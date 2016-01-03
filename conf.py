@@ -26,7 +26,8 @@ class Mock(MagicMock):
             return Mock()
 
 MOCK_MODULES = ['scipy', 'scipy.interpolate', 'scipy.constants', 'argparse',
-'numpy', 'pandas', 'scipy.optimize', 'fluids', 'costing', 'fluids.friction']
+'numpy', 'pandas', 'scipy.optimize', 'fluids', 'costing', 'fluids.friction',
+'fluids.piping']
 sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
 
