@@ -24,7 +24,7 @@ def Lehrer(m=None, Dtank=None, Djacket=None, H=None, Dinlet=None,
            isobaric_expansion=None, dT=None, inlettype='tangential',
            inletlocation='auto'):
     r'''Calculates average heat transfer coefficient for a jacket around a
-    vessel according to [1] as described in [2].
+    vessel according to [Lehrer1970] as described in [Gese].
 
     .. math::
         Nu_{S,L} = \left[\frac{0.03Re_S^{0.75}Pr}{1 + \frac{1.74(Pr-1)}
@@ -93,13 +93,13 @@ def Lehrer(m=None, Dtank=None, Djacket=None, H=None, Dinlet=None,
 
     Examples
     --------
-    Example as in [2], matches completely.
+    Example as in [Gese], matches completely.
 
     >>> Lehrer(m=2.5, Dtank=0.6, Djacket=0.65, H=0.6, Dinlet=0.025, dT=20.,
     ... rho=995.7, Cp=4178.1, k=0.615, mu=798E-6, muw=355E-6)
     2922.128124761829
 
-    Examples similar to in [2] but covering the other case:
+    Examples similar to in [Gese] but covering the other case:
 
     >>> Lehrer(m=2.5, Dtank=0.6, Djacket=0.65, H=0.6, Dinlet=0.025, dT=20.,
     ... rho=995.7, Cp=4178.1, k=0.615, mu=798E-6, muw=355E-6,
@@ -108,10 +108,10 @@ def Lehrer(m=None, Dtank=None, Djacket=None, H=None, Dinlet=None,
 
     References
     ----------
-    .. [1] Lehrer, Isaac H. "Jacket-Side Nusselt Number." Industrial &
+    .. [Lehrer1970] Lehrer, Isaac H. "Jacket-Side Nusselt Number." Industrial &
        Engineering Chemistry Process Design and Development 9, no. 4
        (October 1, 1970): 553-58. doi:10.1021/i260036a010.
-    .. [2] Gesellschaft, V. D. I., ed. VDI Heat Atlas. 2nd edition.
+    .. [Gese] Gesellschaft, V. D. I., ed. VDI Heat Atlas. 2nd edition.
        Berlin; New York:: Springer, 2010.
     '''
     delta = (Djacket-Dtank)/2.
