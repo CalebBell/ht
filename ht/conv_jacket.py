@@ -24,7 +24,7 @@ def Lehrer(m=None, Dtank=None, Djacket=None, H=None, Dinlet=None,
            isobaric_expansion=None, dT=None, inlettype='tangential',
            inletlocation='auto'):
     r'''Calculates average heat transfer coefficient for a jacket around a
-    vessel according to [Lehrer1970] as described in [Gese].
+    vessel according to [Lehrer1970]_ as described in [Gese]_.
 
     .. math::
         Nu_{S,L} = \left[\frac{0.03Re_S^{0.75}Pr}{1 + \frac{1.74(Pr-1)}
@@ -93,13 +93,13 @@ def Lehrer(m=None, Dtank=None, Djacket=None, H=None, Dinlet=None,
 
     Examples
     --------
-    Example as in [Gese], matches completely.
+    Example as in [Gese]_, matches completely.
 
     >>> Lehrer(m=2.5, Dtank=0.6, Djacket=0.65, H=0.6, Dinlet=0.025, dT=20.,
     ... rho=995.7, Cp=4178.1, k=0.615, mu=798E-6, muw=355E-6)
     2922.128124761829
 
-    Examples similar to in [Gese] but covering the other case:
+    Examples similar to in [Gese]_ but covering the other case:
 
     >>> Lehrer(m=2.5, Dtank=0.6, Djacket=0.65, H=0.6, Dinlet=0.025, dT=20.,
     ... rho=995.7, Cp=4178.1, k=0.615, mu=798E-6, muw=355E-6,
