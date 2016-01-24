@@ -24,7 +24,7 @@ def Lehrer(m=None, Dtank=None, Djacket=None, H=None, Dinlet=None,
            isobaric_expansion=None, dT=None, inlettype='tangential',
            inletlocation='auto'):
     r'''Calculates average heat transfer coefficient for a jacket around a
-    vessel according to [1]__ as described in [2]__.
+    vessel according to [1] as described in [2].
 
     .. math::
         Nu_{S,L} = \left[\frac{0.03Re_S^{0.75}Pr}{1 + \frac{1.74(Pr-1)}
@@ -93,13 +93,13 @@ def Lehrer(m=None, Dtank=None, Djacket=None, H=None, Dinlet=None,
 
     Examples
     --------
-    Example as in [2]__, matches completely.
+    Example as in [2], matches completely.
 
     >>> Lehrer(m=2.5, Dtank=0.6, Djacket=0.65, H=0.6, Dinlet=0.025, dT=20.,
     ... rho=995.7, Cp=4178.1, k=0.615, mu=798E-6, muw=355E-6)
     2922.128124761829
 
-    Examples similar to in [2]__ but covering the other case:
+    Examples similar to in [2] but covering the other case:
 
     >>> Lehrer(m=2.5, Dtank=0.6, Djacket=0.65, H=0.6, Dinlet=0.025, dT=20.,
     ... rho=995.7, Cp=4178.1, k=0.615, mu=798E-6, muw=355E-6,
@@ -155,7 +155,7 @@ def Stein_Schmidt(m=None, Dtank=None, Djacket=None, H=None, Dinlet=None,
                   rho=None, Cp=None, k=None, mu=None, muw=None, rhow=None,
                   inlettype='tangential', inletlocation='auto', roughness=0):
     r'''Calculates average heat transfer coefficient for a jacket around a
-    vessel according to [1]__ as described in [2]__.
+    vessel according to [1] as described in [2].
 
     .. math::
         l_{ch} = \left[\left(\frac{\pi}{2}\right)^2 D_{tank}^2+H^2\right]^{0.5}
@@ -258,8 +258,8 @@ def Stein_Schmidt(m=None, Dtank=None, Djacket=None, H=None, Dinlet=None,
 
     Notes
     -----
-    [1]__ is in German and has not been reviewed. Multiple other formulations
-    are considered in [1]__.
+    [1] is in German and has not been reviewed. Multiple other formulations
+    are considered in [1].
 
     If the fluid is heated and enters from the bottom, natural convection
     assists the heat tansfer and the Grashof term is added; if it were to enter
@@ -268,13 +268,13 @@ def Stein_Schmidt(m=None, Dtank=None, Djacket=None, H=None, Dinlet=None,
 
     Examples
     --------
-    Example as in [2]__, matches in all but friction factor:
+    Example as in [2], matches in all but friction factor:
 
     >>> Stein_Schmidt(m=2.5, Dtank=0.6, Djacket=0.65, H=0.6, Dinlet=0.025,
     ... rho=995.7, Cp=4178.1, k=0.615, mu=798E-6, muw=355E-6, rhow=971.8)
     5695.1871940874225
 
-    Examples similar to in [2]__ but covering the other cases:
+    Examples similar to in [2] but covering the other cases:
 
     >>> Stein_Schmidt(m=2.5, Dtank=0.6, Djacket=0.65, H=0.6, Dinlet=0.025,
     ... rho=995.7, Cp=4178.1, k=0.615, mu=798E-6, muw=355E-6, rhow=971.8,
