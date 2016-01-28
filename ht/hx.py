@@ -15,7 +15,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
-
+from __future__ import division
 from math import exp, log, floor
 from math import tanh # 1/coth
 from scipy.optimize import fsolve

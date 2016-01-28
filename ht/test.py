@@ -15,6 +15,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
+from __future__ import division
 from ht import core
 from ht import hx
 from ht import conv_internal
@@ -23,13 +24,6 @@ from ht import air_cooler
 from ht import radiation
 from ht import condensation
 from ht import conv_jacket
-
-
-from scipy.optimize import fsolve
-import numpy as np
-import matplotlib.pyplot as plt
-
-
 
 
 if __name__ == '__main__':
