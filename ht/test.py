@@ -24,6 +24,7 @@ from ht import air_cooler
 from ht import radiation
 from ht import condensation
 from ht import conv_jacket
+from ht import insulation
 
 
 if __name__ == '__main__':
@@ -36,3 +37,4 @@ if __name__ == '__main__':
     doctest.testmod(condensation)
     doctest.testmod(air_cooler)
     doctest.testmod(radiation)
+    doctest.testmod(insulation)

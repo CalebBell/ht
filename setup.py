@@ -19,12 +19,12 @@ from distutils.core import setup
 setup(
   name = 'ht',
   packages = ['ht'],
-  version = '0.1.11',
+  version = '0.1.12',
   description = 'Heat transfer component of Chemical Engineering Design Library (ChEDL)',
   author = 'Caleb Bell',
   author_email = 'Caleb.Andrew.Bell@gmail.com',
   url = 'https://github.com/CalebBell/ht',
-  download_url = 'https://github.com/CalebBell/ht/tarball/0.1.11',
+  download_url = 'https://github.com/CalebBell/ht/tarball/0.1.12',
   keywords = ['chemical engineering', 'heat transfer', 'mechanical engineering'],
   classifiers = [],
 )

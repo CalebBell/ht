@@ -13,6 +13,7 @@ Submodules
    ht.conv_jacket
    ht.core
    ht.hx
+   ht.insulation
    ht.radiation
    ht.test
 
