@@ -4,6 +4,7 @@ ht/__init__.py
 ht/air_cooler.py
 ht/boiling_nucleic.py
 ht/condensation.py
+ht/conduction.py
 ht/conv_internal.py
 ht/conv_jacket.py
 ht/core.py

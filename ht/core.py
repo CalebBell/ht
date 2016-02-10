@@ -57,7 +57,7 @@ def LMTD(Thi, Tho, Tci, Tco, counterflow=True):
 
     Examples
     --------
-    Example 11..1 in [1]_.
+    Example 11.1 in [1]_.
 
     >>> LMTD(100., 60., 30., 40.2)
     43.200409294131525
