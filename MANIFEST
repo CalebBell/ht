@@ -9,5 +9,6 @@ ht/conv_internal.py
 ht/conv_jacket.py
 ht/core.py
 ht/hx.py
+ht/insulation.py
 ht/radiation.py
 ht/test.py
