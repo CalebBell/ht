@@ -19,6 +19,10 @@ from __future__ import division
 from scipy.constants import g
 from math import log, log10
 
+__all__ = ['Rohsenow', 'McNelly', 'Forster_Zuber', 'Montinsky',
+'Stephan_Abdelsalam', 'HEDH_Taborek', 'Bier', 'Cooper', 'h_nucleic', 'Zuber',
+'Serth_HEDH', 'HEDH_Montinsky', 'qmax_boiling']
+
 def Rohsenow(Te=None, Cpl=None, kl=None, mul=None, sigma=None, Hvap=None,
             rhol=None, rhog=None, Csf=0.013, n=1.7):
     r'''Calculates heat transfer coefficient for a evaporator operating
@@ -617,7 +621,7 @@ cryogenics = {'132259-10-0': 'Air', '7440-37-1': 'Argon', '630-08-0':
 
 
 
-def h(Te=None, Tsat=None, P=None, dPSat=None, dPdT=None,
+def h_nucleic(Te=None, Tsat=None, P=None, dPSat=None, dPdT=None,
       Cpl=None, kl=None, mul=None, rhol=None, sigma=None, Hvap=None,
       rhog=None, MW=None, Pc=None, kw=None, rhow=None, Cpw=None, Rp=None,
       CAS=None, AvailableMethods=False, Method=None):
@@ -862,7 +866,7 @@ def HEDH_Montinsky(P=None, Pc=None):
 #print [HEDH_Montinsky(P=310.3E3, Pc=2550E3)]
 
 
-def qmax(rhol=None, rhog=None, sigma=None, Hvap=None, D=None, P=None, Pc=None,
+def qmax_boiling(rhol=None, rhog=None, sigma=None, Hvap=None, D=None, P=None, Pc=None,
          AvailableMethods=False, Method=None):
     r'''This function handles choosing which nucleate boiling critical
     heat flux correlation to use, depending on the provided information.

@@ -16,7 +16,10 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from scipy.interpolate import interp1d
+from ht.conduction import R_to_k
 
+# building_materials In VDI Heat Atlas; full table in DIN EN 12524-2000 which
+# is used here
 # Format: density, thermal conductivity, heat capacity
 # kg/m^3, W/m/K, and J/kg/K
 # A roughly room-teperature value is attached to all values
@@ -152,6 +155,293 @@ building_materials = {'Asphalt': (2100, 0.7, 1000),
 'Wood, fibreboard, 800 kg/m^3': (800, 0.18, 1700)}
 
 
+
+# Format for ASHRAE strings: [rho, Cp, k, R, t]
+# [kg/m^3, J/kg/K, W/m/K, m^2*K/W, mm] only t is in non-SI units
+
+ASHRAE_board_siding = {'Board, Asbestos/cement': [1900, 1000, 0.57, None, None],
+'Board, Cement': [1150, 840, 0.25, None, None],
+'Board, Fiber/cement, 1400 kg/m^3': [1400, 840, 0.25, None, None],
+'Board, Fiber/cement, 1000 kg/m^3': [1000, 840, 0.19, None, None],
+'Board, Fiber/cement, 400 kg/m^3': [400, 1880, 0.07, None, None],
+'Board, Fiber/cement, 300 kg/m^3': [300, 1150, 0.06, None, None],
+'Gypsum or plaster board': [640, 1880, 0.16, None, None],
+'Oriented strand board (OSB)': [650, 1880, None, 0.12, 12.7],
+'Plywood (douglas fir)': [460, 1880, None, 0.14, 12.7],
+'Plywood/wood panels': [450, 1880, None, 0.19, 19],
+'Vegetable fiber board, Sheathing, regular density': [290, 1300, None, 0.23, 12.7],
+'Vegetable fiber board, Sheathing, intermediate density': [350, 1300, None, 0.19, 12.7],
+'Vegetable fiber board, Nail-base sheathing': [400, 1300, None, 0.19, 12.7],
+'Vegetable fiber board, Shingle backer': [290, 1300, None, 0.17, 9.5],
+'Vegetable fiber board, Sound deadening board': [240, 1260, None, 0.24, 12.7],
+'Vegetable fiber board, Tile and lay-in panels, plain or acoustic': [290, 590, 0.058, None, None],
+'Vegetable fiber board, Laminated paperboard': [480, 1380, 0.072, None, None],
+'Vegetable fiber board, Homogeneous board from repulped paper': [480, 1170, 0.072, None, None],
+'Hardboard, medium density': [800, 1300, 0.105, None, None],
+'Hardboard, high density, service-tempered grade and service grade': [880, 1340, 0.12, None, None],
+'Hardboard, high density, standard-tempered grade': [1010, 1340, 0.144, None, None],
+'Particleboard, low density': [590, 1300, 0.102, None, None],
+'Particleboard, medium density': [800, 1300, 0.135, None, None],
+'Particleboard, high density': [1000, 1300, 1.18, None, None],
+'Particleboard, underlayment': [640, 1210, None, 1.22, 15.9],
+'Waferboard': [700, 1880, 0.072, None, None],
+'Shingles, Asbestos/cement': [1900, 1000, None, 0.037, 6.4],
+'Shingles, Wood, 400 mm, 190 mm exposure': [None, 1300, None, 0.15, 6],
+'Shingles, Wood, double, 400 mm, 300 mm exposure': [None, 1170, None, 0.21, 12],
+'Shingles, Wood, plus ins. backer board': [None, 1300, None, 0.25, 8],
+'Shingles, Siding, Asbestos/cement, lapped': [None, 1010, None, 0.037, 6.4],
+'Shingles, Siding, Asphalt roll siding': [None, 1470, None, 0.026, 2],
+'Siding, Asphalt insulating siding': [None, 1470, None, 0.26, 12.7],
+'Siding, Hardboard siding': [None, 1170, None, 0.12, 11],
+'Siding, Wood, drop, 200 mm': [None, 1170, None, 0.14, 25],
+'Siding, Wood, bevel, 200 mm, lapped': [None, 1170, None, 0.14, 13],
+'Siding, Wood, bevel, 250 mm, lapped': [None, 1170, None, 0.18, 19],
+'Siding, Wood, plywood, lapped': [None, 1220, None, 0.1, 9.5],
+'Siding, Aluminum, steel, or vinyl, over sheathing, hollow-backed': [None, 1220, None, 0.11, 0.6],
+'Siding, Aluminum, steel, or vinyl, over sheathing, insulating-board-backed': [None, 1340, None, 0.32, 9.5],
+'Siding, Aluminum, steel, or vinyl, over sheathing foil-backed': [None, None, None, 0.52, 9.5],
+'Siding, Architectural (soda-lime float) glass': [2500, 840, 1, None, None]}
+
+
+ASHRAE_flooring = {'Carpet and rebounded urethane pad': [110, None, None, 0.42, 19],
+'Carpet and rubber pad, one-piece': [320, None, None, 0.12, 9.5],
+'Pile carpet with rubber pad': [290, None, None, 0.28, 11],
+'Linoleum/cork tile': [465, None, None, 0.09, 6.4],
+'PVC/Rubber floor covering, Rubber tile': [1900, None, 0.4, 0.06, 25],
+'PVC/Rubber floor covering, Terrazzo': [None, 800, 0.4, 0.014, 25]}
+
+ASHRAE_insulation = {'Glass-fiber batts, 90 mm': [12, 840, 0.043, None, 90],
+'Glass-fiber batts, 50 mm': [10.5, 840, 0.0465, None, 50],
+'Mineral fiber': [30, 840, 0.036, None, 140],
+'Mineral wool, felted, 32 kg/m^3': [32, 840, 0.04, None, None],
+'Mineral wool, felted, 100 kg/m^3': [97.5, 840, 0.035, None, None],
+'Slag wool, 120 kg/m^3': [120, 950, 0.038, None, None],
+'Slag wool, 255 kg/m^3': [255, 950, 0.04, None, None],
+'Slag wool, 305 kg/m^3': [305, 950, 0.043, None, None],
+'Slag wool, 350 kg/m^3': [350, 950, 0.048, None, None],
+'Slag wool, 400 kg/m^3': [400, 950, 0.05, None, None],
+'Cellular glass': [130, 750, 0.048, None, None],
+'Cement fiber slabs, shredded wood, with Portland cement binder': [415, 1300, 0.074, None, None],
+'Cement fiber slabs, shredded wood, with magnesia oxysulfide binder': [350, 1300, 0.082, None, None],
+'Glass fiber board': [160, 840, 0.036, None, None],
+'Expanded rubber': [70, 1670, 0.032, None, None],
+'Expanded polystyrene, extruded': [32.5, 1470, 0.026, None, None],
+'Expanded polystyrene, molded beads': [20, 1470, 0.0355, None, None],
+'Mineral fiberboard, wet felted': [160, 840, 0.038, None, None],
+'Mineral fiberboard, wet felted, core or roof insulation': [262.5, 840, 0.049, None, None],
+'Mineral fiberboard, wet felted, acoustical tile, 290 kg/m^3': [290, 800, 0.05, None, None],
+'Mineral fiberboard, wet felted, acoustical tile, 335 kg/m^3': [335, None, 0.053, None, None],
+'Mineral fiberboard, wet-molded, acoustical tile': [370, 590, 0.061, None, None],
+'Perlite board': [160, None, 0.052, None, None],
+'Polyisocyanurate, aged, unfaced': [30, None, 0.0235, None, None],
+'Polyisocyanurate, aged, with facers': [65, 1470, 0.019, None, None],
+'Phenolic foam board with facers, aged': [65, None, 0.019, None, None],
+'Loose fill, Cellulosic': [42.5, 1380, 0.042, None, None],
+'Loose fill, Perlite, expanded, 50 kg/m^3': [50, 1090, 0.042, None, None],
+'Loose fill, Perlite, expanded, 100 kg/m^3': [100, None, 0.0485, None, None],
+'Loose fill, Perlite, expanded, 150 kg/m^3': [150, None, 0.0565, None, None],
+'Loose fill, Mineral fiber, 95 to 130 mm': [20, 710, None, 1.92, 112.5],
+'Loose fill, Mineral fiber, 170 to 220 mm': [20, None, None, 3.33, 195],
+'Loose fill, Mineral fiber, 190 to 250 mm': [20, None, None, 3.85, 220],
+'Loose fill, Mineral fiber, 260 to 350 mm': [20, None, None, 5.26, 305],
+'Loose fill, Mineral fiber, 90 mm': [42.5, None, None, 2.3, 90],
+'Loose fill, Vermiculite, exfoliated, 120 kg/m^3': [120, 1340, 0.068, None, None],
+'Loose fill, Vermiculite, exfoliated, 80 kg/m^3': [80, None, 0.063, None, None],
+'Spray-applied Cellulosic fiber': [75, None, 0.0455, None, None],
+'Spray-applied Glass fiber': [62.5, None, 0.0385, None, None],
+'Spray-applied Polyurethane foam, 7 kg/m^3': [7, 1470, 0.042, None, None],
+'Spray-applied Polyurethane foam, 40 kg/m^3': [40, 1470, 0.026, None, None],
+'Spray-applied Polyurethane foam, aged and dry, 40 mm': [30, 1470, None, 1.6, 40],
+'Spray-applied Polyurethane foam, aged and dry, 50 mm': [55, 1470, None, 1.92, 50],
+'Spray-applied Polyurethane foam, aged and dry, 120 mm': [30, None, None, 3.69, 120],
+'Spray-applied Ureaformaldehyde foam, dry': [14, None, 0.031, None, None]}
+
+ASHRAE_roofing = {'Asbestos/cement shingles': [1120, 1000, None, 0.037, 6],
+'Asphalt (bitumen with inert fill), 1600 kg/m^3': [1600, None, 0.43, None, None],
+'Asphalt (bitumen with inert fill), 1900 kg/m^3': [1900, None, 0.58, None, None],
+'Asphalt (bitumen with inert fill), 2300 kg/m^3': [2300, None, 1.15, None, None],
+'Asphalt roll roofing': [920, 1510, None, 0.027, 2],
+'Asphalt shingles': [920, 1260, None, 0.078, 12],
+'Built-up roofing': [920, 1470, None, 0.059, 10],
+'Mastic asphalt (heavy, 20% grit)': [950, None, 0.19, None, None],
+'Reed thatch': [270, None, 0.09, None, None],
+'Roofing felt': [2250, None, 1.2, None, None],
+'Slate': [None, 1260, None, 0.009, 13],
+'Straw thatch': [240, None, 0.07, None, None],
+'Wood shingles, plain and plastic-film-faced': [None, 1300, None, 0.166, 10]}
+
+ASHRAE_plastering = {'Cement plaster, sand aggregate': [1860, 840, 0.72, None, None],
+'Sand aggregate': [None, 840, None, 0.013, 10],
+'Gypsum plaster, 1120 kg/m^3': [1120, None, 0.38, None, None],
+'Gypsum plaster, 1280 kg/m^3': [1280, None, 0.46, None, None],
+'Lightweight aggregate': [720, None, None, 0.056, 13],
+'Perlite aggregate': [720, 1340, 0.22, None, None],
+'Sand aggregate': [1680, 840, 0.81, None, None],
+'Vermiculite aggregate, 480 kg/m^3': [480, None, 0.14, None, None],
+'Vermiculite aggregate, 600 kg/m^3': [600, None, 0.2, None, None],
+'Vermiculite aggregate, 720 kg/m^3': [720, None, 0.25, None, None],
+'Vermiculite aggregate, 840 kg/m^3': [840, None, 0.26, None, None],
+'Vermiculite aggregate, 960 kg/m^3': [960, None, 0.3, None, None],
+'Perlite plaster, 400 kg/m^3': [400, None, 0.08, None, None],
+'Perlite plaster, 600 kg/m^3': [600, None, 0.19, None, None],
+'Pulpboard or paper plaster': [600, None, 0.07, None, None],
+'Sand/cement plaster, conditioned': [1560, None, 0.63, None, None],
+'Sand/cement/lime plaster, conditioned': [1440, None, 0.48, None, None],
+'Sand/gypsum (3:1) plaster, conditioned': [1550, None, 0.65, None, None]}
+
+ASHRAE_masonry = {'Brick, fired clay, 2400 kg/m^3': [2400, 800, 1.34, None, None],
+'Brick, fired clay, 2240 kg/m^3': [2240, 800, 1.185, None, None],
+'Brick, fired clay, 2080 kg/m^3': [2080, 800, 1.02, None, None],
+'Brick, fired clay, 1920 kg/m^3': [1920, 800, 0.895, None, None],
+'Brick, fired clay, 1760 kg/m^3': [1760, 800, 0.78, None, None],
+'Brick, fired clay, 1600 kg/m^3': [1600, 800, 0.675, None, None],
+'Brick, fired clay, 1440 kg/m^3': [1440, 800, 0.57, None, None],
+'Brick, fired clay, 1280 kg/m^3': [1280, 800, 0.48, None, None],
+'Brick, fired clay, 1120 kg/m^3': [1120, 800, 0.405, None, None],
+'Clay tile, hollow, 1 cell deep': [None, 880, None, 0.14, 75],
+'Clay tile, hollow, 2 cells deep': [None, 880, None, 0.27, 150],
+'Clay tile, hollow, 3 cells deep': [None, 880, None, 0.44, 300],
+'Lightweight brick, 800 kg/m^3': [800, None, 0.2, None, None],
+'Lightweight brick, 770 kg/m^3': [770, None, 0.22, None, None],
+'Concrete blocks, Limestone aggregate, 200 mm, 16 kg, 2200 kg/m^3, 2 cores with perlite-filled cores': [None, None, None, 0.37, 200],
+'Concrete blocks, Limestone aggregate, 300 mm, 25 kg, 2200 kg/m^3, 2 cores with perlite-filled cores.': [None, None, None, 0.65, 300],
+'Concrete blocks, normal-weight aggregate, 300 mm, 23 kg, 2100 kg/m^3, 2 or 3 cores': [None, 920, None, 0.185, 200],
+'Concrete blocks, normal-weight aggregate, 300 mm, 23 kg, 2100 kg/m^3, with perlite-filled cores': [None, None, None, 0.35, 200],
+'Concrete blocks, normal-weight aggregate, 300 mm, 23 kg, 2100 kg/m^3, with vermiculite-filled cores': [None, None, None, 0.29, 200],
+'Concrete blocks, normal-weight aggregate, 300 mm, 23 kg, 2000 kg/m^3, 2 cores': [None, 920, None, 0.217, 300],
+'Concrete blocks, medium-weight aggregate, 200 mm, 13 kg, 1650 kg/m^3, 2 or 3 cores': [1650, None, None, 0.26, 200],
+'Concrete blocks, medium-weight aggregate, 200 mm, 13 kg, 1650 kg/m^3, with perlite-filled cores': [1650, None, None, 0.53, 200],
+'Concrete blocks, medium-weight aggregate, 200 mm, 13 kg, 1650 kg/m^3, with vermiculite-filled cores': [None, None, None, 0.58, 200],
+'Concrete blocks, medium-weight aggregate, 200 mm, 13 kg, 1650 kg/m^3, with molded-EPS-filled cores': [1650, None, None, 0.56, 200],
+'Concrete blocks, medium-weight aggregate, 200 mm, 13 kg, 1650 kg/m^3, with molded EPS inserts in cores': [1650, None, None, 0.47, 200],
+'Concrete blocks, low-mass aggregate, 150 mm, 7.5 kg, 1400 kg/m^3, 2 or 3 cores': [None, None, None, 0.315, 150],
+'Concrete blocks, low-mass aggregate, 150 mm, 7.5 kg, 1400 kg/m^3, with perlite-filled cores': [None, None, None, 0.74, 150],
+'Concrete blocks, low-mass aggregate, 150 mm, 7.5 kg, 1400 kg/m^3, with vermiculite-filled cores': [None, None, None, 0.53, 150],
+'Concrete blocks, low-mass aggregate, 200 mm, 9 kg, 1250 kg/m^3': [None, 880, None, 0.445, 200],
+'Concrete blocks, low-mass aggregate, 200 mm, 9 kg, 1250 kg/m^3, with perlite-filled cores': [None, 880, None, 0.985, 200],
+'Concrete blocks, low-mass aggregate, 200 mm, 9 kg, 1250 kg/m^3, with vermiculite-filled cores': [None, 880, None, 0.81, 200],
+'Concrete blocks, low-mass aggregate, 200 mm, 9 kg, 1250 kg/m^3, with molded-EPS-filled cores': [None, 880, None, 0.85, 200],
+'Concrete blocks, low-mass aggregate, 200 mm, 9 kg, 1250 kg/m^3, with UF foam-filled cores': [None, 880, None, 0.79, 200],
+'Concrete blocks, low-mass aggregate, 200 mm, 9 kg, 1250 kg/m^3, with molded EPS inserts in cores': [None, 880, None, 0.62, 200],
+'Concrete blocks, low-mass aggregate, 300 mm, 16 kg, 1400 kg/m^3, 2 or 3 cores': [None, None, None, 0.43, 300],
+'Concrete blocks, low-mass aggregate, 300 mm, 16 kg, 1400 kg/m^3, with perlite-filled cores': [None, None, None, 1.35, 300],
+'Concrete blocks, low-mass aggregate, 300 mm, 16 kg, 1400 kg/m^3, with vermiculite-filled cores': [None, None, None, 1, 300],
+'Stone, lime, or sand': [2880, None, 10.4, None, None],
+'Quartzitic and sandstone, 2560 kg/m^3': [2560, None, 6.2, None, None],
+'Quartzitic and sandstone, 2240 kg/m^3': [2240, None, 3.46, None, None],
+'Quartzitic and sandstone, 1920 kg/m^3': [1920, 880, 1.88, None, None],
+'Calcitic, dolomitic, limestone, marble, and granite, 2880 kg/m^3': [2880, None, 4.33, None, None],
+'Calcitic, dolomitic, limestone, marble, and granite, 2560 kg/m^3': [2560, None, 3.17, None, None],
+'Calcitic, dolomitic, limestone, marble, and granite, 2240 kg/m^3': [2240, None, 2.31, None, None],
+'Calcitic, dolomitic, limestone, marble, and granite, 1920 kg/m^3': [1920, 880, 1.59, None, None],
+'Calcitic, dolomitic, limestone, marble, and granite, 1600 kg/m^3': [1600, None, 1.15, None, None],
+'Gypsum partition tile, 75 by 300 by 760 mm, solid, 3 cells': [None, 790, None, 0.222, 75],
+'Gypsum partition tile, 75 by 300 by 760 mm, with 4 cells': [None, None, None, 0.238, 75],
+'Gypsum partition tile, 100 by 300 by 760 mm, 3 cells': [None, None, None, 0.294, 100],
+'Limestone, 2400 kg/m^3': [2400, 840, 0.57, None, None],
+'Limestone, 2600 kg/m^3': [2600, 840, 0.93, None, None],
+'Concrete, Sand and gravel or stone aggregate concretes, 2400 kg/m^3': [2400, None, 2.15, None, None],
+'Concrete, Sand and gravel or stone aggregate concretes, 2240 kg/m^3': [2240, 900, 1.95, None, None],
+'Concrete, Sand and gravel or stone aggregate concretes, 2080 kg/m^3': [2080, None, 1.45, None, None],
+'Concrete, Low-mass aggregate or limestone': [1920, None, 1.1, None, None],
+'Concrete, Expanded shale, clay, or slate; expanded slags; cinders; pumice; scoria; 1600 kg/m^3': [1600, 840, 0.785, None, None],
+'Concrete, Expanded shale, clay, or slate; expanded slags; cinders; pumice; scoria; 1280 kg/m^3': [1280, 840, 0.535, None, None],
+'Concrete, Expanded shale, clay, or slate; expanded slags; cinders; pumice; scoria; 960 kg/m^3': [960, None, 0.33, None, None],
+'Concrete, Expanded shale, clay, or slate; expanded slags; cinders; pumice; scoria; 640 kg/m^3': [640, None, 0.18, None, None],
+'Concrete, Gypsum/fiber concrete (87.5% gypsum, 12.5% wood chips)': [800, 840, 0.24, None, None],
+'Concrete, Cement/lime, mortar, and stucco, 1920 kg/m^3': [1920, None, 1.4, None, None],
+'Concrete, Cement/lime, mortar, and stucco, 1600 kg/m^3': [1600, None, 0.97, None, None],
+'Concrete, Cement/lime, mortar, and stucco, 1280 kg/m^3': [1280, None, 0.65, None, None],
+'Concrete, Perlite, vermiculite, and polystyrene beads, 800 kg/m^3': [800, None, 0.265, None, None],
+'Concrete, Perlite, vermiculite, and polystyrene beads, 640 kg/m^3': [640, 795, 0.21, None, None],
+'Concrete, Perlite, vermiculite, and polystyrene beads, 480 kg/m^3': [480, None, 0.16, None, None],
+'Concrete, Perlite, vermiculite, and polystyrene beads, 320 kg/m^3': [320, None, 0.12, None, None],
+'Concrete, Foam concretes, 1920 kg/m^3': [1920, None, 0.75, None, None],
+'Concrete, Foam concretes, 1600 kg/m^3': [1600, None, 0.6, None, None],
+'Concrete, Foam concretes, 1280 kg/m^3': [1280, None, 0.44, None, None],
+'Concrete, Foam concretes, 1120 kg/m^3': [1120, None, 0.36, None, None],
+'Concrete, Foam concretes and cellular concretes, 960 kg/m^3': [960, None, 0.3, None, None],
+'Concrete, Foam concretes and cellular concretes, 640 kg/m^3': [640, None, 0.2, None, None],
+'Concrete, Foam concretes and cellular concretes, 320 kg/m^3': [320, None, 0.12, None, None],
+'Concrete, Aerated concrete (oven-dried)': [615, 840, 0.2, None, None],
+'Concrete, Polystyrene concrete (oven-dried)': [527.5, 840, 0.37, None, None],
+'Concrete, Polymer concrete, 1950 kg/m^3': [1950, None, 1.64, None, None],
+'Concrete, Polymer concrete, 2200 kg/m^3': [2200, None, 1.03, None, None],
+'Concrete, Polymer cement': [1870, None, 0.78, None, None],
+'Concrete, Slag concrete, 960 kg/m^3': [960, None, 0.22, None, None],
+'Concrete, Slag concrete, 1280 kg/m^3': [1280, None, 0.32, None, None],
+'Concrete, Slag concrete, 1600 kg/m^3': [1600, None, 0.43, None, None],
+'Concrete, Slag concrete, 2000 kg/m^3': [2000, None, 1.23, None, None]}
+
+ASHRAE_woods = {'Oak': [705, 1630, 0.17, None, None],
+'Birch': [702.5, 1630, 0.175, None, None],
+'Maple': [667.5, 1630, 0.165, None, None],
+'Ash': [642.5, 1630, 0.155, None, None],
+'Southern pine': [615, 1630, 0.15, None, None],
+'Southern yellow pine': [500, 1630, 0.13, None, None],
+'Eastern white pine': [400, 1630, 0.1, None, None],
+'Douglas fir/larch': [557.5, 1630, 0.145, None, None],
+'Southern cypress': [507.5, 1630, 0.13, None, None],
+'Hem/fir, spruce/pine/fir': [445, 1630, 0.12, None, None],
+'Spruce': [400, 1630, 0.09, None, None],
+'Western red cedar': [350, 1630, 0.09, None, None],
+'West coast woods, cedars': [425, 1630, 0.115, None, None],
+'Eastern white cedar': [360, 1630, 0.1, None, None],
+'California redwood': [420, 1630, 0.115, None, None],
+'Pine (oven-dried)': [370, 1880, 0.092, None, None],
+'Spruce (oven-dried)': [395, 1880, 0.1, None, None]}
+
+ASHRAE = {}
+for i in [ASHRAE_board_siding, ASHRAE_flooring, ASHRAE_insulation,
+          ASHRAE_roofing, ASHRAE_plastering, ASHRAE_masonry, ASHRAE_woods]:
+    ASHRAE.update(i)
+
+
+def ASHRAE_k(ID, T=None):
+    r'''Returns thermal conductivity of a building or insulating material
+    from a table in [1]_. Thermal conductivity is independent of temperature
+    here. Many entries in the table are listed for varying densities, but the
+    appropriate ID from the table must be selected to account for that.
+
+    Parameters
+    ----------
+    ID : str
+        ID conresponding to a material in the dictionary `ASHRAE`
+
+    Returns
+    -------
+    k : float
+        Thermal conductivity of the material, [W/m/K]
+
+    Examples
+    --------
+    >>> ASHRAE_k(ID='Mineral fiber')
+    0.036
+    >>> sum([ASHRAE_k(ID) for ID in ASHRAE])
+    102.33813464784427
+
+    References
+    ----------
+    .. [1] ASHRAE Handbook: Fundamentals. American Society of Heating,
+       Refrigerating and Air-Conditioning Engineers, Incorporated, 2013.
+    '''
+    if ID not in ASHRAE:
+        raise Exception('ID provided is not in the table')
+    values = ASHRAE[ID]
+    if values[2]:
+        k = values[2]
+    else:
+        R = values[3]
+        t = values[4]/1000. # mm to m
+        k = R_to_k(R, t)
+    return k
+
+#print [ASHRAE_k(ID='Mineral fiber')]
+#print [sum([ASHRAE_k(ID) for ID in ASHRAE])]
+#print [len([ASHRAE_k(ID) for ID in ASHRAE])]
+
+
+
 _refractory_Ts = [673.15, 873.15, 1073.15, 1273.15, 1473.15]
 
 refractories = {'Silica': [1820, (1.2, 1.36, 1.51, 1.64, 1.76), (915, 944, 961, 969, 979)],
@@ -192,34 +482,6 @@ refractories = {'Silica': [1820, (1.2, 1.36, 1.51, 1.64, 1.76), (915, 944, 961, 
 'L1870': [1440, (1.5, 1.34, 1.23, 1.14, 1.07), (1011, 1066, 1099, 1124, 1150)],
 'Carbon, anthracite': [1540, (7, 8.51, 9.95, 11.33, 12.65), (1106, 1240, 1362, 1474, 1581)],
 'Carbon, graphite': [1550, (67, 60.67, 56.06, 52.01, 49.46), (1108, 1244, 1366, 1479, 1588)]}
-
-def refractory_VDI_rho(ID):
-    r'''Returns density of a refractory material from a table in [1]_.
-    Here, density is not a function of either temperature or porosity, both of
-    which can affect it.
-
-    Parameters
-    ----------
-    ID : str
-        ID conresponding to a material in the dictionary `refractories`
-
-    Returns
-    -------
-    rho : float
-        Density of the refractory material, [kg/m^3]
-
-    Examples
-    --------
-    >>> refractory_VDI_rho('Fused silica')
-    1940
-
-    References
-    ----------
-    .. [1] Gesellschaft, V. D. I., ed. VDI Heat Atlas. 2nd edition.
-       Berlin; New York:: Springer, 2010.
-    '''
-    rho = refractories[ID][0]
-    return rho
 
 
 def refractory_VDI_k(ID, T=None):
@@ -312,4 +574,6 @@ def refractory_VDI_Cp(ID, T=None):
             T = _refractory_Ts[-1]
         Cp = float(to_interp(T))
     return Cp
+
+
 

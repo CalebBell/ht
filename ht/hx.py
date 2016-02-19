@@ -18,15 +18,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 from __future__ import division
 from math import exp, log, floor
 from math import tanh # 1/coth
-from scipy.optimize import fsolve
 from scipy.interpolate import interp1d
 from fluids.piping import BWG_integers, BWG_inch, BWG_SI
-#from ht.core import LMTD
-#from iapws import IAPWS97 as steam
-
-#print steam(T=646,x=1).P, 646-273.14
 TEMA_R_to_metric = 0.17611018
 
+__all__ = ['effectiveness_from_NTU', 'calc_Cmin', 'calc_Cmax', 'calc_Cr',
+'NTU_from_UA', 'UA_from_NTU', 'check_tubing_TEMA', 'get_tube_TEMA',
+'DBundle_min', 'shell_clearance', 'baffle_thickness', 'D_baffle_holes',
+'L_unsupported_max', 'Ntubes_Perrys', 'Ntubes_VDI', 'Ntubes_Phadkeb',
+'Ntubes_HEDH', 'Ntubes', 'D_for_Ntubes_VDI']
 
 def effectiveness_from_NTU(NTU, Cr, Ntp=1, shells=1, counterflow=True,
                            subtype='double-pipe', Cmin_mixed=False, Cmax_mixed=False):
@@ -1286,11 +1286,11 @@ def D_for_Ntubes_VDI(Nt=None, Ntp=None, do=None, pitch=None, angle=30):
     elif Ntp == 2:
         f2 = 22.
     elif Ntp == 4:
-        f = 70.
+        f2 = 70.
     elif Ntp == 6:
-        f = 90.
+        f2 = 90.
     elif Ntp == 8:
-        f = 105.
+        f2 = 105.
     else:
         raise Exception('Only 1, 2, 4 and 8 passes are supported')
     if angle == 30 or angle == 60:
@@ -1312,5 +1312,5 @@ def D_for_Ntubes_VDI(Nt=None, Ntp=None, do=None, pitch=None, angle=30):
 _heads = {'A': 'Removable Channel and Cover', 'B': 'Bonnet (Integral Cover)', 'C': 'Integral With Tubesheet Removable Cover', 'N': 'Channel Integral With Tubesheet and Removable Cover', 'D': 'Special High-Pressure Closures'}
 _shells = {'E': 'One-Pass Shell', 'F': 'Two-Pass Shell with Longitudinal Baffle', 'G': 'Split Flow', 'H': 'Double Split Flow', 'J': 'Divided Flow', 'K': 'Kettle-Type Reboiler',  'X': 'Cross Flow'}
 _rears = {'L': 'Fixed Tube Sheet; Like "A" Stationary Head', 'M': 'Fixed Tube Sheet; Like "B" Stationary Head', 'N': 'Fixed Tube Sheet; Like "C" Stationary Head', 'P': 'Outside Packed Floating Head', 'S': 'Floating Head with Backing Device', 'T': 'Pull-Through Floating Head', 'U': 'U-Tube Bundle', 'W': 'Externally Sealed Floating Tubesheet'}
-_services = {'C': 'Chemical', 'R': 'Refinery', 'C': 'General'}
+_services = {'B': 'Chemical', 'R': 'Refinery', 'C': 'General'}
 _baffle_types = {'segmental', 'double segmental', 'triple segmental', 'disk and doughnut', 'no tubes in window', 'orifice', 'rod'}

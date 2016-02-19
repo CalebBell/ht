@@ -17,9 +17,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from __future__ import division
 from math import sin, cos, exp, pi, log
-from scipy.optimize import fsolve
 from scipy.constants import sigma, h, c, k, pi
-
+__all__ = ['blackbody_spectral_radiance', 'q_rad']
 
 def blackbody_spectral_radiance(T, wavelength):
     r'''Returns the spectral radiance, in units of W/m^3/sr.

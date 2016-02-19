@@ -15,4 +15,49 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
-from scipy.constants import g
+__all__ = ['air_cooler', 'boiling_nucleic', 'condensation', 'conduction',
+'conv_internal', 'conv_jacket', 'hx', 'insulation', 'radiation']
+
+
+
+
+import core
+import hx
+import conv_internal
+import boiling_nucleic
+import air_cooler
+import radiation
+import condensation
+import conduction
+import conv_jacket
+import insulation
+
+from core import *
+from hx import *
+from conv_internal import *
+from boiling_nucleic import *
+from air_cooler import *
+from radiation import *
+from condensation import *
+from conduction import *
+from conv_jacket import *
+from insulation import *
+
+__all__ = ['compressible', 'control_valve', 'core', 'filters', 'fittings',
+'friction_factor', 'geometry', 'mixing', 'open_flow', 'packed_bed', 'piping',
+'pump', 'safety_valve']
+
+
+__all__.extend(core.__all__)
+__all__.extend(hx.__all__)
+__all__.extend(conv_internal.__all__)
+__all__.extend(boiling_nucleic.__all__)
+__all__.extend(air_cooler.__all__)
+__all__.extend(radiation.__all__)
+__all__.extend(condensation.__all__)
+__all__.extend(conduction.__all__)
+__all__.extend(conv_jacket.__all__)
+#__all__.extend(insulation.__all__)
+
+
+

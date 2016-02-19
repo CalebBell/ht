@@ -18,6 +18,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 from __future__ import division
 from math import log, log10, exp, tanh
 
+__all__ = ['laminar_T_const', 'laminar_Q_const',
+'laminar_entry_thermal_Hausen', 'laminar_entry_Seider_Tate',
+'laminar_entry_Baehr_Stephan', 'turbulent_Dittus_Boelter',
+'turbulent_Sieder_Tate', 'turbulent_entry_Hausen', 'turbulent_Colburn',
+'turbulent_Drexel_McAdams', 'turbulent_von_Karman', 'turbulent_Prandtl',
+'turbulent_Friend_Metzner', 'turbulent_Petukhov_Kirillov_Popov',
+'turbulent_Webb', 'turbulent_Sandall', 'turbulent_Gnielinski',
+'turbulent_Gnielinski_smooth_1', 'turbulent_Gnielinski_smooth_2',
+'turbulent_Churchill_Zajic', 'turbulent_ESDU', 'turbulent_Martinelli',
+'turbulent_Nunner', 'turbulent_Dipprey_Sabersky', 'turbulent_Gowen_Smith',
+'turbulent_Kawase_Ulbrecht', 'turbulent_Kawase_De', 'turbulent_Bhatti_Shah',
+'Nu_conv_internal']
+
 ### Laminar
 
 def laminar_T_const():
@@ -1305,8 +1318,8 @@ def turbulent_Bhatti_Shah(Re=None, Pr=None, fd=None, eD=None):
 #print [turbulent_Bhatti_Shah(Re=1E5, Pr=1.2, fd=0.0185, eD=1E-3)]
 
 
-def Nu(Re=None, Pr=None, fd=None, eD=None, Di=None, x=None, fd_smooth=None,
-       AvailableMethods=False, Method=None):
+def Nu_conv_internal(Re=None, Pr=None, fd=None, eD=None, Di=None, x=None,
+                     fd_smooth=None, AvailableMethods=False, Method=None):
     r'''This function handles choosing which internal flow heat transfer
     correlation to use, depending on the provided information.
     Generally this is used by a helper class, but can be used directly. Will
@@ -1438,7 +1451,7 @@ def Nu(Re=None, Pr=None, fd=None, eD=None, Di=None, x=None, fd_smooth=None,
 #Di = 0.0254*4
 #roughness = .00015
 #
-#methods = Nu(Re=10000, Pr=Pr, fd=1.8E-5, x=2.5, Di=0.5, AvailableMethods=True, Method=None)
+#methods = Nu_conv_internal(Re=10000, Pr=Pr, fd=1.8E-5, x=2.5, Di=0.5, AvailableMethods=True, Method=None)
 #
 #plt.figure()
 #Res = np.logspace(4, 6, 300)
@@ -1446,7 +1459,7 @@ def Nu(Re=None, Pr=None, fd=None, eD=None, Di=None, x=None, fd_smooth=None,
 #    Nus = []
 #    for Re in Res:
 #        fd = friction_factor(Re=Re, eD=roughness/Di)
-#        Nus.append(Nu(Re=Re, Pr=Pr, fd=fd, x=2.5, Di=0.5, Method=way))
+#        Nus.append(Nu_conv_internal(Re=Re, Pr=Pr, fd=fd, x=2.5, Di=0.5, Method=way))
 #    plt.plot(Res, Nus, label=way)
 #plt.xlabel(r'Res')
 #plt.ylabel('Nus')

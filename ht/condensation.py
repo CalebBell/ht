@@ -19,6 +19,7 @@ from __future__ import division
 from scipy.constants import g
 from math import sin, pi, log
 
+__all__ = ['Boyko_Kruzhilin', 'Nusselt_laminar']
 
 def Nusselt_laminar(Tsat=None, Tw=None, rhog=None, rhol=None, kl=None,
                     mul=None, Hvap=None, L=None, angle=90):

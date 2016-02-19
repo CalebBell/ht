@@ -17,6 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from __future__ import division
 from math import log
+__all__ =['LMTD']
 
 def LMTD(Thi, Tho, Tci, Tco, counterflow=True):
     r'''Returns the log-mean temperature difference of an ideal counterflow

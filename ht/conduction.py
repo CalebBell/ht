@@ -17,6 +17,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from __future__ import division
 from math import log, pi, exp
+from scipy.constants import inch, foot, hour, Btu, degree_Fahrenheit
+
+__all__ = ['R_to_k', 'k_to_R', 'k_to_thermal_resistivity',
+'thermal_resistivity_to_k', 'R_value_to_k', 'k_to_R_value', 'R_cylinder']
 
 
 def R_to_k(R, t, A=1.):
@@ -204,7 +208,7 @@ def R_value_to_k(R_value, SI=True):
     Examples
     --------
     >>> R_value_to_k(0.12), R_value_to_k(0.71, SI=False)
-    0.2116666666666667, 0.20313787163983468
+    (0.2116666666666667, 0.20313787163983468)
 
     >>> R_value_to_k(1., SI=False)/R_value_to_k(1.)
     5.678263341113488
@@ -249,7 +253,7 @@ def k_to_R_value(k, SI=True):
     Examples
     --------
     >>> k_to_R_value(R_value_to_k(0.12)), k_to_R_value(R_value_to_k(0.71, SI=False), SI=False)
-    0.11999999999999998, 0.7099999999999999
+    (0.11999999999999998, 0.7099999999999999)
 
     References
     ----------

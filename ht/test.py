@@ -23,6 +23,7 @@ from ht import boiling_nucleic
 from ht import air_cooler
 from ht import radiation
 from ht import condensation
+from ht import conduction
 from ht import conv_jacket
 from ht import insulation
 
@@ -38,3 +39,6 @@ if __name__ == '__main__':
     doctest.testmod(air_cooler)
     doctest.testmod(radiation)
     doctest.testmod(insulation)
+    doctest.testmod(conduction)
+
+
