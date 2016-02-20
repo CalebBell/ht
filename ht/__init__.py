@@ -43,9 +43,8 @@ from conduction import *
 from conv_jacket import *
 from insulation import *
 
-__all__ = ['compressible', 'control_valve', 'core', 'filters', 'fittings',
-'friction_factor', 'geometry', 'mixing', 'open_flow', 'packed_bed', 'piping',
-'pump', 'safety_valve']
+__all__ = ['core', 'hx', 'conv_internal', 'boiling_nucleic', 'air_cooler',
+'radiation', 'condensation', 'conduction', 'conv_jacket']
 
 
 __all__.extend(core.__all__)
