@@ -49,7 +49,7 @@ def blackbody_spectral_radiance(T, wavelength):
     Checked with Spectral-calc.com, at
 
     >>> blackbody_spectral_radiance(800., 4E-6)
-    1311693595.7898972
+    1311692056.2430143
 
     References
     ----------
@@ -91,10 +91,10 @@ def q_rad(emissivity, T, T2=0):
     Examples
     --------
     >>> q_rad(1., 400)
-    1451.6154880000001
+    1451.613952
 
     >>> q_rad(.85, 400, 305.)
-    816.7830365288185
+    816.7821722650002
 
     References
     ----------
