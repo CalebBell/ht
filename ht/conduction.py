@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from __future__ import division
-from math import log, pi, exp, acosh, log, cosh
+from math import log, pi, acosh, cosh
 from scipy.constants import inch, foot, hour, Btu, degree_Fahrenheit
 
 
