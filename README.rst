@@ -8,11 +8,11 @@ ht
 .. image:: http://img.shields.io/pypi/dm/ht.svg?style=flat
    :target: https://pypi.python.org/pypi/ht
    :alt: Downloads
-.. image:: http://img.shields.io/travis/CalebBell/fluids/master.svg?style=flat
-   :target: https://travis-ci.org/CalebBell/fluids
+.. image:: http://img.shields.io/travis/CalebBell/ht/master.svg?style=flat
+   :target: https://travis-ci.org/CalebBell/ht
    :alt: Build_status
 .. image:: http://img.shields.io/badge/license-GPL3-blue.svg?style=flat
-   :target: https://github.com/CalebBell/fluids/blob/master/LICENSE.txt
+   :target: https://github.com/CalebBell/ht/blob/master/LICENSE.txt
    :alt: license
 
 
