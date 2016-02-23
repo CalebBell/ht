@@ -10,6 +10,7 @@ Submodules
    ht.boiling_nucleic
    ht.condensation
    ht.conduction
+   ht.conv_free_immersed
    ht.conv_internal
    ht.conv_jacket
    ht.core

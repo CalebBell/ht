@@ -31,6 +31,7 @@ import condensation
 import conduction
 import conv_jacket
 import insulation
+import conv_free_immersed
 
 from core import *
 from hx import *
@@ -42,9 +43,10 @@ from condensation import *
 from conduction import *
 from conv_jacket import *
 from insulation import *
+from conv_free_immersed import *
 
 __all__ = ['core', 'hx', 'conv_internal', 'boiling_nucleic', 'air_cooler',
-'radiation', 'condensation', 'conduction', 'conv_jacket']
+'radiation', 'condensation', 'conduction', 'conv_jacket', 'conv_free_immersed']
 
 
 __all__.extend(core.__all__)
@@ -56,6 +58,7 @@ __all__.extend(radiation.__all__)
 __all__.extend(condensation.__all__)
 __all__.extend(conduction.__all__)
 __all__.extend(conv_jacket.__all__)
+__all__.extend(conv_free_immersed.__all__)
 #__all__.extend(insulation.__all__)
 
 
