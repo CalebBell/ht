@@ -16,6 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from __future__ import division
+from math import exp, log
 
 __all__ = ['Nu_vertical_plate_Churchill', 'Nu_horizontal_cylinder_Churchill',
            'Nu_sphere_Churchill', 'Nu_vertical_cylinder_Griffiths_Davis_Morgan',
@@ -188,11 +189,10 @@ def Nu_sphere_Churchill(Pr, Gr):
 #print [Nu_sphere_Churchill(.7, 1E1), Nu_sphere_Churchill(.7, 1E7)]
 
 
-from math import exp, log
 
 ### Vertical cylinders
 
-def Nu_vertical_cylinder_Griffiths_Davis_Morgan(Pr, Gr):
+def Nu_vertical_cylinder_Griffiths_Davis_Morgan(Pr, Gr, turbulent=None):
     r'''Calculates Nusselt number for natural convection around a vertical
     isothermal cylinder according to the results of [1]_ correlated by [2]_, as
     presented in [3]_ and [4]_.
@@ -208,6 +208,9 @@ def Nu_vertical_cylinder_Griffiths_Davis_Morgan(Pr, Gr):
         Prandtl number [-]
     Gr : float
         Grashof number [-]
+    turbulent : bool or None, optional
+        Whether or not to force the correlation to return the turbulent
+        result; will return the laminar regime if False
 
     Returns
     -------
@@ -241,14 +244,14 @@ def Nu_vertical_cylinder_Griffiths_Davis_Morgan(Pr, Gr):
        23-42. Springer, 2014.
     '''
     Ra = Pr*Gr
-    if Ra < 1E9:
-        Nu = 0.67*Ra**0.25
-    else:
+    if turbulent or (Ra > 1E9 and turbulent is None):
         Nu = 0.0782*Ra**0.357
+    else:
+        Nu = 0.67*Ra**0.25
     return Nu
 
 
-def Nu_vertical_cylinder_Jakob_Linke_Morgan(Pr, Gr):
+def Nu_vertical_cylinder_Jakob_Linke_Morgan(Pr, Gr, turbulent=None):
     r'''Calculates Nusselt number for natural convection around a vertical
     isothermal cylinder according to the results of [1]_ correlated by [2]_, as
     presented in [3]_ and [4]_.
@@ -264,6 +267,9 @@ def Nu_vertical_cylinder_Jakob_Linke_Morgan(Pr, Gr):
         Prandtl number [-]
     Gr : float
         Grashof number [-]
+    turbulent : bool or None, optional
+        Whether or not to force the correlation to return the turbulent
+        result; will return the laminar regime if False
 
     Returns
     -------
@@ -299,14 +305,14 @@ def Nu_vertical_cylinder_Jakob_Linke_Morgan(Pr, Gr):
        23-42. Springer, 2014.
     '''
     Ra = Pr*Gr
-    if Ra < 1E8:
-        Nu = 0.555*Ra**0.25
-    else:
+    if turbulent or (Ra > 1E8 and turbulent is None):
         Nu = 0.129*Ra**(1/3.)
+    else:
+        Nu = 0.555*Ra**0.25
     return Nu
 
 
-def Nu_vertical_cylinder_Carne_Morgan(Pr, Gr):
+def Nu_vertical_cylinder_Carne_Morgan(Pr, Gr, turbulent=None):
     r'''Calculates Nusselt number for natural convection around a vertical
     isothermal cylinder according to the results of [1]_ correlated by [2]_, as
     presented in [3]_ and [4]_.
@@ -322,6 +328,9 @@ def Nu_vertical_cylinder_Carne_Morgan(Pr, Gr):
         Prandtl number [-]
     Gr : float
         Grashof number [-]
+    turbulent : bool or None, optional
+        Whether or not to force the correlation to return the turbulent
+        result; will return the laminar regime if False
 
     Returns
     -------
@@ -359,14 +368,14 @@ def Nu_vertical_cylinder_Carne_Morgan(Pr, Gr):
        23-42. Springer, 2014.
     '''
     Ra = Pr*Gr
-    if Ra < 2E8:
-        Nu = 1.07*Ra**0.28
-    else:
+    if turbulent or (Ra > 2E8 and turbulent is None):
         Nu = 0.152*Ra**0.38
+    else:
+        Nu = 1.07*Ra**0.28
     return Nu
 
 
-def Nu_vertical_cylinder_Eigenson_Morgan(Pr, Gr):
+def Nu_vertical_cylinder_Eigenson_Morgan(Pr, Gr, turbulent=None):
     r'''Calculates Nusselt number for natural convection around a vertical
     isothermal cylinder according to the results of [1]_ correlated by [2]_,
     presented in [3]_ and in more detail in [4]_.
@@ -384,6 +393,9 @@ def Nu_vertical_cylinder_Eigenson_Morgan(Pr, Gr):
         Prandtl number [-]
     Gr : float
         Grashof number [-]
+    turbulent : bool or None, optional
+        Whether or not to force the correlation to return the turbulent
+        result; will return the laminar regime if False
 
     Returns
     -------
@@ -424,16 +436,16 @@ def Nu_vertical_cylinder_Eigenson_Morgan(Pr, Gr):
        23-42. Springer, 2014.
     '''
     Ra = Pr*Gr
-    if Ra < 1E9:
-        Nu = 0.48*Ra**0.25
-    elif Ra < 1.69E10:
+    if turbulent or (Ra > 1.69E10 and turbulent is None):
+        Nu = 0.148*Ra**(1/3.) - 127.6
+    elif 1E9 < Ra < 1.69E10 and turbulent is not False:
         Nu = 51.5 + 0.0000726*Ra**0.63
     else:
-        Nu = 0.148*Ra**(1/3.) - 127.6
+        Nu = 0.48*Ra**0.25
     return Nu
 
 
-def Nu_vertical_cylinder_Touloukian_Morgan(Pr, Gr):
+def Nu_vertical_cylinder_Touloukian_Morgan(Pr, Gr, turbulent=None):
     r'''Calculates Nusselt number for natural convection around a vertical
     isothermal cylinder according to the results of [1]_ correlated by [2]_, as
     presented in [3]_ and [4]_.
@@ -449,6 +461,9 @@ def Nu_vertical_cylinder_Touloukian_Morgan(Pr, Gr):
         Prandtl number [-]
     Gr : float
         Grashof number [-]
+    turbulent : bool or None, optional
+        Whether or not to force the correlation to return the turbulent
+        result; will return the laminar regime if False
 
     Returns
     -------
@@ -485,14 +500,14 @@ def Nu_vertical_cylinder_Touloukian_Morgan(Pr, Gr):
        23-42. Springer, 2014.
     '''
     Ra = Pr*Gr
-    if Ra < 4E10:
-        Nu = 0.726*Ra**0.25
-    else:
+    if turbulent or (Ra > 4E10 and turbulent is None):
         Nu = 0.0674*(Gr*Pr**1.29)**(1/3.)
+    else:
+        Nu = 0.726*Ra**0.25
     return Nu
 
 
-def Nu_vertical_cylinder_McAdams_Weiss_Saunders(Pr, Gr):
+def Nu_vertical_cylinder_McAdams_Weiss_Saunders(Pr, Gr, turbulent=None):
     r'''Calculates Nusselt number for natural convection around a vertical
     isothermal cylinder according to the results of [1]_ and [2]_ correlated by
     [3]_, as presented in [4]_, [5]_, and [6]_.
@@ -508,6 +523,9 @@ def Nu_vertical_cylinder_McAdams_Weiss_Saunders(Pr, Gr):
         Prandtl number [-]
     Gr : float
         Grashof number [-]
+    turbulent : bool or None, optional
+        Whether or not to force the correlation to return the turbulent
+        result; will return the laminar regime if False
 
     Returns
     -------
@@ -547,14 +565,14 @@ def Nu_vertical_cylinder_McAdams_Weiss_Saunders(Pr, Gr):
        23-42. Springer, 2014.
     '''
     Ra = Pr*Gr
-    if Ra < 1E9:
-        Nu = 0.59*Ra**0.25
-    else:
+    if turbulent or (Ra > 1E9 and turbulent is None):
         Nu = 0.13*Ra**(1/3.)
+    else:
+        Nu = 0.59*Ra**0.25
     return Nu
 
 
-def Nu_vertical_cylinder_Kreith_Eckert(Pr, Gr):
+def Nu_vertical_cylinder_Kreith_Eckert(Pr, Gr, turbulent=None):
     r'''Calculates Nusselt number for natural convection around a vertical
     isothermal cylinder according to the results of [1]_  correlated by
     [2]_, also as presented in [3]_, [4]_, and [5]_.
@@ -570,6 +588,9 @@ def Nu_vertical_cylinder_Kreith_Eckert(Pr, Gr):
         Prandtl number [-]
     Gr : float
         Grashof number [-]
+    turbulent : bool or None, optional
+        Whether or not to force the correlation to return the turbulent
+        result; will return the laminar regime if False
 
     Returns
     -------
@@ -606,10 +627,10 @@ def Nu_vertical_cylinder_Kreith_Eckert(Pr, Gr):
        23-42. Springer, 2014.
     '''
     Ra = Pr*Gr
-    if Ra < 1E9:
-        Nu = 0.555*Ra**0.25
+    if turbulent or (Ra > 1E9 and turbulent is None):
+        Nu = 0.021*Ra**0.4
     else:
-        Nu = 0.021*Ra**(0.4)
+        Nu = 0.555*Ra**0.25
     return Nu
 
 
@@ -636,6 +657,7 @@ def Nu_vertical_cylinder_Hanesian_Kalish_Morgan(Pr, Gr):
     Notes
     -----
     For air and fluoro-carbons. If outside of range, no warning is given.
+    Laminar range only!
 
     Examples
     --------
@@ -664,7 +686,7 @@ def Nu_vertical_cylinder_Hanesian_Kalish_Morgan(Pr, Gr):
 
 
 ### Vertical cylinders, more complex correlations
-def Nu_vertical_cylinder_Al_Arabi_Khamis(Pr, Gr, L, D):
+def Nu_vertical_cylinder_Al_Arabi_Khamis(Pr, Gr, L, D, turbulent=None):
     r'''Calculates Nusselt number for natural convection around a vertical
     isothermal cylinder according to [1]_, also as presented in [2]_ and [3]_.
 
@@ -683,6 +705,9 @@ def Nu_vertical_cylinder_Al_Arabi_Khamis(Pr, Gr, L, D):
         Length of vertical cylinder, [m]
     D : float
         Diameter of cylinder, [m]
+    turbulent : bool or None, optional
+        Whether or not to force the correlation to return the turbulent
+        result; will return the laminar regime if False
 
     Returns
     -------
@@ -720,10 +745,10 @@ def Nu_vertical_cylinder_Al_Arabi_Khamis(Pr, Gr, L, D):
     Gr_noL =Gr/L**3
     Gr_D = Gr_noL*D**3
     Ra = Pr*Gr
-    if Ra <= 2.6E9:
-        Nu = 2.9*Ra**0.25*Gr_D**(-1/12.)
-    else:
+    if turbulent or (Ra > 2.6E9 and turbulent is None):
         Nu = 0.47*Ra**(1/3.)*Gr_D**(-1/12.)
+    else:
+        Nu = 2.9*Ra**0.25*Gr_D**(-1/12.)
     return Nu
 
 
@@ -781,3 +806,4 @@ def Nu_vertical_cylinder_Popiel_Churchill(Pr, Gr, L, D,
     Nu_fp = Nu_vertical_plate_correlation(Pr, Gr)
     Nu = Nu_fp*(1 + B*(32**2*Gr**-0.25*L/D)**C)
     return Nu
+
