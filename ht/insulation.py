@@ -17,6 +17,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from scipy.interpolate import interp1d
 from ht.conduction import R_to_k
+import difflib
+
+__all__ = ['nearest_material', 'k_material', 'rho_material', 'Cp_material',
+           'building_materials', 'refractories', 'ASHRAE']
 
 # building_materials In VDI Heat Atlas; full table in DIN EN 12524-2000 which
 # is used here
@@ -397,7 +401,7 @@ for i in [ASHRAE_board_siding, ASHRAE_flooring, ASHRAE_insulation,
     ASHRAE.update(i)
 
 
-def ASHRAE_k(ID, T=None):
+def ASHRAE_k(ID):
     r'''Returns thermal conductivity of a building or insulating material
     from a table in [1]_. Thermal conductivity is independent of temperature
     here. Many entries in the table are listed for varying densities, but the
@@ -482,6 +486,12 @@ refractories = {'Silica': [1820, (1.2, 1.36, 1.51, 1.64, 1.76), (915, 944, 961, 
 'L1870': [1440, (1.5, 1.34, 1.23, 1.14, 1.07), (1011, 1066, 1099, 1124, 1150)],
 'Carbon, anthracite': [1540, (7, 8.51, 9.95, 11.33, 12.65), (1106, 1240, 1362, 1474, 1581)],
 'Carbon, graphite': [1550, (67, 60.67, 56.06, 52.01, 49.46), (1108, 1244, 1366, 1479, 1588)]}
+
+
+materials_dict = {}
+for mat_dict, reference in [(refractories, 1), (ASHRAE, 2), (building_materials, 3)]:
+    for key in mat_dict.keys():
+        materials_dict[key] = reference
 
 
 def refractory_VDI_k(ID, T=None):
@@ -576,4 +586,211 @@ def refractory_VDI_Cp(ID, T=None):
     return Cp
 
 
+def nearest_material(name, complete=False):
+    r'''Returns the nearest hit to a given name from from dictionaries of
+    building, insulating, or refractory material from tables in [1]_, [2]_,
+    and [3]_. Function will pick the closest match based on a fuzzy search.
+    if `complete` is True, will only return hits with all three of density,
+    heat capacity, and thermal conductivity available.
 
+    Parameters
+    ----------
+    name : str
+        Search keywords to be used by difflib function
+
+    Returns
+    -------
+    ID : str
+        A key to one of the dictionaries mentioned above
+
+    Examples
+    --------
+    >>> nearest_material('stainless steel')
+    'Metals, stainless steel'
+
+    References
+    ----------
+    .. [1] ASHRAE Handbook: Fundamentals. American Society of Heating,
+       Refrigerating and Air-Conditioning Engineers, Incorporated, 2013.
+    .. [2] DIN EN 12524 (2000-07) Building Materials and Products
+       Hygrothermal Properties - Tabulated Design Values; English Version of
+       DIN EN 12524.
+    .. [3] Gesellschaft, V. D. I., ed. VDI Heat Atlas. 2nd edition.
+       Berlin; New York:: Springer, 2010.
+    '''
+    if complete:
+        hits = difflib.get_close_matches(name, materials_dict.keys(), n=100, cutoff=0)
+        for hit in hits:
+            if materials_dict[hit] == 1 or materials_dict[hit]==3 or (ASHRAE[hit][0] and ASHRAE[hit][1]):
+                return hit
+        raise Exception('Hit was not found in first hundred results')
+    else:
+        return difflib.get_close_matches(name, materials_dict.keys(), n=1, cutoff=0)[0]
+
+
+def k_material(ID, T=298.15):
+    r'''Returns thermal conductivity of a building, insulating, or refractory
+    material from tables  in [1]_, [2]_, and [3]_. Thermal conductivity may or
+    may not be dependent on temperature depending on the source used. Function
+    must be provided with either a key to one of the dictionaries
+    `refractories`, `ASHRAE`, or `building_materials` - or a search term which
+    will pick the closest match based on a fuzzy search. To determine which
+    source the fuzzy search will pick, use the function `nearest_material`.
+    Fuzzy searches are slow; it is preferable to call this function with a
+    material key directly.
+
+    Parameters
+    ----------
+    ID : str
+        String as described above
+    T : float, optional
+        Temperature of the material, [K]
+
+    Returns
+    -------
+    k : float
+        Thermal conductivity of the material, [W/m/K]
+
+    Examples
+    --------
+    >>> k_material('Mineral fiber')
+    0.036
+    >>> k_material('stainless steel')
+    17.0
+    >>> sum([k_material(ID) for ID in materials_dict])
+    1505.182534647845
+
+    References
+    ----------
+    .. [1] ASHRAE Handbook: Fundamentals. American Society of Heating,
+       Refrigerating and Air-Conditioning Engineers, Incorporated, 2013.
+    .. [2] DIN EN 12524 (2000-07) Building Materials and Products
+       Hygrothermal Properties - Tabulated Design Values; English Version of
+       DIN EN 12524.
+    .. [3] Gesellschaft, V. D. I., ed. VDI Heat Atlas. 2nd edition.
+       Berlin; New York:: Springer, 2010.
+    '''
+    if ID not in materials_dict:
+        ID = nearest_material(ID)
+    if ID in refractories:
+        k = refractory_VDI_k(ID, T)
+    elif ID in ASHRAE:
+        k = ASHRAE_k(ID)
+    else:
+        k = float(building_materials[ID][1])
+    return k
+
+
+def rho_material(ID):
+    r'''Returns the density of a building, insulating, or refractory
+    material from tables  in [1]_, [2]_, and [3]_. No temperature dependence is
+    available. Function must be provided with either a key to one of the
+    dictionaries `refractories`, `ASHRAE`, or `building_materials` - or a
+    search term which will pick the closest match based on a fuzzy search. To
+    determine which source the fuzzy search will pick, use the function
+    `nearest_material`. Fuzzy searches are slow; it is preferable to call this
+    function with a material key directly.
+
+    Parameters
+    ----------
+    ID : str
+        String as described above
+
+    Returns
+    -------
+    rho : float
+        Density of the material, [kg/m^3]
+
+    Examples
+    --------
+    >>> rho_material('Mineral fiber')
+    30.0
+    >>> rho_material('stainless steel')
+    7900.0
+    >>> rho_material('Board, Asbestos/cement')
+    1900.0
+    >>> sum([rho_material(mat) for mat in materials_dict if (
+    ... materials_dict[mat] == 1 or materials_dict[mat]==3 or ASHRAE[mat][0])])
+    473135.98
+
+    References
+    ----------
+    .. [1] ASHRAE Handbook: Fundamentals. American Society of Heating,
+       Refrigerating and Air-Conditioning Engineers, Incorporated, 2013.
+    .. [2] DIN EN 12524 (2000-07) Building Materials and Products
+       Hygrothermal Properties - Tabulated Design Values; English Version of
+       DIN EN 12524.
+    .. [3] Gesellschaft, V. D. I., ed. VDI Heat Atlas. 2nd edition.
+       Berlin; New York:: Springer, 2010.
+    '''
+    if ID not in materials_dict:
+        ID = nearest_material(ID)
+    if ID in refractories:
+        rho = float(refractories[ID][0]) # Density available for all hits
+    elif ID in building_materials:
+        rho = float(building_materials[ID][0]) # Density available for all hits
+    else:
+        rho = ASHRAE[ID][0]
+        if rho is None:
+            raise Exception('Density is not available for this material')
+        else:
+            rho = float(rho)
+    return rho
+
+
+def Cp_material(ID, T=298.15):
+    r'''Returns heat capacity of a building, insulating, or refractory
+    material from tables  in [1]_, [2]_, and [3]_. Heat capacity may or
+    may not be dependent on temperature depending on the source used. Function
+    must be provided with either a key to one of the dictionaries
+    `refractories`, `ASHRAE`, or `building_materials` - or a search term which
+    will pick the closest match based on a fuzzy search. To determine which
+    source the fuzzy search will pick, use the function `nearest_material`.
+    Fuzzy searches are slow; it is preferable to call this function with a
+    material key directly.
+
+    Parameters
+    ----------
+    ID : str
+        String as described above
+    T : float, optional
+        Temperature of the material, [K]
+
+    Returns
+    -------
+    Cp : float
+        Heat capacity of the material, [W/m/K]
+
+    Examples
+    --------
+    >>> Cp_material('Mineral fiber')
+    840.0
+    >>> Cp_material('stainless steel')
+    460.0
+    >>> sum([Cp_material(mat) for mat in materials_dict if (
+    ... materials_dict[mat] == 1 or materials_dict[mat]==3 or ASHRAE[mat][1])])
+    353115.0
+
+    References
+    ----------
+    .. [1] ASHRAE Handbook: Fundamentals. American Society of Heating,
+       Refrigerating and Air-Conditioning Engineers, Incorporated, 2013.
+    .. [2] DIN EN 12524 (2000-07) Building Materials and Products
+       Hygrothermal Properties - Tabulated Design Values; English Version of
+       DIN EN 12524.
+    .. [3] Gesellschaft, V. D. I., ed. VDI Heat Atlas. 2nd edition.
+       Berlin; New York:: Springer, 2010.
+    '''
+    if ID not in materials_dict:
+        ID = nearest_material(ID)
+    if ID in refractories:
+        Cp = refractory_VDI_Cp(ID, T)
+    elif ID in building_materials:
+        Cp = float(building_materials[ID][2]) # Density available for all hits
+    else:
+        Cp = ASHRAE[ID][1]
+        if Cp is None:
+            raise Exception('Heat capacity is not available for this material')
+        else:
+            Cp = float(Cp)
+    return Cp

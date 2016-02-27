@@ -63,7 +63,7 @@ __all__.extend(conduction.__all__)
 __all__.extend(conv_jacket.__all__)
 __all__.extend(conv_free_immersed.__all__)
 __all__.extend(conv_tube_bank.__all__)
-#__all__.extend(insulation.__all__)
+__all__.extend(insulation.__all__)
 
 
 
