@@ -136,7 +136,7 @@ def Nu_horizontal_cylinder_Churchill(Pr, Gr):
        David P. DeWitt. Introduction to Heat Transfer. 6E. Hoboken, NJ:
        Wiley, 2011.
     '''
-    Ra = Pr * Gr
+    Ra = Pr*Gr
     Nu = (0.6 + 0.387*Ra**(1/6.)/(1 + (0.559/Pr)**(9/16.))**(8/27.))**2
     return Nu
 
@@ -742,8 +742,7 @@ def Nu_vertical_cylinder_Al_Arabi_Khamis(Pr, Gr, L, D, turbulent=None):
        Vertical Cylinders." In Natural Convection from Circular Cylinders,
        23-42. Springer, 2014.
     '''
-    Gr_noL =Gr/L**3
-    Gr_D = Gr_noL*D**3
+    Gr_D = Gr/L**3*D**3
     Ra = Pr*Gr
     if turbulent or (Ra > 2.6E9 and turbulent is None):
         Nu = 0.47*Ra**(1/3.)*Gr_D**(-1/12.)
@@ -758,7 +757,7 @@ def Nu_vertical_cylinder_Popiel_Churchill(Pr, Gr, L, D,
     isothermal cylinder according to [1]_, also  presented in [2]_.
 
     .. math::
-        \frac{Nu}{Nu_{L,fp}} = 1 + B\left[32^2Gr_L^{-0.25}\frac{L}{D}\right]^C
+        \frac{Nu}{Nu_{L,fp}} = 1 + B\left[32^{0.5}Gr_L^{-0.25}\frac{L}{D}\right]^C
 
         B = 0.0571322 + 0.20305 Pr^{-0.43}
 
@@ -785,25 +784,131 @@ def Nu_vertical_cylinder_Popiel_Churchill(Pr, Gr, L, D,
     Notes
     -----
     For 0.01 < Pr < 100. Requires a vertical flat plate correlation.
-    ***Results are suspisciously high!***
+    Both [2], [3] present a power of 2 instead of 0.5 on the 32 in the equation,
+    but the original has the correct form.
 
     Examples
     --------
     >>> Nu_vertical_cylinder_Popiel_Churchill(0.7, 1E10, 2.5, 1)
-    667.2367253322423
+    228.8979005514989
 
     References
     ----------
-    .. [1] Popiel, Czeslaw O. "Free Convection Heat Transfer from Vertical
+    .. [1] Popiel, C. O., J. Wojtkowiak, and K. Bober. "Laminar Free Convective
+       Heat Transfer from Isothermal Vertical Slender Cylinder." Experimental
+       Thermal and Fluid Science 32, no. 2 (November 2007): 607-613.
+       doi:10.1016/j.expthermflusci.2007.07.003.
+    .. [2] Popiel, Czeslaw O. "Free Convection Heat Transfer from Vertical
        Slender Cylinders: A Review." Heat Transfer Engineering 29, no. 6
        (June 1, 2008): 521-36. doi:10.1080/01457630801891557.
-    .. [2] Boetcher, Sandra K. S. "Natural Convection Heat Transfer From
+    .. [3] Boetcher, Sandra K. S. "Natural Convection Heat Transfer From
        Vertical Cylinders." In Natural Convection from Circular Cylinders,
        23-42. Springer, 2014.
     '''
     B = 0.0571322 + 0.20305*Pr**-0.43
     C = 0.9165 - 0.0043*Pr**0.5 + 0.01333*log(Pr) + 0.0004809/Pr
     Nu_fp = Nu_vertical_plate_correlation(Pr, Gr)
-    Nu = Nu_fp*(1 + B*(32**2*Gr**-0.25*L/D)**C)
+    Nu = Nu_fp*(1 + B*(32**0.5*Gr**-0.25*L/D)**C)
     return Nu
 
+
+
+# Nice Name : (function_call, does_turbulent, does_laminar, transition_Ra, is_only_Pr_Gr)
+vertical_cylinder_correlations = {
+'Churchill Vertical Plate': (Nu_vertical_plate_Churchill, True, True, None, True),
+'Griffiths, Davis, & Morgan': (Nu_vertical_cylinder_Griffiths_Davis_Morgan, True, True, 1.00E+009, True),
+'Jakob, Linke, & Morgan': (Nu_vertical_cylinder_Jakob_Linke_Morgan, True, True, 1.00E+008, True),
+'Carne & Morgan': (Nu_vertical_cylinder_Carne_Morgan, True, True, 2.00E+008, True),
+'Eigenson & Morgan': (Nu_vertical_cylinder_Eigenson_Morgan, True, True, 6.90E+011, True),
+'Touloukian & Morgan': (Nu_vertical_cylinder_Touloukian_Morgan, True, True, 4.00E+010, True),
+'McAdams, Weiss & Saunders': (Nu_vertical_cylinder_McAdams_Weiss_Saunders, True, True, 1.00E+009, True),
+'Kreith & Eckert': (Nu_vertical_cylinder_Kreith_Eckert, True, True, 1.00E+009, True),
+'Hanesian, Kalish & Morgan': (Nu_vertical_cylinder_Hanesian_Kalish_Morgan, False, True, 1.00E+008, True),
+'Al-Arabi & Khamis': (Nu_vertical_cylinder_Al_Arabi_Khamis, True, True, 2.60E+009, False),
+'Popiel & Churchill': (Nu_vertical_cylinder_Popiel_Churchill, False, True, 1.00E+009, False),
+}
+
+
+def Nu_vertical_cylinder(Pr=None, Gr=None, L=None, D=None,
+                         AvailableMethods=False, Method=None):
+    r'''This function handles choosing which vertical cylinder free convection
+    correlation is used. Generally this is used by a helper class, but can be
+    used directly. Will automatically select the correlation to use if none is
+    provided; returns None if insufficient information is provided.
+
+    Prefered functions are 'Popiel & Churchill' for fully defined geometries,
+    and 'McAdams, Weiss & Saunders' otherwise.
+
+    Examples
+    --------
+    >>> Nu_vertical_cylinder(0.72, 1E7)
+    30.562236756513943
+
+    Parameters
+    ----------
+    Pr : float
+        Prandtl number [-]
+    Gr : float
+        Grashof number [-]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    methods : list, only returned if AvailableMethods == True
+        List of methods which can be used to calculate Nu with the given inputs
+
+    Other Parameters
+    ----------------
+    Method : string, optional
+        A string of the function name to use, as in the dictionary
+        vertical_cylinder_correlations
+    AvailableMethods : bool, optional
+        If True, function will consider which methods which can be used to
+        calculate Nu with the given inputs
+    '''
+    def list_methods():
+        methods = []
+        if all((Pr, Gr)):
+            for key, values in vertical_cylinder_correlations.iteritems():
+                if values[4] or all((L, D)):
+                    methods.append(key)
+        methods.append('None')
+        if 'Popiel & Churchill' in methods:
+            methods.remove('Popiel & Churchill')
+            methods.insert(0, 'Popiel & Churchill')
+        elif 'McAdams, Weiss & Saunders' in methods:
+            methods.remove('McAdams, Weiss & Saunders')
+            methods.insert(0, 'McAdams, Weiss & Saunders')
+        return methods
+
+    if AvailableMethods:
+        return list_methods()
+    if not Method:
+        Method = list_methods()[0]
+
+    if Method in vertical_cylinder_correlations:
+        if vertical_cylinder_correlations[Method][4]:
+            Nu = vertical_cylinder_correlations[Method][0](Pr=Pr, Gr=Gr)
+        else:
+            Nu = vertical_cylinder_correlations[Method][0](Pr=Pr, Gr=Gr, L=L, D=D)
+    elif Method == 'None':
+        Nu = None
+    else:
+        raise Exception('Failure in in function')
+    return Nu
+
+#print [ Nu_vertical_cylinder(0.72, 1E7)]
+
+#import matplotlib.pyplot as plt
+#import numpy as np
+##L, D = 1.5, 0.1
+#Pr, Gr = 0.72, 1E8
+#methods = Nu_vertical_cylinder(Pr, Gr, AvailableMethods=True)
+#Grs = np.logspace(2, 12, 10000)
+#
+#for method in methods:
+#    Nus = [Nu_vertical_cylinder(Pr=Pr, Gr=i, Method=method) for i in Grs]
+#    plt.loglog(Grs, Nus, label=method)
+#plt.legend()
+#plt.show()
