@@ -28,7 +28,8 @@ __all__ = ['Nu_vertical_plate_Churchill', 'Nu_horizontal_cylinder_Churchill',
            'Nu_vertical_cylinder_Kreith_Eckert',
            'Nu_vertical_cylinder_Hanesian_Kalish_Morgan',
            'Nu_vertical_cylinder_Al_Arabi_Khamis',
-           'Nu_vertical_cylinder_Popiel_Churchill']
+           'Nu_vertical_cylinder_Popiel_Churchill',
+           'Nu_vertical_cylinder']
 
 
 def Nu_vertical_plate_Churchill(Pr, Gr):
