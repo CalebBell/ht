@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from scipy.interpolate import interp1d
-from ht.conduction import R_to_k
+from .conduction import R_to_k
 import difflib
 
 __all__ = ['nearest_material', 'k_material', 'rho_material', 'Cp_material',
