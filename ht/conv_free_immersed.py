@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 from __future__ import division
 from math import exp, log
 
-__all__ = ['Nu_vertical_plate_Churchill', 'Nu_horizontal_cylinder_Churchill',
+__all__ = ['Nu_vertical_plate_Churchill',
            'Nu_sphere_Churchill', 'Nu_vertical_cylinder_Griffiths_Davis_Morgan',
            'Nu_vertical_cylinder_Jakob_Linke_Morgan',
            'Nu_vertical_cylinder_Carne_Morgan',
@@ -29,7 +29,11 @@ __all__ = ['Nu_vertical_plate_Churchill', 'Nu_horizontal_cylinder_Churchill',
            'Nu_vertical_cylinder_Hanesian_Kalish_Morgan',
            'Nu_vertical_cylinder_Al_Arabi_Khamis',
            'Nu_vertical_cylinder_Popiel_Churchill',
-           'Nu_vertical_cylinder']
+           'Nu_vertical_cylinder',
+           'Nu_horizontal_cylinder_Churchill_Chu',
+           'Nu_horizontal_cylinder_Kuehn_Goldstein',
+           'Nu_horizontal_cylinder_Morgan',
+           'Nu_horizontal_cylinder']
 
 
 def Nu_vertical_plate_Churchill(Pr, Gr):
@@ -88,58 +92,6 @@ def Nu_vertical_plate_Churchill(Pr, Gr):
 
 #print [Nu_vertical_plate_Churchill(.69, 2.63E9)]
 
-def Nu_horizontal_cylinder_Churchill(Pr, Gr):
-    r'''Calculates Nusselt number for natural convection around a horizontal
-    cylinder according to the Churchill-Chu [1]_ correlation, also presented in
-    [2]_. Cylinder must be isothermal; an alternate expression exists for
-    constant heat flux.
-
-    .. math::
-        Nu_{D}=\left[0.60+\frac{0.387Ra_{D}^{1/6}}
-        {[1+(0.559/Pr)^{9/16}]^{8/27}}\right]^2
-
-    Parameters
-    ----------
-    Pr : float
-        Prandtl number [-]
-    Gr : float
-        Grashof number [-]
-
-    Returns
-    -------
-    Nu : float
-        Nusselt number, [-]
-
-    Notes
-    -----
-    Although transition from laminar to turbulent is discrete in reality, this
-    equation provides a smooth transition in value from laminar to turbulent.
-    Checked with the original source, which has its powers unsimplified but
-    is equivalent.
-
-    [1]_ recommends 1E-5 as the lower limit for Ra, but no upper limit. [2]_
-    suggests an upper limit of 1E12.
-
-    Examples
-    --------
-    From [2]_, Example 9.2, matches:
-
-    >>> Nu_horizontal_cylinder_Churchill(0.69, 2.63E9)
-    139.13493970073597
-
-    References
-    ----------
-    .. [1] Churchill, Stuart W., and Humbert H. S. Chu. "Correlating Equations
-       for Laminar and Turbulent Free Convection from a Horizontal Cylinder."
-       International Journal of Heat and Mass Transfer 18, no. 9
-       (September 1975): 1049-53. doi:10.1016/0017-9310(75)90222-7.
-    .. [2] Bergman, Theodore L., Adrienne S. Lavine, Frank P. Incropera, and
-       David P. DeWitt. Introduction to Heat Transfer. 6E. Hoboken, NJ:
-       Wiley, 2011.
-    '''
-    Ra = Pr*Gr
-    Nu = (0.6 + 0.387*Ra**(1/6.)/(1 + (0.559/Pr)**(9/16.))**(8/27.))**2
-    return Nu
 
 
 def Nu_sphere_Churchill(Pr, Gr):
@@ -913,3 +865,262 @@ def Nu_vertical_cylinder(Pr=None, Gr=None, L=None, D=None,
 #    plt.loglog(Grs, Nus, label=method)
 #plt.legend()
 #plt.show()
+
+
+### Horizontal Cylinders
+
+def Nu_horizontal_cylinder_Churchill_Chu(Pr, Gr):
+    r'''Calculates Nusselt number for natural convection around a horizontal
+    cylinder according to the Churchill-Chu [1]_ correlation, also presented in
+    [2]_. Cylinder must be isothermal; an alternate expression exists for
+    constant heat flux.
+
+    .. math::
+        Nu_{D}=\left[0.60+\frac{0.387Ra_{D}^{1/6}}
+        {[1+(0.559/Pr)^{9/16}]^{8/27}}\right]^2
+
+    Parameters
+    ----------
+    Pr : float
+        Prandtl number [-]
+    Gr : float
+        Grashof number [-]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+
+    Notes
+    -----
+    Although transition from laminar to turbulent is discrete in reality, this
+    equation provides a smooth transition in value from laminar to turbulent.
+    Checked with the original source, which has its powers unsimplified but
+    is equivalent.
+
+    [1]_ recommends 1E-5 as the lower limit for Ra, but no upper limit. [2]_
+    suggests an upper limit of 1E12.
+
+    Examples
+    --------
+    From [2]_, Example 9.2, matches:
+
+    >>> Nu_horizontal_cylinder_Churchill_Chu(0.69, 2.63E9)
+    139.13493970073597
+
+    References
+    ----------
+    .. [1] Churchill, Stuart W., and Humbert H. S. Chu. "Correlating Equations
+       for Laminar and Turbulent Free Convection from a Horizontal Cylinder."
+       International Journal of Heat and Mass Transfer 18, no. 9
+       (September 1975): 1049-53. doi:10.1016/0017-9310(75)90222-7.
+    .. [2] Bergman, Theodore L., Adrienne S. Lavine, Frank P. Incropera, and
+       David P. DeWitt. Introduction to Heat Transfer. 6E. Hoboken, NJ:
+       Wiley, 2011.
+    '''
+    Ra = Pr*Gr
+    Nu = (0.6 + 0.387*Ra**(1/6.)/(1 + (0.559/Pr)**(9/16.))**(8/27.))**2
+    return Nu
+
+
+def Nu_horizontal_cylinder_Kuehn_Goldstein(Pr, Gr):
+    r'''Calculates Nusselt number for natural convection around a horizontal
+    cylinder according to the Kuehn-Goldstein [1]_ correlation, also shown in
+    [2]_. Cylinder must be isothermal.
+
+    .. math::
+        \frac{2}{Nu_D} = \ln\left[1 + \frac{2}{\left[\left\{0.518Ra_D^{0.25}
+        \left[1 + \left(\frac{0.559}{Pr}\right)^{3/5}\right]^{-5/12}
+        \right\}^{15} + (0.1Ra_D^{1/3})^{15}\right]^{1/15}}\right]
+
+    Parameters
+    ----------
+    Pr : float
+        Prandtl number [-]
+    Gr : float
+        Grashof number [-]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+
+    Notes
+    -----
+    [1]_ suggests this expression is valid for all cases except low-Pr fluids.
+    [2]_ suggests no restrictions.
+
+    Examples
+    --------
+    >>> Nu_horizontal_cylinder_Kuehn_Goldstein(0.69, 2.63E9)
+    122.99323525628186
+
+    References
+    ----------
+    .. [1] Kuehn, T. H., and R. J. Goldstein. "Correlating Equations for
+       Natural Convection Heat Transfer between Horizontal Circular Cylinders."
+       International Journal of Heat and Mass Transfer 19, no. 10
+       (October 1976): 1127-34. doi:10.1016/0017-9310(76)90145-9
+    .. [2] Boetcher, Sandra K. S. "Natural Convection Heat Transfer From
+       Vertical Cylinders." In Natural Convection from Circular Cylinders,
+       23-42. Springer, 2014.
+    '''
+    Ra = Pr*Gr
+    Nu = 2./log(1 + 2./((0.518*Ra**0.25*(1. + (0.559/Pr)**0.6)**(-5/12.))**15. + (0.1*Ra**(1/3.))**15)**(1/15.))
+    return Nu
+
+
+def Nu_horizontal_cylinder_Morgan(Pr, Gr):
+    r'''Calculates Nusselt number for natural convection around a horizontal
+    cylinder according to the Morgan [1]_ correlations, a product of a very
+    large review of the literature. Sufficiently common as to be shown in [2]_.
+    Cylinder must be isothermal.
+
+    .. math::
+        Nu_D = C Ra_D^n
+
+    +----------+----------+-------+-------+
+    |  Gr min  |  Gr max  |  C    |  n    |
+    +==========+==========+=======+=======+
+    | 10E-10   |  10E-2   | 0.675 | 0.058 |
+    +----------+----------+-------+-------+
+    | 10E-2    |  10E2    | 1.02  | 0.148 |
+    +----------+----------+-------+-------+
+    | 10E2     |  10E4    | 0.850 | 0.188 |
+    +----------+----------+-------+-------+
+    | 10E4     |  10E7    | 0.480 | 0.250 |
+    +----------+----------+-------+-------+
+    | 10E7     |  10E12   | 0.125 | 0.333 |
+    +----------+----------+-------+-------+
+
+    Parameters
+    ----------
+    Pr : float
+        Prandtl number [-]
+    Gr : float
+        Grashof number [-]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+
+    Notes
+    -----
+    Most comprehensive review with a new proposed equation to date.
+    Discontinuous among the jumps in range. Blindly runs outside if upper and
+    lower limits without warning.
+
+    Examples
+    --------
+    >>> [Nu_horizontal_cylinder_Morgan(.9, i) for i in (1E-2, 1E2, 1E4, 1E7, 1E10)]
+    [0.5136293570857408, 1.9853087795801612, 4.707783879945983, 26.290682760247975, 258.0315247153301]
+    >>> Nu_horizontal_cylinder_Morgan(0.69, 2.63E9)
+    151.3881997228419
+
+    References
+    ----------
+    .. [1] Morgan, V.T., The Overall Convective Heat Transfer from Smooth
+       Circular Cylinders, in Advances in Heat Transfer, eds. T.F. Irvin and
+       J.P. Hartnett, V 11, 199-264, 1975.
+    .. [2] Boetcher, Sandra K. S. "Natural Convection Heat Transfer From
+       Vertical Cylinders." In Natural Convection from Circular Cylinders,
+       23-42. Springer, 2014.
+    '''
+    Ra = Pr*Gr
+    if Ra < 1E-2:
+        C, n = 0.675, 0.058
+    elif Ra < 1E2:
+        C, n = 1.02, 0.148
+    elif Ra < 1E4:
+        C, n = 0.850, 0.188
+    elif Ra < 1E7:
+        C, n = 0.480, 0.250
+    else:
+        # up to 1E12
+        C, n = 0.125, 0.333
+    Nu = C*Ra**n
+    return Nu
+
+
+horizontal_cylinder_correlations = {
+'Churchill-Chu': (Nu_horizontal_cylinder_Churchill_Chu),
+'Kuehn & Goldstein':  (Nu_horizontal_cylinder_Kuehn_Goldstein),
+'Morgan': (Nu_horizontal_cylinder_Morgan)
+}
+
+def Nu_horizontal_cylinder(Pr=None, Gr=None,
+                           AvailableMethods=False, Method=None):
+    r'''This function handles choosing which horizontal cylinder free convection
+    correlation is used. Generally this is used by a helper class, but can be
+    used directly. Will automatically select the correlation to use if none is
+    provided; returns None if insufficient information is provided.
+
+    Prefered functions are 'Morgan' when discontinuous results are acceptable
+    and 'Churchill-Chu' otherwise.
+
+    Examples
+    --------
+    >>> Nu_horizontal_cylinder(0.72, 1E7)
+    24.864192615468973
+
+    Parameters
+    ----------
+    Pr : float
+        Prandtl number [-]
+    Gr : float
+        Grashof number [-]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    methods : list, only returned if AvailableMethods == True
+        List of methods which can be used to calculate Nu with the given inputs
+
+    Other Parameters
+    ----------------
+    Method : string, optional
+        A string of the function name to use, as in the dictionary
+        horizontal_cylinder_correlations
+    AvailableMethods : bool, optional
+        If True, function will consider which methods which can be used to
+        calculate Nu with the given inputs
+    '''
+    def list_methods():
+        methods = []
+        if all((Pr, Gr)):
+            for key, values in horizontal_cylinder_correlations.iteritems():
+                    methods.append(key)
+        methods.append('None')
+        if 'Morgan' in methods:
+            methods.remove('Morgan')
+            methods.insert(0, 'Morgan')
+        return methods
+
+    if AvailableMethods:
+        return list_methods()
+    if not Method:
+        Method = list_methods()[0]
+
+    if Method in horizontal_cylinder_correlations:
+        Nu = horizontal_cylinder_correlations[Method](Pr=Pr, Gr=Gr)
+    elif Method == 'None':
+        Nu = None
+    else:
+        raise Exception('Failure in in function')
+    return Nu
+
+
+#import matplotlib.pyplot as plt
+#import numpy as np
+#Pr, Gr = 0.72, 1E8
+#methods = Nu_horizontal_cylinder(Pr, Gr, AvailableMethods=True)
+#Grs = np.logspace(-2, 2.5, 10000)
+#
+#for method in methods:
+#    Nus = [Nu_horizontal_cylinder(Pr=Pr, Gr=i, Method=method) for i in Grs]
+#    plt.semilogx(Grs, Nus, label=method)
+#plt.legend()
+#plt.show()
+
