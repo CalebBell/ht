@@ -28,6 +28,7 @@ from ht import conv_jacket
 from ht import insulation
 from ht import conv_free_immersed
 from ht import conv_tube_bank
+from ht import conv_packed_bed
 
 if __name__ == '__main__':
     import doctest
@@ -43,5 +44,6 @@ if __name__ == '__main__':
     doctest.testmod(conduction)
     doctest.testmod(conv_free_immersed)
     doctest.testmod(conv_tube_bank)
+    doctest.testmod(conv_packed_bed)
 
 

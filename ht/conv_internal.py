@@ -58,7 +58,7 @@ def laminar_T_const():
     .. [2] Bergman, Theodore L., Adrienne S. Lavine, Frank P. Incropera, and
        David P. DeWitt. Introduction to Heat Transfer. 6E. Hoboken, NJ: Wiley, 2011.
     .. [3] Gesellschaft, V. D. I., ed. VDI Heat Atlas. 2nd ed. 2010 edition.
-      Berlin ; New York: Springer, 2010.
+       Berlin ; New York: Springer, 2010.
     '''
     Nu = 3.66
     return Nu
@@ -89,7 +89,7 @@ def laminar_Q_const():
     .. [2] Bergman, Theodore L., Adrienne S. Lavine, Frank P. Incropera, and
        David P. DeWitt. Introduction to Heat Transfer. 6E. Hoboken, NJ: Wiley, 2011.
     .. [3] Gesellschaft, V. D. I., ed. VDI Heat Atlas. 2nd ed. 2010 edition.
-      Berlin ; New York: Springer, 2010.
+        Berlin ; New York: Springer, 2010.
     '''
     Nu = 48/11.
     return Nu

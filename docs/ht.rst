@@ -13,6 +13,7 @@ Submodules
    ht.conv_free_immersed
    ht.conv_internal
    ht.conv_jacket
+   ht.conv_packed_bed
    ht.conv_tube_bank
    ht.core
    ht.hx
