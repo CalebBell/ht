@@ -1,7 +1,11 @@
 language: python
 python:
+  - "2.6"
   - "2.7"
-# command to install dependencies
+  - "3.2"
+  - "3.3"
+  - "3.4"
+  - "3.5"
 notifications:
   email: false
 virtualenv:
@@ -17,5 +21,5 @@ install:
   - conda install --yes python=$TRAVIS_PYTHON_VERSION numpy scipy
   - pip install -r requirements.txt
   - python setup.py -q install
-script: 
+script:
   - python tests/doctests.py
