@@ -823,7 +823,7 @@ def Nu_vertical_cylinder(Pr=None, Gr=None, L=None, D=None,
     def list_methods():
         methods = []
         if all((Pr, Gr)):
-            for key, values in vertical_cylinder_correlations.iteritems():
+            for key, values in vertical_cylinder_correlations.items():
                 if values[4] or all((L, D)):
                     methods.append(key)
         methods.append('None')
@@ -1090,7 +1090,7 @@ def Nu_horizontal_cylinder(Pr=None, Gr=None,
     def list_methods():
         methods = []
         if all((Pr, Gr)):
-            for key, values in horizontal_cylinder_correlations.iteritems():
+            for key, values in horizontal_cylinder_correlations.items():
                     methods.append(key)
         methods.append('None')
         if 'Morgan' in methods:

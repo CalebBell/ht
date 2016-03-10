@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 from __future__ import division
 from math import pi, log
 from scipy.constants import g
-from fluids.friction_factor import friction_factor
+from fluids.friction import friction_factor
 
 __all__ =['Lehrer', 'Stein_Schmidt']
 def Lehrer(m=None, Dtank=None, Djacket=None, H=None, Dinlet=None,

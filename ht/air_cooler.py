@@ -17,7 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from __future__ import division
 from math import atan, sin
-from .core import LMTD
+from ht.core import LMTD
 
 __all__ = ['Ft_aircooler']
 

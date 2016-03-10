@@ -16,19 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from __future__ import division
-from ht import core
-from ht import hx
-from ht import conv_internal
-from ht import boiling_nucleic
-from ht import air_cooler
-from ht import radiation
-from ht import condensation
-from ht import conduction
-from ht import conv_jacket
-from ht import insulation
-from ht import conv_free_immersed
-from ht import conv_tube_bank
-from ht import conv_packed_bed
+from ht import *
 
 if __name__ == '__main__':
     import doctest

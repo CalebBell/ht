@@ -15,9 +15,9 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
-from scipy.interpolate import interp1d
-from .conduction import R_to_k
 import difflib
+from scipy.interpolate import interp1d
+from ht.conduction import R_to_k
 
 __all__ = ['nearest_material', 'k_material', 'rho_material', 'Cp_material',
            'building_materials', 'refractories', 'ASHRAE']
@@ -421,8 +421,8 @@ def ASHRAE_k(ID):
     --------
     >>> ASHRAE_k(ID='Mineral fiber')
     0.036
-    >>> sum([ASHRAE_k(ID) for ID in ASHRAE])
-    102.33813464784427
+    >>> round(sum([ASHRAE_k(ID) for ID in ASHRAE]), 8)
+    102.33813465
 
     References
     ----------
@@ -443,7 +443,6 @@ def ASHRAE_k(ID):
 #print [ASHRAE_k(ID='Mineral fiber')]
 #print [sum([ASHRAE_k(ID) for ID in ASHRAE])]
 #print [len([ASHRAE_k(ID) for ID in ASHRAE])]
-
 
 
 _refractory_Ts = [673.15, 873.15, 1073.15, 1273.15, 1473.15]
@@ -657,8 +656,8 @@ def k_material(ID, T=298.15):
     0.036
     >>> k_material('stainless steel')
     17.0
-    >>> sum([k_material(ID) for ID in materials_dict])
-    1505.182534647845
+    >>> round(sum([k_material(ID) for ID in materials_dict]), 8)
+    1505.18253465
 
     References
     ----------
@@ -709,8 +708,8 @@ def rho_material(ID):
     7900.0
     >>> rho_material('Board, Asbestos/cement')
     1900.0
-    >>> sum([rho_material(mat) for mat in materials_dict if (
-    ... materials_dict[mat] == 1 or materials_dict[mat]==3 or ASHRAE[mat][0])])
+    >>> round(sum([rho_material(mat) for mat in materials_dict if (
+    ... materials_dict[mat] == 1 or materials_dict[mat]==3 or ASHRAE[mat][0])]), 2)
     473135.98
 
     References

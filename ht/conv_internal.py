@@ -1446,7 +1446,7 @@ def Nu_conv_internal(Re=None, Pr=None, fd=None, eD=None, Di=None, x=None,
 ## Comparison
 #import matplotlib.pyplot as plt
 #import numpy as np
-#from fluids.friction_factor import friction_factor
+#from fluids.friction import friction_factor
 #Pr = 0.3
 #Di = 0.0254*4
 #roughness = .00015

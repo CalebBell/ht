@@ -399,10 +399,10 @@ def Stephan_Abdelsalam(Te=None, Tsat=None, Cpl=None, kl=None, mul=None,
     >>> Stephan_Abdelsalam(Te=16.2, Tsat=437.5, Cpl=2730., kl=0.086, mul=156E-6,
     ... sigma=0.0082, Hvap=272E3, rhol=567, rhog=18.09, angle=35)
     26722.441071108373
-    >>> [(Stephan_Abdelsalam(Te=16.2, Tsat=437.5, Cpl=2730., kl=0.086, mul=156E-6,
-    ... sigma=0.0082, Hvap=272E3, rhol=567, rhog=18.09, correlation=i), i)
-    ... for i in _angles_Stephan_Abdelsalam.keys()]
-    [(30571.788078886435, 'water'), (84657.98595551957, 'refrigerant'), (3548.8050360907037, 'cryogenic'), (21009.03422203015, 'hydrocarbon'), (26722.441071108373, 'general')]
+    >>> round(sum([Stephan_Abdelsalam(Te=16.2, Tsat=437.5, Cpl=2730., kl=0.086,
+    ... mul=156E-6, sigma=0.0082, Hvap=272E3, rhol=567, rhog=18.09,
+    ... correlation=i) for i in _angles_Stephan_Abdelsalam.keys()]), 6)
+    166510.054364
 
     References
     ----------
@@ -444,8 +444,8 @@ def Stephan_Abdelsalam(Te=None, Tsat=None, Cpl=None, kl=None, mul=None,
         h = (207*X1**0.745*X5**0.581*X6**0.533*kl/db)**(1/0.255)
     return h
 
-#print [(Stephan_Abdelsalam(Te=16.2, Tsat=437.5, Cpl=2730., kl=0.086, mul=156E-6,
-#                          sigma=0.0082, Hvap=272E3, rhol=567, rhog=18.09, correlation=i), i) for i in _angles_Stephan_Abdelsalam.keys()]
+#print [round(sum([Stephan_Abdelsalam(Te=16.2, Tsat=437.5, Cpl=2730., kl=0.086, mul=156E-6,
+#                          sigma=0.0082, Hvap=272E3, rhol=567, rhog=18.09, correlation=i) for i in _angles_Stephan_Abdelsalam.keys()]), 6)]
 
 #print [Stephan_Abdelsalam(Te=16.2, Tsat=437.5, Cpl=2730., kl=0.086, mul=156E-6,
 #                  sigma=0.0082, Hvap=272E3, rhol=567, rhog=18.09, angle=35)]

@@ -21,37 +21,37 @@ __all__ = ['air_cooler', 'boiling_nucleic', 'condensation', 'conduction',
 
 
 
-import core
-import hx
-import conv_internal
-import boiling_nucleic
-import air_cooler
-import radiation
-import condensation
-import conduction
-import conv_jacket
-import insulation
-import conv_free_immersed
-import conv_tube_bank
-import conv_packed_bed
+from . import core
+from . import hx
+from . import conv_internal
+from . import boiling_nucleic
+from . import air_cooler
+from . import radiation
+from . import condensation
+from . import conduction
+from . import conv_jacket
+from . import insulation
+from . import conv_free_immersed
+from . import conv_tube_bank
+from . import conv_packed_bed
 
-from core import *
-from hx import *
-from conv_internal import *
-from boiling_nucleic import *
-from air_cooler import *
-from radiation import *
-from condensation import *
-from conduction import *
-from conv_jacket import *
-from insulation import *
-from conv_free_immersed import *
-from conv_tube_bank import *
-from conv_packed_bed import *
+from .core import *
+from .hx import *
+from .conv_internal import *
+from .boiling_nucleic import *
+from .air_cooler import *
+from .radiation import *
+from .condensation import *
+from .conduction import *
+from .conv_jacket import *
+from .insulation import *
+from .conv_free_immersed import *
+from .conv_tube_bank import *
+from .conv_packed_bed import *
 
 __all__ = ['core', 'hx', 'conv_internal', 'boiling_nucleic', 'air_cooler',
 'radiation', 'condensation', 'conduction', 'conv_jacket', 'conv_free_immersed',
-'conv_tube_bank']
+'conv_tube_bank', 'insulation', 'conv_packed_bed']
 
 
 __all__.extend(core.__all__)
