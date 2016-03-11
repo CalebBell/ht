@@ -19,7 +19,6 @@ Submodules
    ht.hx
    ht.insulation
    ht.radiation
-   ht.test
 
 Module contents
 ---------------

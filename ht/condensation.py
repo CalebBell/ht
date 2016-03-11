@@ -87,7 +87,7 @@ def Boyko_Kruzhilin(m=None, rhog=None, rhol=None, kl=None, mul=None, Cpl=None,
                     D=None, x=None):
     r'''Calculates heat transfer coefficient for condensation
     of a pure chemical insude a vertical tube or tube bundle, as presented in
-     [2]_ according to [1]_.
+    [2]_ according to [1]_.
 
     .. math::
         h_f = h_{LO}\left[1 + x\left(\frac{\rho_L}{\rho_G} - 1\right)\right]^{0.5}
@@ -125,7 +125,7 @@ def Boyko_Kruzhilin(m=None, rhog=None, rhol=None, kl=None, mul=None, Cpl=None,
 
     Examples
     --------
-    p. 589 in [2]_, matches exactly.
+    Page 589 in [2]_, matches exactly.
 
     >>> Boyko_Kruzhilin(m=500*pi/4*.03**2, rhog=6.36, rhol=582.9, kl=0.098,
     ... mul=159E-6, Cpl=2520., D=0.03, x=0.85)
@@ -140,12 +140,10 @@ def Boyko_Kruzhilin(m=None, rhog=None, rhol=None, kl=None, mul=None, Cpl=None,
     .. [2] Hewitt, G. L. Shires T. Reg Bott G. F., George L. Shires, and
        T. R. Bott. Process Heat Transfer. 1E. Boca Raton: CRC Press, 1994.
     '''
-
     Vlo = m/rhol/(pi/4*D**2)
     Relo = rhol*Vlo*D/mul
     Prl = mul*Cpl/kl
     hlo = 0.021*kl/D*Relo**0.8*Prl**0.43
-
     h = hlo*(1 + x*(rhol/rhog -1))**0.5
     return h
 
