@@ -16,8 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 __all__ = ['air_cooler', 'boiling_nucleic', 'condensation', 'conduction',
-'conv_internal', 'conv_jacket', 'hx', 'insulation', 'radiation']
-
+'conv_internal', 'conv_jacket', 'hx', 'insulation', 'radiation',
+'conv_free_immersed', 'conv_tube_bank', 'conv_packed_bed', 'conv_external']
 
 
 
@@ -34,6 +34,7 @@ from . import insulation
 from . import conv_free_immersed
 from . import conv_tube_bank
 from . import conv_packed_bed
+from . import conv_external
 
 from .core import *
 from .hx import *
@@ -48,10 +49,11 @@ from .insulation import *
 from .conv_free_immersed import *
 from .conv_tube_bank import *
 from .conv_packed_bed import *
+from .conv_external import *
 
 __all__ = ['core', 'hx', 'conv_internal', 'boiling_nucleic', 'air_cooler',
 'radiation', 'condensation', 'conduction', 'conv_jacket', 'conv_free_immersed',
-'conv_tube_bank', 'insulation', 'conv_packed_bed']
+'conv_tube_bank', 'insulation', 'conv_packed_bed', 'conv_external']
 
 
 __all__.extend(core.__all__)
@@ -67,6 +69,7 @@ __all__.extend(conv_free_immersed.__all__)
 __all__.extend(conv_tube_bank.__all__)
 __all__.extend(insulation.__all__)
 __all__.extend(conv_packed_bed.__all__)
+__all__.extend(conv_external.__all__)
 
 
 
