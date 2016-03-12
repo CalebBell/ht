@@ -33,5 +33,6 @@ if __name__ == '__main__':
     doctest.testmod(conv_free_immersed)
     doctest.testmod(conv_tube_bank)
     doctest.testmod(conv_packed_bed)
+    doctest.testmod(conv_external)
 
 

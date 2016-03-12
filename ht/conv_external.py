@@ -17,8 +17,88 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from __future__ import division
 
-__all__ = ['Nu_cylinder_Churchill_Bernstein']
+__all__ = ['Nu_cylinder_Zukauskas', 'Nu_cylinder_Churchill_Bernstein']
 
+### Single Cylinders in Crossflow
+
+
+def Nu_cylinder_Zukauskas(Re, Pr, Prw=None):
+    r'''Calculates Nusselt number for crossflow across a single tube at a
+    specified Re. Method from [1]_, also shown without modification in [2]_.
+
+    .. math::
+        Nu_{D}=CRe^{m}Pr^{n}\left(\frac{Pr}{Pr_s}\right)^{1/4}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number with respect to cylinder diameter, [-]
+    Pr : float
+        Prandtl number at bulk temperature [-]
+    Prw : float, optional
+        Prandtl number at wall temperature, [-]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number with respect to cylinder diameter, [-]
+
+    Notes
+    -----
+    If Prandtl number at wall are not provided, the Prandtl number correction
+    is not used and left to an outside function.
+
+    n is 0.37 if Pr <= 10; otherwise n is 0.36.
+
+    C and m are from the following table. If Re is outside of the ranges shown,
+    the nearest range is used blindly.
+
+    +---------+-------+-----+
+    | Re      | C     | m   |
+    +=========+=======+=====+
+    | 1-40    | 0.75  | 0.4 |
+    +---------+-------+-----+
+    | 40-1E3  | 0.51  | 0.5 |
+    +---------+-------+-----+
+    | 1E3-2E5 | 0.26  | 0.6 |
+    +---------+-------+-----+
+    | 2E5-1E6 | 0.076 | 0.7 |
+    +---------+-------+-----+
+
+    Examples
+    --------
+    Example 7.3 in [2]_, matches.
+
+    >>> Nu_cylinder_Zukauskas(7992, 0.707, 0.69)
+    50.523612661934386
+
+    References
+    ----------
+    .. [1] Zukauskas, A. Heat transfer from tubes in crossflow. In T.F. Irvine,
+       Jr. and J. P. Hartnett, editors, Advances in Heat Transfer, volume 8,
+       pages 93-160. Academic Press, Inc., New York, 1972.
+    .. [2] Bergman, Theodore L., Adrienne S. Lavine, Frank P. Incropera, and
+       David P. DeWitt. Introduction to Heat Transfer. 6E. Hoboken, NJ:
+       Wiley, 2011.
+    '''
+    if Re <= 40:
+        c, m = 0.75, 0.4
+    elif Re < 1E3:
+        c, m = 0.51, 0.5
+    elif Re < 2E5:
+        c, m = 0.26, 0.6
+    else:
+        c, m = 0.076, 0.7
+    if Pr <= 10:
+        n = 0.37
+    else:
+        n = 0.36
+    Nu = c*Re**m*Pr**n
+    if Prw:
+        Nu = Nu*(Pr/Prw)**0.25
+    return Nu
+
+#print [Nu_cylinder_Zukauskas(7992, 0.707, 0.69)]
 
 def Nu_cylinder_Churchill_Bernstein(Re, Pr):
     r'''Calculates Nusselt number for crossflow across a single tube
