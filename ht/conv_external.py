@@ -16,8 +16,10 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from __future__ import division
+from math import exp
 
-__all__ = ['Nu_cylinder_Zukauskas', 'Nu_cylinder_Churchill_Bernstein']
+__all__ = ['Nu_cylinder_Zukauskas', 'Nu_cylinder_Churchill_Bernstein',
+           'Nu_cylinder_Sanitjai_Goldstein']
 
 ### Single Cylinders in Crossflow
 
@@ -150,3 +152,52 @@ def Nu_cylinder_Churchill_Bernstein(Re, Pr):
     return Nu
 
 #print [Nu_cylinder_Churchill_Bernstein(6071, 0.7)]
+
+
+def Nu_cylinder_Sanitjai_Goldstein(Re, Pr):
+    r'''Calculates Nusselt number for crossflow across a single tube
+    at a specified `Re` and `Pr`, both evaluated at the film temperature. No
+    other wall correction is necessary for this formulation. Method is the
+    most recent implemented here and believed to be more accurate than other
+    formulations available.
+
+    .. math::
+        Nu = 0.446Re^{0.5} Pr^{0.35} + 0.528\left[(6.5\exp(Re/5000))^{-5}
+        + (0.031Re^{0.8})^{-5}\right]^{-1/5}Pr^{0.42}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number with respect to cylinder diameter, [-]
+    Pr : float
+        Prandtl number at film temperature, [-]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number with respect to cylinder diameter, [-]
+
+    Notes
+    -----
+    Developed with test results for water, mixtures of ethylene glycol and
+    water, and air (Pr = 0.7 to 176). Re range from 2E3 to 9E4. Also presents
+    results for local heat transfer coefficients.
+
+    Examples
+    --------
+    >>> Nu_cylinder_Sanitjai_Goldstein(6071, 0.7)
+    40.38327083519522
+
+    References
+    ----------
+    .. [1] Sanitjai, S., and R. J. Goldstein. "Forced Convection Heat Transfer
+       from a Circular Cylinder in Crossflow to Air and Liquids." International
+       Journal of Heat and Mass Transfer 47, no. 22 (October 2004): 4795-4805.
+       doi:10.1016/j.ijheatmasstransfer.2004.05.012.
+    '''
+    Nu = 0.446*Re**0.5*Pr**0.35 + 0.528*((6.5*exp(Re/5000.))**-5
+    + (0.031*Re**0.8)**-5)**-0.2*Pr**0.42
+    return Nu
+
+#print [ Nu_cylinder_Sanitjai_Goldstein(6071, 0.7)]
+
