@@ -19,7 +19,10 @@ from __future__ import division
 from math import exp
 
 __all__ = ['Nu_cylinder_Zukauskas', 'Nu_cylinder_Churchill_Bernstein',
-           'Nu_cylinder_Sanitjai_Goldstein']
+           'Nu_cylinder_Sanitjai_Goldstein', 'Nu_cylinder_Fand',
+           'Nu_cylinder_Perkins_Leppert_1964',
+           'Nu_cylinder_Perkins_Leppert_1962', 'Nu_cylinder_Whitaker',
+           'Nu_cylinder_McAdams']
 
 ### Single Cylinders in Crossflow
 
@@ -201,3 +204,252 @@ def Nu_cylinder_Sanitjai_Goldstein(Re, Pr):
 
 #print [ Nu_cylinder_Sanitjai_Goldstein(6071, 0.7)]
 
+def Nu_cylinder_Fand(Re, Pr):
+    r'''Calculates Nusselt number for crossflow across a single tube
+    at a specified `Re` and `Pr`, both evaluated at the film temperature. No
+    other wall correction is necessary for this formulation. Also shown in
+    [2]_.
+
+    .. math::
+        Nu = (0.35 + 0.34Re^{0.5} + 0.15Re^{0.58})Pr^{0.3}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number with respect to cylinder diameter, [-]
+    Pr : float
+        Prandtl number at film temperature, [-]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number with respect to cylinder diameter, [-]
+
+    Notes
+    -----
+    Developed with test results for water, and Re from 1E4 to 1E5, but also
+    compared with other data in the literature. Claimed validity of Re from
+    1E-1 to 1E5.
+
+    Examples
+    --------
+    >>> Nu_cylinder_Fand(6071, 0.7)
+    45.19984325481126
+
+    References
+    ----------
+    .. [1] Fand, R. M. "Heat Transfer by Forced Convection from a Cylinder to
+       Water in Crossflow." International Journal of Heat and Mass Transfer 8,
+       no. 7 (July 1, 1965): 995-1010. doi:10.1016/0017-9310(65)90084-0.
+    .. [2] Sanitjai, S., and R. J. Goldstein. "Forced Convection Heat Transfer
+       from a Circular Cylinder in Crossflow to Air and Liquids." International
+       Journal of Heat and Mass Transfer 47, no. 22 (October 2004): 4795-4805.
+       doi:10.1016/j.ijheatmasstransfer.2004.05.012.
+    '''
+    Nu = (0.35 + 0.34*Re**0.5 + 0.15*Re**0.58)*Pr**0.3
+    return Nu
+
+
+def Nu_cylinder_McAdams(Re, Pr):
+    r'''Calculates Nusselt number for crossflow across a single tube
+    at a specified `Re` and `Pr`, both evaluated at the film temperature. No
+    other wall correction is necessary for this formulation. Also shown in
+    [2]_.
+
+    .. math::
+        Nu = (0.35 + 0.56 Re^{0.52})Pr^{0.3}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number with respect to cylinder diameter, [-]
+    Pr : float
+        Prandtl number at film temperature, [-]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number with respect to cylinder diameter, [-]
+
+    Notes
+    -----
+    Developed with very limited test results for water only.
+
+    Examples
+    --------
+    >>> Nu_cylinder_McAdams(6071, 0.7)
+    46.98179235867934
+
+    References
+    ----------
+    .. [1] McAdams, William Henry. Heat Transmission. 3E. Malabar, Fla:
+       Krieger Pub Co, 1985.
+    .. [2] Fand, R. M. "Heat Transfer by Forced Convection from a Cylinder to
+       Water in Crossflow." International Journal of Heat and Mass Transfer 8,
+       no. 7 (July 1, 1965): 995-1010. doi:10.1016/0017-9310(65)90084-0.
+    '''
+    Nu = (0.35 + 0.56*Re**0.52)*Pr**0.3
+    return Nu
+
+
+def Nu_cylinder_Whitaker(Re, Pr, mu=None, muw=None):
+    r'''Calculates Nusselt number for crossflow across a single tube as shown
+    in [1]_ at a specified `Re` and `Pr`, both evaluated at the free stream
+    temperature. Recommends a viscosity exponent correction of 0.25, which is
+    applied only if provided. Also shown in [2]_.
+
+    .. math::
+        Nu_D = (0.4 Re_D^{0.5} + 0.06Re_D^{2/3})Pr^{0.4}
+        \left(\frac{\mu}{\mu_w}\right)^{0.25}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number with respect to cylinder diameter, [-]
+    Pr : float
+        Prandtl number at free stream temperature, [-]
+    mu : float, optional
+        Viscosity of fluid at the free stream temperature [Pa*s]
+    muw : float, optional
+        Viscosity of fluid at the wall temperature [Pa*s]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number with respect to cylinder diameter, [-]
+
+    Notes
+    -----
+    Developed considering data from 1 to 1E5 Re, 0.67 to 300 Pr, and range of
+    viscosity ratios from 0.25 to 5.2. Found experimental data to generally
+    agree with it within 25%.
+
+    Examples
+    --------
+    >>> Nu_cylinder_Whitaker(6071, 0.7)
+    45.94527461589126
+
+    References
+    ----------
+    .. [1] Whitaker, Stephen. "Forced Convection Heat Transfer Correlations for
+       Flow in Pipes, Past Flat Plates, Single Cylinders, Single Spheres, and
+       for Flow in Packed Beds and Tube Bundles." AIChE Journal 18, no. 2
+       (March 1, 1972): 361-371. doi:10.1002/aic.690180219.
+    .. [2] Sanitjai, S., and R. J. Goldstein. "Forced Convection Heat Transfer
+       from a Circular Cylinder in Crossflow to Air and Liquids." International
+       Journal of Heat and Mass Transfer 47, no. 22 (October 2004): 4795-4805.
+       doi:10.1016/j.ijheatmasstransfer.2004.05.012.
+    '''
+    Nu = (0.4*Re**0.5 + 0.06*Re**(2/3.))*Pr**0.3
+    if mu and muw:
+        Nu *= (mu/muw)**0.25
+    return Nu
+
+#print [Nu_cylinder_Whitaker(6071, 0.7)]
+
+def Nu_cylinder_Perkins_Leppert_1962(Re, Pr, mu=None, muw=None):
+    r'''Calculates Nusselt number for crossflow across a single tube as shown
+    in [1]_ at a specified `Re` and `Pr`, both evaluated at the free stream
+    temperature. Recommends a viscosity exponent correction of 0.25, which is
+    applied only if provided. Also shown in [2]_.
+
+    .. math::
+        Nu = \left[0.30Re^{0.5} + 0.10Re^{0.67}\right]Pr^{0.4}
+        \left(\frac{\mu}{\mu_w}\right)^{0.25}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number with respect to cylinder diameter, [-]
+    Pr : float
+        Prandtl number at free stream temperature, [-]
+    mu : float, optional
+        Viscosity of fluid at the free stream temperature [Pa*s]
+    muw : float, optional
+        Viscosity of fluid at the wall temperature [Pa*s]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number with respect to cylinder diameter, [-]
+
+    Notes
+    -----
+    Considered results with Re from 40 to 1E5, Pr from 1 to 300; and viscosity
+    ratios of 0.25 to 4.
+
+    Examples
+    --------
+    >>> Nu_cylinder_Perkins_Leppert_1962(6071, 0.7)
+    49.97164291175499
+
+    References
+    ----------
+    .. [1] Perkins, Jr., H. C., and G. Leppert. "Forced Convection Heat
+       Transfer From a Uniformly Heated Cylinder." Journal of Heat Transfer 84,
+       no. 3 (August 1, 1962): 257-261. doi:10.1115/1.3684359.
+    .. [2] Sanitjai, S., and R. J. Goldstein. "Forced Convection Heat Transfer
+       from a Circular Cylinder in Crossflow to Air and Liquids." International
+       Journal of Heat and Mass Transfer 47, no. 22 (October 2004): 4795-4805.
+       doi:10.1016/j.ijheatmasstransfer.2004.05.012.
+    '''
+    Nu = (0.30*Re**0.5 + 0.10*Re**0.67)*Pr**0.4
+    if mu and muw:
+        Nu *= (mu/muw)**0.25
+    return Nu
+
+
+def Nu_cylinder_Perkins_Leppert_1964(Re, Pr, mu=None, muw=None):
+    r'''Calculates Nusselt number for crossflow across a single tube as shown
+    in [1]_ at a specified `Re` and `Pr`, both evaluated at the free stream
+    temperature. Recommends a viscosity exponent correction of 0.25, which is
+    applied only if provided. Also shown in [2]_.
+
+    .. math::
+        Nu = \left[0.31Re^{0.5} + 0.11Re^{0.67}\right]Pr^{0.4}
+        \left(\frac{\mu}{\mu_w}\right)^{0.25}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number with respect to cylinder diameter, [-]
+    Pr : float
+        Prandtl number at free stream temperature, [-]
+    mu : float, optional
+        Viscosity of fluid at the free stream temperature [Pa*s]
+    muw : float, optional
+        Viscosity of fluid at the wall temperature [Pa*s]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number with respect to cylinder diameter, [-]
+
+    Notes
+    -----
+    Considers new data since `Nu_cylinder_Perkins_Leppert_1962`, Re from 2E3 to
+    1.2E5, Pr from 1 to 7, and surface to bulk temperature differences of
+    11 to 66.
+
+    Examples
+    --------
+    >>> Nu_cylinder_Perkins_Leppert_1964(6071, 0.7)
+    53.61767038619986
+
+    References
+    ----------
+    .. [1] Perkins Jr., H. C., and G. Leppert. "Local Heat-Transfer
+       Coefficients on a Uniformly Heated Cylinder." International Journal of
+       Heat and Mass Transfer 7, no. 2 (February 1964): 143-158.
+       doi:10.1016/0017-9310(64)90079-1.
+    .. [2] Sanitjai, S., and R. J. Goldstein. "Forced Convection Heat Transfer
+       from a Circular Cylinder in Crossflow to Air and Liquids." International
+       Journal of Heat and Mass Transfer 47, no. 22 (October 2004): 4795-4805.
+       doi:10.1016/j.ijheatmasstransfer.2004.05.012.
+    '''
+    Nu = (0.31*Re**0.5 + 0.11*Re**0.67)*Pr**0.4
+    if mu and muw:
+        Nu *= (mu/muw)**0.25
+    return Nu
+
+#print [Nu_cylinder_Perkins_Leppert_1964(6071, 0.7)]
