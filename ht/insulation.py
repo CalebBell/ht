@@ -621,7 +621,6 @@ def nearest_material(name, complete=False):
         if not ID:
             ID = difflib.get_close_matches(name, materials_dict.keys(), n=1, cutoff=0.3)
         if not ID:
-            print 'derp'
             ID = difflib.get_close_matches(name, materials_dict.keys(), n=1, cutoff=0)
         return ID[0]
 
