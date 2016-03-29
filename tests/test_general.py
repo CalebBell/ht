@@ -91,6 +91,8 @@ def test_boiling_nucleic_Stephan_Abdelsalam():
 
     h_SA = [Stephan_Abdelsalam(16.2, 437.5, 2730., 0.086, mul=156E-6, sigma=0.0082, Hvap=272E3, rhol=567, rhog=18.09, correlation=i) for i in _angles_Stephan_Abdelsalam.keys()]
     h_values = [30571.788078886435, 84657.98595551957, 3548.8050360907037, 21009.03422203015, 26722.441071108373]
+    h_SA.sort()
+    h_values.sort()
     assert_allclose(h_SA, h_values)
 
 
@@ -567,7 +569,7 @@ def test_insulation():
 
 
 def test_radiation():
-    assert_allclose(q_rad(1., 400), 1451.613952)
-    assert_allclose(q_rad(.85, 400, 305.), 816.7821722650002)
+    assert_allclose(q_rad(1., 400), 1451.613952, rtol=1e-05)
+    assert_allclose(q_rad(.85, 400, 305.), 816.7821722650002, rtol=1e-05)
 
     assert_allclose(blackbody_spectral_radiance(800., 4E-6), 1311692056.2430143)
