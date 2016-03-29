@@ -20,13 +20,15 @@ from scipy.interpolate import interp1d
 from ht.conduction import R_to_k
 
 __all__ = ['nearest_material', 'k_material', 'rho_material', 'Cp_material',
-           'building_materials', 'refractories', 'ASHRAE']
+           'building_materials', 'refractories', 'ASHRAE', 'ASHRAE_k',
+           'refractory_VDI_k', 'refractory_VDI_Cp', 'materials_dict']
 
 # building_materials In VDI Heat Atlas; full table in DIN EN 12524-2000 which
 # is used here
 # Format: density, thermal conductivity, heat capacity
 # kg/m^3, W/m/K, and J/kg/K
 # A roughly room-teperature value is attached to all values
+
 
 building_materials = {'Asphalt': (2100, 0.7, 1000),
 'Bitumen, pure': (1050, 0.17, 1000),
@@ -401,6 +403,7 @@ for i in [ASHRAE_board_siding, ASHRAE_flooring, ASHRAE_insulation,
     ASHRAE.update(i)
 
 
+
 def ASHRAE_k(ID):
     r'''Returns thermal conductivity of a building or insulating material
     from a table in [1]_. Thermal conductivity is independent of temperature
@@ -421,16 +424,12 @@ def ASHRAE_k(ID):
     --------
     >>> ASHRAE_k(ID='Mineral fiber')
     0.036
-    >>> round(sum([ASHRAE_k(ID) for ID in ASHRAE]), 8)
-    102.33813465
 
     References
     ----------
     .. [1] ASHRAE Handbook: Fundamentals. American Society of Heating,
        Refrigerating and Air-Conditioning Engineers, Incorporated, 2013.
     '''
-    if ID not in ASHRAE:
-        raise Exception('ID provided is not in the table')
     values = ASHRAE[ID]
     if values[2]:
         k = values[2]
@@ -443,7 +442,6 @@ def ASHRAE_k(ID):
 #print [ASHRAE_k(ID='Mineral fiber')]
 #print [sum([ASHRAE_k(ID) for ID in ASHRAE])]
 #print [len([ASHRAE_k(ID) for ID in ASHRAE])]
-
 
 _refractory_Ts = [673.15, 873.15, 1073.15, 1273.15, 1473.15]
 
@@ -524,8 +522,6 @@ def refractory_VDI_k(ID, T=None):
     .. [1] Gesellschaft, V. D. I., ed. VDI Heat Atlas. 2nd edition.
        Berlin; New York:: Springer, 2010.
     '''
-    if ID not in refractories:
-        raise Exception('ID provided is not in the table')
     if T is None:
         k = float(refractories[ID][1][0])
     else:
@@ -570,8 +566,6 @@ def refractory_VDI_Cp(ID, T=None):
     .. [1] Gesellschaft, V. D. I., ed. VDI Heat Atlas. 2nd edition.
        Berlin; New York:: Springer, 2010.
     '''
-    if ID not in refractories:
-        raise Exception('ID provided is not in the table')
     if T is None:
         Cp = float(refractories[ID][2][0])
     else:
@@ -618,13 +612,18 @@ def nearest_material(name, complete=False):
        Berlin; New York:: Springer, 2010.
     '''
     if complete:
-        hits = difflib.get_close_matches(name, materials_dict.keys(), n=100, cutoff=0)
+        hits = difflib.get_close_matches(name, materials_dict.keys(), n=1000, cutoff=0)
         for hit in hits:
             if materials_dict[hit] == 1 or materials_dict[hit]==3 or (ASHRAE[hit][0] and ASHRAE[hit][1]):
                 return hit
-        raise Exception('Hit was not found in first hundred results')
     else:
-        return difflib.get_close_matches(name, materials_dict.keys(), n=1, cutoff=0)[0]
+        ID = difflib.get_close_matches(name, materials_dict.keys(), n=1, cutoff=0.6)
+        if not ID:
+            ID = difflib.get_close_matches(name, materials_dict.keys(), n=1, cutoff=0.3)
+        if not ID:
+            print 'derp'
+            ID = difflib.get_close_matches(name, materials_dict.keys(), n=1, cutoff=0)
+        return ID[0]
 
 
 def k_material(ID, T=298.15):
@@ -654,10 +653,6 @@ def k_material(ID, T=298.15):
     --------
     >>> k_material('Mineral fiber')
     0.036
-    >>> k_material('stainless steel')
-    17.0
-    >>> round(sum([k_material(ID) for ID in materials_dict]), 8)
-    1505.18253465
 
     References
     ----------
@@ -702,15 +697,8 @@ def rho_material(ID):
 
     Examples
     --------
-    >>> rho_material('Mineral fiber')
-    30.0
-    >>> rho_material('stainless steel')
-    7900.0
     >>> rho_material('Board, Asbestos/cement')
     1900.0
-    >>> round(sum([rho_material(mat) for mat in materials_dict if (
-    ... materials_dict[mat] == 1 or materials_dict[mat]==3 or ASHRAE[mat][0])]), 2)
-    473135.98
 
     References
     ----------
@@ -764,11 +752,6 @@ def Cp_material(ID, T=298.15):
     --------
     >>> Cp_material('Mineral fiber')
     840.0
-    >>> Cp_material('stainless steel')
-    460.0
-    >>> sum([Cp_material(mat) for mat in materials_dict if (
-    ... materials_dict[mat] == 1 or materials_dict[mat]==3 or ASHRAE[mat][1])])
-    353115.0
 
     References
     ----------
@@ -793,3 +776,4 @@ def Cp_material(ID, T=298.15):
         else:
             Cp = float(Cp)
     return Cp
+

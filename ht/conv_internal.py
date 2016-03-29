@@ -101,7 +101,8 @@ def laminar_entry_thermal_Hausen(Re=None, Pr=None, L=None, Di=None):
     [2]_ and cited by [3]_.
 
     .. math::
-        Nu_D=3.66+\frac{0.0668\frac{D}{L}Re_{D}Pr}{1+0.04{(\frac{D}{L}Re_{D}Pr)}^{2/3}}
+        Nu_D=3.66+\frac{0.0668\frac{D}{L}Re_{D}Pr}{1+0.04{(\frac{D}{L}
+        Re_{D}Pr)}^{2/3}}
 
     Parameters
     ----------
@@ -143,17 +144,19 @@ def laminar_entry_thermal_Hausen(Re=None, Pr=None, L=None, Di=None):
        Hoboken, NJ: Wiley, 2011.
     '''
     Gz = Di/L*Re*Pr
-    Nu = 3.66 + (0.0668*Gz)/(1+0.04*(Gz)**(2/3.0))
+    Nu = 3.66 + (0.0668*Gz)/(1+0.04*(Gz)**(2/3.))
     return Nu
 #print [laminar_entry_thermal_Hausen(Re=100000, Pr=1.1, L=5, Di=.5)]
 
-def laminar_entry_Seider_Tate(Re=None, Pr=None, L=None, Di=None, mu=None, mu_w=None, wall=False):
+def laminar_entry_Seider_Tate(Re=None, Pr=None, L=None, Di=None, mu=None,
+                              mu_w=None):
     r'''Calculates average internal convection Nusselt number for laminar flows
     in pipe during the thermal entry region as developed in [1]_, also
     shown in [2]_.
 
     .. math::
-        Nu_D=1.86\left(\frac{D}{L}Re_DPr\right)^{1/3}\left(\frac{\mu_b}{\mu_s}\right)^{0.14}
+        Nu_D=1.86\left(\frac{D}{L}Re_DPr\right)^{1/3}\left(\frac{\mu_b}
+        {\mu_s}\right)^{0.14}
 
     Parameters
     ----------
@@ -169,9 +172,6 @@ def laminar_entry_Seider_Tate(Re=None, Pr=None, L=None, Di=None, mu=None, mu_w=N
         Viscosity of fluid, [Pa*S or consistent with mu_w]
     mu_w : float
         Viscosity of fluid at wall temperature, [Pa*S or consistent with mu]
-    wall : bool
-        Indicates if wall correction should be used or not, optional
-        and superfluous if wall viscosity is not given
 
     Returns
     -------
@@ -201,11 +201,11 @@ def laminar_entry_Seider_Tate(Re=None, Pr=None, L=None, Di=None, mu=None, mu_w=N
        Applications and Rules of Thumb. 2E. Amsterdam: Academic Press, 2014.
     '''
     Nu = 1.86*(Di/L*Re*Pr)**(1/3.0)
-    if wall and mu_w and mu:
+    if mu_w and mu:
         Nu *= (mu/mu_w)**0.14
     return Nu
 
-#print [laminar_entry_Seider_Tate(Re=100000, Pr=1.1, L=5, Di=.5)]
+#print [laminar_entry_Seider_Tate(Re=100000, Pr=1.1, L=5, Di=.5, mu=1E-3, mu_w=1.2E-3)]
 
 def laminar_entry_Baehr_Stephan(Re=None, Pr=None, L=None, Di=None):
     r'''Calculates average internal convection Nusselt number for laminar flows
@@ -264,7 +264,7 @@ def laminar_entry_Baehr_Stephan(Re=None, Pr=None, L=None, Di=None):
 
 
 ### Turbulent - Equations with more comlicated options
-def turbulent_Dittus_Boelter(Re=None, Pr=None, method='heating', revised=True):
+def turbulent_Dittus_Boelter(Re=None, Pr=None, heating=True, revised=True):
     r'''Calculates internal convection Nusselt number for turbulent flows
     in pipe according to [1]_, and [2]_, a reprint of [3]_.
 
@@ -277,8 +277,8 @@ def turbulent_Dittus_Boelter(Re=None, Pr=None, method='heating', revised=True):
         Reynolds number, [-]
     Pr : float
         Prandtl number, [-]
-    method : string
-        Either 'heating' or 'cooling', optional
+    heating : bool
+        Indicates if the process is heating or cooling, optional
     revised : bool
         Indicates if revised coefficients should be used or not
 
@@ -301,14 +301,10 @@ def turbulent_Dittus_Boelter(Re=None, Pr=None, method='heating', revised=True):
 
     Examples
     --------
-    >>> turbulent_Dittus_Boelter(Re=1E5, Pr=1.2, method='heating', revised=False)
-    261.3838629346147
-    >>> turbulent_Dittus_Boelter(Re=1E5, Pr=1.2, method='cooling', revised=False)
-    279.89829163640354
-    >>> turbulent_Dittus_Boelter(Re=1E5, Pr=1.2, method='cooling')
-    242.9305927410295
     >>> turbulent_Dittus_Boelter(Re=1E5, Pr=1.2)
     247.40036409449127
+    >>> turbulent_Dittus_Boelter(Re=1E5, Pr=1.2, heating=False)
+    242.9305927410295
 
     References
     ----------
@@ -323,26 +319,23 @@ def turbulent_Dittus_Boelter(Re=None, Pr=None, method='heating', revised=True):
        1930.
     '''
     m = 0.023
-    if method == 'heating':
+    if heating:
         power = 0.4
-    elif method == 'cooling':
+    else:
         power = 0.3
-    else:
-        raise Exception('Cooling or heating not provided')
 
-    if method == 'heating' and not revised:
+    if heating and not revised:
         m = 0.0243
-    elif method == 'cooling' and not revised:
+    elif not heating and not revised:
         m = 0.0265
-    elif revised:
-        m = 0.023
     else:
-        raise Exception('m determination did not work')
+        m = 0.023
+
     Nu = m*Re**0.8*Pr**power
     return Nu
 
 
-def turbulent_Sieder_Tate(Re=None, Pr=None, mu=None, mu_w=None, wall=False):
+def turbulent_Sieder_Tate(Re=None, Pr=None, mu=None, mu_w=None):
     r'''Calculates internal convection Nusselt number for turbulent flows
     in pipe according to [1]_ and supposedly [2]_.
 
@@ -359,9 +352,6 @@ def turbulent_Sieder_Tate(Re=None, Pr=None, mu=None, mu_w=None, wall=False):
         Viscosity of fluid, [Pa*S or consistent with mu_w]
     mu_w : float
         Viscosity of fluid at wall temperature, [Pa*S or consistent with mu]
-    wall : bool
-        Indicates if wall correction should be used or not, optional
-        and superfluous if wall viscosity is not given
 
     Returns
     -------
@@ -378,7 +368,7 @@ def turbulent_Sieder_Tate(Re=None, Pr=None, mu=None, mu_w=None, wall=False):
     --------
     >>> turbulent_Sieder_Tate(Re=1E5, Pr=1.2)
     286.9178136793052
-    >>> turbulent_Sieder_Tate(Re=1E5, Pr=1.2, wall=True, mu=0.01, mu_w = 0.067)
+    >>> turbulent_Sieder_Tate(Re=1E5, Pr=1.2, mu=0.01, mu_w=0.067)
     219.84016455766044
 
     References
@@ -390,7 +380,7 @@ def turbulent_Sieder_Tate(Re=None, Pr=None, mu=None, mu_w=None, wall=False):
        (December 1, 1936): 1429-35. doi:10.1021/ie50324a027.
     '''
     Nu = 0.027*Re**0.8*Pr**(1/3.)
-    if wall and mu_w and mu:
+    if mu_w and mu:
         Nu *= (mu/mu_w)**0.14
     return Nu
 
@@ -437,8 +427,9 @@ def turbulent_entry_Hausen(Re=None, Pr=None, Di=None, x=None):
     Nu = 0.037*(Re**0.75 - 180)*Pr**0.42*(1 + (x/Di)**(-2/3.))
     return Nu
 
-#print [turbulent_entry_Hausen(Re=1E5, Pr=1.2, Di=0.154, x=0.05)]
+
 ### Regular correlations, Re, Pr and fd only
+
 
 def turbulent_Colburn(Re=None, Pr=None):
     r'''Calculates internal convection Nusselt number for turbulent flows
@@ -480,6 +471,7 @@ def turbulent_Colburn(Re=None, Pr=None):
     Nu = 0.023*Re**0.8*Pr**(1/3.)
     return Nu
 
+
 def turbulent_Drexel_McAdams(Re=None, Pr=None):
     r'''Calculates internal convection Nusselt number for turbulent flows
     in pipe according to [2]_ as in [1]_.
@@ -520,7 +512,6 @@ def turbulent_Drexel_McAdams(Re=None, Pr=None):
     Nu = 0.021*Re**0.8*Pr**(0.4)
     return Nu
 
-#print [turbulent_Drexel_McAdams(Re=1E5, Pr=0.6)]
 
 def turbulent_von_Karman(Re=None, Pr=None, fd=None):
     r'''Calculates internal convection Nusselt number for turbulent flows

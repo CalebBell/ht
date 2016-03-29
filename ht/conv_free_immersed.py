@@ -17,6 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from __future__ import division
 from math import exp, log
+import numpy as np
 
 __all__ = ['Nu_vertical_plate_Churchill',
            'Nu_sphere_Churchill', 'Nu_vertical_cylinder_Griffiths_Davis_Morgan',
@@ -90,9 +91,6 @@ def Nu_vertical_plate_Churchill(Pr, Gr):
     Nu = (0.825 + (0.387*Ra**(1/6.)/(1 + (0.492/Pr)**(9/16.))**(8/27.)))**2
     return Nu
 
-#print [Nu_vertical_plate_Churchill(.69, 2.63E9)]
-
-
 
 def Nu_sphere_Churchill(Pr, Gr):
     r'''Calculates Nusselt number for natural convection around a sphere
@@ -138,9 +136,6 @@ def Nu_sphere_Churchill(Pr, Gr):
     Nu = 2 + (0.589*Ra**0.25/(1 + (0.469/Pr)**(9/16.))**(4/9.)*(
     1 + 7.44E-8*Ra/(1 + (0.469/Pr)**(9/16.))**(16/9.))**(1/12.))
     return Nu
-
-#print [Nu_sphere_Churchill(.7, 1E1), Nu_sphere_Churchill(.7, 1E7)]
-
 
 
 ### Vertical cylinders
@@ -327,6 +322,9 @@ def Nu_vertical_cylinder_Carne_Morgan(Pr, Gr, turbulent=None):
         Nu = 1.07*Ra**0.28
     return Nu
 
+#print [[Nu_vertical_cylinder_Carne_Morgan(i, 2E8, j) for i in (0.999999, 1.000001)]
+#        for j in (True, False, None)]
+
 
 def Nu_vertical_cylinder_Eigenson_Morgan(Pr, Gr, turbulent=None):
     r'''Calculates Nusselt number for natural convection around a vertical
@@ -396,6 +394,8 @@ def Nu_vertical_cylinder_Eigenson_Morgan(Pr, Gr, turbulent=None):
     else:
         Nu = 0.48*Ra**0.25
     return Nu
+
+#print [[Nu_vertical_cylinder_Eigenson_Morgan(i, 1.69E10, j) for i in (0.999999, 1.000001)] for j in (True, False, None)]
 
 
 def Nu_vertical_cylinder_Touloukian_Morgan(Pr, Gr, turbulent=None):

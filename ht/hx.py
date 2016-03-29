@@ -28,6 +28,12 @@ __all__ = ['effectiveness_from_NTU', 'calc_Cmin', 'calc_Cmax', 'calc_Cr',
 'L_unsupported_max', 'Ntubes_Perrys', 'Ntubes_VDI', 'Ntubes_Phadkeb',
 'Ntubes_HEDH', 'Ntubes', 'D_for_Ntubes_VDI']
 
+
+# TODO: Implement selection algorithms for heat exchangers from
+# Systematic Procedure for Selection of Heat Exchangers
+# 10.1243/PIME_PROC_1983_197_006_02
+
+
 def effectiveness_from_NTU(NTU, Cr, Ntp=1, shells=1, counterflow=True,
                            subtype='double-pipe', Cmin_mixed=False, Cmax_mixed=False):
     r'''Returns the effectiveness of a heat exchanger with a given NTU and Cr,
@@ -902,8 +908,8 @@ def Ntubes_VDI(DBundle=None, Ntp=None, do=None, pitch=None, angle=30.):
 
     Examples
     --------
-    >>> [[Ntubes_VDI(DBundle=1.184, Ntp=i, do=.028, pitch=.036, angle=j) for i in [1,2,4,8]] for j in [30, 45, 60, 90]]
-    [[983, 966, 929, 903], [832, 818, 790, 769], [983, 966, 929, 903], [832, 818, 790, 769]]
+    >>> [[Ntubes_VDI(DBundle=1.184, Ntp=i, do=.028, pitch=.036, angle=j) for i in [1,2,4,6,8]] for j in [30, 45, 60, 90]]
+    [[983, 966, 929, 914, 903], [832, 818, 790, 778, 769], [983, 966, 929, 914, 903], [832, 818, 790, 778, 769]]
 
     References
     ----------
@@ -938,6 +944,7 @@ def Ntubes_VDI(DBundle=None, Ntp=None, do=None, pitch=None, angle=30.):
     Ntubes = int(Ntubes)
     return Ntubes
 
+#print [[Ntubes_VDI(DBundle=1.184, Ntp=i, do=.028, pitch=.036, angle=j) for i in [1,2,4,6,8]] for j in [30, 45, 60, 90]]
 
 #print [[Ntubes_VDI(DBundle=1.184, Ntp=i, do=.028, pitch=.036, angle=j) for i in [1,2,4,8]] for j in [30, 45, 60, 90]]
 #    >>> [Ntubes_Phadkeb(DBundle=1.200-.008*2, do=.028, pitch=.036, Ntp=i, angle=45.) for i in [1,2,4,6,8]]
@@ -1193,14 +1200,12 @@ def Ntubes_HEDH(DBundle=None, do=None, pitch=None, angle=30):
     return Nt
 
 
-
 def Ntubes(DBundle=None, Ntp=1, do=None, pitch=None, angle=30, pitch_ratio=1.25, AvailableMethods=False, Method=None):
     '''Function to calculate the number of tubes which can fit in a given tube
     bundle outer diameter.
 
-    >>> methods = Ntubes(DBundle=1.2, do=0.025, AvailableMethods=True)
-    >>> [Ntubes(DBundle=1.2, do=0.025, Method=i) for i in methods]
-    [1285, 1272, 1340, 1297, None]
+    >>> Ntubes(DBundle=1.2, do=0.025)
+    1285
     '''
     def list_methods():
         methods = []
@@ -1233,7 +1238,6 @@ def Ntubes(DBundle=None, Ntp=1, do=None, pitch=None, angle=30, pitch_ratio=1.25,
     else:
         raise Exception('Failure in in function')
     return N
-
 
 
 def D_for_Ntubes_VDI(Nt=None, Ntp=None, do=None, pitch=None, angle=30):
@@ -1303,10 +1307,6 @@ def D_for_Ntubes_VDI(Nt=None, Ntp=None, do=None, pitch=None, angle=30):
     Dshell = (f1*Nt*pitch**2 + f2*Nt**0.5*pitch +do)**0.5
     Dshell = Dshell/1000.
     return Dshell
-
-
-#print [D_for_Ntubes_VDI(Nt=970, Ntp=2., do=0.00735, pitch=0.015, angle=30.)]
-
 
 
 _heads = {'A': 'Removable Channel and Cover', 'B': 'Bonnet (Integral Cover)', 'C': 'Integral With Tubesheet Removable Cover', 'N': 'Channel Integral With Tubesheet and Removable Cover', 'D': 'Special High-Pressure Closures'}

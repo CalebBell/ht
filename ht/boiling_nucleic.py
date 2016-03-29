@@ -62,18 +62,15 @@ def Rohsenow(Te=None, Cpl=None, kl=None, mul=None, sigma=None, Hvap=None,
 
     Notes
     -----
-    No further work is required on this correlation.
-    Multiple sources confirm its form and rearrangement.
+    No further work is required on this correlation. Multiple sources confirm
+    its form and rearrangement.
 
     Examples
     --------
-    >>> [Rohsenow(Te=i, Cpl=4180, kl=0.688, mul=2.75E-4, sigma=0.0588, Hvap=2.25E6,
-    ... rhol=958, rhog=0.597, Csf=0.013, n=1) for i in [4.3, 9.1, 13]]
-    [2860.6242230238613, 12811.697777642301, 26146.321995188344]
+    Q for water at atmospheric pressure on oxidized aluminum, 10.30 P set 8.
 
-    # q for water at atmospheric pressure on oxidized aluminum, 10.30 P set 8
-    >>> Rohsenow(Te=4.9, Cpl=4217., kl=0.680, mul=2.79E-4, sigma=0.0589, Hvap=2.257E6,
-    ... rhol=957.854, rhog=0.595593, Csf=0.011, n=1.26)*4.9
+    >>> Rohsenow(Te=4.9, Cpl=4217., kl=0.680, mul=2.79E-4, sigma=0.0589,
+    ... Hvap=2.257E6, rhol=957.854, rhog=0.595593, Csf=0.011, n=1.26)*4.9
     18245.91080863059
 
     References
@@ -90,7 +87,7 @@ def Rohsenow(Te=None, Cpl=None, kl=None, mul=None, sigma=None, Hvap=None,
 #print [Rohsenow(Te=i, Cpl=4180, kl=0.688, mul=2.75E-4, sigma=0.0588, Hvap=2.25E6,
 #            rhol=958, rhog=0.597, Csf=0.013, n=1) for i in [4.3, 9.1, 13]]
 
-
+#print [Rohsenow(Te=5, Cpl=4180, kl=0.688, mul=2.75E-4, sigma=0.0588, Hvap=2.25E6, rhol=958, rhog=0.597)]
 
 def McNelly(Te=None, P=None, Cpl=None, kl=None, sigma=None, Hvap=None,
             rhol=None, rhog=None):
@@ -128,15 +125,15 @@ def McNelly(Te=None, P=None, Cpl=None, kl=None, sigma=None, Hvap=None,
 
     Notes
     -----
-    Water matches expectations, ammonia is somewhat distant. Likely just
-    error in the text's calculation.
+    Further examples for this function are desired.
 
     Examples
     --------
-    >>> McNelly(Te=4.3, P=101325, Cpl=4180., kl=0.688, sigma=0.0588, Hvap=2.25E6, rhol=958., rhog=0.597)
+    Water boiling, with excess temperature of 4.3 K.
+
+    >>> McNelly(Te=4.3, P=101325, Cpl=4180., kl=0.688, sigma=0.0588,
+    ... Hvap=2.25E6, rhol=958., rhog=0.597)
     533.8056972951352
-    >>> McNelly(Te=9.1, P=101325., Cpl=4472., kl=0.502, sigma=0.0325, Hvap=1.37E6, rhol=689., rhog=0.843)
-    6387.3951029225855
 
     References
     ----------
@@ -145,14 +142,13 @@ def McNelly(Te=None, P=None, Cpl=None, kl=None, sigma=None, Hvap=None,
     .. [2] McNelly M. J.: "A correlation of the rates of heat transfer to n
        ucleate boiling liquids," J. Imp Coll. Chem Eng Soc 7:18, 1953.
     '''
-    h = (0.225*(Te*Cpl/Hvap)**0.69*(P*kl/sigma)**0.31*(rhol/rhog-1.)**0.33)**(1./0.31)
+    h = (0.225*(Te*Cpl/Hvap)**0.69*(P*kl/sigma)**0.31*(rhol/rhog-1.)**0.33
+        )**(1./0.31)
     return h
-
 
 
 #print [McNelly(Te=4.3, P=101325, Cpl=4180., kl=0.688, sigma=0.0588, Hvap=2.25E6, rhol=958., rhog=0.597)] # Water
 #print [McNelly(Te=9.1, P=101325., Cpl=4472., kl=0.502, sigma=0.0325, Hvap=1.37E6, rhol=689., rhog=0.843)] # Ammonia
-
 
 
 def Forster_Zuber(Te=None, dPSat=None, Cpl=None, kl=None, mul=None, sigma=None,
@@ -193,24 +189,15 @@ def Forster_Zuber(Te=None, dPSat=None, Cpl=None, kl=None, mul=None, sigma=None,
 
     Notes
     -----
-    All examples are for water from [1]_ and match.
-    4th example is from [3]_ and matches completely.
-    No further work is required on this function.
+    Examples have been found in [1]_ and [3]_ and match exactly.
 
     Examples
     --------
-    >>> Forster_Zuber(Te=4.3, dPSat=3906*4.3, Cpl=4180., kl=0.688, mul=0.275E-3,
-    ... sigma=0.0588, Hvap=2.25E6, rhol=958., rhog=0.597)
+    Water boiling, with excess temperature of 4.3K from [1]_.
+
+    >>> Forster_Zuber(Te=4.3, dPSat=3906*4.3, Cpl=4180., kl=0.688,
+    ... mul=0.275E-3, sigma=0.0588, Hvap=2.25E6, rhol=958., rhog=0.597)
     3519.9239897462644
-    >>> Forster_Zuber(Te=9.1, dPSat=3906*9.1, Cpl=4180., kl=0.688, mul=0.275E-3,
-    ... sigma=0.0588, Hvap=2.25E6, rhol=958., rhog=0.597)
-    7393.507072909551
-    >>> Forster_Zuber(Te=13, dPSat=3906*13, Cpl=4180., kl=0.688, mul=0.275E-3,
-    ... sigma=0.0588, Hvap=2.25E6, rhol=958., rhog=0.597)
-    10524.54751261952
-    >>> Forster_Zuber(Te=16.2, dPSat=106300., Cpl=2730., kl=0.086, mul=156E-6,
-    ... sigma=.0082, Hvap=272E3, rhol=567., rhog=18.09)
-    5512.279068294656
 
     References
     ----------
@@ -260,28 +247,19 @@ def Montinsky(Te=None, P=None, Pc=None):
 
     Notes
     -----
-    First three examples are for water, ammonia, and benzene, from [1]_, and
-    match to within 20%. Formulas has been checked.
+    Formulas has been found consistent in all cited sources. Examples have
+    been found in [1]_ and [3]_.
 
-    Given with a constant of 3.7E-5 instead of 0.00417 if Pc is not internally
-    converted to kPa. [3]_ lists a constant of 3.596E-5. Both sources are
-    otherwise consistent.
-
-    Fourth example is from [4]_ and matches to within the error of the algebraic
-    manipulation rounding.
-
-    No further work is required.
+    The equation for this function is sometimes given with a constant of 3.7E-5
+    instead of 0.00417 if critical pressure is not internally
+    converted to kPa. [3]_ lists a constant of 3.596E-5.
 
     Examples
     --------
-    >>> [Montinsky(Te=i, P=101325., Pc=22048321.0) for i in [4.3, 9.1, 13]]
-    [1185.0509770292663, 6814.079848742471, 15661.924462897328]
-    >>> [Montinsky(Te=i, P=101325., Pc=112E5) for i in [4.3, 9.1, 13]]
-    [377.04493949460635, 2168.0200886557072, 4983.118427770712]
-    >>> [Montinsky(Te=i, P=101325., Pc=48.9E5) for i in [4.3, 9.1, 13]]
-    [96.75040954887533, 556.3178536987874, 1278.6771501657056]
-    >>> Montinsky(Te=16.2, P=310.3E3, Pc=2550E3)
-    2423.2656339862583
+    Water boiling at 1 atm, with excess temperature of 4.3K from [1]_.
+
+    >>> Montinsky(Te=4.3, P=101325., Pc=22048321.0)
+    1185.0509770292663
 
     References
     ----------
@@ -339,11 +317,11 @@ def Stephan_Abdelsalam(Te=None, Tsat=None, Cpl=None, kl=None, mul=None,
     cryogenic fluids, and refrigerants.
 
     .. math::
-        h = 0.246\times 10^7 X1^{0.673} X4^{-1.58} X3^{1.26} X8^{5.22}k_L/d_B
+        h = 0.246\times 10^7 X1^{0.673} X4^{-1.58} X3^{1.26}X8^{5.22}k_L/d_B
 
         h = 0.0546 X5^{0.335} X1^{0.67} X8^{-4.33} X4^{0.248}k_L/d_B
 
-        h = 4.82 X1^{0.624} X7^{0.117} X3^{0.374} X4^{-0.329} X5^{0.257} k_L/d_B
+        h = 4.82 X1^{0.624} X7^{0.117} X3^{0.374} X4^{-0.329}X5^{0.257} k_L/d_B
 
         h = 207 X1^{0.745} X5^{0.581} X6^{0.533} k_L/d_B
 
@@ -373,10 +351,10 @@ def Stephan_Abdelsalam(Te=None, Tsat=None, Cpl=None, kl=None, mul=None,
         Density of the wall (only for cryogenics) [kg/m^3]
     Cpw : float
         Heat capacity of wall (only for cryogenics) [J/kg/K]
-    angle : float
+    angle : float, optional
         Contact angle of bubble with wall [degrees]
-    correlation : str
-        Either 'general', 'water', 'hydrocarbon', 'cryogenic', or 'refrigerant'
+    correlation : str, optional
+        Any of 'general', 'water', 'hydrocarbon', 'cryogenic', or 'refrigerant'
 
     Returns
     -------
@@ -385,24 +363,21 @@ def Stephan_Abdelsalam(Te=None, Tsat=None, Cpl=None, kl=None, mul=None,
 
     Notes
     -----
-    Example 1 is from [3]_ and matches. The other four are believed correct and
-    have been compared to the original publication.
-
-    If cryogenic correlation is selected, metal properties are used. Default are
-    properties of copper at STP.
+    If cryogenic correlation is selected, metal properties are used. Default
+    values are the properties of copper at STP.
 
     The angle is selected automatically if a correlation is selected; if angle
-    is provided anyway, the automatic selection is ignored.
+    is provided anyway, the automatic selection is ignored. A IndexError
+    exception is raised if the correlation is not in the dictionary
+    _angles_Stephan_Abdelsalam.
 
     Examples
     --------
+    Example is from [3]_ and matches.
+
     >>> Stephan_Abdelsalam(Te=16.2, Tsat=437.5, Cpl=2730., kl=0.086, mul=156E-6,
     ... sigma=0.0082, Hvap=272E3, rhol=567, rhog=18.09, angle=35)
     26722.441071108373
-    >>> round(sum([Stephan_Abdelsalam(Te=16.2, Tsat=437.5, Cpl=2730., kl=0.086,
-    ... mul=156E-6, sigma=0.0082, Hvap=272E3, rhol=567, rhog=18.09,
-    ... correlation=i) for i in _angles_Stephan_Abdelsalam.keys()]), 6)
-    166510.054364
 
     References
     ----------
@@ -415,10 +390,7 @@ def Stephan_Abdelsalam(Te=None, Tsat=None, Cpl=None, kl=None, mul=None,
     .. [3] Serth, R. W., Process Heat Transfer: Principles,
        Applications and Rules of Thumb. 2E. Amsterdam: Academic Press, 2014.
     '''
-    if correlation in _angles_Stephan_Abdelsalam:
-        angle = _angles_Stephan_Abdelsalam[correlation]
-    else:
-        raise Exception('correlation string is incorrect')
+    angle = _angles_Stephan_Abdelsalam[correlation]
 
     db = 0.0146*angle*(2*sigma/g/(rhol-rhog))**0.5
     diffusivity_L = kl/rhol/Cpl
@@ -444,8 +416,8 @@ def Stephan_Abdelsalam(Te=None, Tsat=None, Cpl=None, kl=None, mul=None,
         h = (207*X1**0.745*X5**0.581*X6**0.533*kl/db)**(1/0.255)
     return h
 
-#print [round(sum([Stephan_Abdelsalam(Te=16.2, Tsat=437.5, Cpl=2730., kl=0.086, mul=156E-6,
-#                          sigma=0.0082, Hvap=272E3, rhol=567, rhog=18.09, correlation=i) for i in _angles_Stephan_Abdelsalam.keys()]), 6)]
+#print [Stephan_Abdelsalam(Te=16.2, Tsat=437.5, Cpl=2730., kl=0.086, mul=156E-6,
+#                          sigma=0.0082, Hvap=272E3, rhol=567, rhog=18.09, correlation=i) for i in _angles_Stephan_Abdelsalam.keys()]
 
 #print [Stephan_Abdelsalam(Te=16.2, Tsat=437.5, Cpl=2730., kl=0.086, mul=156E-6,
 #                  sigma=0.0082, Hvap=272E3, rhol=567, rhog=18.09, angle=35)]
@@ -478,8 +450,6 @@ def HEDH_Taborek(Te=None, P=None, Pc=None):
     Example is from [3]_ and matches to within the error of the algebraic
     manipulation rounding.
 
-    No further work is required.
-
     Examples
     --------
     >>> HEDH_Taborek(Te=16.2, P=310.3E3, Pc=2550E3)
@@ -497,7 +467,8 @@ def HEDH_Taborek(Te=None, P=None, Pc=None):
        Applications and Rules of Thumb. 2E. Amsterdam: Academic Press, 2014.
     '''
     Pr = P/Pc
-    h = (0.00417*(Pc/1000.)**0.69*Te**0.7*(2.1*Pr**0.27 + (9 + 1/(1-Pr**2))*Pr**2))**(1/0.3)
+    h = (0.00417*(Pc/1000.)**0.69*Te**0.7*(2.1*Pr**0.27
+    + (9 + 1./(1-Pr**2))*Pr**2))**(1/0.3)
     return h
 
 
@@ -525,16 +496,15 @@ def Bier(Te=None, P=None, Pc=None):
 
     Notes
     -----
-    No examples to thick this are known. Gives very different results than
+    No examples of this are known. Seems to give very different results than
     other correlations.
-    Examples are for water and benzene.
 
     Examples
     --------
-    >>> [Bier(Te=i, P=101325., Pc=22048321.0) for i in [4.3, 9.1, 13]]
-    [1290.5349471503353, 7420.6159464293305, 17056.026492351128]
-    >>> [Bier(Te=i, P=101325., Pc=48.9E5) for i in [4.3, 9.1, 13]]
-    [77.81190344679615, 447.42085661013226, 1028.3812069865799]
+    Water boiling at 1 atm, with excess temperature of 4.3 K from [1]_.
+
+    >>> Bier(4.3, 101325., 22048321.0)
+    1290.5349471503353
 
     References
     ----------
@@ -586,14 +556,10 @@ def Cooper(Te=None, P=None, Pc=None, MW=None, Rp=1E-6):
 
     Examples
     --------
-    >>> [Cooper(Te=i, P=101325., Pc=22048321.0, MW=18.02) for i in [4.3, 9.1, 13]]
-    [1558.1435442153575, 7138.700876530947, 14727.09551225091]
+    Water boiling at 1 atm, with excess temperature of 4.3 K from [1]_.
 
-    >>> [Cooper(Te=i, P=101325., Pc=48.9E5, MW=78.11184) for i in [4.3, 9.1, 13]]
-    [504.57942247904055, 2311.7520711767947, 4769.130145905329]
-
-    >>> Cooper(Te=16.2, P=310.3E3, Pc=2550E3, MW=110.37)
-    23234.288511344483
+    >>> Cooper(Te=4.3, P=101325., Pc=22048321.0, MW=18.02)
+    1558.1435442153575
 
     References
     ----------
@@ -605,7 +571,8 @@ def Cooper(Te=None, P=None, Pc=None, MW=None, Rp=1E-6):
        Applications and Rules of Thumb. 2E. Amsterdam: Academic Press, 2014.
     '''
     Rp*= 1E6
-    h = (55*Te**0.67*(P/Pc)**(0.12 - 0.2*log10(Rp))*(-log10(P/Pc))**-0.55*MW**-0.5)**(1/0.33)
+    h = (55*Te**0.67*(P/Pc)**(0.12 - 0.2*log10(Rp))*(
+         -log10(P/Pc))**-0.55*MW**-0.5)**(1/0.33)
     return h
 
 #print [Cooper(Te=i, P=101325., Pc=22048321.0, MW=18.02) for i in [4.3, 9.1, 13]]
@@ -727,12 +694,13 @@ def Zuber(sigma=None, Hvap=None, rhol=None, rhog=None, K=0.18):
 
     Notes
     -----
-    No further work is required on this correlation.
-    The first example is from [3]_.
-    Multiple sources confirm its form.
+    No further work is required on this correlation. Multiple sources confirm
+    its form.
 
     Examples
     --------
+    Example from [3]_
+
     >>> Zuber(sigma=8.2E-3, Hvap=272E3, rhol=567, rhog=18.09, K=0.149)
     444307.22304342285
     >>> Zuber(sigma=8.2E-3, Hvap=272E3, rhol=567, rhog=18.09, K=0.18)
@@ -776,7 +744,7 @@ def Serth_HEDH(D=None, sigma=None, Hvap=None, rhol=None, rhog=None):
     sigma : float
         Surface tension of liquid [N/m]
     Hvap : float
-        Heat of vaporization of the fluid at P, [J/kg]
+        Heat of vaporization of the fluid at T, [J/kg]
     rhol : float
         Density of the liquid [kg/m^3]
     rhog : float
@@ -798,8 +766,8 @@ def Serth_HEDH(D=None, sigma=None, Hvap=None, rhol=None, rhog=None):
 
     References
     ----------
-    .. [1] Zuber N. "On the stability of boiling heat transfer". Trans ASME 1958
-        80:711-20.
+    .. [1] Zuber N. "On the stability of boiling heat transfer". Trans ASME
+       1958 80:711-20.
     .. [2] Serth, R. W., Process Heat Transfer: Principles,
        Applications and Rules of Thumb. 2E. Amsterdam: Academic Press, 2014.
     .. [3] Schlünder, Ernst U, and International Center for Heat and Mass
@@ -814,7 +782,7 @@ def Serth_HEDH(D=None, sigma=None, Hvap=None, rhol=None, rhog=None):
     q = K*Hvap*rhog**0.5*(g*sigma*(rhol-rhog))**0.25
     return q
 
-#print [Serth_HEDH(D=0.0127, sigma=8.2E-3, Hvap=272E3, rhol=567, rhog=18.09)]
+#print [Serth_HEDH(D=0.00127, sigma=8.2E-3, Hvap=272E3, rhol=567, rhog=18.09)]
 
 def HEDH_Montinsky(P=None, Pc=None):
     r'''Calculates critical heat flux
@@ -838,14 +806,14 @@ def HEDH_Montinsky(P=None, Pc=None):
 
     Notes
     -----
-    Example is from [3]_ and matches to within the error of the algebraic
-    manipulation rounding.
-
     No further work is required.
     Units of Pc are kPa internally.
 
     Examples
     --------
+    Example is from [3]_ and matches to within the error of the algebraic
+    manipulation rounding.
+
     >>> HEDH_Montinsky(P=310.3E3, Pc=2550E3)
     398405.66545181436
 

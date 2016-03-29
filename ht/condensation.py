@@ -77,11 +77,6 @@ def Nusselt_laminar(Tsat=None, Tw=None, rhog=None, rhol=None, kl=None,
     h = 0.943*(kl**3*rhol*(rhol-rhog)*g*sin(angle/180.*pi)*Hvap/(mul*(Tsat-Tw)*L))**0.25
     return h
 
-#print [Nusselt_laminar(Tsat=370, Tw=350, rhog=7.0, rhol=585., kl=0.091, mul=158.9E-6, Hvap=776900, L=0.1)]
-
-
-
-
 
 def Boyko_Kruzhilin(m=None, rhog=None, rhol=None, kl=None, mul=None, Cpl=None,
                     D=None, x=None):
@@ -140,12 +135,10 @@ def Boyko_Kruzhilin(m=None, rhog=None, rhol=None, kl=None, mul=None, Cpl=None,
     .. [2] Hewitt, G. L. Shires T. Reg Bott G. F., George L. Shires, and
        T. R. Bott. Process Heat Transfer. 1E. Boca Raton: CRC Press, 1994.
     '''
-    Vlo = m/rhol/(pi/4*D**2)
+    Vlo = m/rhol/(pi/4.*D**2)
     Relo = rhol*Vlo*D/mul
     Prl = mul*Cpl/kl
     hlo = 0.021*kl/D*Relo**0.8*Prl**0.43
-    h = hlo*(1 + x*(rhol/rhog -1))**0.5
+    h = hlo*(1. + x*(rhol/rhog - 1.))**0.5
     return h
 
-#print [Boyko_Kruzhilin(m=500*pi/4*.03**2, rhog=6.36, rhol=582.9, kl=0.098,
-#mul=159E-6, Cpl=2520., D=0.03, x=0.85)]

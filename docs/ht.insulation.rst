@@ -1,5 +1,5 @@
 ht.insulation module
-=====================
+====================
 
 .. automodule:: ht.insulation
     :members:

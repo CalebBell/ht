@@ -21,6 +21,7 @@ from scipy.constants import g
 from fluids.friction import friction_factor
 
 __all__ =['Lehrer', 'Stein_Schmidt']
+
 def Lehrer(m=None, Dtank=None, Djacket=None, H=None, Dinlet=None,
            rho=None, Cp=None, k=None, mu=None, muw=None,
            isobaric_expansion=None, dT=None, inlettype='tangential',
@@ -143,14 +144,6 @@ def Lehrer(m=None, Dtank=None, Djacket=None, H=None, Dinlet=None,
         NuSL = (0.03*Res**0.75*Pr)/(1 + 1.74*(Pr-1)/Res**0.125)
     h = NuSL*k/dg
     return h
-
-#print [Lehrer(m=2.5, Dtank=0.6, Djacket=0.65, H=0.6, Dinlet=0.025, dT=20.,
-#             rho=995.7, Cp=4178.1, k=0.615, mu=798E-6, muw=355E-6)]
-##[2922.128124761829]
-#print [Lehrer(m=2.5, Dtank=0.6, Djacket=0.65, H=0.6, Dinlet=0.025, dT=20.,
-#             rho=995.7, Cp=4178.1, k=0.615, mu=798E-6, muw=355E-6, inlettype='radial', isobaric_expansion=0.000303) ]
-# [3269.4389632666557]
-
 
 
 def Stein_Schmidt(m=None, Dtank=None, Djacket=None, H=None, Dinlet=None,
@@ -276,21 +269,6 @@ def Stein_Schmidt(m=None, Dtank=None, Djacket=None, H=None, Dinlet=None,
     ... rho=995.7, Cp=4178.1, k=0.615, mu=798E-6, muw=355E-6, rhow=971.8)
     5695.1871940874225
 
-    Examples similar to in [2]_ but covering the other cases:
-
-    >>> Stein_Schmidt(m=2.5, Dtank=0.6, Djacket=0.65, H=0.6, Dinlet=0.025,
-    ... rho=995.7, Cp=4178.1, k=0.615, mu=798E-6, muw=355E-6, rhow=971.8,
-    ...  inletlocation='top')
-    5675.824588428565
-    >>> Stein_Schmidt(m=2.5, Dtank=0.6, Djacket=0.65, H=0.6, Dinlet=0.025,
-    ... rho=995.7, Cp=4178.1, k=0.615, mu=798E-6, muw=355E-6, rhow=971.8,
-    ... inletlocation='top', roughness=1E-4)
-    4918.5855029292225
-    >>> Stein_Schmidt(m=2.5, Dtank=0.6, Djacket=0.65, H=0.6, Dinlet=0.025,
-    ... rho=995.7, Cp=4178.1, k=0.615, mu=798E-6, muw=355E-6, rhow=971.8,
-    ... inlettype='radial')
-    1217.1449686341773
-
     References
     ----------
     .. [1] Stein, Prof Dr-Ing Werner Alexander, and Dipl-Ing (FH) Wolfgang
@@ -351,20 +329,3 @@ def Stein_Schmidt(m=None, Dtank=None, Djacket=None, H=None, Dinlet=None,
     h = NuJ*k/dch
     return h
 # Eveything here is good.
-
-#print [Stein_Schmidt(m=2.5, Dtank=0.6, Djacket=0.65, H=0.6, Dinlet=0.025,
-#             rho=995.7, Cp=4178.1, k=0.615, mu=798E-6, muw=355E-6, rhow=971.8)]
-##[5695.1871940874225]
-#print [Stein_Schmidt(m=2.5, Dtank=0.6, Djacket=0.65, H=0.6, Dinlet=0.025,
-#             rho=995.7, Cp=4178.1, k=0.615, mu=798E-6, muw=355E-6, rhow=971.8,
-#             inletlocation='top')]
-##[5675.824588428565]
-#print [Stein_Schmidt(m=2.5, Dtank=0.6, Djacket=0.65, H=0.6, Dinlet=0.025,
-#             rho=995.7, Cp=4178.1, k=0.615, mu=798E-6, muw=355E-6, rhow=971.8,
-#             inletlocation='top', roughness=1E-4)]
-##[4918.5855029292225]
-## Friction reduces circulation around the jacket by increasing the dP. Interesting.
-#print [Stein_Schmidt(m=2.5, Dtank=0.6, Djacket=0.65, H=0.6, Dinlet=0.025,
-#             rho=995.7, Cp=4178.1, k=0.615, mu=798E-6, muw=355E-6, rhow=971.8,
-#            inlettype='radial')]
-##[1217.1449686341773]

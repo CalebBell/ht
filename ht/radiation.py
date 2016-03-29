@@ -46,7 +46,7 @@ def blackbody_spectral_radiance(T, wavelength):
 
     Examples
     --------
-    Checked with Spectral-calc.com, at
+    Checked with Spectral-calc.com, at [2]_.
 
     >>> blackbody_spectral_radiance(800., 4E-6)
     1311692056.2430143

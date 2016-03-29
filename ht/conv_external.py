@@ -39,7 +39,7 @@ def Nu_cylinder_Zukauskas(Re, Pr, Prw=None):
     Re : float
         Reynolds number with respect to cylinder diameter, [-]
     Pr : float
-        Prandtl number at bulk temperature [-]
+        Prandtl number at free stream temperature [-]
     Prw : float, optional
         Prandtl number at wall temperature, [-]
 
@@ -103,7 +103,6 @@ def Nu_cylinder_Zukauskas(Re, Pr, Prw=None):
         Nu = Nu*(Pr/Prw)**0.25
     return Nu
 
-#print [Nu_cylinder_Zukauskas(7992, 0.707, 0.69)]
 
 def Nu_cylinder_Churchill_Bernstein(Re, Pr):
     r'''Calculates Nusselt number for crossflow across a single tube
@@ -202,7 +201,6 @@ def Nu_cylinder_Sanitjai_Goldstein(Re, Pr):
     + (0.031*Re**0.8)**-5)**-0.2*Pr**0.42
     return Nu
 
-#print [ Nu_cylinder_Sanitjai_Goldstein(6071, 0.7)]
 
 def Nu_cylinder_Fand(Re, Pr):
     r'''Calculates Nusselt number for crossflow across a single tube
@@ -345,7 +343,7 @@ def Nu_cylinder_Whitaker(Re, Pr, mu=None, muw=None):
         Nu *= (mu/muw)**0.25
     return Nu
 
-#print [Nu_cylinder_Whitaker(6071, 0.7)]
+#print [Nu_cylinder_Whitaker(6071, 0.7, 1E-3, 1.2E-3)]
 
 def Nu_cylinder_Perkins_Leppert_1962(Re, Pr, mu=None, muw=None):
     r'''Calculates Nusselt number for crossflow across a single tube as shown
@@ -452,4 +450,4 @@ def Nu_cylinder_Perkins_Leppert_1964(Re, Pr, mu=None, muw=None):
         Nu *= (mu/muw)**0.25
     return Nu
 
-#print [Nu_cylinder_Perkins_Leppert_1964(6071, 0.7)]
+#print [Nu_cylinder_Perkins_Leppert_1964(6071, 0.7, 1E-3, 1.2E-3)]
