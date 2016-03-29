@@ -25,3 +25,4 @@ install:
   - python setup.py -q install
 script:
   - python tests/doctests.py
+  - py.test --cov-report html --cov=ht
