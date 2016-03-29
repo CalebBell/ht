@@ -26,6 +26,7 @@ install:
 script:
   - python tests/doctests.py
   - find .
-  - py.test -v --cov-report html --cov=ht --cov-report term-missing
+  - py.test . -v --cov-report html --cov=ht --cov-report term-missing 
+  - find .
 after_success:
   - coveralls
