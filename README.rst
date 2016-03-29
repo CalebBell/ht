@@ -14,6 +14,9 @@ ht
 .. image:: http://img.shields.io/badge/license-GPL3-blue.svg?style=flat
    :target: https://github.com/CalebBell/ht/blob/master/LICENSE.txt
    :alt: license
+.. image:: https://img.shields.io/coveralls/CalebBell/ht.svg
+   :target: https://coveralls.io/github/CalebBell/ht
+   :alt: Coverage
 
 
 .. contents::
