@@ -1,0 +1,3 @@
+fluids
+scipy
+pytest-cov

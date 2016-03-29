@@ -1,3 +1,2 @@
 fluids
 scipy
-pytest-cov
