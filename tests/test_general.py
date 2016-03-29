@@ -572,4 +572,4 @@ def test_radiation():
     assert_allclose(q_rad(1., 400), 1451.613952, rtol=1e-05)
     assert_allclose(q_rad(.85, 400, 305.), 816.7821722650002, rtol=1e-05)
 
-    assert_allclose(blackbody_spectral_radiance(800., 4E-6), 1311692056.2430143)
+    assert_allclose(blackbody_spectral_radiance(800., 4E-6), 1311692056.2430143, rtol=1e-05)
