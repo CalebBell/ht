@@ -25,7 +25,7 @@ install:
   - python setup.py -q install
 script:
   - python tests/doctests.py
-  - cd ht
+  - find .
   - py.test --cov-report html --cov=ht
 after_success:
   - coveralls
