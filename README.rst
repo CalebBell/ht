@@ -5,9 +5,6 @@ ht
 .. image:: http://img.shields.io/pypi/v/ht.svg?style=flat
    :target: https://pypi.python.org/pypi/ht
    :alt: Version_status
-.. image:: http://img.shields.io/pypi/dm/ht.svg?style=flat
-   :target: https://pypi.python.org/pypi/ht
-   :alt: Downloads
 .. image:: http://img.shields.io/travis/CalebBell/ht/master.svg?style=flat
    :target: https://travis-ci.org/CalebBell/ht
    :alt: Build_status

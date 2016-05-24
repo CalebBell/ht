@@ -17,7 +17,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from distutils.core import setup
 
-
 classifiers=[
     'Development Status :: 3 - Alpha',
     'Intended Audience :: Developers',
@@ -46,27 +45,26 @@ classifiers=[
     'Topic :: Scientific/Engineering :: Physics',
 ]
 
-long_description = '''ht is open-source software for engineers and
-technicians working in the fields of chemical or mechanical engineering. It
-includes modules for various heat transfer functions. ht runs on all
-operating systems which support Python, is quick to install, and is free of
-charge. ht is designed to be easy to use while still providing powerful
-functionality. If you need to perform some heat transfer calculations,
-give ht a try.'''
+
+
 
 
 setup(
   name = 'ht',
   packages = ['ht'],
   license='GPL3',
-  version = '0.1.35',
+  version = '0.1.36',
   description = 'Heat transfer component of Chemical Engineering Design Library (ChEDL)',
   author = 'Caleb Bell',
-  long_description = long_description,
+  long_description = open('README.rst').read(),
   platforms=["Windows", "Linux", "Mac OS", "Unix"],
   author_email = 'Caleb.Andrew.Bell@gmail.com',
   url = 'https://github.com/CalebBell/ht',
-  download_url = 'https://github.com/CalebBell/ht/tarball/0.1.35',
+  download_url = 'https://github.com/CalebBell/ht/tarball/0.1.36',
   keywords = ['chemical engineering', 'heat transfer', 'mechanical engineering'],
   classifiers = classifiers,
+  install_requires=['fluids'],
+  extras_require = {
+      'Coverage documentation':  ['wsgiref>=0.1.2', 'coverage>=4.0.3']
+  },
 )
