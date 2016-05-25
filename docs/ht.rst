@@ -21,10 +21,3 @@ Submodules
    ht.insulation
    ht.radiation
 
-Module contents
----------------
-
-.. automodule:: ht
-    :members:
-    :undoc-members:
-    :show-inheritance:
