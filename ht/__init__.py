@@ -67,5 +67,5 @@ __all__.extend(conv_packed_bed.__all__)
 __all__.extend(conv_external.__all__)
 
 
-__version__ = '0.1.36'
+__version__ = '0.1.37'
 
