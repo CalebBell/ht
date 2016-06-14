@@ -42,6 +42,7 @@ configurations = ['forced draft', 'induced-draft (top drive)', 'induced-draft (b
 
 # Coefs are from: Roetzel and Nicole - 1975 - Mean Temperature Difference for Heat Exchanger Design A General Approximate Explicit Equation
 # Checked twice.
+# NOTE: These are the same as the options in HYSYS for an Air Cooler
 
 _crossflow_1_row_1_pass = [[-4.62E-1, -3.13E-2, -1.74E-1, -4.2E-2],
                            [5.08E0, 5.29E-1, 1.32E0, 3.47E-1],
