@@ -29,7 +29,7 @@ __all__ = ['laminar_T_const', 'laminar_Q_const',
 'turbulent_Churchill_Zajic', 'turbulent_ESDU', 'turbulent_Martinelli',
 'turbulent_Nunner', 'turbulent_Dipprey_Sabersky', 'turbulent_Gowen_Smith',
 'turbulent_Kawase_Ulbrecht', 'turbulent_Kawase_De', 'turbulent_Bhatti_Shah',
-'Nu_conv_internal']
+'Nu_conv_internal', 'Morimoto_Hotta']
 
 ### Laminar
 
@@ -1457,3 +1457,63 @@ def Nu_conv_internal(Re=None, Pr=None, fd=None, eD=None, Di=None, x=None,
 #plt.legend()
 #
 #plt.show()
+
+
+### Spiral heat exchangers
+
+def Morimoto_Hotta(Re, Pr, Dh, Rm):
+    r'''Calculates Nusselt number for flow inside a spiral heat exchanger of
+    spiral mean diameter `Rm` and hydraulic diameter `Dh` according to [1]_,
+    also as shown in [2]_ and [3]_.
+    
+    .. math::
+        Nu = 0.0239\left(1 + 5.54\frac{D_h}{R_m}\right)Re^{0.806}Pr^{0.268}
+        
+        D_h = \frac{2HS}{H+S}
+        
+        R_m = \frac{R_{min} + R_{max}}{2}
+    
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number with bulk properties, [-]
+    Pr : float
+        Prandtl number with bulk properties [-]
+    Dh : float
+        Average hydraulic diameter, [m]
+    Rm : float
+        Average spiral radius, [m]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number with respect to `Dh`, [-]
+
+    Notes
+    -----
+    [1]_ is in Japanese.
+
+    Examples
+    --------
+    >>> Morimoto_Hotta(1E5, 5.7, .05, .5)
+    634.4879473869859
+
+    References
+    ----------
+    .. [1] Morimoto, Eiji, and Kazuyuki Hotta. "Study of Geometric Structure 
+       and Heat Transfer Characteristics of Spiral Plate Heat Exchanger." 
+       Transactions of the Japan Society of Mechanical Engineers Series B 52, 
+       no. 474 (1986): 926-33. doi:10.1299/kikaib.52.926.
+    .. [2] Bidabadi, M. and Sadaghiani, A. and Azad, A. "Spiral heat exchanger 
+       optimization using genetic algorithm." Transaction on Mechanical 
+       Engineering, International Journal of Science and Technology,
+       vol. 20, no. 5 (2013): 1445-1454. 
+       http://www.scientiairanica.com/en/ManuscriptDetail?mid=47.
+    .. [3] Turgut, Oğuz Emrah, and Mustafa Turhan Çoban. "Thermal Design of 
+       Spiral Heat Exchangers and Heat Pipes through Global Best Algorithm." 
+       Heat and Mass Transfer, July 7, 2016, 1-18. 
+       doi:10.1007/s00231-016-1861-y.
+    '''
+    Nu = 0.0239*(1 + 5.54*Dh/Rm)*Re**0.806*Pr**0.268
+    return Nu

@@ -121,3 +121,8 @@ def test_turbulent_rough():
     assert_allclose(Nu, 302.7037617414273)
 
 # TODO meta function  Nu internal
+
+
+def test_Morimoto_Hotta():
+    Nu = Morimoto_Hotta(1E5, 5.7, .05, .5)
+    assert_allclose(Nu, 634.4879473869859)
