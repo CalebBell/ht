@@ -17,7 +17,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from __future__ import division
 
-__all__ = ['Nu_packed_bed_Gnielinski']
+__all__ = ['Nu_packed_bed_Gnielinski', 'Nu_Wakao_Kagei', 'Nu_Achenbach',
+           'Nu_KTA']
 
 def Nu_packed_bed_Gnielinski(dp, voidage, vs, rho, mu, Pr, fa=None):
     r'''Calculates Nusselt number of a fluid passing over a bed of particles
@@ -56,7 +57,7 @@ def Nu_packed_bed_Gnielinski(dp, voidage, vs, rho, mu, Pr, fa=None):
     Returns
     -------
     Nu : float
-        Nusselt number for heat transfer to the packed bed [Pa]
+        Nusselt number for heat transfer to the packed bed [-]
 
     Notes
     -----
@@ -96,3 +97,137 @@ def Nu_packed_bed_Gnielinski(dp, voidage, vs, rho, mu, Pr, fa=None):
     Nu = fa*Nu_sphere
     return Nu
 
+
+def Nu_Wakao_Kagei(Re, Pr):
+    r'''Calculates Nusselt number of a fluid passing over a bed of particles
+    using a correlation shown in [1]_ and also cited in the review of [2]_.
+    Relatively rough, as it has no dependence on voidage.
+    
+    .. math::
+        Nu = 2 + 1.1Pr^{1/3}Re^{0.6}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number with pebble diameter as characteristic dimension, [-]
+    Pr : float
+        Prandtl number of the fluid []
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number for heat transfer to the packed bed [-]
+
+    Notes
+    -----
+    Fit for Re from 3 to 3000; claimed reasonableness of fit to to 1E6.
+    
+    Examples
+    --------
+    >>> Nu_Wakao_Kagei(2000, 0.7)
+    95.40641328041248
+
+    References
+    ----------
+    .. [1] Wakao, Noriaki, and Seiichirō Kagei. Heat and Mass Transfer in 
+       Packed Beds. Taylor & Francis, 1982.
+    .. [2] Abdulmohsin, Rahman S., and Muthanna H. Al-Dahhan. "Characteristics 
+       of Convective Heat Transport in a Packed Pebble-Bed Reactor." Nuclear
+       Engineering and Design 284 (April 1, 2015): 143-52. 
+       doi:10.1016/j.nucengdes.2014.11.041.
+    '''
+    return 2 + 1.1*Pr**(1/3.)*Re**0.6
+
+
+def Nu_Achenbach(Re, Pr, voidage):
+    r'''Calculates Nusselt number of a fluid passing over a bed of particles
+    using a correlation shown in [1]_ and also cited in the review of [2]_.
+    
+    .. math::
+        Nu = [(1.18Re^{0.58})^4 + (0.23\left(\frac{Re}{1-\epsilon}
+        \right)^{0.75})^4]^{0.25}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number with pebble diameter as characteristic dimension, [-]
+    Pr : float
+        Prandtl number of the fluid []
+    voidage : float
+        Void fraction of bed packing [-]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number for heat transfer to the packed bed [-]
+
+    Notes
+    -----
+    Claimed value for Re/ε < 7.7E5
+    Developed with tests performed in a wind tunnel at conditions up to 30 bar.
+    
+    Examples
+    --------
+    >>> Nu_Achenbach(2000, 0.7, 0.4)
+    117.70343608599121
+
+    References
+    ----------
+    .. [1] Achenbach, E. "Heat and Flow Characteristics of Packed Beds." 
+       Experimental Thermal and Fluid Science 10, no. 1 (January 1, 1995): 
+       17-27. doi:10.1016/0894-1777(94)00077-L.
+    .. [2] Abdulmohsin, Rahman S., and Muthanna H. Al-Dahhan. "Characteristics 
+       of Convective Heat Transport in a Packed Pebble-Bed Reactor." Nuclear
+       Engineering and Design 284 (April 1, 2015): 143-52. 
+       doi:10.1016/j.nucengdes.2014.11.041.
+    '''
+    return ((1.18*Re**0.58)**4 + (0.23*(Re/(1-voidage))**0.75)**4)**0.25
+
+
+def Nu_KTA(Re, Pr, voidage):
+    r'''Calculates Nusselt number of a fluid passing over a bed of particles
+    using a correlation shown in [1]_ and also cited in the review of [2]_.
+    
+    .. math::
+        Nu = 1.27\frac{Pr^{1/3}}{\epsilon^{1.18}}Re^{0.36}
+        + 0.033\frac{Pr^{0.5}}{\epsilon^{1.07}}Re^{0.86}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number with pebble diameter as characteristic dimension, [-]
+    Pr : float
+        Prandtl number of the fluid []
+    voidage : float
+        Void fraction of bed packing [-]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number for heat transfer to the packed bed [-]
+
+    Notes
+    -----
+    100 < Re < 1E5;
+    0.36 < ε < 0.42;
+    D/d > 20 with D as bed diameter, d as particle diameter;
+    H > 4d with H as bed height.
+    
+    Examples
+    --------
+    >>> Nu_KTA(2000, 0.7, 0.4)
+    102.08516480718129
+
+    References
+    ----------
+    .. [1] Reactor Core Design of High-Temperature Gas-Cooled Reactors Part 2: 
+       Heat Transfer in Spherical Fuel Elements (June 1983).
+       http://www.kta-gs.de/e/standards/3100/3102_2_engl_1983_06.pdf
+    .. [2] Abdulmohsin, Rahman S., and Muthanna H. Al-Dahhan. "Characteristics 
+       of Convective Heat Transport in a Packed Pebble-Bed Reactor." Nuclear
+       Engineering and Design 284 (April 1, 2015): 143-52. 
+       doi:10.1016/j.nucengdes.2014.11.041.
+    '''
+    Nu = (1.27*Pr**(1/3.)*Re**0.36/voidage**1.18 
+        + 0.033*Pr**0.5/voidage**1.07*Re**0.86)
+    return Nu
