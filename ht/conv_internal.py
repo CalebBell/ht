@@ -504,9 +504,9 @@ def turbulent_Drexel_McAdams(Re=None, Pr=None):
     ----------
     .. [1] Rohsenow, Warren and James Hartnett and Young Cho. Handbook of Heat
        Transfer, 3E. New York: McGraw-Hill, 1998.
-    .. [2] Drexel, Rober E., and William H. Mcadams. “Heat-Transfer
+    .. [2] Drexel, Rober E., and William H. Mcadams. "Heat-Transfer
        Coefficients for Air Flowing in Round Tubes, in Rectangular Ducts, and
-       around Finned Cylinders,” February 1, 1945.
+       around Finned Cylinders," February 1, 1945.
        http://ntrs.nasa.gov/search.jsp?R=19930090924.
     '''
     Nu = 0.021*Re**0.8*Pr**(0.4)
