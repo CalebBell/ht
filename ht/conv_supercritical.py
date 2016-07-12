@@ -204,20 +204,6 @@ def Nu_Griem(Re, Pr, H=None):
     Nu = 0.0169*Re**0.8356*Pr**0.432*w
     return Nu
 
-#from numpy.testing import assert_allclose
-#
-##print([Nu_Griem(1E5, 1.2)])
-##print([Nu_Griem(1E5, 1.2, 1.52E6)])
-##print([Nu_Griem(1E5, 1.2, 1.6E6)])
-##print([Nu_Griem(1E5, 1.2, 1.8E6)])
-#
-#hs = [225.8951232812432, 240.77114359488607, 275.4818576600527]
-#hs_calc = [Nu_Griem(1E5, 1.2, H) for H in [1.52E6, 1.6E6, 1.8E6]]
-#assert_allclose(hs, hs_calc)
-#
-#
-##print([Nu_Shitsman(1E5, 1.2, 1.6)])
-
 
 def Nu_Jackson(Re, Pr, rho_w=None, rho_b=None, Cp_avg=None, Cp_b=None, T_b=None,
                T_w=None, T_pc=None):
@@ -320,22 +306,4 @@ def Nu_Jackson(Re, Pr, rho_w=None, rho_b=None, Cp_avg=None, Cp_b=None, T_b=None,
     if Cp_avg and Cp_b:
         Nu *= (Cp_avg/Cp_b)**n
     return Nu
-
-#print([Nu_Jackson(1E5, 1.2)])
-
-#print(Nu_Jackson(1E5, 1.2, rho_w=125.8, rho_b=249.0233, Cp_avg=2080.845, Cp_b=2048.621, T_b=650,
-#   T_w=700, T_pc=750))
-#print(Nu_Jackson(1E5, 1.2, rho_w=125.8, rho_b=249.0233, Cp_avg=2080.845, Cp_b=2048.621, T_b=650,
-#               T_w=700, T_pc=675))
-#print(Nu_Jackson(1E5, 1.2, rho_w=125.8, rho_b=249.0233, Cp_avg=2080.845, Cp_b=2048.621, T_b=650,
-#   T_w=700, T_pc=600))
-
-#print([Nu_Jackson(1E5, 1.2, rho_w=125.8, rho_b=249.0233, Cp_avg=2080.845, Cp_b=2048.621, T_b=650,
-#   T_w=700, T_pc=T) for T in [750, 675, 600]])
-#
-#Nu_calc = [Nu_Jackson(1E5, 1.2, rho_w=125.8, rho_b=249.0233, Cp_avg=2080.845, 
-#                      Cp_b=2048.621, T_b=650, T_w=700, T_pc=T) for T in [750, 675, 600]]
-#Nu_exp = [206.91175020307264, 206.93567238866916, 206.97455183928113]
-#assert_allclose(Nu_calc, Nu_exp)
-
 
