@@ -17,7 +17,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from __future__ import division
 
-__all__ = ['Nu_McAdams', 'Nu_Shitsman', 'Nu_Griem', 'Nu_Jackson']
+__all__ = ['Nu_McAdams', 'Nu_Shitsman', 'Nu_Griem', 'Nu_Jackson', 'Nu_Gupta',
+           'Nu_Swenson', 'Nu_Xu', 'Nu_Mokry', 'Nu_Bringer_Smith', 
+           'Nu_Ornatsky', 'Nu_Gorban', 'Nu_Zhu']
 
 
 def Nu_McAdams(Re, Pr):
@@ -64,7 +66,7 @@ def Nu_McAdams(Re, Pr):
     return 0.0243*Re**0.8*Pr**0.4
 
 
-def Nu_Shitsman(Re, Prb, Prw):
+def Nu_Shitsman(Re, Pr_b, Pr_w):
     r'''Calculates internal convection Nusselt number for turbulent flows
     in a pipe under supercritical conditions according to [1]_ and [2] as shown
     in both [3]_ and [4]_.
@@ -76,9 +78,9 @@ def Nu_Shitsman(Re, Prb, Prw):
     ----------
     Re : float
         Reynolds number with bulk fluid properties, [-]
-    Prb : float
+    Pr_b : float
         Prandtl number with bulk fluid properties, [-]
-    Prw : float
+    Pr_w : float
         Prandtl number with wall fluid properties, [-]
 
     Returns
@@ -93,7 +95,7 @@ def Nu_Shitsman(Re, Prb, Prw):
     category, with a MAD as 11.5%
     
     [4]_ cites a [1]_ as the source of the correlation. Neither have been
-    reviewd, and both are in Russian. [4]_ lists this as third most accurate
+    reviewed, and both are in Russian. [4]_ lists this as third most accurate
     of the 14 correlations reviewed from a database of all regimes.
 
     Examples
@@ -116,7 +118,7 @@ def Nu_Shitsman(Re, Prb, Prw):
        Genetic Algorithms." Heat and Mass Transfer 45, no. 6 (January 8, 2009): 
        757-66. doi:10.1007/s00231-008-0475-4.
     '''
-    return 0.023*Re**0.8*min(Prb, Prw)**0.8
+    return 0.023*Re**0.8*min(Pr_b, Pr_w)**0.8
     
 
 def Nu_Griem(Re, Pr, H=None):
@@ -193,12 +195,13 @@ def Nu_Griem(Re, Pr, H=None):
        Process Monitoring, 241, no. 6 (June 2011): 2184-2203. 
        doi:10.1016/j.nucengdes.2011.03.022. 
     '''
-    if H and H < 1.54E6:
-        w = 0.82
-    elif H and H > 1.74E6:
-        w = 1
-    elif H:
-        w = 0.82 + 9E-7*(H - 1.54E6)
+    if H:
+        if H < 1.54E6:
+            w = 0.82
+        elif H > 1.74E6:
+            w = 1
+        else:
+            w = 0.82 + 9E-7*(H - 1.54E6)
     else:
         w = 1
     Nu = 0.0169*Re**0.8356*Pr**0.432*w
@@ -253,7 +256,7 @@ def Nu_Jackson(Re, Pr, rho_w=None, rho_b=None, Cp_avg=None, Cp_b=None, T_b=None,
 
     Notes
     -----
-    The range of examined paramters is as follows: 
+    The range of examined parameters is as follows: 
     P from 23.4 to 29.3 MPa; G from 700-3600 kg/m^2/s; 
     q from 46 to 2600 kW/m^2; Re from 8E4 to 5E5; D from 1.6 to 20 mm.
     
@@ -305,5 +308,530 @@ def Nu_Jackson(Re, Pr, rho_w=None, rho_b=None, Cp_avg=None, Cp_b=None, T_b=None,
         Nu *= (rho_w/rho_b)**0.3
     if Cp_avg and Cp_b:
         Nu *= (Cp_avg/Cp_b)**n
+    return Nu
+
+
+def Nu_Gupta(Re, Pr, rho_w=None, rho_b=None, mu_w=None, mu_b=None):
+    r'''Calculates internal convection Nusselt number for turbulent flows
+    in a pipe under supercritical conditions according to [1]_.
+        
+    .. math::
+        Nu_w = 0.004 Re_w^{0.923} \bar{Pr}_w^{0.773}
+        \left(\frac{\rho_w}{\rho_b}\right)^{0.186}
+        \left(\frac{\mu_w}{\mu_b}\right)^{0.366}
+        
+        \bar{Cp} = \frac{H_w-H_b}{T_w-T_b}
+        
+    Parameters
+    ----------
+    Re : float
+        Reynolds number with wall fluid properties, [-]
+    Pr : float
+        Prandtl number with wall fluid properties and an average heat capacity
+        between the wall and bulk temperatures [-]
+    rho_w : float, optional
+        Density at the wall temperature, [kg/m^3]
+    rho_b : float, optional
+        Density at the bulk temperature, [kg/m^3]
+    mu_w : float, optional
+        Viscosity at the wall temperature, [Pa*S]
+    mu_b : float, optional
+        Viscosity at the bulk temperature, [Pa*S]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number with wall fluid properties, [-]
+
+    Notes
+    -----
+    For the data used to develop the correlation, P was set at 24 MPa, and D 
+    was 10 mm. G varied from 200-1500 kg/m^2/s and q varied from 0 to 1250 
+    kW/m^2.
+    
+    Cp used in the calculation of Prantl number should be the average value
+    of those at the wall and the bulk temperatures.
+
+    For deteriorated heat transfer, this was the most accurate correlation in 
+    [2]_ with a MAD of 18.1%.
+    
+    If the extra density and viscosity information is not provided, it will 
+    not be used.
+
+    Examples
+    --------
+    >>> Nu_Gupta(1E5, 1.2, 330, 290., 8e-4, 9e-4)
+    186.20135477175126
+
+    References
+    ----------
+    .. [1] Gupta, Sahil, Amjad Farah, Krysten King, Sarah Mokry, and Igor 
+       Pioro. "Developing New Heat-Transfer Correlation for SuperCritical-Water
+       Flow in Vertical Bare Tubes," January 1, 2010, 809-17. 
+       doi:10.1115/ICONE18-30024.
+    .. [2] Chen, Weiwei, Xiande Fang, Yu Xu, and Xianghui Su. "An Assessment of
+       Correlations of Forced Convection Heat Transfer to Water at 
+       Supercritical Pressure." Annals of Nuclear Energy 76 (February 2015): 
+       451-60. doi:10.1016/j.anucene.2014.10.027.
+    '''
+    Nu = 0.004*Re**0.923*Pr**0.773
+    if rho_w and rho_b:
+        Nu *= (rho_w/rho_b)**0.186
+    if mu_w and mu_b:
+        Nu *= (mu_w/mu_b)**0.366
+    return Nu
+
+
+
+def Nu_Swenson(Re, Pr, rho_w=None, rho_b=None):
+    r'''Calculates internal convection Nusselt number for turbulent flows
+    in a pipe under supercritical conditions according to [1]_.
+        
+    .. math::
+        Nu_w = 0.00459 Re_w^{0.923} Pr_w^{0.613}
+        \left(\frac{\rho_w}{\rho_b}\right)^{0.231}
+
+        
+        \bar{Cp} = \frac{H_w-H_b}{T_w-T_b}
+        
+    Parameters
+    ----------
+    Re : float
+        Reynolds number with wall fluid properties, [-]
+    Pr : float
+        Prandtl number with wall fluid properties and an average heat capacity
+        between the wall and bulk temperatures [-]
+    rho_w : float, optional
+        Density at the wall temperature, [kg/m^3]
+    rho_b : float, optional
+        Density at the bulk temperature, [kg/m^3]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number with wall fluid properties, [-]
+
+    Notes
+    -----
+    The range of examined parameters is as follows: 
+    P from 22.8 to 27.6 MPa; G from 542-2150 kg/m^2/s; 
+    Re from 7.5E4 to 3.16E6; T_b from 75 to 576 degrees Celsius and T_w from
+    93 to 649 degrees Celsius.
+    
+    Cp used in the calculation of Prantl number should be the average value
+    of those at the wall and the bulk temperatures.
+
+    For deteriorated heat transfer, this was the most accurate correlation in 
+    [2]_ with a MAD of 18.4%. On the overall database in [3]_, it was the 
+    9th most accurate correlation.
+    
+    If the extra density information is not provided, it will not be used.
+
+    Examples
+    --------
+    >>> Nu_Swenson(1E5, 1.2, 330, 290.)
+    217.92827034803668
+
+    References
+    ----------
+    .. [1] Swenson, H. S., J. R. Carver, and C. R. Kakarala. "Heat Transfer to 
+       Supercritical Water in Smooth-Bore Tubes." Journal of Heat Transfer 87, 
+       no. 4 (November 1, 1965): 477-83. doi:10.1115/1.3689139.
+    .. [2] Chen, Weiwei, Xiande Fang, Yu Xu, and Xianghui Su. "An Assessment of
+       Correlations of Forced Convection Heat Transfer to Water at 
+       Supercritical Pressure." Annals of Nuclear Energy 76 (February 2015): 
+       451-60. doi:10.1016/j.anucene.2014.10.027.
+    .. [3] Yu, Jiyang, Baoshan Jia, Dan Wu, and Daling Wang. "Optimization of 
+       Heat Transfer Coefficient Correlation at Supercritical Pressure Using 
+       Genetic Algorithms." Heat and Mass Transfer 45, no. 6 (January 8, 2009): 
+       757-66. doi:10.1007/s00231-008-0475-4.
+    .. [4] Jäger, Wadim, Victor Hugo Sánchez Espinoza, and Antonio Hurtado. 
+       "Review and Proposal for Heat Transfer Predictions at Supercritical 
+       Water Conditions Using Existing Correlations and Experiments." Nuclear 
+       Engineering and Design, (W3MDM) University of Leeds International 
+       Symposium: What Where When? Multi-dimensional Advances for Industrial 
+       Process Monitoring, 241, no. 6 (June 2011): 2184-2203. 
+       doi:10.1016/j.nucengdes.2011.03.022. 
+    '''
+    Nu = 0.00459*Re**0.923*Pr**0.613
+    if rho_w and rho_b:
+        Nu *= (rho_w/rho_b)**0.231
+    return Nu
+
+
+def Nu_Xu(Re, Pr, rho_w=None, rho_b=None, mu_w=None, mu_b=None):
+    r'''Calculates internal convection Nusselt number for turbulent flows
+    in a pipe under supercritical conditions according to [1]_.
+        
+    .. math::
+        Nu_b = 0.02269 Re_b^{0.8079} \bar{Pr}_b^{0.9213}
+        \left(\frac{\rho_w}{\rho_b}\right)^{0.6638}
+        \left(\frac{\mu_w}{\mu_b}\right)^{0.8687}
+        
+        \bar{Cp} = \frac{H_w-H_b}{T_w-T_b}
+        
+    Parameters
+    ----------
+    Re : float
+        Reynolds number with bulk fluid properties, [-]
+    Pr : float
+        Prandtl number with bulk fluid properties and an average heat capacity
+        between the wall and bulk temperatures [-]
+    rho_w : float, optional
+        Density at the wall temperature, [kg/m^3]
+    rho_b : float, optional
+        Density at the bulk temperature, [kg/m^3]
+    mu_w : float, optional
+        Viscosity at the wall temperature, [Pa*S]
+    mu_b : float, optional
+        Viscosity at the bulk temperature, [Pa*S]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number with bulk fluid properties, [-]
+
+    Notes
+    -----
+    For the data used to develop the correlation, P varied from 23 to 30 MPa,
+    and D was 12 mm. G varied from 600-1200 kg/m^2/s and q varied from 100 to 
+    600 kW/m^2.
+    
+    Cp used in the calculation of Prantl number should be the average value
+    of those at the wall and the bulk temperatures.
+
+    For deteriorated heat transfer, this was the third most accurate  
+    correlation in [2]_ with a MAD of 20.5%.
+    
+    If the extra density and viscosity information is not provided, it will 
+    not be used.
+
+    Examples
+    --------
+    >>> Nu_Xu(1E5, 1.2, 330, 290., 8e-4, 9e-4)
+    289.133054256742
+
+    References
+    ----------
+    .. [1] Xu, F., Guo, L.J., Mao, Y.F., Jiang, X.E., 2005. "Experimental 
+       investigation to the heat transfer characteristics of water in vertical 
+       pipes under supercritical pressure". J. Xi'an Jiaotong University 39, 
+       468-471.
+    .. [2] Chen, Weiwei, Xiande Fang, Yu Xu, and Xianghui Su. "An Assessment of
+       Correlations of Forced Convection Heat Transfer to Water at 
+       Supercritical Pressure." Annals of Nuclear Energy 76 (February 2015): 
+       451-60. doi:10.1016/j.anucene.2014.10.027.
+    '''
+    Nu = 0.02269*Re**0.8079*Pr**0.9213
+    if rho_w and rho_b:
+        Nu *= (rho_w/rho_b)**0.6638
+    if mu_w and mu_b:
+        Nu *= (mu_w/mu_b)**0.8687
+    return Nu
+
+
+def Nu_Mokry(Re, Pr, rho_w=None, rho_b=None):
+    r'''Calculates internal convection Nusselt number for turbulent flows
+    in a pipe under supercritical conditions according to [1]_, and reviewed
+    in [2]_.
+        
+    .. math::
+        Nu_b = 0.0061 Re_b^{0.904} \bar{Pr}_b^{0.684}
+        \left(\frac{\rho_w}{\rho_b}\right)^{0.564}
+        
+        \bar{Cp} = \frac{H_w-H_b}{T_w-T_b}
+        
+    Parameters
+    ----------
+    Re : float
+        Reynolds number with bulk fluid properties, [-]
+    Pr : float
+        Prandtl number with bulk fluid properties and an average heat capacity
+        between the wall and bulk temperatures [-]
+    rho_w : float, optional
+        Density at the wall temperature, [kg/m^3]
+    rho_b : float, optional
+        Density at the bulk temperature, [kg/m^3]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number with bulk fluid properties, [-]
+
+    Notes
+    -----
+    For the data used to develop the correlation, P was set at 20 MPa, and D 
+    was 10 mm. G varied from 200-1500 kg/m^2/s and q varied from 0 to 1250
+    kW/m^2.
+    
+    Cp used in the calculation of Prantl number should be the average value
+    of those at the wall and the bulk temperatures.
+
+    For deteriorated heat transfer, this was the four most accurate correlation  
+    in [2]_ with a MAD of 24.0%. It was also the 7th most accurate against
+    enhanced heat transfer, with a MAD of 14.7%, and the most accurate for the
+    normal heat transfer database as well as the top correlation in all 
+    categories compined.
+    
+    If the extra density information is not provided, it will not be used.
+
+    Examples
+    --------
+    >>> Nu_Mokry(1E5, 1.2, 330, 290.)
+    246.1156319156992
+
+    References
+    ----------
+    .. [1] Mokry, Sarah, Igor Pioro, Amjad Farah, Krysten King, Sahil Gupta, 
+       Wargha Peiman, and Pavel Kirillov. "Development of Supercritical Water 
+       Heat-Transfer Correlation for Vertical Bare Tubes." Nuclear Engineering
+       and Design, International Conference on Nuclear Energy for New Europe 
+       2009, 241, no. 4 (April 2011): 1126-36. 
+       doi:10.1016/j.nucengdes.2010.06.012.
+    .. [2] Chen, Weiwei, Xiande Fang, Yu Xu, and Xianghui Su. "An Assessment of
+       Correlations of Forced Convection Heat Transfer to Water at 
+       Supercritical Pressure." Annals of Nuclear Energy 76 (February 2015): 
+       451-60. doi:10.1016/j.anucene.2014.10.027.
+    '''
+    Nu = 0.0061*Re**0.904*Pr**0.684
+    if rho_w and rho_b:
+        Nu *= (rho_w/rho_b)**0.564
+    return Nu
+
+
+def Nu_Bringer_Smith(Re, Pr):
+    r'''Calculates internal convection Nusselt number for turbulent flows
+    in a pipe under near-supercritical conditions according to [1]_ and as 
+    shown in [2]_ and [3]_.
+        
+    .. math::
+        Nu_x = 0.0266Re_x^{0.77}Pr_w^{0.55}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number with fluid properties at T_ref, [-]
+    Pr : float
+        Prandtl number with wall fluid properties, [-]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number with fluid properties at T_ref, [-]
+
+    Notes
+    -----
+    Fit to data somewhat distant from the critical and pseudo-critical regions.
+    Found to fit the data in [3]_ fourth best; in [2]_ however, it was ranked
+    so low that no ranking was given.
+    
+    Tref and the properties therein should be evaluated as follows:
+    
+    .. math::
+        T_{ref} = T_b \text{ if } \frac{T_{pc}-T_b}{T_w-T_b} < 0
+
+        T_{ref} = T_{pc} \text{ if } 0 < \frac{T_{pc}-T_b}{T_w-T_b}  < 1
+        
+        T_{ref} = T_w \text{ if } \frac{T_{pc}-T_b}{T_w-T_b} > 1
+    
+    Examples
+    --------
+    >>> Nu_Bringer_Smith(1E5, 1.2)
+    208.17631753279107
+
+    References
+    ----------
+    .. [1] Bringer, R. P., and J. M. Smith. "Heat Transfer in the Critical 
+       Region." AIChE Journal 3, no. 1 (March 1, 1957): 49-55. 
+       doi:10.1002/aic.690030110. 
+    .. [2] Chen, Weiwei, Xiande Fang, Yu Xu, and Xianghui Su. "An Assessment of
+       Correlations of Forced Convection Heat Transfer to Water at 
+       Supercritical Pressure." Annals of Nuclear Energy 76 (February 2015): 
+       451-60. doi:10.1016/j.anucene.2014.10.027.
+    .. [3] Yu, Jiyang, Baoshan Jia, Dan Wu, and Daling Wang. "Optimization of 
+       Heat Transfer Coefficient Correlation at Supercritical Pressure Using 
+       Genetic Algorithms." Heat and Mass Transfer 45, no. 6 (January 8, 2009): 
+       757-66. doi:10.1007/s00231-008-0475-4.
+    '''
+    return 0.0266*Re**0.77*Pr**0.55
+
+
+def Nu_Ornatsky(Re, Pr_b, Pr_w, rho_w=None, rho_b=None):
+    r'''Calculates internal convection Nusselt number for turbulent flows
+    in a pipe under supercritical conditions according to [1]_ as shown
+    in both [2]_ and [3]_.
+        
+    .. math::
+        Nu_b = 0.023Re_b^{0.8}(\min(Pr_b, Pr_w))^{0.8}
+        \left(\frac{\rho_w}{\rho_b}\right)^{0.3}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number with bulk fluid properties, [-]
+    Pr_b : float
+        Prandtl number with bulk fluid properties, [-]
+    Pr_w : float
+        Prandtl number with wall fluid properties, [-]
+    rho_w : float, optional
+        Density at the wall temperature, [kg/m^3]
+    rho_b : float, optional
+        Density at the bulk temperature, [kg/m^3]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number with bulk fluid properties, [-]
+
+    Notes
+    -----
+    [2]_ ranked it thirteenth in the enhanced heat transfer
+    category, with a MAD of 19.8% and 11th in the normal heat transfer with a
+    MAD of17.6%. [3]_ ranked it seventh on a combined database.
+    
+    If the extra density information is not provided, it will not be used.
+
+    Examples
+    --------
+    >>> Nu_Ornatsky(1E5, 1.2, 1.5, 330, 290.)
+    276.63531150832307
+
+    References
+    ----------
+    .. [1] Ornatsky A.P., Glushchenko, L.P., Siomin, E.T. (1970). The research
+       of temperature conditions of small diameter parallel tubes cooled by 
+       water under supercritical pressures. In: Proceedings of the 4th 
+       international heat transfer conference, Paris-Versailles, France. 
+       Elsevier, Amsterdam, vol VI, Paper no. B, 8 November 1970
+    .. [2] Chen, Weiwei, Xiande Fang, Yu Xu, and Xianghui Su. "An Assessment of
+       Correlations of Forced Convection Heat Transfer to Water at 
+       Supercritical Pressure." Annals of Nuclear Energy 76 (February 2015): 
+       451-60. doi:10.1016/j.anucene.2014.10.027.
+    .. [3] Yu, Jiyang, Baoshan Jia, Dan Wu, and Daling Wang. "Optimization of 
+       Heat Transfer Coefficient Correlation at Supercritical Pressure Using 
+       Genetic Algorithms." Heat and Mass Transfer 45, no. 6 (January 8, 2009): 
+       757-66. doi:10.1007/s00231-008-0475-4.
+    '''
+    Nu = 0.023*Re**0.8*min(Pr_b, Pr_w)**0.8
+    if rho_w and rho_b:
+        Nu *= (rho_w/rho_b)**0.3
+    return Nu
+
+
+def Nu_Gorban(Re, Pr):
+    r'''Calculates internal convection Nusselt number for turbulent flows
+    in a pipe under supercritical conditions according to [1]_.
+    Not recommended.
+        
+    .. math::
+        Nu_b = 0.0059Re_b^{0.90}Pr_b^{-0.12}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number with bulk fluid properties, [-]
+    Pr : float
+        Prandtl number with bulk fluid properties, [-]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number with bulk fluid properties, [-]
+
+    Notes
+    -----
+    Reviewed in [2]_ and [3]_; [2]_ did not even rank it, and [3]_ ranked it
+    12th of 14.
+
+    Examples
+    --------
+    >>> Nu_Gorban(1E5, 1.2)
+    182.5367282733999
+
+    References
+    ----------
+    .. [1] Gorban LM, Pomet’ko RS, Khryaschev OA (1990) Modeling of water heat
+       transfer with Freon of supercritical pressure, 1766, Institute of 
+       Physics and Power Engineering, Obninsk
+    .. [2] Chen, Weiwei, Xiande Fang, Yu Xu, and Xianghui Su. "An Assessment of
+       Correlations of Forced Convection Heat Transfer to Water at 
+       Supercritical Pressure." Annals of Nuclear Energy 76 (February 2015): 
+       451-60. doi:10.1016/j.anucene.2014.10.027.
+    .. [3] Yu, Jiyang, Baoshan Jia, Dan Wu, and Daling Wang. "Optimization of 
+       Heat Transfer Coefficient Correlation at Supercritical Pressure Using 
+       Genetic Algorithms." Heat and Mass Transfer 45, no. 6 (January 8, 2009): 
+       757-66. doi:10.1007/s00231-008-0475-4.
+    '''
+    return 0.0059*Re**0.90*Pr**-0.12
+
+
+def Nu_Zhu(Re, Pr, rho_w=None, rho_b=None, k_w=None, k_b=None):
+    r'''Calculates internal convection Nusselt number for turbulent flows
+    in a pipe under supercritical conditions according to [1]_.
+        
+    .. math::
+        Nu_b = 0.0068 Re_b^{0.9} \bar{Pr}_b^{0.63}
+        \left(\frac{\rho_w}{\rho_b}\right)^{0.17}
+        \left(\frac{k_w}{k_b}\right)^{0.29}
+
+        \bar{Cp} = \frac{H_w-H_b}{T_w-T_b}
+        
+    Parameters
+    ----------
+    Re : float
+        Reynolds number with bulk fluid properties, [-]
+    Pr : float
+        Prandtl number with bulk fluid properties and an average heat capacity
+        between the wall and bulk temperatures [-]
+    rho_w : float, optional
+        Density at the wall temperature, [kg/m^3]
+    rho_b : float, optional
+        Density at the bulk temperature, [kg/m^3]
+    k_w : float, optional
+        Thermal conductivity at the wall temperature, [W/m/K]
+    mu_b : float, optional
+        Thermal conductivity at the bulk temperature, [W/m/K]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number with bulk fluid properties, [-]
+
+    Notes
+    -----
+    For the data used to develop the correlation, P varied from 22 to 30 MPa,
+    and D was 26 mm. G varied from 600-1200 kg/m^2/s and q varied from 200 to 
+    600 kW/m^2.    
+    
+    Cp used in the calculation of Prantl number should be the average value
+    of those at the wall and the bulk temperatures.
+
+    On the overall database in [2]_, this was the 8th most accurate 
+    correlation,and ninth most accurate against normal heat transfer.
+    
+    If the extra density and thermal conductivity information is not provided, 
+    it will not be used.
+
+    Examples
+    --------
+    >>> Nu_Zhu(1E5, 1.2, 330, 290., 0.63, 0.69)
+    240.1459854494706
+
+    References
+    ----------
+    .. [1] Zhu, Xiaojing, Qincheng Bi, Dong Yang, and Tingkuan Chen. "An 
+       Investigation on Heat Transfer Characteristics of Different Pressure 
+       Steam-Water in Vertical Upward Tube." Nuclear Engineering and Design 
+       239, no. 2 (February 2009): 381-88. doi:10.1016/j.nucengdes.2008.10.026.
+    .. [2] Chen, Weiwei, Xiande Fang, Yu Xu, and Xianghui Su. "An Assessment of
+       Correlations of Forced Convection Heat Transfer to Water at 
+       Supercritical Pressure." Annals of Nuclear Energy 76 (February 2015): 
+       451-60. doi:10.1016/j.anucene.2014.10.027.
+    '''
+    Nu = 0.0068*Re**0.9*Pr**0.63
+    if rho_w and rho_b:
+        Nu *= (rho_w/rho_b)**0.17
+    if k_w and k_b:
+        Nu *= (k_w/k_b)**0.29
     return Nu
 

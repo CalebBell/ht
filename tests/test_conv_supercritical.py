@@ -50,3 +50,56 @@ def test_Nu_Jackson():
                           T_pc=T) for T in [750, 675, 600]]
     Nu_exp = [206.91175020307264, 206.93567238866916, 206.97455183928113]
     assert_allclose(Nu_calc, Nu_exp)
+
+
+def test_Nu_Gupta():
+    Nu = Nu_Gupta(1E5, 1.2)
+    assert_allclose(Nu, 189.78727690467736)
+    Nu = Nu_Gupta(1E5, 1.2, 330, 290., 8e-4, 9e-4)
+    assert_allclose(Nu, 186.20135477175126)
+
+
+def test_Nu_Swenson():
+    Nu = Nu_Swenson(1E5, 1.2)
+    assert_allclose(Nu, 211.51968418167206)
+    Nu = Nu_Swenson(1E5, 1.2, 330, 290.)
+    assert_allclose(Nu, 217.92827034803668)
+
+
+def test_Nu_Xu():
+    Nu = Nu_Xu(1E5, 1.2)
+    assert_allclose(Nu, 293.9572513612297)
+    Nu = Nu_Xu(1E5, 1.2, 330, 290., 8e-4, 9e-4)
+    assert_allclose(Nu, 289.133054256742)
+
+
+def test_Nu_Mokry():
+    Nu = Nu_Mokry(1E5, 1.2)
+    assert_allclose(Nu, 228.8178008454556)
+    Nu = Nu_Mokry(1E5, 1.2, 330, 290.)
+    assert_allclose(Nu, 246.1156319156992)
+
+
+def test_Nu_Bringer_Smith():
+    Nu = Nu_Bringer_Smith(1E5, 1.2)
+    assert_allclose(Nu, 208.17631753279107)
+
+
+def test_Nu_Ornatsky():
+    Nu = Nu_Ornatsky(1E5, 1.2, 1.5, 330, 290.)
+    assert_allclose(Nu, 276.63531150832307)
+    Nu = Nu_Ornatsky(1E5, 1.2, 1.5)
+    assert_allclose(Nu, 266.1171311047253)
+
+
+def test_Nu_Gorban():
+    Nu = Nu_Gorban(1E5, 1.2)
+    assert_allclose(Nu, 182.5367282733999)
+
+
+
+def test_Nu_Zhu():
+    Nu = Nu_Zhu(1E5, 1.2, 330, 290., 0.63, 0.69)
+    assert_allclose(Nu, 240.1459854494706)
+    Nu = Nu_Zhu(1E5, 1.2)
+    assert_allclose(Nu, 241.2087720246979)
