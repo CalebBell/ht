@@ -5,6 +5,9 @@ ht
 .. image:: http://img.shields.io/pypi/v/ht.svg?style=flat
    :target: https://pypi.python.org/pypi/ht
    :alt: Version_status
+.. image:: http://img.shields.io/badge/docs-latest-brightgreen.svg?style=flat
+   :target: https://ht.readthedocs.io/en/latest/
+   :alt: Documentation
 .. image:: http://img.shields.io/travis/CalebBell/ht/master.svg?style=flat
    :target: https://travis-ci.org/CalebBell/ht
    :alt: Build_status
@@ -14,6 +17,9 @@ ht
 .. image:: https://img.shields.io/coveralls/CalebBell/ht.svg
    :target: https://coveralls.io/github/CalebBell/ht
    :alt: Coverage
+.. image:: https://img.shields.io/pypi/pyversions/ht.svg
+   :target: https://pypi.python.org/pypi/ht
+   :alt: Supported_versions
 
 
 .. contents::

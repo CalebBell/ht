@@ -97,9 +97,59 @@ def test_Nu_Gorban():
     assert_allclose(Nu, 182.5367282733999)
 
 
-
 def test_Nu_Zhu():
     Nu = Nu_Zhu(1E5, 1.2, 330, 290., 0.63, 0.69)
     assert_allclose(Nu, 240.1459854494706)
     Nu = Nu_Zhu(1E5, 1.2)
     assert_allclose(Nu, 241.2087720246979)
+
+
+def test_Nu_Bishop():
+    Nu = Nu_Bishop(1E5, 1.2, 330, 290., .01, 1.2)
+    assert_allclose(Nu, 265.3620050072533)
+    Nu = Nu_Bishop(1E5, 1.2)
+    assert_allclose(Nu, 246.09835634820243)
+
+
+def test_Nu_Yamagata():
+    Nu = Nu_Yamagata(1E5, 1.2)
+    assert_allclose(Nu, 283.9383689412967)
+
+    Nu_calc = [Nu_Yamagata(1E5, 1.2, 1.5, Cp_avg=2080.845, Cp_b=2048.621, 
+                           T_b=650, T_w=700, T_pc=T) for T in [750, 675, 600]]
+    Nu_exp = [283.9383689412967, 187.02304885276828, 292.3473428004679]
+    assert_allclose(Nu_calc, Nu_exp)
+
+    
+def test_Nu_Kitoh():
+    Nu = Nu_Kitoh(1E5, 1.2)
+    assert_allclose(Nu, 302.5006546293724)
+    
+    Nu_calc = [Nu_Kitoh(1E5, 1.2, H, 1500, 5E6) for H in [1.4E6, 2E6, 3.5E6]]
+    Nu_exp = [331.80234139591306, 174.8417387874232, 308.40146536866945]
+    assert_allclose(Nu_calc, Nu_exp)
+
+
+def test_Nu_Krasnoshchekov_Protopopov():
+    Nu = Nu_Krasnoshchekov_Protopopov(1E5, 1.2, 330, 290., 0.62, 0.52, 8e-4, 9e-4)
+    assert_allclose(Nu, 228.85296737400222)
+
+
+def test_Nu_Petukhov():
+    Nu = Nu_Petukhov(1E5, 1.2, 330, 290., 8e-4, 9e-4)
+    assert_allclose(Nu, 254.8258598466738)
+
+
+def test_Nu_Krasnoshchekov():
+    Nu_calc = [Nu_Krasnoshchekov(1E5, 1.2, rho_w=125.8, rho_b=249.0233, 
+                          Cp_avg=2080.845, Cp_b=2048.621, T_b=650, T_w=700, 
+                          T_pc=T) for T in [750, 675]]
+    Nu_exp = [192.52819597784372, 192.54822916468785]
+    assert_allclose(Nu_calc, Nu_exp)
+    
+    Nu_3 = Nu_Krasnoshchekov(1E5, 1.2, rho_w=125.8, rho_b=249.0233, 
+                      Cp_avg=2080.845, Cp_b=2048.621, T_b=400, T_w=200, T_pc=400)
+    assert_allclose(Nu_3, 192.2579518680533)
+    
+    Nu = Nu_Krasnoshchekov(1E5, 1.2)
+    assert_allclose(Nu, 234.82855185610364)

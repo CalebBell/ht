@@ -1,7 +1,7 @@
-ht.conv_superctitical module
+ht.conv_supercritical module
 ============================
 
-.. automodule:: ht.conv_superctitical
+.. automodule:: ht.conv_supercritical
     :members:
     :undoc-members:
     :show-inheritance:
