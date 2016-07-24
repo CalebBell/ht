@@ -185,9 +185,10 @@ def Ft_aircooler(Thi=None, Tho=None, Tci=None, Tco=None, Ntp=1, rows=1):
         coefs = _crossflow_4_rows_2_pass
     tot = 0
 
+    atanR = atan(R)
     for k in range(len(coefs)):
         for i in range(len(coefs)):
-            tot += coefs[k][i]*(1-rlm)**(k+1)*sin(2*(i+1)*atan(R))
+            tot += coefs[k][i]*(1-rlm)**(k+1)*sin(2*(i+1)*atanR)
     _Ft = 1-tot
     return _Ft
 
