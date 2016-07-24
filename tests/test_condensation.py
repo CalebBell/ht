@@ -50,4 +50,4 @@ def test_Akers_Deans_Crosser():
 
 def test_h_kinetic():
     h = h_kinetic(300, 1E5, 18.02, 2441674)
-    assert_allclose(h, 30788845.562480535)
+    assert_allclose(h, 30788845.562480535, rtol=1e-5)
