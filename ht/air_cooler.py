@@ -186,14 +186,11 @@ def Ft_aircooler(Thi=None, Tho=None, Tci=None, Tco=None, Ntp=1, rows=1):
     tot = 0
 
     atanR = atan(R)
-    tot = sum([coefs[k][i]*(1-rlm)**(k+1)*sin(2*(i+1)*atanR) 
-               for i in range(len(coefs)) for k in range(len(coefs))])
     
-#    for k in range(len(coefs)):
-#        for i in range(len(coefs)):
-#            tot += coefs[k][i]*(1-rlm)**(k+1)*sin(2*(i+1)*atanR)
-    _Ft = 1-tot
-    return _Ft
+    for k in range(len(coefs)):
+        for i in range(len(coefs)):
+            tot += coefs[k][i]*(1-rlm)**(k+1)*sin(2*(i+1)*atanR)
+    return 1-tot
 
 
 #print Ft_aircooler(Thi=66.82794, Tho=47.52647, Tci=15.4667, Tco=51.5889) # some example?

@@ -54,7 +54,7 @@ def Nusselt_laminar(Tsat, Tw, rhog, rhol, kl, mul, Hvap, L, angle=90):
 
     Returns
     -------
-    h: float
+    h : float
         Heat transfer coefficient [W/m^2/K]
 
     Notes
@@ -113,7 +113,7 @@ def Boyko_Kruzhilin(m, rhog, rhol, kl, mul, Cpl, D, x):
 
     Returns
     -------
-    h: float
+    h : float
         Heat transfer coefficient [W/m^2/K]
 
     Notes
@@ -183,7 +183,7 @@ def Akers_Deans_Crosser(m, rhog, rhol, kl, mul, Cpl, D, x):
 
     Returns
     -------
-    h: float
+    h : float
         Heat transfer coefficient [W/m^2/K]
 
     Notes
@@ -242,7 +242,7 @@ def h_kinetic(T, P, MW, Hvap, f=1):
 
     Returns
     -------
-    h: float
+    h : float
         Heat transfer coefficient [W/m^2/K]
 
     Notes
