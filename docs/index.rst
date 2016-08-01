@@ -9,7 +9,7 @@ Welcome to ht's documentation!
 Contents:
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 10
 
    modules
 
