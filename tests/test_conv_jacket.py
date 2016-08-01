@@ -46,25 +46,25 @@ def test_conv_jacket():
     ### Stein Schmidt
 
     h = Stein_Schmidt(2.5, 0.6, 0.65, 0.6, 0.025, 995.7, 4178.1, 0.615, 798E-6, 355E-6, 971.8)
-    assert_allclose(h, 5695.1871940874225)
+    assert_allclose(h, 5695.204169808863)
 
     h = Stein_Schmidt(2.5, 0.6, 0.65, 0.6, 0.025, 995.7, 4178.1, 0.615, 798E-6, 355E-6, 971.8, inlettype='radial')
     assert_allclose(h, 1217.1449686341773)
 
     h = Stein_Schmidt(2.5, 0.6, 0.65, 0.6, 0.025, 995.7, 4178.1, 0.615, 798E-6, 355E-6, 971.8, inletlocation='top')
-    assert_allclose(h, 5675.824588428565)
+    assert_allclose(h, 5675.841635061595)
 
     h = Stein_Schmidt(2.5, 0.6, 0.65, 0.6, 0.025, 995.7, 4178.1, 0.615, 798E-6, 355E-6, 971.8, inletlocation='bottom')
-    assert_allclose(h, 5695.1871940874225)
+    assert_allclose(h, 5695.2041698088633)
 
     h = Stein_Schmidt(2.5, 0.6, 0.65, 0.6, 0.025, 971.8, 4178.1, 0.615, 798E-6, 355E-6, 995.7, inletlocation='bottom')
-    assert_allclose(h, 5694.955289327642)
+    assert_allclose(h, 5694.9722658952096)
 
     h = Stein_Schmidt(2.5, 0.6, 0.65, 0.6, 0.025, 971.8, 4178.1, 0.615, 798E-6, 355E-6, 995.7, inletlocation='top')
-    assert_allclose(h, 5676.0574502620975)
+    assert_allclose(h, 5676.0744960391157)
 
     h = Stein_Schmidt(2.5, 0.6, 0.65, 0.6, 0.025, 971.8, 4178.1, 0.615, 798E-6, 355E-6)
-    assert_allclose(h, 5685.515980483362)
+    assert_allclose(h, 5685.532991556428)
 
     h = Stein_Schmidt(.1, 0.6, 0.65, 0.6, 0.025, 971.8, 4178.1, 0.615, 798E-6)
-    assert_allclose(h, 146.80846173206865)
+    assert_allclose(h, 146.81000991987679)
