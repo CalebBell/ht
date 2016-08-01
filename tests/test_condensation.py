@@ -16,6 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from __future__ import division
+from fluids import *
 from ht import *
 from ht.boiling_nucleic import _angles_Stephan_Abdelsalam
 import numpy as np
@@ -51,3 +52,34 @@ def test_Akers_Deans_Crosser():
 def test_h_kinetic():
     h = h_kinetic(300, 1E5, 18.02, 2441674)
     assert_allclose(h, 30788845.562480535, rtol=1e-5)
+
+
+def test_Cavallini_Smith_Zecchin():
+    assert_allclose(Cavallini_Smith_Zecchin(m=1, x=0.4, D=.3, rhol=800, rhog=2.5, mul=1E-5, mug=1E-3, kl=0.6, Cpl=2300), 5578.218369177804)
+
+
+def test_Shah():
+    assert_allclose(Shah(m=1, x=0.4, D=.3, rhol=800, mul=1E-5, kl=0.6, Cpl=2300, P=1E6, Pc=2E7), 2561.2593415479214)
+    # In Shaw's second paper, they used the following definition. However, it
+    # is just rearanged differently. It was coded to verify this, and is left
+    # in case further sources list it in different forms.
+    def Shah3(m, x, D, rhol, mul, kl, Cpl, P, Pc):
+        Pr = P/Pc
+        G = m/(pi/4*D**2)
+        Prl = Prandtl(Cp=Cpl, k=kl, mu=mul)
+        Rel = G*D/mul
+        hL = kl/D*(0.023*Rel**0.8*Prl**0.4)
+        hl = hL*(1-x)**0.8
+        Z = (1/x -1)**0.8*Pr**0.4
+        h_TP = hl*(1 + 3.8/Z**0.95)
+        return h_TP
+    assert_allclose(Shah(m=1, x=0.4, D=.3, rhol=800, mul=1E-5, kl=0.6, Cpl=2300, P=1E6, Pc=2E7), 2561.2593415479214)
+    # The following is in the review of Balcular (2011), and incorrect.
+    #    Pr = P/Pc
+    #    G = m/(pi/4*D**2)
+    #    Prl = Prandtl(Cp=Cpl, k=kl, mu=mul)
+    #    Rel = G*D*(1-x)/mul
+    #    hl = kl/D*(0.023*(Rel/(1-x))**0.8*Prl**0.4)
+    #    hsf = hl*(1-x)**0.8
+    #    Co = (1/x-1)**0.8*(rhog/rhol)**0.5
+    #    return hsf*1.8/Co**0.8

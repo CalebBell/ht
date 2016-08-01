@@ -394,8 +394,8 @@ def Knott(m, x, D, rhol, rhog, Cpl=None, kl=None, mu_b=None, mu_w=None, L=None,
     
     Examples
     --------
-    >>> Knott(m=400, x=.9, D=.3, rhol=1000, rhog=2.5, Cpl=2300, kl=.6, 
-    ... mu_b=1E-3, mu_w=1.2E-3, L=4)
+    >>> Knott(m=1, x=.9, D=.3, rhol=1000, rhog=2.5, Cpl=2300, kl=.6, mu_b=1E-3, 
+    ... mu_w=1.2E-3, L=4)
     4225.536758045839
 
     References

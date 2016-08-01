@@ -330,7 +330,6 @@ def turbulent_Dittus_Boelter(Re=None, Pr=None, heating=True, revised=True):
         m = 0.0265
     else:
         m = 0.023
-
     Nu = m*Re**0.8*Pr**power
     return Nu
 
