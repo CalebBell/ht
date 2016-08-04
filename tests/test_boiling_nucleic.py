@@ -106,6 +106,38 @@ def test_boiling_nucleic_Cooper():
     assert_allclose(h_B, h_B_values)
 
 
+def test_Gorenflo():
+    # water case, boiling at 3 bar 
+    q = 2E4
+    h1 = Gorenflo(3E5, 22048320., q=q, CASRN='7732-18-5')
+    assert_allclose(h1, 3043.344595525422)
+    Te = q/h1
+    h2 = Gorenflo(3E5, 22048320., Te=Te, CASRN='7732-18-5')
+    assert_allclose(h1, h2)
+    
+    # Ethanol case, boiling at 3 bar
+    q = 2E4
+    h1 = Gorenflo(3E5, 6137000., q=q, CASRN='64-17-5')
+    Te = q/h1
+    assert_allclose(h1, 3101.133553596696)
+    h2 = Gorenflo(3E5, 6137000., Te=Te, CASRN='64-17-5')
+    assert_allclose(h1, h2)
+    
+    # Custom h0 case
+    h = Gorenflo(3E5, 6137000., q=2E4, h0=3700)
+    assert_allclose(h, 2607.771397342676)
+    
+    with pytest.raises(Exception):
+        # Case with a CAS number not in the database
+        Gorenflo(3E5, 6137000., q=2E4, CASRN='6400-17-5')
+    with pytest.raises(Exception):
+        # Case with neither Te or q provided:
+        Gorenflo(3E5, 6137000., CASRN='64-17-5')
+    
+
+
+
+
 def test_h_nucleic():
   # TODO
     pass

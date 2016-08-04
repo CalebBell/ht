@@ -597,7 +597,7 @@ def shell_clearance(DBundle=None, DShell=None):
     References
     ----------
     .. [1] Standards of the Tubular Exchanger Manufacturers Association,
-       Ningth ednition, 2007, TEMA, New York.
+       Ninth edition, 2007, TEMA, New York.
     '''
     if DShell:
         if DShell< 0.457:
@@ -675,7 +675,7 @@ def baffle_thickness(Dshell=None, L_unsupported=None, service='C'):
     References
     ----------
     .. [1] Standards of the Tubular Exchanger Manufacturers Association,
-       Ningth ednition, 2007, TEMA, New York.
+       Ninth edition, 2007, TEMA, New York.
     '''
     if Dshell < 0.381:
         j = 0
@@ -750,7 +750,7 @@ def D_baffle_holes(do=None, L_unsupported=None):
     References
     ----------
     .. [1] Standards of the Tubular Exchanger Manufacturers Association,
-       Ningth ednition, 2007, TEMA, New York.
+       Ninth edition, 2007, TEMA, New York.
     '''
     if do > 0.0318 or L_unsupported <= 0.914: # 1-1/4 inches and 36 inches
         extra = 0.0008
@@ -792,7 +792,7 @@ def L_unsupported_max(NPS=None, material='CS'):
     References
     ----------
     .. [1] Standards of the Tubular Exchanger Manufacturers Association,
-       Ningth ednition, 2007, TEMA, New York.
+       Ninth edition, 2007, TEMA, New York.
     '''
     if NPS in _L_unsupported_lengths:
         i = _L_unsupported_lengths.index(NPS)

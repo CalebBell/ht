@@ -20,8 +20,8 @@ from scipy.constants import g
 from math import log, log10
 
 __all__ = ['Rohsenow', 'McNelly', 'Forster_Zuber', 'Montinsky',
-'Stephan_Abdelsalam', 'HEDH_Taborek', 'Bier', 'Cooper', 'h_nucleic', 'Zuber',
-'Serth_HEDH', 'HEDH_Montinsky', 'qmax_boiling']
+'Stephan_Abdelsalam', 'HEDH_Taborek', 'Bier', 'Cooper', 'Gorenflo', 
+'h_nucleic', 'Zuber', 'Serth_HEDH', 'HEDH_Montinsky', 'qmax_boiling']
 
 def Rohsenow(Te=None, Cpl=None, kl=None, mul=None, sigma=None, Hvap=None,
             rhol=None, rhog=None, Csf=0.013, n=1.7):
@@ -35,7 +35,7 @@ def Rohsenow(Te=None, Cpl=None, kl=None, mul=None, sigma=None, Hvap=None,
     Parameters
     ----------
     Te : float
-        Excess wal temperature, [K]
+        Excess wall temperature, [K]
     Cpl : float
         Heat capacity of liquid [J/kg/K]
     kl : float
@@ -57,7 +57,7 @@ def Rohsenow(Te=None, Cpl=None, kl=None, mul=None, sigma=None, Hvap=None,
 
     Returns
     -------
-    h: float
+    h : float
         Heat transfer coefficient [W/m^2/K]
 
     Notes
@@ -102,7 +102,7 @@ def McNelly(Te=None, P=None, Cpl=None, kl=None, sigma=None, Hvap=None,
     Parameters
     ----------
     Te : float
-        Excess wal temperature, [K]
+        Excess wall temperature, [K]
     P : float
         Saturation pressure of fluid, [Pa]
     Cpl : float
@@ -120,7 +120,7 @@ def McNelly(Te=None, P=None, Cpl=None, kl=None, sigma=None, Hvap=None,
 
     Returns
     -------
-    h: float
+    h : float
         Heat transfer coefficient [W/m^2/K]
 
     Notes
@@ -164,7 +164,7 @@ def Forster_Zuber(Te=None, dPSat=None, Cpl=None, kl=None, mul=None, sigma=None,
     Parameters
     ----------
     Te : float
-        Excess wal temperature, [K]
+        Excess wall temperature, [K]
     dPSat : float
         Difference in Saturation pressure of fluid at Te and T, [Pa]
     Cpl : float
@@ -184,7 +184,7 @@ def Forster_Zuber(Te=None, dPSat=None, Cpl=None, kl=None, mul=None, sigma=None,
 
     Returns
     -------
-    h: float
+    h : float
         Heat transfer coefficient [W/m^2/K]
 
     Notes
@@ -234,7 +234,7 @@ def Montinsky(Te=None, P=None, Pc=None):
     Parameters
     ----------
     Te : float
-        Excess wal temperature, [K]
+        Excess wall temperature, [K]
     P : float
         Saturation pressure of fluid, [Pa]
     Pc : float
@@ -242,7 +242,7 @@ def Montinsky(Te=None, P=None, Pc=None):
 
     Returns
     -------
-    h: float
+    h : float
         Heat transfer coefficient [W/m^2/K]
 
     Notes
@@ -328,7 +328,7 @@ def Stephan_Abdelsalam(Te=None, Tsat=None, Cpl=None, kl=None, mul=None,
     Parameters
     ----------
     Te : float
-        Excess wal temperature, [K]
+        Excess wall temperature, [K]
     Tsat : float
         Saturation temperature at operating pressure [Pa]
     Cpl : float
@@ -358,7 +358,7 @@ def Stephan_Abdelsalam(Te=None, Tsat=None, Cpl=None, kl=None, mul=None,
 
     Returns
     -------
-    h: float
+    h : float
         Heat transfer coefficient [W/m^2/K]
 
     Notes
@@ -434,7 +434,7 @@ def HEDH_Taborek(Te=None, P=None, Pc=None):
     Parameters
     ----------
     Te : float
-        Excess wal temperature, [K]
+        Excess wall temperature, [K]
     P : float
         Saturation pressure of fluid, [Pa]
     Pc : float
@@ -442,7 +442,7 @@ def HEDH_Taborek(Te=None, P=None, Pc=None):
 
     Returns
     -------
-    h: float
+    h : float
         Heat transfer coefficient [W/m^2/K]
 
     Notes
@@ -483,7 +483,7 @@ def Bier(Te=None, P=None, Pc=None):
     Parameters
     ----------
     Te : float
-        Excess wal temperature, [K]
+        Excess wall temperature, [K]
     P : float
         Saturation pressure of fluid, [Pa]
     Pc : float
@@ -491,7 +491,7 @@ def Bier(Te=None, P=None, Pc=None):
 
     Returns
     -------
-    h: float
+    h : float
         Heat transfer coefficient [W/m^2/K]
 
     Notes
@@ -529,7 +529,7 @@ def Cooper(Te=None, P=None, Pc=None, MW=None, Rp=1E-6):
     Parameters
     ----------
     Te : float
-        Excess wal temperature, [K]
+        Excess wall temperature, [K]
     P : float
         Saturation pressure of fluid, [Pa]
     Pc : float
@@ -541,7 +541,7 @@ def Cooper(Te=None, P=None, Pc=None, MW=None, Rp=1E-6):
 
     Returns
     -------
-    h: float
+    h : float
         Heat transfer coefficient [W/m^2/K]
 
     Notes
@@ -579,6 +579,144 @@ def Cooper(Te=None, P=None, Pc=None, MW=None, Rp=1E-6):
 #print [Cooper(Te=i, P=101325., Pc=48.9E5, MW=78.11184) for i in [4.3, 9.1, 13]]
 #print [Cooper(Te=16.2, P=310.3E3, Pc=2550E3, MW=110.37)]
 
+
+
+h0_Gorenflow_1993 = {'74-82-8': 7000, '74-84-0': 4500, '74-98-6': 4000, 
+'106-97-8': 3600, '109-66-0': 3400, '78-78-4': 2500, '110-54-3': 3300, 
+'142-82-5': 3200, '71-43-2': 2900, '108-88-3': 2800, '92-52-4': 2100, 
+'67-56-1': 5400, '64-17-5': 4400, '71-23-8': 3800, '67-63-0': 3000, 
+'71-36-3': 2600, '78-83-1': 4500, '67-64-1': 3300, '75-69-4': 2800, 
+'75-71-8': 4000, '75-72-9': 3900, '75-63-8': 3500, '75-45-6': 3900, 
+'75-46-7': 4400, '76-13-1': 2650, '76-14-2': 3800, '76-15-3': 3200, 
+'811-97-2': 4500, '28987-04-4': 3700, '431-89-0': 3800, '115-25-3': 4200, 
+'74-87-3': 4400, '56-23-5': 3200, '75-73-0': 4750, '7732-18-5': 5600, 
+'7664-41-7': 7000, '124-38-9': 5100, '2551-62-4': 3700, '7782-44-7': 9500, 
+'7727-37-9': 10000, '7440-37-1': 8200, '7440-01-9': 20000, '1333-74-0': 24000, 
+'7440-59-7': 2000}
+
+
+def Gorenflo(P, Pc, q=None, Te=None, CASRN=None, h0=None, Ra=4E-7):
+    r'''Calculates heat transfer coefficient for a pool boiling according to 
+    [1]_ and also presented in [2]_. Calculation is based on the corresponding
+    states law, with a single regression constant per fluid. P and Pc are 
+    always required.
+    
+    Either `q` or `Te` may be specified. Either `CASRN` or `h0` may be 
+    specified as well. If `CASRN` is specified and the fluid is not in the
+    list of those studied, an error is raises.
+
+    .. math::
+        \frac{h}{h_0} = C_W F(p^*) \left(\frac{q}{q_0}\right)^n
+        
+        C_W = \left(\frac{R_a}{R_{ao}}\right)^{0.133}
+
+        q_0 = 20 \;000 \frac{\text{W}}{\text{m}^{2}}
+        
+        R_{ao} = 0.4 \mu\text{m}
+        
+    For fluids other than water:
+    
+    .. math::
+        n = 0.9 - 0.3 p^{*0.3}
+        
+        f(p^*) = 1.2p^{*0.27} + \left(2.5 + \frac{1}{1-p^*}\right)p^*
+    
+    For water:
+    
+    .. math::
+        n = 0.9 - 0.3 p^{*0.15}
+        
+        f(p^*) = 1.73p^{*0.27} + \left(6.1 + \frac{0.68}{1-p^*}\right)p^2
+
+    Parameters
+    ----------
+    P : float
+        Saturation pressure of fluid, [Pa]
+    Pc : float
+        Critical pressure of fluid, [Pa]
+    q : float, optional
+        Heat flux, [W/m^2]
+    Te : float, optional
+        Excess wall temperature, [K]
+    CASRN : str, optional
+        CASRN of fluid
+    h0 : float
+        Reference heat transfer coefficient, [W/m^2/K]
+    Ra : float, optional
+        Roughness parameter of the surface (0.4 micrometer default), [m]
+
+    Returns
+    -------
+    h : float
+        Heat transfer coefficient [W/m^2/K]
+
+    Notes
+    -----
+    A more recent set of reference heat fluxes is available. Where a range of
+    values was listed for reference heat fluxes in [1]_, values from the
+    second edition of [1]_ were used instead. 44 values are available, all
+    listed in the dictionary `h0_Gorenflow_1993`. Values range from 2000
+    to 24000 W/m^2/K.
+
+    Examples
+    --------
+    Water boiling at 3 bar and a heat flux of 2E4 W/m^2/K.
+
+    >>> Gorenflo(3E5, 22048320., q=2E4, CASRN='7732-18-5')
+    3043.344595525422
+
+    References
+    ----------
+    .. [1] Schlunder, Ernst U, VDI. VDI Heat Atlas. Dusseldorf: V.D.I. Verlag, 
+       1993. http://digital.ub.uni-paderborn.de/hs/download/pdf/41898?originalFilename=true
+    .. [2] Bertsch, Stefan S., Eckhard A. Groll, and Suresh V. Garimella. 
+       "Review and Comparative Analysis of Studies on Saturated Flow Boiling in
+       Small Channels." Nanoscale and Microscale Thermophysical Engineering 12,
+       no. 3 (September 4, 2008): 187-227. doi:10.1080/15567260802317357.
+    '''
+    Pr = P/Pc
+    Ra0 = 0.4E-6
+    q0 = 2E4
+    if CASRN not in h0_Gorenflow_1993 and h0 is None:
+        raise Exception('Reference heat transfer coefficient not known')
+    if not h0:
+        h0 = h0_Gorenflow_1993[CASRN]
+    if CASRN != '7732-18-5':
+        # Case for not dealing with water
+        n = 0.9 - 0.3*Pr**0.3
+        Fp = 1.2*Pr**0.27 + (2.5 + 1/(1-Pr))*Pr
+    else:
+        # Case for water
+        n = 0.9 - 0.3*Pr**0.15
+        Fp = 1.73*Pr**0.27 + (6.1 + 0.68/(1-Pr))*Pr**2
+    CW = (Ra/Ra0)**0.133
+    if q:
+        h = h0*CW*Fp*(q/q0)**n
+    elif Te:
+        A = h0*CW*Fp*(Te/q0)**n
+        h = A**(-1./(n - 1.))
+    else:
+        raise Exception('Either q or Te is needed for this correlation')
+    return h
+        
+
+q0_VDI_2e = {'74-82-8': 7200, '74-85-1': 4200, '74-84-0': 4600, 
+'115-07-1': 4200, '74-98-6': 4300, '106-97-8': 3600, '75-28-5': 3700, 
+'109-66-0': 3300, '78-78-4': 3200, '110-54-3': 3200, '110-82-7': 3000, 
+'142-82-5': 2900, '71-43-2': 2900, '108-88-3': 2800, '92-52-4': 2100, 
+'67-56-1': 5400, '64-17-5': 4350, '71-23-8': 3750, '67-63-0': 4100, 
+'71-36-3': 2600, '78-83-1': 4500, '78-92-2': 3400, '75-07-0': 3500, 
+'67-64-1': 3300, '124-38-9': 5500, '75-46-7': 4800, '75-10-5': 5000, 
+'354-33-6': 4400, '811-97-2': 4200, '420-46-2': 4700, '75-37-6': 4600, 
+'754-12-1': 3000, '431-89-0': 4100, '115-25-3': 4200, '75-73-0': 4750, 
+'306-83-2': 3000, '75-69-4': 2800, '75-71-8': 4000, '75-72-9': 3900, 
+'75-63-8': 3500, '75-45-6': 3900, '76-13-1': 2650, '76-14-2': 3800, 
+'76-15-3': 4200, '74-87-3': 4400, '56-23-5': 3200, '2551-62-4': 3700, 
+'7732-18-5': 5600, '7664-41-7': 7000, '7782-44-7': 9500, '7727-37-9': 10000, 
+'7440-37-1': 8200, '7440-01-9': 20000, '1333-74-0': 24000, '7440-59-7': 2000}
+
+
+
 cryogenics = {'132259-10-0': 'Air', '7440-37-1': 'Argon', '630-08-0':
 'carbon monoxide', '7782-39-0': 'deuterium', '7782-41-4': 'fluorine',
 '7440-59-7': 'helium', '1333-74-0': 'hydrogen', '7439-90-9': 'krypton',
@@ -598,6 +736,9 @@ def h_nucleic(Te=None, Tsat=None, P=None, dPSat=None, dPdT=None,
     select the correlation to use if none is provided'''
     def list_methods():
         methods = []
+        if all([P, Pc]):
+            if CAS and CAS in h0_Gorenflow_1993:
+                methods.append('Gorenflo (1993)')
         if all((Te, Tsat, Cpl, kl, mul, sigma, Hvap, rhol, rhog)):
             if CAS and CAS == '7732-18-5':
                 methods.append('Stephan-Abdelsalam water')
@@ -655,6 +796,8 @@ def h_nucleic(Te=None, Tsat=None, P=None, dPSat=None, dPdT=None,
     elif Method == 'McNelly':
         h = McNelly(Te=Te, P=P, Cpl=Cpl, kl=kl, sigma=sigma, Hvap=Hvap,
                     rhol=rhol, rhog=rhog)
+    elif Method == 'Gorenflo (1993)':
+        h = Gorenflo(P=P, Pc=Pc, Te=Te, CASRN=CAS)
     elif Method == 'None':
         h = None
     else:

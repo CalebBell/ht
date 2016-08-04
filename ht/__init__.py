@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 from . import core
 from . import hx
 from . import conv_internal
+from . import boiling_flow
 from . import boiling_nucleic
 from . import air_cooler
 from . import radiation
@@ -36,6 +37,7 @@ from . import conv_two_phase
 from .core import *
 from .hx import *
 from .conv_internal import *
+from .boiling_flow import *
 from .boiling_nucleic import *
 from .air_cooler import *
 from .radiation import *
@@ -53,12 +55,13 @@ from .conv_two_phase import *
 __all__ = ['core', 'hx', 'conv_internal', 'boiling_nucleic', 'air_cooler',
 'radiation', 'condensation', 'conduction', 'conv_jacket', 'conv_free_immersed',
 'conv_tube_bank', 'insulation', 'conv_packed_bed', 'conv_external', 
-'conv_supercritical', 'conv_two_phase']
+'conv_supercritical', 'conv_two_phase', 'boiling_flow']
 
 
 __all__.extend(core.__all__)
 __all__.extend(hx.__all__)
 __all__.extend(conv_internal.__all__)
+__all__.extend(boiling_flow.__all__)
 __all__.extend(boiling_nucleic.__all__)
 __all__.extend(air_cooler.__all__)
 __all__.extend(radiation.__all__)

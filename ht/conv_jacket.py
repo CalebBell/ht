@@ -54,7 +54,7 @@ def Lehrer(m=None, Dtank=None, Djacket=None, H=None, Dinlet=None,
     Parameters
     ----------
     m : float
-        Mass flow rate of fluid, [kg/m^3]
+        Mass flow rate of fluid, [kg/s]
     Dtank : float
         Outer diameter of tank or vessel surrounded by jacket, [m]
     Djacket : float
@@ -85,7 +85,7 @@ def Lehrer(m=None, Dtank=None, Djacket=None, H=None, Dinlet=None,
     Returns
     -------
     h: float
-        Average  transfer coefficient inside the jacket [W/m^2/K]
+        Average heat transfer coefficient inside the jacket [W/m^2/K]
 
     Notes
     -----
