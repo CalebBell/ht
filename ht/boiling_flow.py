@@ -16,13 +16,18 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from __future__ import division
-from math import pi, log10
+from math import pi, log10, atan, exp
 from scipy.constants import g
 from scipy.optimize import newton, fsolve
 from fluids.core import Prandtl, Boiling, Bond, Weber, nu_mu_converter
-from ht.conv_internal import turbulent_Gnielinski
+from fluids.two_phase_voidage import Lockhart_Martinelli_Xtt
+from ht.conv_internal import turbulent_Gnielinski, turbulent_Dittus_Boelter
+from ht.boiling_nucleic import Forster_Zuber, Cooper
 
-__all__ = ['Thome', 'Lazarek_Black', 'Li_Wu', 'Sun_Mishima', 'Yun_Heo_Kim']
+
+
+__all__ = ['Thome', 'Liu_Winterton', 'Chen_Edelstein', 'Chen_Bennett', 
+           'Lazarek_Black', 'Li_Wu', 'Sun_Mishima', 'Yun_Heo_Kim']
 
 
 def Lazarek_Black(m, D, mul, kl, Hvap, q=None, Te=None):
@@ -202,7 +207,6 @@ def Li_Wu(m, x, D, rhol, rhog, mul, kl, Hvap, sigma, q=None, Te=None):
     else:
         raise Exception('Either q or Te is needed for this correlation')
     return htp
-
 
 
 def Sun_Mishima(m, D, rhol, rhog, mul, kl, Hvap, sigma, q=None, Te=None):
@@ -450,8 +454,8 @@ def Thome(m, x, D, rhol, rhog, mul, mug, kl, kg, Cpl, Cpg, Hvap, sigma, Psat,
     '''
     if q is None and Te:
         to_solve = lambda q : q/Thome(m=m, x=x, D=D, rhol=rhol, rhog=rhog, kl=kl, kg=kg, mul=mul, mug=mug, Cpl=Cpl, Cpg=Cpg, sigma=sigma, Hvap=Hvap, Psat=Psat, Pc=Pc, q=q) - Te
-#        q = newton(to_solve, 1E4)
-        q = fsolve(to_solve, 1E4)
+        q = newton(to_solve, 1E4)
+#       q = fsolve(to_solve, 1E4)
         return Thome(m=m, x=x, D=D, rhol=rhol, rhog=rhog, kl=kl, kg=kg, mul=mul, mug=mug, Cpl=Cpl, Cpg=Cpg, sigma=sigma, Hvap=Hvap, Psat=Psat, Pc=Pc, q=q)
     elif q is None and Te is None:
         raise Exception('Either q or Te is needed for this correlation')
@@ -591,6 +595,341 @@ def Yun_Heo_Kim(m, x, D, rhol, mul, Hvap, sigma, q=None, Te=None):
     else:
         raise Exception('Either q or Te is needed for this correlation')
     return htp
+
+
+def Chen_Edelstein(m, x, D, rhol, rhog, mul, mug, kl, Cpl, Hvap, sigma, 
+                   dPSat, Te):
+    r'''Calculates heat transfer coefficient for film boiling of saturated
+    fluid in any orientation of flow. Correlation
+    is developed in [1]_ and [2]_, and reviewed in [3]_. This model is one of 
+    the most often used. It uses the Dittus-Boelter correlation for turbulent
+    convection and the Forster-Zuber correlation for pool boiling, and
+    combines them with two factors `F` and `S`.
+    
+    
+    .. math::
+        h_{tp} = S\cdot h_{nb} + F \cdot h_{sp,l}
+        
+        h_{sp,l} = 0.023 Re_l^{0.8} Pr_l^{0.4} k_l/D
+        
+        Re_l = \frac{DG(1-x)}{\mu_l}
+        
+        h_{nb} = 0.00122\left( \frac{\lambda_l^{0.79} c_{p,l}^{0.45} 
+        \rho_l^{0.49}}{\sigma^{0.5} \mu^{0.29} H_{vap}^{0.24} \rho_g^{0.24}}
+        \right)\Delta T_{sat}^{0.24} \Delta p_{sat}^{0.75}
+        
+        F = (1 + X_{tt}^{-0.5})^{1.78}
+        
+        X_{tt} = \left( \frac{1-x}{x}\right)^{0.9} \left(\frac{\rho_g}{\rho_l}
+        \right)^{0.5}\left( \frac{\mu_l}{\mu_g}\right)^{0.1}
+    
+        S = 0.9622 - 0.5822\left(\tan^{-1}\left(\frac{Re_L\cdot F^{1.25}}
+        {6.18\cdot 10^4}\right)\right)
+        
+    Parameters
+    ----------
+    m : float
+        Mass flow rate [kg/s]
+    x : float
+        Quality at the specific tube interval []
+    D : float
+        Diameter of the tube [m]
+    rhol : float
+        Density of the liquid [kg/m^3]
+    rhog : float
+        Density of the gas [kg/m^3]
+    mul : float
+        Viscosity of liquid [Pa*s]
+    mug : float
+        Viscosity of gas [Pa*s]
+    kl : float
+        Thermal conductivity of liquid [W/m/K]
+    Cpl : float
+        Heat capacity of liquid [J/kg/K]
+    Hvap : float
+        Heat of vaporization of liquid [J/kg]
+    sigma : float
+        Surface tension of liquid [N/m]
+    dPSat : float
+        Difference in Saturation pressure of fluid at Te and T, [Pa]
+    Te : float
+        Excess temperature of wall, [K]
+
+    Returns
+    -------
+    h : float
+        Heat transfer coefficient [W/m^2/K]
+
+    Notes
+    -----
+    [1]_ and [2]_ have been reviewed, but the model is only put together in 
+    the review of [3]_. Many other forms of this equation exist with different
+    functions for `F` and `S`.
+    
+    Examples
+    --------
+    >>> Chen_Edelstein(m=0.106, x=0.2, D=0.0212, rhol=567, rhog=18.09, 
+    ... mul=156E-6, mug=7.11E-6, kl=0.086, Cpl=2730, Hvap=2E5, sigma=0.02, 
+    ... dPSat=1E5, Te=3)
+    3289.058731974052
+
+    See Also
+    --------
+    turbulent_Dittus_Boelter
+    Forster_Zuber
+
+    References
+    ----------
+    .. [1] Chen, J. C. "Correlation for Boiling Heat Transfer to Saturated 
+       Fluids in Convective Flow." Industrial & Engineering Chemistry Process
+       Design and Development 5, no. 3 (July 1, 1966): 322-29. 
+       doi:10.1021/i260019a023. 
+    .. [2] Edelstein, Sergio, A. J. Pérez, and J. C. Chen. "Analytic 
+       Representation of Convective Boiling Functions." AIChE Journal 30, no. 
+       5 (September 1, 1984): 840-41. doi:10.1002/aic.690300528.
+    .. [3] Bertsch, Stefan S., Eckhard A. Groll, and Suresh V. Garimella. 
+       "Review and Comparative Analysis of Studies on Saturated Flow Boiling in
+       Small Channels." Nanoscale and Microscale Thermophysical Engineering 12,
+       no. 3 (September 4, 2008): 187-227. doi:10.1080/15567260802317357.
+    '''
+    G = m/(pi/4*D**2)
+    Rel = D*G*(1-x)/mul
+    Prl = Prandtl(Cp=Cpl, mu=mul, k=kl)
+    hl = turbulent_Dittus_Boelter(Re=Rel, Pr=Prl)*kl/D
+    
+    Xtt = Lockhart_Martinelli_Xtt(x=x, rhol=rhol, rhog=rhog, mul=mul, mug=mug)
+    F = (1 + Xtt**-0.5)**1.78
+    Re = Rel*F**1.25
+    S = 0.9622 - 0.5822*atan(Re/6.18E4)
+    hnb = Forster_Zuber(Te=Te, dPSat=dPSat, Cpl=Cpl, kl=kl, mul=mul, sigma=sigma,
+                       Hvap=Hvap, rhol=rhol, rhog=rhog)
+    h = hnb*S + hl*F
+    return h
+
+
+
+def Chen_Bennett(m, x, D, rhol, rhog, mul, mug, kl, Cpl, Hvap, sigma, 
+                   dPSat, Te):
+    r'''Calculates heat transfer coefficient for film boiling of saturated
+    fluid in any orientation of flow. Correlation
+    is developed in [1]_ and [2]_, and reviewed in [3]_. This model is one of 
+    the most often used, and replaces the `Chen_Edelstein` correlation. It uses
+    the Dittus-Boelter correlation for turbulent convection and the 
+    Forster-Zuber correlation for pool boiling, and combines them with two 
+    factors `F` and `S`.
+    
+    .. math::
+        h_{tp} = S\cdot h_{nb} + F \cdot h_{sp,l}
+        
+        h_{sp,l} = 0.023 Re_l^{0.8} Pr_l^{0.4} k_l/D
+        
+        Re_l = \frac{DG(1-x)}{\mu_l}
+        
+        h_{nb} = 0.00122\left( \frac{\lambda_l^{0.79} c_{p,l}^{0.45} 
+        \rho_l^{0.49}}{\sigma^{0.5} \mu^{0.29} H_{vap}^{0.24} \rho_g^{0.24}}
+        \right)\Delta T_{sat}^{0.24} \Delta p_{sat}^{0.75}
+        
+        F = \left(\frac{Pr_1+1}{2}\right)^{0.444}\cdot (1+X_{tt}^{-0.5})^{1.78}
+        
+        S = \frac{1-\exp(-F\cdot h_{conv} \cdot X_0/k_l)}
+        {F\cdot h_{conv}\cdot X_0/k_l}
+        
+        X_{tt} = \left( \frac{1-x}{x}\right)^{0.9} \left(\frac{\rho_g}{\rho_l}
+        \right)^{0.5}\left( \frac{\mu_l}{\mu_g}\right)^{0.1}
+    
+        X_0 = 0.041 \left(\frac{\sigma}{g \cdot (\rho_l-\rho_v)}\right)^{0.5} 
+        
+    Parameters
+    ----------
+    m : float
+        Mass flow rate [kg/s]
+    x : float
+        Quality at the specific tube interval []
+    D : float
+        Diameter of the tube [m]
+    rhol : float
+        Density of the liquid [kg/m^3]
+    rhog : float
+        Density of the gas [kg/m^3]
+    mul : float
+        Viscosity of liquid [Pa*s]
+    mug : float
+        Viscosity of gas [Pa*s]
+    kl : float
+        Thermal conductivity of liquid [W/m/K]
+    Cpl : float
+        Heat capacity of liquid [J/kg/K]
+    Hvap : float
+        Heat of vaporization of liquid [J/kg]
+    sigma : float
+        Surface tension of liquid [N/m]
+    dPSat : float
+        Difference in Saturation pressure of fluid at Te and T, [Pa]
+    Te : float
+        Excess temperature of wall, [K]
+
+    Returns
+    -------
+    h : float
+        Heat transfer coefficient [W/m^2/K]
+
+    Notes
+    -----
+    [1]_ and [2]_ have been reviewed, but the model is only put together in 
+    the review of [3]_. Many other forms of this equation exist with different
+    functions for `F` and `S`.
+    
+    Examples
+    --------
+    >>> Chen_Bennett(m=0.106, x=0.2, D=0.0212, rhol=567, rhog=18.09, 
+    ... mul=156E-6, mug=7.11E-6, kl=0.086, Cpl=2730, Hvap=2E5, sigma=0.02, 
+    ... dPSat=1E5, Te=3)
+    4938.275351219369
+
+    See Also
+    --------
+    Chen_Edelstein
+    turbulent_Dittus_Boelter
+    Forster_Zuber
+
+    References
+    ----------
+    .. [1] Bennett, Douglas L., and John C. Chen. "Forced Convective Boiling in
+       Vertical Tubes for Saturated Pure Components and Binary Mixtures." 
+       AIChE Journal 26, no. 3 (May 1, 1980): 454-61. doi:10.1002/aic.690260317.
+    .. [2] Bennett, Douglas L., M.W. Davies and B.L. Hertzler, The Suppression 
+       of Saturated Nucleate Boiling by Forced Convective Flow, American 
+       Institute of Chemical Engineers Symposium Series, vol. 76, no. 199. 
+       91-103, 1980.
+    .. [3] Bertsch, Stefan S., Eckhard A. Groll, and Suresh V. Garimella. 
+       "Review and Comparative Analysis of Studies on Saturated Flow Boiling in
+       Small Channels." Nanoscale and Microscale Thermophysical Engineering 12,
+       no. 3 (September 4, 2008): 187-227. doi:10.1080/15567260802317357.
+    '''
+    G = m/(pi/4*D**2)
+    Rel = D*G*(1-x)/mul
+    Prl = Prandtl(Cp=Cpl, mu=mul, k=kl)
+    hl = turbulent_Dittus_Boelter(Re=Rel, Pr=Prl)*kl/D
+    Xtt = Lockhart_Martinelli_Xtt(x=x, rhol=rhol, rhog=rhog, mul=mul, mug=mug)
+    F = ((Prl+1)/2.)**0.444*(1 + Xtt**-0.5)**1.78
+    X0 = 0.041*(sigma/(g*(rhol-rhog)))**0.5
+    S = (1 - exp(-F*hl*X0/kl))/(F*hl*X0/kl)
+    
+    hnb = Forster_Zuber(Te=Te, dPSat=dPSat, Cpl=Cpl, kl=kl, mul=mul, sigma=sigma,
+                       Hvap=Hvap, rhol=rhol, rhog=rhog)
+    h = hnb*S + hl*F
+    return h
+
+
+def Liu_Winterton(m, x, D, rhol, rhog, mul, kl, Cpl, MW, P,  Pc, Te):
+    r'''Calculates heat transfer coefficient for film boiling of saturated
+    fluid in any orientation of flow. Correlation
+    is as developed in [1]_, also reviewed in [2]_ and [3]_.
+    
+    Excess wall temperature is required to use this correlation.
+    
+    .. math::
+        h_{tp} = \sqrt{ (F\cdot h_l)^2 + (S\cdot h_{nb})^2} 
+        
+        S = \left( 1+0.055F^{0.1} Re_{L}^{0.16}\right)^{-1}
+        
+        h_{l} = 0.023 Re_L^{0.8} Pr_l^{0.4} k_l/D
+
+        Re_L = \frac{GD}{\mu_l}
+        
+        F = \left[ 1+ xPr_{l}(\rho_l/\rho_g-1)\right]^{0.35}
+        
+        h_{nb} = \left(55\Delta Te^{0.67} \frac{P}{P_c}^{(0.12 - 0.2\log_{10}
+         R_p)}(-\log_{10} \frac{P}{P_c})^{-0.55} MW^{-0.5}\right)^{1/0.33}
+    
+    Parameters
+    ----------
+    m : float
+        Mass flow rate [kg/s]
+    x : float
+        Quality at the specific tube interval []
+    D : float
+        Diameter of the tube [m]
+    rhol : float
+        Density of the liquid [kg/m^3]
+    rhog : float
+        Density of the gas [kg/m^3]
+    mul : float
+        Viscosity of liquid [Pa*s]
+    kl : float
+        Thermal conductivity of liquid [W/m/K]
+    Cpl : float
+        Heat capacity of liquid [J/kg/K]
+    MW : float
+        Molecular weight of the fluid, [g/mol]
+    P : float
+        Pressure of fluid, [Pa]
+    Pc : float
+        Critical pressure of fluid, [Pa]
+    Te : float, optional
+        Excess temperature of wall, [K]
+
+    Returns
+    -------
+    h : float
+        Heat transfer coefficient [W/m^2/K]
+
+    Notes
+    -----
+    [1]_ has been reviewed, and is accurately reproduced in [3]_.
+    
+    Uses the `Cooper` and `turbulent_Dittus_Boelter` correlations.
+    
+    A correction for horizontal flow at low Froude numbers is available in 
+    [1]_ but has not been implemented and is not recommended in several 
+    sources.
+    
+    Examples
+    --------
+    >>> Liu_Winterton(m=1, x=0.4, D=0.3, rhol=567., rhog=18.09, kl=0.086, 
+    mul=156E-6, Cpl=2300, P=1E6, Pc=22E6, MW=44.02, Te=7)
+    4747.749477190532
+
+    References
+    ----------
+    .. [1] Liu, Z., and R. H. S. Winterton. "A General Correlation for 
+       Saturated and Subcooled Flow Boiling in Tubes and Annuli, Based on a 
+       Nucleate Pool Boiling Equation." International Journal of Heat and Mass 
+       Transfer 34, no. 11 (November 1991): 2759-66. 
+       doi:10.1016/0017-9310(91)90234-6. 
+    .. [2] Fang, Xiande, Zhanru Zhou, and Dingkun Li. "Review of Correlations 
+       of Flow Boiling Heat Transfer Coefficients for Carbon Dioxide." 
+       International Journal of Refrigeration 36, no. 8 (December 2013): 
+       2017-39. doi:10.1016/j.ijrefrig.2013.05.015.
+    .. [3] Bertsch, Stefan S., Eckhard A. Groll, and Suresh V. Garimella. 
+       "Review and Comparative Analysis of Studies on Saturated Flow Boiling in
+       Small Channels." Nanoscale and Microscale Thermophysical Engineering 12,
+       no. 3 (September 4, 2008): 187-227. doi:10.1080/15567260802317357.
+    '''
+    G = m/(pi/4*D**2)
+    ReL = D*G/mul
+    Prl = Prandtl(Cp=Cpl, mu=mul, k=kl)
+    hl = turbulent_Dittus_Boelter(Re=ReL, Pr=Prl)*kl/D
+    F = (1 + x*Prl*(rhol/rhog - 1))**0.35
+    S = (1 + 0.055*F**0.1*ReL**0.16)**-1
+#    if horizontal:
+#        Fr = Froude(V=G/rhol, L=D, squared=True)
+#        if Fr < 0.05:
+#            ef = Fr**(0.1 - 2*Fr)
+#            es = Fr**0.5
+#            F *= ef
+#            S *= es
+    h_nb = Cooper(Te=Te, P=P, Pc=Pc, MW=MW)
+    h_tp = ((F*hl)**2 + (S*h_nb)**2)**0.5
+    return h_tp
+
+
+
+#h = Liu_Winterton(m=1, x=0.4, D=0.3, rhol=567., rhog=18.09, kl=0.086, mul=156E-6, Cpl=2300, P=1E6, Pc=22E6, MW=44.02, Te=7)
+#print(h)
+
+#print(Chen_Bennett(m=0.106, x=0.2, D=0.0212, rhol=567, rhog=18.09, mul=156E-6, mug=7.11E-6, kl=0.086, Cpl=2730, Hvap=2E5, sigma=0.02, dPSat=1E5, Te=3))
+
 
 #q = 1E4
 #h1 = Yun_Heo_Kim(m=1, x=0.4, D=0.3, rhol=567., mul=156E-6, sigma=0.02, Hvap=9E5, q=q)

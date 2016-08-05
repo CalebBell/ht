@@ -21,10 +21,10 @@ from math import log, log10
 
 __all__ = ['Rohsenow', 'McNelly', 'Forster_Zuber', 'Montinsky',
 'Stephan_Abdelsalam', 'HEDH_Taborek', 'Bier', 'Cooper', 'Gorenflo', 
-'h_nucleic', 'Zuber', 'Serth_HEDH', 'HEDH_Montinsky', 'qmax_boiling']
+'h_nucleic', 'Zuber', 'Serth_HEDH', 'HEDH_Montinsky', 'qmax_boiling', 
+'h0_VDI_2e', 'h0_Gorenflow_1993']
 
-def Rohsenow(Te=None, Cpl=None, kl=None, mul=None, sigma=None, Hvap=None,
-            rhol=None, rhog=None, Csf=0.013, n=1.7):
+def Rohsenow(Cpl, kl, mul, sigma, Hvap, rhol, rhog, Te=None, Csf=0.013, n=1.7):
     r'''Calculates heat transfer coefficient for a evaporator operating
     in the nucleate boiling regime according to [2]_ as presented in [1]_.
 
@@ -89,8 +89,7 @@ def Rohsenow(Te=None, Cpl=None, kl=None, mul=None, sigma=None, Hvap=None,
 
 #print [Rohsenow(Te=5, Cpl=4180, kl=0.688, mul=2.75E-4, sigma=0.0588, Hvap=2.25E6, rhol=958, rhog=0.597)]
 
-def McNelly(Te=None, P=None, Cpl=None, kl=None, sigma=None, Hvap=None,
-            rhol=None, rhog=None):
+def McNelly(Te, P, Cpl, kl, sigma, Hvap, rhol, rhog):
     r'''Calculates heat transfer coefficient for a evaporator operating
     in the nucleate boiling regime according to [2]_ as presented in [1]_.
 
@@ -151,8 +150,7 @@ def McNelly(Te=None, P=None, Cpl=None, kl=None, sigma=None, Hvap=None,
 #print [McNelly(Te=9.1, P=101325., Cpl=4472., kl=0.502, sigma=0.0325, Hvap=1.37E6, rhol=689., rhog=0.843)] # Ammonia
 
 
-def Forster_Zuber(Te=None, dPSat=None, Cpl=None, kl=None, mul=None, sigma=None,
-                  Hvap=None, rhol=None, rhog=None):
+def Forster_Zuber(Te, dPSat, Cpl, kl, mul, sigma, Hvap, rhol, rhog):
     r'''Calculates heat transfer coefficient for a evaporator operating
     in the nucleate boiling regime according to [2]_ as presented in [1]_.
 
@@ -223,7 +221,7 @@ def Forster_Zuber(Te=None, dPSat=None, Cpl=None, kl=None, mul=None, sigma=None,
 #
 
 
-def Montinsky(Te=None, P=None, Pc=None):
+def Montinsky(Te, P, Pc):
     r'''Calculates heat transfer coefficient for a evaporator operating
     in the nucleate boiling regime according to [2]_ as presented in [1]_.
 
@@ -285,9 +283,8 @@ def Montinsky(Te=None, P=None, Pc=None):
 _angles_Stephan_Abdelsalam = {'general': 35, 'water': 45, 'hydrocarbon': 35,
 'cryogenic': 1, 'refrigerant': 35}
 
-def Stephan_Abdelsalam(Te=None, Tsat=None, Cpl=None, kl=None, mul=None,
-     sigma=None, Hvap=None, rhol=None, rhog=None, kw=401., rhow=8.96, Cpw=384,
-     angle=None, correlation='general'):
+def Stephan_Abdelsalam(Te, Tsat, Cpl, kl, mul, sigma, Hvap, rhol, rhog, 
+                       kw=401., rhow=8.96, Cpw=384, angle=None, correlation='general'):
     r'''Calculates heat transfer coefficient for a evaporator operating
     in the nucleate boiling regime according to [2]_ as presented in [1]_.
     Five variants are possible.
@@ -422,7 +419,7 @@ def Stephan_Abdelsalam(Te=None, Tsat=None, Cpl=None, kl=None, mul=None,
 #print [Stephan_Abdelsalam(Te=16.2, Tsat=437.5, Cpl=2730., kl=0.086, mul=156E-6,
 #                  sigma=0.0082, Hvap=272E3, rhol=567, rhog=18.09, angle=35)]
 
-def HEDH_Taborek(Te=None, P=None, Pc=None):
+def HEDH_Taborek(Te, P, Pc):
     r'''Calculates heat transfer coefficient for a evaporator operating
     in the nucleate boiling regime according to Taborek (1986)
     as described in [1]_ and as presented in [2]_. Modification of [3]_.
@@ -472,7 +469,7 @@ def HEDH_Taborek(Te=None, P=None, Pc=None):
     return h
 
 
-def Bier(Te=None, P=None, Pc=None):
+def Bier(Te, P, Pc):
     r'''Calculates heat transfer coefficient for a evaporator operating
     in the nucleate boiling regime according to [1]_ .
 
@@ -518,7 +515,7 @@ def Bier(Te=None, P=None, Pc=None):
 #print [Bier(Te=i, P=101325., Pc=22048321.0) for i in [4.3, 9.1, 13]]
 #print [Bier(Te=i, P=101325., Pc=48.9E5) for i in [4.3, 9.1, 13]]
 
-def Cooper(Te=None, P=None, Pc=None, MW=None, Rp=1E-6):
+def Cooper(Te, P, Pc, MW, Rp=1E-6):
     r'''Calculates heat transfer coefficient for a evaporator operating
     in the nucleate boiling regime according to [2]_ as presented in [1]_.
 
@@ -700,7 +697,7 @@ def Gorenflo(P, Pc, q=None, Te=None, CASRN=None, h0=None, Ra=4E-7):
     return h
         
 
-q0_VDI_2e = {'74-82-8': 7200, '74-85-1': 4200, '74-84-0': 4600, 
+h0_VDI_2e = {'74-82-8': 7200, '74-85-1': 4200, '74-84-0': 4600, 
 '115-07-1': 4200, '74-98-6': 4300, '106-97-8': 3600, '75-28-5': 3700, 
 '109-66-0': 3300, '78-78-4': 3200, '110-54-3': 3200, '110-82-7': 3000, 
 '142-82-5': 2900, '71-43-2': 2900, '108-88-3': 2800, '92-52-4': 2100, 
@@ -806,7 +803,7 @@ def h_nucleic(Te=None, Tsat=None, P=None, dPSat=None, dPdT=None,
 
 
 ### Critical Heat Flux
-def Zuber(sigma=None, Hvap=None, rhol=None, rhog=None, K=0.18):
+def Zuber(sigma, Hvap, rhol, rhog, K=0.18):
     r'''Calculates critical heat flux for nucleic boiling of a flat plate
     or other shape as presented in various sources.
     K = pi/24 is believed to be the original [1]_ value for K, but 0.149 is
@@ -867,7 +864,7 @@ def Zuber(sigma=None, Hvap=None, rhol=None, rhog=None, K=0.18):
 
 #print [Zuber(sigma=8.2E-3, Hvap=272E3, rhol=567, rhog=18.09, K=0.18)]
 
-def Serth_HEDH(D=None, sigma=None, Hvap=None, rhol=None, rhog=None):
+def Serth_HEDH(D, sigma, Hvap, rhol, rhog):
     r'''Calculates critical heat flux for nucleic boiling of a tube bundle
     according to [2]_, citing [3]_, and using [1]_ as the original form.
 
@@ -927,7 +924,7 @@ def Serth_HEDH(D=None, sigma=None, Hvap=None, rhol=None, rhog=None):
 
 #print [Serth_HEDH(D=0.00127, sigma=8.2E-3, Hvap=272E3, rhol=567, rhog=18.09)]
 
-def HEDH_Montinsky(P=None, Pc=None):
+def HEDH_Montinsky(P, Pc):
     r'''Calculates critical heat flux
     in the nucleate boiling regime according to [3]_ as presented in [1]_,
     using an expression modified from [2]_.

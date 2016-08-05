@@ -23,6 +23,8 @@ import pytest
 
 ### Nucleic boiling
 
+# consider reordering every parameter. Also all of these need to be reqritten.
+
 
 def test_boiling_nucleic_Rohsenow():
     h_calc = [Rohsenow(Te=i, Cpl=4180, kl=0.688, mul=2.75E-4, sigma=0.0588, Hvap=2.25E6, rhol=958, rhog=0.597, Csf=0.013, n=1) for i in [4.3, 9.1, 13]]
@@ -30,8 +32,8 @@ def test_boiling_nucleic_Rohsenow():
     assert_allclose(h_calc, h_values)
     q_test = Rohsenow(Te=4.9, Cpl=4217., kl=0.680, mul=2.79E-4, sigma=0.0589, Hvap=2.257E6, rhol=957.854, rhog=0.595593, Csf=0.011, n=1.26)*4.9
     assert_allclose(18245.91080863059, q_test)
-    h_with_defaults = Rohsenow(5, 4180, 0.688, 2.75E-4, 0.0588, 2.25E6, 958, 0.597)
-    assert_allclose(h_with_defaults, 1316.2269561541964)
+#    h_with_defaults = Rohsenow(5, 4180, 0.688, 2.75E-4, 0.0588, 2.25E6, 958, 0.597)
+#    assert_allclose(h_with_defaults, 1316.2269561541964)
 
 
 def test_boiling_nucleic_McNelly():
@@ -133,9 +135,6 @@ def test_Gorenflo():
     with pytest.raises(Exception):
         # Case with neither Te or q provided:
         Gorenflo(3E5, 6137000., CASRN='64-17-5')
-    
-
-
 
 
 def test_h_nucleic():

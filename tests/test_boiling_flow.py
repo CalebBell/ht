@@ -86,3 +86,19 @@ def test_Yun_Heo_Kim():
     
     with pytest.raises(Exception):
         Yun_Heo_Kim(m=1, x=0.4, D=0.3, rhol=567., mul=156E-6, sigma=0.02, Hvap=9E5)
+
+
+def test_Liu_Winterton():
+    h = Liu_Winterton(m=1, x=0.4, D=0.3, rhol=567., rhog=18.09, kl=0.086, mul=156E-6, Cpl=2300, P=1E6, Pc=22E6, MW=44.02, Te=7)
+    assert_allclose(h, 4747.749477190532)
+
+def test_Chen_Edelstein():
+    # Odd numbers for the test case from Serth, but not actually compared to
+    # anything.
+    h = Chen_Edelstein(m=0.106, x=0.2, D=0.0212, rhol=567, rhog=18.09, mul=156E-6, mug=7.11E-6, kl=0.086, Cpl=2730, Hvap=2E5, sigma=0.02, dPSat=1E5, Te=3)
+    assert_allclose(h, 3289.058731974052)
+
+
+def test_Chen_Bennett():
+    h = Chen_Bennett(m=0.106, x=0.2, D=0.0212, rhol=567, rhog=18.09, mul=156E-6, mug=7.11E-6, kl=0.086, Cpl=2730, Hvap=2E5, sigma=0.02, dPSat=1E5, Te=3)
+    assert_allclose(h, 4938.275351219369)
