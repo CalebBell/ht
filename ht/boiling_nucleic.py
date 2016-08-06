@@ -24,36 +24,51 @@ __all__ = ['Rohsenow', 'McNelly', 'Forster_Zuber', 'Montinsky',
 'h_nucleic', 'Zuber', 'Serth_HEDH', 'HEDH_Montinsky', 'qmax_boiling', 
 'h0_VDI_2e', 'h0_Gorenflow_1993']
 
-def Rohsenow(Cpl, kl, mul, sigma, Hvap, rhol, rhog, Te=None, Csf=0.013, n=1.7):
+
+def Rohsenow(rhol, rhog, mul, kl, Cpl, Hvap, sigma, Te=None, q=None, Csf=0.013, n=1.7):
     r'''Calculates heat transfer coefficient for a evaporator operating
     in the nucleate boiling regime according to [2]_ as presented in [1]_.
+    
+    Either heat flux or excess temperature is required.
 
+    With `Te` specified:
+    
     .. math::
-        h = {{\mu }_{L}} \Delta H_{vap} \left[ \frac{g( \rho_L-\rho_v)}{\sigma } \right]^{0.5}
-        \left[\frac{C_{p,L}\Delta T_e^{2/3}}{C_{sf}\Delta H_{vap} Pr_L^n}\right]^3
+        h = {{\mu }_{L}} \Delta H_{vap} \left[ \frac{g( \rho_L-\rho_v)}
+        {\sigma } \right]^{0.5}\left[\frac{C_{p,L}\Delta T_e^{2/3}}{C_{sf}
+        \Delta H_{vap} Pr_L^n}\right]^3
+    
+    With `q` specified:
+    
+    .. math::
+        h = \left({{\mu }_{L}} \Delta H_{vap} \left[ \frac{g( \rho_L-\rho_v)}
+        {\sigma } \right]^{0.5}\left[\frac{C_{p,L}\Delta T_e^{2/3}}{C_{sf}
+        \Delta H_{vap} Pr_L^n}\right]^3\right)^{1/3}q^{2/3}
 
     Parameters
     ----------
-    Te : float
-        Excess wall temperature, [K]
-    Cpl : float
-        Heat capacity of liquid [J/kg/K]
-    kl : float
-        Thermal conductivity of liquid [W/m/K]
-    mul : float
-        Viscosity of liquid [Pa*s]
-    sigma : float
-        Surface tension of liquid [N/m]
-    Hvap : float
-        Heat of vaporization of the fluid at P, [J/kg]
     rhol : float
         Density of the liquid [kg/m^3]
     rhog : float
         Density of the produced gas [kg/m^3]
+    mul : float
+        Viscosity of liquid [Pa*s]
+    kl : float
+        Thermal conductivity of liquid [W/m/K]
+    Cpl : float
+        Heat capacity of liquid [J/kg/K]
+    Hvap : float
+        Heat of vaporization of the fluid at P, [J/kg]
+    sigma : float
+        Surface tension of liquid [N/m]
+    Te : float, optional
+        Excess wall temperature, [K]
+    q : float, optional
+        Heat flux, [W/m^2]
     Csf : float
         Rohsenow coefficient specific to fluid and metal []
     n : float
-            Constant, 1 for water, 1.7 (default) for other fluids usually []
+        Constant, 1 for water, 1.7 (default) for other fluids usually []
 
     Returns
     -------
@@ -67,56 +82,70 @@ def Rohsenow(Cpl, kl, mul, sigma, Hvap, rhol, rhog, Te=None, Csf=0.013, n=1.7):
 
     Examples
     --------
-    Q for water at atmospheric pressure on oxidized aluminum, 10.30 P set 8.
+    h for water at atmospheric pressure on oxidized aluminum.
 
-    >>> Rohsenow(Te=4.9, Cpl=4217., kl=0.680, mul=2.79E-4, sigma=0.0589,
-    ... Hvap=2.257E6, rhol=957.854, rhog=0.595593, Csf=0.011, n=1.26)*4.9
-    18245.91080863059
+    >>> Rohsenow(rhol=957.854, rhog=0.595593, mul=2.79E-4, kl=0.680, Cpl=4217,
+    ... Hvap=2.257E6, sigma=0.0589, Te=4.9, Csf=0.011, n=1.26)
+    3723.655267067467
 
     References
     ----------
     .. [1] Cao, Eduardo. Heat Transfer in Process Engineering.
        McGraw Hill Professional, 2009.
     .. [2] Rohsenow, Warren M. "A Method of Correlating Heat Transfer Data for
-       Surface Boiling of Liquids.” Technical Report. Cambridge, Mass. : M.I.T.
+       Surface Boiling of Liquids." Technical Report. Cambridge, Mass. : M.I.T.
        Division of Industrial Cooporation, 1951
     '''
-    h = mul*Hvap*(g*(rhol-rhog)/sigma)**0.5*(Cpl*Te**(2/3.)/Csf/Hvap/(Cpl*mul/kl)**n)**3
+    if Te:
+        h = mul*Hvap*(g*(rhol-rhog)/sigma)**0.5*(Cpl*Te**(2/3.)/Csf/Hvap/(Cpl*mul/kl)**n)**3
+    elif q:
+        A = mul*Hvap*(g*(rhol-rhog)/sigma)**0.5*(Cpl/Csf/Hvap/(Cpl*mul/kl)**n)**3
+        h = A**(1/3.)*q**(2/3.)
+    else:
+        raise Exception('Either q or Te is needed for this correlation')
     return h
 
-#print [Rohsenow(Te=i, Cpl=4180, kl=0.688, mul=2.75E-4, sigma=0.0588, Hvap=2.25E6,
-#            rhol=958, rhog=0.597, Csf=0.013, n=1) for i in [4.3, 9.1, 13]]
 
-#print [Rohsenow(Te=5, Cpl=4180, kl=0.688, mul=2.75E-4, sigma=0.0588, Hvap=2.25E6, rhol=958, rhog=0.597)]
-
-def McNelly(Te, P, Cpl, kl, sigma, Hvap, rhol, rhog):
+def McNelly(rhol, rhog, kl, Cpl, Hvap, sigma, P, Te=None, q=None):
     r'''Calculates heat transfer coefficient for a evaporator operating
     in the nucleate boiling regime according to [2]_ as presented in [1]_.
 
+    Either heat flux or excess temperature is required.
+
+    With `Te` specified:
+    
     .. math::
         h = \left(0.225\left(\frac{\Delta T_e C_{p,l}}{H_{vap}}\right)^{0.69}
         \left(\frac{P k_L}{\sigma}\right)^{0.31}
         \left(\frac{\rho_L}{\rho_V}-1\right)^{0.33}\right)^{1/0.31}
 
+    With `q` specified:
+    
+    .. math::
+        h = 0.225\left(\frac{q C_{p,l}}{H_{vap}}\right)^{0.69} \left(\frac{P 
+        k_L}{\sigma}\right)^{0.31}\left(\frac{\rho_L}{\rho_V}-1\right)^{0.33}
+
     Parameters
     ----------
-    Te : float
-        Excess wall temperature, [K]
-    P : float
-        Saturation pressure of fluid, [Pa]
-    Cpl : float
-        Heat capacity of liquid [J/kg/K]
-    kl : float
-        Thermal conductivity of liquid [W/m/K]
-    sigma : float
-        Surface tension of liquid [N/m]
-    Hvap : float
-        Heat of vaporization of the fluid at P, [J/kg]
     rhol : float
         Density of the liquid [kg/m^3]
     rhog : float
         Density of the produced gas [kg/m^3]
-
+    kl : float
+        Thermal conductivity of liquid [W/m/K]
+    Cpl : float
+        Heat capacity of liquid [J/kg/K]
+    Hvap : float
+        Heat of vaporization of the fluid at P, [J/kg]
+    sigma : float
+        Surface tension of liquid [N/m]
+    P : float
+        Saturation pressure of fluid, [Pa]
+    Te : float, optional
+        Excess wall temperature, [K]
+    q : float, optional
+        Heat flux, [W/m^2]
+    
     Returns
     -------
     h : float
@@ -141,44 +170,58 @@ def McNelly(Te, P, Cpl, kl, sigma, Hvap, rhol, rhog):
     .. [2] McNelly M. J.: "A correlation of the rates of heat transfer to n
        ucleate boiling liquids," J. Imp Coll. Chem Eng Soc 7:18, 1953.
     '''
-    h = (0.225*(Te*Cpl/Hvap)**0.69*(P*kl/sigma)**0.31*(rhol/rhog-1.)**0.33
-        )**(1./0.31)
+    if Te:
+        h = (0.225*(Te*Cpl/Hvap)**0.69*(P*kl/sigma)**0.31*(rhol/rhog-1.)**0.33
+            )**(1./0.31)
+    elif q:
+        h = 0.225*(q*Cpl/Hvap)**0.69*(P*kl/sigma)**0.31*(rhol/rhog-1.)**0.33
+    else:
+        raise Exception('Either q or Te is needed for this correlation')
     return h
 
 
-#print [McNelly(Te=4.3, P=101325, Cpl=4180., kl=0.688, sigma=0.0588, Hvap=2.25E6, rhol=958., rhog=0.597)] # Water
-#print [McNelly(Te=9.1, P=101325., Cpl=4472., kl=0.502, sigma=0.0325, Hvap=1.37E6, rhol=689., rhog=0.843)] # Ammonia
-
-
-def Forster_Zuber(Te, dPSat, Cpl, kl, mul, sigma, Hvap, rhol, rhog):
+def Forster_Zuber(rhol, rhog, mul, kl, Cpl, Hvap, sigma, dPsat, Te=None, q=None):
     r'''Calculates heat transfer coefficient for a evaporator operating
     in the nucleate boiling regime according to [2]_ as presented in [1]_.
 
+    Either heat flux or excess temperature is required.
+
+    With `Te` specified:
+    
     .. math::
         h = 0.00122\left(\frac{k_L^{0.79} C_{p,l}^{0.45}\rho_L^{0.49}}
         {\sigma^{0.5}\mu_L^{0.29} H_{vap}^{0.24} \rho_V^{0.24}}\right)
         \Delta T_e^{0.24} \Delta P_{sat}^{0.75}
 
+    With `q` specified:
+    
+    .. math::
+        h = \left[0.00122\left(\frac{k_L^{0.79} C_{p,l}^{0.45}\rho_L^{0.49}}
+        {\sigma^{0.5}\mu_L^{0.29} H_{vap}^{0.24} \rho_V^{0.24}}\right) \Delta 
+        P_{sat}^{0.75} q^{0.24}\right]^{\frac{1}{1.24}}
+
     Parameters
     ----------
-    Te : float
-        Excess wall temperature, [K]
-    dPSat : float
-        Difference in Saturation pressure of fluid at Te and T, [Pa]
-    Cpl : float
-        Heat capacity of liquid [J/kg/K]
-    kl : float
-        Thermal conductivity of liquid [W/m/K]
-    mul : float
-        Viscosity of liquid [Pa*s]
-    sigma : float
-        Surface tension of liquid [N/m]
-    Hvap : float
-        Heat of vaporization of the fluid at P, [J/kg]
     rhol : float
         Density of the liquid [kg/m^3]
     rhog : float
         Density of the produced gas [kg/m^3]
+    mul : float
+        Viscosity of liquid [Pa*s]
+    kl : float
+        Thermal conductivity of liquid [W/m/K]
+    Cpl : float
+        Heat capacity of liquid [J/kg/K]
+    Hvap : float
+        Heat of vaporization of the fluid at P, [J/kg]
+    sigma : float
+        Surface tension of liquid [N/m]
+    dPsat : float
+        Difference in saturation pressure of fluid at Te and T, [Pa]
+    Te : float, optional
+        Excess wall temperature, [K]
+    q : float, optional
+        Heat flux, [W/m^2]
 
     Returns
     -------
@@ -193,7 +236,7 @@ def Forster_Zuber(Te, dPSat, Cpl, kl, mul, sigma, Hvap, rhol, rhog):
     --------
     Water boiling, with excess temperature of 4.3K from [1]_.
 
-    >>> Forster_Zuber(Te=4.3, dPSat=3906*4.3, Cpl=4180., kl=0.688,
+    >>> Forster_Zuber(Te=4.3, dPsat=3906*4.3, Cpl=4180., kl=0.688,
     ... mul=0.275E-3, sigma=0.0588, Hvap=2.25E6, rhol=958., rhog=0.597)
     3519.9239897462644
 
@@ -207,36 +250,43 @@ def Forster_Zuber(Te, dPSat, Cpl, kl, mul, sigma, Hvap, rhol, rhog):
     .. [3] Serth, R. W., Process Heat Transfer: Principles,
        Applications and Rules of Thumb. 2E. Amsterdam: Academic Press, 2014.
     '''
-    h = 0.00122*(kl**0.79*Cpl**0.45*rhol**0.49/sigma**0.5/mul**0.29/Hvap**0.24/rhog**0.24)*Te**0.24*dPSat**0.75
+    if Te:
+        h = 0.00122*(kl**0.79*Cpl**0.45*rhol**0.49/sigma**0.5/mul**0.29/Hvap**0.24/rhog**0.24)*Te**0.24*dPsat**0.75
+    elif q:
+        h = (0.00122*(kl**0.79*Cpl**0.45*rhol**0.49/sigma**0.5/mul**0.29/Hvap**0.24/rhog**0.24)*q**0.24*dPsat**0.75)**(1/1.24)
+    else:
+        raise Exception('Either q or Te is needed for this correlation')
     return h
 
-#print [Forster_Zuber(Te=4.3, dPSat=3906*4.3, Cpl=4180., kl=0.688, mul=0.275E-3,
-#                    sigma=0.0588, Hvap=2.25E6, rhol=958., rhog=0.597)]
-#print [Forster_Zuber(Te=9.1, dPSat=3906*9.1, Cpl=4180., kl=0.688, mul=0.275E-3,
-#                    sigma=0.0588, Hvap=2.25E6, rhol=958., rhog=0.597)]
-#print [Forster_Zuber(Te=13, dPSat=3906*13, Cpl=4180., kl=0.688, mul=0.275E-3,
-#                    sigma=0.0588, Hvap=2.25E6, rhol=958., rhog=0.597)]
-#print  [Forster_Zuber(Te=16.2, dPSat=106300., Cpl=2730., kl=0.086, mul=156E-6, sigma=.0082,
-#                  Hvap=272E3, rhol=567., rhog=18.09)]
-#
 
-
-def Montinsky(Te, P, Pc):
+def Montinsky(P, Pc, Te=None, q=None):
     r'''Calculates heat transfer coefficient for a evaporator operating
     in the nucleate boiling regime according to [2]_ as presented in [1]_.
 
+    Either heat flux or excess temperature is required.
+
+    With `Te` specified:
+    
     .. math::
-        h = \left(0.00417P_c^{0.69} \Delta Te^{0.7}\left[1.8(P/P_c)^{0.17} +
+        h = \left(0.00417P_c^{0.69} \Delta Te^{0.7}\left[1.8(P/P_c)^{0.17} + 
         4(P/P_c)^{1.2} + 10(P/P_c)^{10}\right]\right)^{1/0.3}
+
+    With `q` specified:
+    
+    .. math::
+        h = 0.00417P_c^{0.69} q^{0.7}\left[1.8(P/P_c)^{0.17} + 4(P/P_c)^{1.2} 
+        + 10(P/P_c)^{10}\right]
 
     Parameters
     ----------
-    Te : float
-        Excess wall temperature, [K]
     P : float
         Saturation pressure of fluid, [Pa]
     Pc : float
         Critical pressure of fluid, [Pa]
+    Te : float, optional
+        Excess wall temperature, [K]
+    q : float, optional
+        Heat flux, [W/m^2]
 
     Returns
     -------
@@ -256,7 +306,7 @@ def Montinsky(Te, P, Pc):
     --------
     Water boiling at 1 atm, with excess temperature of 4.3K from [1]_.
 
-    >>> Montinsky(Te=4.3, P=101325., Pc=22048321.0)
+    >>> Montinsky(P=101325, Pc=22048321, Te=4.3, )
     1185.0509770292663
 
     References
@@ -271,23 +321,29 @@ def Montinsky(Te, P, Pc):
     .. [4] Serth, R. W., Process Heat Transfer: Principles,
        Applications and Rules of Thumb. 2E. Amsterdam: Academic Press, 2014.
     '''
-    h = (0.00417*(Pc/1000.)**0.69*Te**0.7*(1.8*(P/Pc)**0.17 + 4*(P/Pc)**1.2
-    +10*(P/Pc)**10))**(1/0.3)
+    if Te:
+        h = (0.00417*(Pc/1000.)**0.69*Te**0.7*(1.8*(P/Pc)**0.17 + 4*(P/Pc)**1.2
+        +10*(P/Pc)**10))**(1/0.3)
+    elif q:
+        h = (0.00417*(Pc/1000.)**0.69*q**0.7*(1.8*(P/Pc)**0.17 + 4*(P/Pc)**1.2
+        +10*(P/Pc)**10))
+    else:
+        raise Exception('Either q or Te is needed for this correlation')
     return h
-
-#print [Montinsky(Te=i, P=101325., Pc=112E5) for i in [4.3, 9.1, 13]]
-#print [Montinsky(Te=i, P=101325., Pc=48.9E5) for i in [4.3, 9.1, 13]]
-#print [Montinsky(Te=16.2, P=310.3E3, Pc=2550E3)]
 
 
 _angles_Stephan_Abdelsalam = {'general': 35, 'water': 45, 'hydrocarbon': 35,
 'cryogenic': 1, 'refrigerant': 35}
 
-def Stephan_Abdelsalam(Te, Tsat, Cpl, kl, mul, sigma, Hvap, rhol, rhog, 
-                       kw=401., rhow=8.96, Cpw=384, angle=None, correlation='general'):
+def Stephan_Abdelsalam(rhol, rhog, mul, kl, Cpl, Hvap, sigma, Tsat, Te=None, 
+                       q=None, kw=401, rhow=8.96, Cpw=384, angle=None, 
+                       correlation='general'):
     r'''Calculates heat transfer coefficient for a evaporator operating
     in the nucleate boiling regime according to [2]_ as presented in [1]_.
     Five variants are possible.
+
+    Either heat flux or excess temperature is required. The forms for `Te` are
+    not shown here, but are similar to those of the other functions.
 
     .. math::
         h = 0.23X_1^{0.674} X_2^{0.35} X_3^{0.371} X_5^{0.297} X_8^{-1.73} k_L/d_B
@@ -310,7 +366,7 @@ def Stephan_Abdelsalam(Te, Tsat, Cpl, kl, mul, sigma, Hvap, rhol, rhog,
 
         D_b = 0.0146\theta\sqrt{\frac{2\sigma}{g(\rho_L-\rho_g)}}
 
-    Respectively, the following four correlatoins are for water, hydrocarbons,
+    Respectively, the following four correlations are for water, hydrocarbons,
     cryogenic fluids, and refrigerants.
 
     .. math::
@@ -324,29 +380,31 @@ def Stephan_Abdelsalam(Te, Tsat, Cpl, kl, mul, sigma, Hvap, rhol, rhog,
 
     Parameters
     ----------
-    Te : float
-        Excess wall temperature, [K]
-    Tsat : float
-        Saturation temperature at operating pressure [Pa]
-    Cpl : float
-        Heat capacity of liquid [J/kg/K]
-    kl : float
-        Thermal conductivity of liquid [W/m/K]
-    mul : float
-        Viscosity of liquid [Pa*s]
-    sigma : float
-        Surface tension of liquid [N/m]
-    Hvap : float
-        Heat of vaporization of the fluid at P, [J/kg]
     rhol : float
         Density of the liquid [kg/m^3]
     rhog : float
         Density of the produced gas [kg/m^3]
-    kw : float
+    mul : float
+        Viscosity of liquid [Pa*s]
+    kl : float
+        Thermal conductivity of liquid [W/m/K]
+    Cpl : float
+        Heat capacity of liquid [J/kg/K]
+    Hvap : float
+        Heat of vaporization of the fluid at P, [J/kg]
+    sigma : float
+        Surface tension of liquid [N/m]
+    Tsat : float
+        Saturation temperature at operating pressure [Pa]
+    Te : float, optional
+        Excess wall temperature, [K]
+    q : float, optional
+        Heat flux, [W/m^2]
+    kw : float, optional
         Thermal conductivity of wall (only for cryogenics) [W/m/K]
-    rhow : float
+    rhow : float, optional
         Density of the wall (only for cryogenics) [kg/m^3]
-    Cpw : float
+    Cpw : float, optional
         Heat capacity of wall (only for cryogenics) [J/kg/K]
     angle : float, optional
         Contact angle of bubble with wall [degrees]
@@ -387,12 +445,17 @@ def Stephan_Abdelsalam(Te, Tsat, Cpl, kl, mul, sigma, Hvap, rhol, rhog,
     .. [3] Serth, R. W., Process Heat Transfer: Principles,
        Applications and Rules of Thumb. 2E. Amsterdam: Academic Press, 2014.
     '''
+    if Te is None and q is None:
+        raise Exception('Either q or Te is needed for this correlation')
     angle = _angles_Stephan_Abdelsalam[correlation]
 
     db = 0.0146*angle*(2*sigma/g/(rhol-rhog))**0.5
     diffusivity_L = kl/rhol/Cpl
 
-    X1 = db/kl/Tsat*Te
+    if Te:
+        X1 = db/kl/Tsat*Te
+    else:
+        X1 = db/kl/Tsat*q
     X2 = diffusivity_L**2*rhol/sigma/db
     X3 = Hvap*db**2/diffusivity_L**2
     X4 = Hvap*db**2/diffusivity_L**2
@@ -402,15 +465,30 @@ def Stephan_Abdelsalam(Te, Tsat, Cpl, kl, mul, sigma, Hvap, rhol, rhog,
     X8 = (rhol-rhog)/rhol
 
     if correlation == 'general':
-        h = (0.23*X1**0.674*X2**0.35*X3**0.371*X5**0.297*X8**-1.73*kl/db)**(1/0.326)
+        if Te:
+            h = (0.23*X1**0.674*X2**0.35*X3**0.371*X5**0.297*X8**-1.73*kl/db)**(1/0.326)
+        else:
+            h = (0.23*X1**0.674*X2**0.35*X3**0.371*X5**0.297*X8**-1.73*kl/db)
     elif correlation == 'water':
-        h = (0.246E7*X1**0.673*X4**-1.58*X3**1.26*X8**5.22*kl/db)**(1/0.327)
+        if Te:
+            h = (0.246E7*X1**0.673*X4**-1.58*X3**1.26*X8**5.22*kl/db)**(1/0.327)
+        else:
+            h = (0.246E7*X1**0.673*X4**-1.58*X3**1.26*X8**5.22*kl/db)
     elif correlation == 'hydrocarbon':
-        h = (0.0546*X5**0.335*X1**0.67*X8**-4.33*X4**0.248*kl/db)**(1/0.33)
+        if Te:
+            h = (0.0546*X5**0.335*X1**0.67*X8**-4.33*X4**0.248*kl/db)**(1/0.33)
+        else:
+            h = (0.0546*X5**0.335*X1**0.67*X8**-4.33*X4**0.248*kl/db)
     elif correlation == 'cryogenic':
-        h = (4.82*X1**0.624*X7**0.117*X3**0.374*X4**-0.329*X5**0.257*kl/db)**(1/0.376)
+        if Te:
+            h = (4.82*X1**0.624*X7**0.117*X3**0.374*X4**-0.329*X5**0.257*kl/db)**(1/0.376)
+        else:
+            h = (4.82*X1**0.624*X7**0.117*X3**0.374*X4**-0.329*X5**0.257*kl/db)
     else:
-        h = (207*X1**0.745*X5**0.581*X6**0.533*kl/db)**(1/0.255)
+        if Te:
+            h = (207*X1**0.745*X5**0.581*X6**0.533*kl/db)**(1/0.255)
+        else:
+            h = (207*X1**0.745*X5**0.581*X6**0.533*kl/db)
     return h
 
 #print [Stephan_Abdelsalam(Te=16.2, Tsat=437.5, Cpl=2730., kl=0.086, mul=156E-6,
@@ -419,23 +497,35 @@ def Stephan_Abdelsalam(Te, Tsat, Cpl, kl, mul, sigma, Hvap, rhol, rhog,
 #print [Stephan_Abdelsalam(Te=16.2, Tsat=437.5, Cpl=2730., kl=0.086, mul=156E-6,
 #                  sigma=0.0082, Hvap=272E3, rhol=567, rhog=18.09, angle=35)]
 
-def HEDH_Taborek(Te, P, Pc):
+def HEDH_Taborek(P, Pc, Te=None, q=None):
     r'''Calculates heat transfer coefficient for a evaporator operating
     in the nucleate boiling regime according to Taborek (1986)
     as described in [1]_ and as presented in [2]_. Modification of [3]_.
 
+    Either heat flux or excess temperature is required.
+
+    With `Te` specified:
+    
     .. math::
         h = \left(0.00417P_c^{0.69} \Delta Te^{0.7}\left[2.1P_r^{0.27} +
         \left(9 + (1-Pr^2)^{-1}\right)P_r^2 \right]\right)^{1/0.3}
 
+    With `q` specified:
+    
+    .. math::
+        h = 0.00417P_c^{0.69} q^{0.7}\left[2.1P_r^{0.27} + \left(9 + (1-Pr^2
+        )^{-1}\right)P_r^2\right]
+
     Parameters
     ----------
-    Te : float
-        Excess wall temperature, [K]
     P : float
         Saturation pressure of fluid, [Pa]
     Pc : float
         Critical pressure of fluid, [Pa]
+    Te : float, optional
+        Excess wall temperature, [K]
+    q : float, optional
+        Heat flux, [W/m^2]
 
     Returns
     -------
@@ -464,27 +554,45 @@ def HEDH_Taborek(Te, P, Pc):
        Applications and Rules of Thumb. 2E. Amsterdam: Academic Press, 2014.
     '''
     Pr = P/Pc
-    h = (0.00417*(Pc/1000.)**0.69*Te**0.7*(2.1*Pr**0.27
-    + (9 + 1./(1-Pr**2))*Pr**2))**(1/0.3)
+    if Te:
+        h = (0.00417*(Pc/1000.)**0.69*Te**0.7*(2.1*Pr**0.27
+        + (9 + 1./(1-Pr**2))*Pr**2))**(1/0.3)
+    elif q:
+        h = (0.00417*(Pc/1000.)**0.69*q**0.7*(2.1*Pr**0.27
+        + (9 + 1./(1-Pr**2))*Pr**2))
+    else:
+        raise Exception('Either q or Te is needed for this correlation')
     return h
 
 
-def Bier(Te, P, Pc):
+def Bier(P, Pc, Te=None, q=None):
     r'''Calculates heat transfer coefficient for a evaporator operating
     in the nucleate boiling regime according to [1]_ .
+
+    Either heat flux or excess temperature is required.
+
+    With `Te` specified:
 
     .. math::
         h = \left(0.00417P_c^{0.69} \Delta Te^{0.7}\left[0.7 + 2P_r\left(4 +
         \frac{1}{1-P_r}\right)  \right]\right)^{1/0.3}
 
+    With `q` specified:
+
+    .. math::
+        h = 0.00417P_c^{0.69} \Delta q^{0.7}\left[0.7 + 2P_r\left(4 + 
+        \frac{1}{1-P_r}\right)  \right]
+
     Parameters
     ----------
-    Te : float
-        Excess wall temperature, [K]
     P : float
         Saturation pressure of fluid, [Pa]
     Pc : float
         Critical pressure of fluid, [Pa]
+    Te : float, optional
+        Excess wall temperature, [K]
+    q : float, optional
+        Heat flux, [W/m^2]
 
     Returns
     -------
@@ -500,7 +608,7 @@ def Bier(Te, P, Pc):
     --------
     Water boiling at 1 atm, with excess temperature of 4.3 K from [1]_.
 
-    >>> Bier(4.3, 101325., 22048321.0)
+    >>> Bier(101325., 22048321.0, Te=4.3)
     1290.5349471503353
 
     References
@@ -509,30 +617,45 @@ def Bier(Te, P, Pc):
        Transfer, 3E. New York: McGraw-Hill, 1998.
     '''
     Pr = P/Pc
-    h = (0.00417*(Pc/1000.)**0.69*Te**0.7*(0.7 + 2*Pr*(4 + 1/(1-Pr))))**(1/0.3)
+    if Te:
+        h = (0.00417*(Pc/1000.)**0.69*Te**0.7*(0.7 + 2*Pr*(4 + 1/(1.-Pr))))**(1/0.3)
+    elif q:
+        h = 0.00417*(Pc/1000.)**0.69*q**0.7*(0.7 + 2*Pr*(4 + 1/(1. - Pr)))
+    else:
+        raise Exception('Either q or Te is needed for this correlation')
     return h
 
-#print [Bier(Te=i, P=101325., Pc=22048321.0) for i in [4.3, 9.1, 13]]
-#print [Bier(Te=i, P=101325., Pc=48.9E5) for i in [4.3, 9.1, 13]]
 
-def Cooper(Te, P, Pc, MW, Rp=1E-6):
+def Cooper(P, Pc, MW, Te=None, q=None, Rp=1E-6):
     r'''Calculates heat transfer coefficient for a evaporator operating
     in the nucleate boiling regime according to [2]_ as presented in [1]_.
+
+    Either heat flux or excess temperature is required.
+
+    With `Te` specified:
 
     .. math::
         h = \left(55\Delta Te^{0.67} \frac{P}{P_c}^{(0.12 - 0.2\log_{10} R_p)}
         (-\log_{10} \frac{P}{P_c})^{-0.55} MW^{-0.5}\right)^{1/0.33}
 
+    With `q` specified:
+
+    .. math::
+        h = 55q^{0.67} \frac{P}{P_c}^{(0.12 - 0.2\log_{10} R_p)}(-\log_{10} 
+        \frac{P}{P_c})^{-0.55} MW^{-0.5}
+
     Parameters
     ----------
-    Te : float
-        Excess wall temperature, [K]
     P : float
         Saturation pressure of fluid, [Pa]
     Pc : float
         Critical pressure of fluid, [Pa]
     MW : float
         Molecular weight of fluid, [g/mol]
+    Te : float, optional
+        Excess wall temperature, [K]
+    q : float, optional
+        Heat flux, [W/m^2]
     Rp : float
         Roughness parameter of the surface (1 micrometer default), [m]
 
@@ -549,13 +672,11 @@ def Cooper(Te, P, Pc, MW, Rp=1E-6):
     If unchanged, the roughness parameter's logarithm gives a value of 0.12
     as an exponent of reduced pressure.
 
-    No further work is required.
-
     Examples
     --------
     Water boiling at 1 atm, with excess temperature of 4.3 K from [1]_.
 
-    >>> Cooper(Te=4.3, P=101325., Pc=22048321.0, MW=18.02)
+    >>> Cooper(P=101325., Pc=22048321.0, MW=18.02, Te=4.3)
     1558.1435442153575
 
     References
@@ -568,14 +689,15 @@ def Cooper(Te, P, Pc, MW, Rp=1E-6):
        Applications and Rules of Thumb. 2E. Amsterdam: Academic Press, 2014.
     '''
     Rp*= 1E6
-    h = (55*Te**0.67*(P/Pc)**(0.12 - 0.2*log10(Rp))*(
-         -log10(P/Pc))**-0.55*MW**-0.5)**(1/0.33)
+    if Te:
+        h = (55*Te**0.67*(P/Pc)**(0.12 - 0.2*log10(Rp))*(
+             -log10(P/Pc))**-0.55*MW**-0.5)**(1/0.33)
+    elif q:
+        h = (55*q**0.67*(P/Pc)**(0.12 - 0.2*log10(Rp))*(
+             -log10(P/Pc))**-0.55*MW**-0.5)
+    else:
+        raise Exception('Either q or Te is needed for this correlation')
     return h
-
-#print [Cooper(Te=i, P=101325., Pc=22048321.0, MW=18.02) for i in [4.3, 9.1, 13]]
-#print [Cooper(Te=i, P=101325., Pc=48.9E5, MW=78.11184) for i in [4.3, 9.1, 13]]
-#print [Cooper(Te=16.2, P=310.3E3, Pc=2550E3, MW=110.37)]
-
 
 
 h0_Gorenflow_1993 = {'74-82-8': 7000, '74-84-0': 4500, '74-98-6': 4000, 
@@ -779,7 +901,7 @@ def h_nucleic(Te=None, Tsat=None, P=None, dPSat=None, dPdT=None,
     elif Method == 'HEDH-Taborek':
         h = HEDH_Taborek(Te=Te, P=P, Pc=Pc)
     elif Method == 'Forster-Zuber':
-        h = Forster_Zuber(Te=Te, dPSat=dPSat, Cpl=Cpl, kl=kl, mul=mul,
+        h = Forster_Zuber(Te=Te, dPsat=dPsat, Cpl=Cpl, kl=kl, mul=mul,
                           sigma=sigma, Hvap=Hvap, rhol=rhol, rhog=rhog)
     elif Method == 'Rohsenow':
         h = Rohsenow(Te=Te, Cpl=Cpl, kl=kl, mul=mul, sigma=sigma, Hvap=Hvap,
@@ -971,7 +1093,6 @@ def HEDH_Montinsky(P, Pc):
     Pr = P/Pc
     q = 367*(Pc/1000.)*Pr**0.35*(1-Pr)**0.9
     return q
-#print [HEDH_Montinsky(P=310.3E3, Pc=2550E3)]
 
 
 def qmax_boiling(rhol=None, rhog=None, sigma=None, Hvap=None, D=None, P=None, Pc=None,

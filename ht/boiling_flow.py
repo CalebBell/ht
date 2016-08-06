@@ -70,16 +70,8 @@ def Lazarek_Black(m, D, mul, kl, Hvap, q=None, Te=None):
 
     Notes
     -----
-    [1]_ has been reviewed. The code to derive the form with `Te` specified is
-    as follows:
+    [1]_ has been reviewed. 
     
-    >>> from sympy import *
-    >>> Relo, Bgish, kl, D, h, Te = symbols('Relo, Bgish, kl, D, h, Te',
-    ... positive=True, real=True)
-    >>> solve(Eq(h, 30*Relo**Rational(857,1000)*(Bgish*h*Te)**Rational(714,
-    ... 1000)*kl/D), h)
-    [27000*30**(71/143)*Bgish**(357/143)*Relo**(857/286)*Te**(357/143)*kl**(500/143)/D**(500/143)]
-
     [2]_ claims it was developed for a range of quality 0-0.6,
     Relo 860-5500, mass flux 125-750 kg/m^2/s, q of 1.4-38 W/cm^2, and with a
     pipe diameter of 3.1 mm. Developed with data for R113 only.
@@ -163,13 +155,7 @@ def Li_Wu(m, x, D, rhol, rhog, mul, kl, Hvap, sigma, q=None, Te=None):
 
     Notes
     -----
-    [1]_ has been reviewed. The code to derive the form with `Te` specified is
-    as follows:
-    
-    >>> from sympy import *
-    >>> h, A, Te, G, Hvap = symbols('h, A, Te, G, Hvap', positive=True, real=True)
-    >>> solve(Eq(h, A*(h*Te/G/Hvap)**0.3), h)
-    [A**(10/7)*Te**(3/7)/(G**(3/7)*Hvap**(3/7))]
+    [1]_ has been reviewed. 
     
     [1]_ used 18 sets of experimental data to derive the results, covering 
     hydraulic diameters from 0.19 to 3.1 mm and 12 different fluids.
@@ -255,13 +241,7 @@ def Sun_Mishima(m, D, rhol, rhog, mul, kl, Hvap, sigma, q=None, Te=None):
 
     Notes
     -----
-    [1]_ has been reviewed. The code to derive the form with `Te` specified is
-    as follows:
-    
-    >>> from sympy import *
-    >>> h, A, Te, G, Hvap = symbols('h, A, Te, G, Hvap', positive=True, real=True)
-    >>> solve(Eq(h, A*(h*Te/G/Hvap)**0.54), h)
-    [A**(50/23)*Te**(27/23)/(G**(27/23)*Hvap**(27/23))]
+    [1]_ has been reviewed. 
     
     [1]_ used 2501 data points to derive the results, covering 
     hydraulic diameters from 0.21 to 6.05 mm and 11 different fluids.
@@ -554,13 +534,7 @@ def Yun_Heo_Kim(m, x, D, rhol, mul, Hvap, sigma, q=None, Te=None):
 
     Notes
     -----
-    [1]_ has been reviewed. The code to derive the form with `Te` specified is
-    as follows:
-    
-    >>> from sympy import *
-    >>> h, A = symbols('h, A', positive=True, real=True)
-    >>> solve(Eq(h, A*(h)**0.1993), h)
-    [A**(10000/8707)]        
+    [1]_ has been reviewed. 
 
     Examples
     --------
@@ -598,7 +572,7 @@ def Yun_Heo_Kim(m, x, D, rhol, mul, Hvap, sigma, q=None, Te=None):
 
 
 def Chen_Edelstein(m, x, D, rhol, rhog, mul, mug, kl, Cpl, Hvap, sigma, 
-                   dPSat, Te):
+                   dPsat, Te):
     r'''Calculates heat transfer coefficient for film boiling of saturated
     fluid in any orientation of flow. Correlation
     is developed in [1]_ and [2]_, and reviewed in [3]_. This model is one of 
@@ -650,7 +624,7 @@ def Chen_Edelstein(m, x, D, rhol, rhog, mul, mug, kl, Cpl, Hvap, sigma,
         Heat of vaporization of liquid [J/kg]
     sigma : float
         Surface tension of liquid [N/m]
-    dPSat : float
+    dPsat : float
         Difference in Saturation pressure of fluid at Te and T, [Pa]
     Te : float
         Excess temperature of wall, [K]
@@ -670,7 +644,7 @@ def Chen_Edelstein(m, x, D, rhol, rhog, mul, mug, kl, Cpl, Hvap, sigma,
     --------
     >>> Chen_Edelstein(m=0.106, x=0.2, D=0.0212, rhol=567, rhog=18.09, 
     ... mul=156E-6, mug=7.11E-6, kl=0.086, Cpl=2730, Hvap=2E5, sigma=0.02, 
-    ... dPSat=1E5, Te=3)
+    ... dPsat=1E5, Te=3)
     3289.058731974052
 
     See Also
@@ -701,7 +675,7 @@ def Chen_Edelstein(m, x, D, rhol, rhog, mul, mug, kl, Cpl, Hvap, sigma,
     F = (1 + Xtt**-0.5)**1.78
     Re = Rel*F**1.25
     S = 0.9622 - 0.5822*atan(Re/6.18E4)
-    hnb = Forster_Zuber(Te=Te, dPSat=dPSat, Cpl=Cpl, kl=kl, mul=mul, sigma=sigma,
+    hnb = Forster_Zuber(Te=Te, dPsat=dPsat, Cpl=Cpl, kl=kl, mul=mul, sigma=sigma,
                        Hvap=Hvap, rhol=rhol, rhog=rhog)
     h = hnb*S + hl*F
     return h
@@ -709,7 +683,7 @@ def Chen_Edelstein(m, x, D, rhol, rhog, mul, mug, kl, Cpl, Hvap, sigma,
 
 
 def Chen_Bennett(m, x, D, rhol, rhog, mul, mug, kl, Cpl, Hvap, sigma, 
-                   dPSat, Te):
+                   dPsat, Te):
     r'''Calculates heat transfer coefficient for film boiling of saturated
     fluid in any orientation of flow. Correlation
     is developed in [1]_ and [2]_, and reviewed in [3]_. This model is one of 
@@ -763,7 +737,7 @@ def Chen_Bennett(m, x, D, rhol, rhog, mul, mug, kl, Cpl, Hvap, sigma,
         Heat of vaporization of liquid [J/kg]
     sigma : float
         Surface tension of liquid [N/m]
-    dPSat : float
+    dPsat : float
         Difference in Saturation pressure of fluid at Te and T, [Pa]
     Te : float
         Excess temperature of wall, [K]
@@ -783,7 +757,7 @@ def Chen_Bennett(m, x, D, rhol, rhog, mul, mug, kl, Cpl, Hvap, sigma,
     --------
     >>> Chen_Bennett(m=0.106, x=0.2, D=0.0212, rhol=567, rhog=18.09, 
     ... mul=156E-6, mug=7.11E-6, kl=0.086, Cpl=2730, Hvap=2E5, sigma=0.02, 
-    ... dPSat=1E5, Te=3)
+    ... dPsat=1E5, Te=3)
     4938.275351219369
 
     See Also
@@ -815,7 +789,7 @@ def Chen_Bennett(m, x, D, rhol, rhog, mul, mug, kl, Cpl, Hvap, sigma,
     X0 = 0.041*(sigma/(g*(rhol-rhog)))**0.5
     S = (1 - exp(-F*hl*X0/kl))/(F*hl*X0/kl)
     
-    hnb = Forster_Zuber(Te=Te, dPSat=dPSat, Cpl=Cpl, kl=kl, mul=mul, sigma=sigma,
+    hnb = Forster_Zuber(Te=Te, dPsat=dPsat, Cpl=Cpl, kl=kl, mul=mul, sigma=sigma,
                        Hvap=Hvap, rhol=rhol, rhog=rhog)
     h = hnb*S + hl*F
     return h
@@ -887,7 +861,7 @@ def Liu_Winterton(m, x, D, rhol, rhog, mul, kl, Cpl, MW, P,  Pc, Te):
     Examples
     --------
     >>> Liu_Winterton(m=1, x=0.4, D=0.3, rhol=567., rhog=18.09, kl=0.086, 
-    mul=156E-6, Cpl=2300, P=1E6, Pc=22E6, MW=44.02, Te=7)
+    ... mul=156E-6, Cpl=2300, P=1E6, Pc=22E6, MW=44.02, Te=7)
     4747.749477190532
 
     References
