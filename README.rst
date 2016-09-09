@@ -1,6 +1,6 @@
-======
+==
 ht
-======
+==
 
 .. image:: http://img.shields.io/pypi/v/ht.svg?style=flat
    :target: https://pypi.python.org/pypi/ht
@@ -11,7 +11,7 @@ ht
 .. image:: http://img.shields.io/travis/CalebBell/ht/master.svg?style=flat
    :target: https://travis-ci.org/CalebBell/ht
    :alt: Build_status
-.. image:: http://img.shields.io/badge/license-GPL3-blue.svg?style=flat
+.. image:: http://img.shields.io/badge/license-MIT-blue.svg?style=flat 
    :target: https://github.com/CalebBell/ht/blob/master/LICENSE.txt
    :alt: license
 .. image:: https://img.shields.io/coveralls/CalebBell/ht.svg
