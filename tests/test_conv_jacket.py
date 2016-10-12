@@ -67,4 +67,4 @@ def test_conv_jacket():
     assert_allclose(h, 5685.532991556428)
 
     h = Stein_Schmidt(.1, 0.6, 0.65, 0.6, 0.025, 971.8, 4178.1, 0.615, 798E-6)
-    assert_allclose(h, 146.81000991987679)
+    assert_allclose(h, 151.78819106776797)
