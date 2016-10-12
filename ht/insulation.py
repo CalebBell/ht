@@ -28,10 +28,10 @@ __all__ = ['nearest_material', 'k_material', 'rho_material', 'Cp_material',
            'building_materials', 'refractories', 'ASHRAE', 'ASHRAE_k',
            'refractory_VDI_k', 'refractory_VDI_Cp', 'materials_dict']
 
-# building_materials In VDI Heat Atlas; full table in DIN EN 12524-2000 which
+# building_materials in VDI Heat Atlas; full table in DIN EN 12524-2000 which
 # is used here
 # Format: density, thermal conductivity, heat capacity
-# kg/m^3, W/m/K, and J/kg/K
+# Units: kg/m^3, W/m/K, and J/kg/K
 # A roughly room-teperature value is attached to all values
 
 
@@ -168,7 +168,7 @@ building_materials = {'Asphalt': (2100, 0.7, 1000),
 
 
 # Format for ASHRAE strings: [rho, Cp, k, R, t]
-# [kg/m^3, J/kg/K, W/m/K, m^2*K/W, mm] only t is in non-SI units
+# Units [kg/m^3, J/kg/K, W/m/K, m^2*K/W, mm]; only t is in non-SI units
 
 ASHRAE_board_siding = {'Board, Asbestos/cement': [1900, 1000, 0.57, None, None],
 'Board, Cement': [1150, 840, 0.25, None, None],
