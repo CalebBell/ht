@@ -30,7 +30,6 @@ __all__ = ['R_to_k', 'k_to_R', 'k_to_thermal_resistivity',
 'S_isothermal_sphere_to_plane', 'S_isothermal_pipe_to_plane',
 'S_isothermal_pipe_normal_to_plane',
 'S_isothermal_pipe_to_isothermal_pipe', 'S_isothermal_pipe_to_two_planes',
-'S_isothermal_pipe_eccentric_to_isothermal_pipe',
 'S_isothermal_pipe_eccentric_to_isothermal_pipe']
 
 
