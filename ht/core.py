@@ -54,8 +54,8 @@ def LMTD(Thi, Tho, Tci, Tco, counterflow=True):
 
     Returns
     -------
-    ans : float
-        log-mean temperature difference [K]
+    LMTD : float
+        Log-mean temperature difference [K]
 
     Notes
     -----
@@ -82,6 +82,5 @@ def LMTD(Thi, Tho, Tci, Tco, counterflow=True):
     else:
         dTF1 = Thi-Tci
         dTF2 = Tho-Tco
-    ans = (dTF2-dTF1)/log(dTF2/dTF1)
-    return ans
+    return (dTF2-dTF1)/log(dTF2/dTF1)
 
