@@ -65,8 +65,7 @@ def laminar_T_const():
     .. [3] Gesellschaft, V. D. I., ed. VDI Heat Atlas. 2nd ed. 2010 edition.
        Berlin ; New York: Springer, 2010.
     '''
-    Nu = 3.66
-    return Nu
+    return 3.66
 
 
 def laminar_Q_const():
@@ -96,8 +95,8 @@ def laminar_Q_const():
     .. [3] Gesellschaft, V. D. I., ed. VDI Heat Atlas. 2nd ed. 2010 edition.
         Berlin ; New York: Springer, 2010.
     '''
-    Nu = 48/11.
-    return Nu
+    return 48/11.
+
 ### Laminar - entry region
 
 def laminar_entry_thermal_Hausen(Re=None, Pr=None, L=None, Di=None):
@@ -149,9 +148,8 @@ def laminar_entry_thermal_Hausen(Re=None, Pr=None, L=None, Di=None):
        Hoboken, NJ: Wiley, 2011.
     '''
     Gz = Di/L*Re*Pr
-    Nu = 3.66 + (0.0668*Gz)/(1+0.04*(Gz)**(2/3.))
-    return Nu
-#print [laminar_entry_thermal_Hausen(Re=100000, Pr=1.1, L=5, Di=.5)]
+    return 3.66 + (0.0668*Gz)/(1+0.04*(Gz)**(2/3.))
+
 
 def laminar_entry_Seider_Tate(Re=None, Pr=None, L=None, Di=None, mu=None,
                               mu_w=None):
@@ -263,11 +261,6 @@ def laminar_entry_Baehr_Stephan(Re=None, Pr=None, L=None, Di=None):
     return Nu
 
 
-#print [laminar_entry_Baehr_Stephan(Re=100000, Pr=1.1, L=5, Di=.5)]
-
-
-
-
 ### Turbulent - Equations with more comlicated options
 def turbulent_Dittus_Boelter(Re=None, Pr=None, heating=True, revised=True):
     r'''Calculates internal convection Nusselt number for turbulent flows
@@ -335,8 +328,7 @@ def turbulent_Dittus_Boelter(Re=None, Pr=None, heating=True, revised=True):
         m = 0.0265
     else:
         m = 0.023
-    Nu = m*Re**0.8*Pr**power
-    return Nu
+    return m*Re**0.8*Pr**power
 
 
 def turbulent_Sieder_Tate(Re=None, Pr=None, mu=None, mu_w=None):
@@ -428,8 +420,7 @@ def turbulent_entry_Hausen(Re=None, Pr=None, Di=None, x=None):
     .. [2] H. Hausen, "Neue Gleichungen fÜr die Wärmeübertragung bei freier
        oder erzwungener Stromung,"Allg. Warmetchn., (9): 75-79, 1959.
     '''
-    Nu = 0.037*(Re**0.75 - 180)*Pr**0.42*(1 + (x/Di)**(-2/3.))
-    return Nu
+    return 0.037*(Re**0.75 - 180)*Pr**0.42*(1 + (x/Di)**(-2/3.))
 
 
 ### Regular correlations, Re, Pr and fd only
@@ -472,8 +463,7 @@ def turbulent_Colburn(Re=None, Pr=None):
        Journal of Heat and Mass Transfer 7, no. 12 (December 1964): 1359-84.
        doi:10.1016/0017-9310(64)90125-5.
     '''
-    Nu = 0.023*Re**0.8*Pr**(1/3.)
-    return Nu
+    return 0.023*Re**0.8*Pr**(1/3.)
 
 
 def turbulent_Drexel_McAdams(Re=None, Pr=None):
@@ -513,8 +503,7 @@ def turbulent_Drexel_McAdams(Re=None, Pr=None):
        around Finned Cylinders," February 1, 1945.
        http://ntrs.nasa.gov/search.jsp?R=19930090924.
     '''
-    Nu = 0.021*Re**0.8*Pr**(0.4)
-    return Nu
+    return 0.021*Re**0.8*Pr**(0.4)
 
 
 def turbulent_von_Karman(Re=None, Pr=None, fd=None):
@@ -555,8 +544,7 @@ def turbulent_von_Karman(Re=None, Pr=None, fd=None):
     .. [2] T. von Karman, "The Analogy Between Fluid Friction and Heat
        Transfer," Trans. ASME, (61):705-710,1939.
     '''
-    Nu = fd/8.*Re*Pr/(1 + 5*(fd/8.)**0.5*(Pr-1+log((5*Pr+1)/6.)))
-    return Nu
+    return fd/8.*Re*Pr/(1 + 5*(fd/8.)**0.5*(Pr - 1 + log((5*Pr + 1)/6.)))
 
 
 def turbulent_Prandtl(Re=None, Pr=None, fd=None):
@@ -596,8 +584,7 @@ def turbulent_Prandtl(Re=None, Pr=None, fd=None):
     .. [2] L. Prandt, Fuhrrer durch die Stomungslehre, Vieweg, Braunschweig,
        p. 359, 1944.
     '''
-    Nu = (fd/8.)*Re*Pr/(1+8.7*(fd/8.)**0.5*(Pr-1) )
-    return Nu
+    return (fd/8.)*Re*Pr/(1+8.7*(fd/8.)**0.5*(Pr-1) )
 
 
 def turbulent_Friend_Metzner(Re=None, Pr=None, fd=None):
@@ -639,8 +626,7 @@ def turbulent_Friend_Metzner(Re=None, Pr=None, fd=None):
        Tubes and the Analogy among Heat, Mass, and Momentum Transfer.” AIChE
        Journal 4, no. 4 (December 1, 1958): 393-402. doi:10.1002/aic.690040404.
     '''
-    Nu = (fd/8.)*Re*Pr/(1.2 + 11.8*(fd/8.)**0.5*(Pr-1)*Pr**(-1/3.) )
-    return Nu
+    return (fd/8.)*Re*Pr/(1.2 + 11.8*(fd/8.)**0.5*(Pr-1)*Pr**(-1/3.) )
 
 
 def turbulent_Petukhov_Kirillov_Popov(Re=None, Pr=None, fd=None):
@@ -686,8 +672,7 @@ def turbulent_Petukhov_Kirillov_Popov(Re=None, Pr=None, fd=None):
        Variable Physical Properties," High Temp., (111): 69-83, 1963.
     '''
     C = 1.07 + 900./Re - (0.63/(1+10*Pr))
-    Nu = (fd/8.)*Re*Pr/(C + 12.7*(fd/8.)**0.5*(Pr**(2/3.)-1))
-    return Nu
+    return (fd/8.)*Re*Pr/(C + 12.7*(fd/8.)**0.5*(Pr**(2/3.)-1))
 
 
 def turbulent_Webb(Re=None, Pr=None, fd=None):
@@ -729,8 +714,7 @@ def turbulent_Webb(Re=None, Pr=None, fd=None):
        Smooth Tubes.” Wärme - Und Stoffübertragung 4, no. 4
        (December 1, 1971): 197–204. doi:10.1007/BF01002474.
     '''
-    Nu = (fd/8.)*Re*Pr/(1.07 + 9*(fd/8.)**0.5*(Pr-1)*Pr**0.25)
-    return Nu
+    return (fd/8.)*Re*Pr/(1.07 + 9*(fd/8.)**0.5*(Pr-1)*Pr**0.25)
 
 
 def turbulent_Sandall(Re=None, Pr=None, fd=None):
@@ -774,8 +758,8 @@ def turbulent_Sandall(Re=None, Pr=None, fd=None):
        (August 1, 1980): 443–47. doi:10.1002/cjce.5450580404.
     '''
     C = 2.78*log((fd/8.)**0.5*Re/45.)
-    Nu = (fd/8.)**0.5*Re*Pr/(12.48*Pr**(2/3.) - 7.853*Pr**(1/3.) + 3.613*log(Pr) + 5.8 + C)
-    return Nu
+    return (fd/8.)**0.5*Re*Pr/(12.48*Pr**(2/3.) - 7.853*Pr**(1/3.) 
+                               + 3.613*log(Pr) + 5.8 + C)
 
 
 def turbulent_Gnielinski(Re=None, Pr=None, fd=None):
@@ -817,8 +801,7 @@ def turbulent_Gnielinski(Re=None, Pr=None, fd=None):
        Turbulent Pipe and Channel Flow, International Chemical Engineering,
        Vol. 16, pp. 359–368.
     '''
-    Nu = (fd/8.)*(Re-1000)*Pr/(1 + 12.7*(fd/8.)**0.5*(Pr**(2/3.)-1))
-    return Nu
+    return (fd/8.)*(Re-1000)*Pr/(1 + 12.7*(fd/8.)**0.5*(Pr**(2/3.)-1))
 
 
 def turbulent_Gnielinski_smooth_1(Re=None, Pr=None):
@@ -858,8 +841,7 @@ def turbulent_Gnielinski_smooth_1(Re=None, Pr=None):
        Turbulent Pipe and Channel Flow, International Chemical Engineering,
        Vol. 16, pp. 359–368.
     '''
-    Nu = 0.0214*(Re**0.8-100)*Pr**0.4
-    return Nu
+    return 0.0214*(Re**0.8-100)*Pr**0.4
 
 
 def turbulent_Gnielinski_smooth_2(Re=None, Pr=None):
@@ -899,8 +881,7 @@ def turbulent_Gnielinski_smooth_2(Re=None, Pr=None):
        Turbulent Pipe and Channel Flow, International Chemical Engineering,
        Vol. 16, pp. 359–368.
     '''
-    Nu = 0.012*(Re**0.87 - 280)*Pr**0.4
-    return Nu
+    return 0.012*(Re**0.87 - 280)*Pr**0.4
 
 
 def turbulent_Churchill_Zajic(Re=None, Pr=None, fd=None):
@@ -954,8 +935,7 @@ def turbulent_Churchill_Zajic(Re=None, Pr=None, fd=None):
     Pr_T = 0.85 + 0.015/Pr
     Nu_di = Re*(fd/8.)/(1 + 145*(8./fd)**(-1.25))
     Nu_dinf = 0.07343*Re*(Pr/Pr_T)**(1/3.0)*(fd/8.)**0.5
-    Nu = (Pr_T/Pr/Nu_di + (1 - (Pr_T/Pr)**(2/3.))/Nu_dinf)**-1
-    return Nu
+    return (Pr_T/Pr/Nu_di + (1 - (Pr_T/Pr)**(2/3.))/Nu_dinf)**-1
 
 
 def turbulent_ESDU(Re=None, Pr=None):
@@ -994,8 +974,7 @@ def turbulent_ESDU(Re=None, Pr=None):
     .. [1] Hewitt, G. L. Shires, T. Reg Bott G. F., George L. Shires, and
        T. R. Bott. Process Heat Transfer. 1E. Boca Raton: CRC Press, 1994.
     '''
-    Nu = 0.0225*Re**0.795*Pr**0.495*exp(-0.0225*log(Pr)**2)
-    return Nu
+    return 0.0225*Re**0.795*Pr**0.495*exp(-0.0225*log(Pr)**2)
 
 ### Correlations for 'rough' turbulent pipe
 
@@ -1037,8 +1016,7 @@ def turbulent_Martinelli(Re=None, Pr=None, fd=None):
     .. [2] Martinelli, R. C. (1947). "Heat transfer to molten metals".
        Trans. ASME, 69, 947-959.
     '''
-    Nu = Re*Pr*(fd/8.)**0.5/5/(Pr + log(1+5*Pr) + 0.5*log(Re*(fd/8.)**0.5/60.))
-    return Nu
+    return Re*Pr*(fd/8.)**0.5/5/(Pr + log(1+5*Pr) + 0.5*log(Re*(fd/8.)**0.5/60.))
 
 
 def turbulent_Nunner(Re=None, Pr=None, fd=None, fd_smooth=None):
@@ -1080,8 +1058,7 @@ def turbulent_Nunner(Re=None, Pr=None, fd=None, fd_smooth=None):
     .. [2] W. Nunner, "Warmeiibergang und Druckabfall in Rauhen Rohren,"
        VDI-Forschungsheft 445, ser. B,(22): 5-39, 1956
     '''
-    Nu = Re*Pr*fd/8./(1 + 1.5*Re**-0.125*Pr**(-1/6.)*(Pr*fd/fd_smooth -1))
-    return Nu
+    return Re*Pr*fd/8./(1 + 1.5*Re**-0.125*Pr**(-1/6.)*(Pr*fd/fd_smooth -1))
 
 
 def turbulent_Dipprey_Sabersky(Re=None, Pr=None, fd=None, eD=None):
@@ -1127,8 +1104,7 @@ def turbulent_Dipprey_Sabersky(Re=None, Pr=None, fd=None, eD=None):
        doi:10.1016/0017-9310(63)90097-8
     '''
     Re_e = Re*eD*(fd/8.)**0.5
-    Nu = Re*Pr*fd/8./(1 + (fd/8.)**0.5*(5.19*Re_e**0.2*Pr**0.44 - 8.48))
-    return Nu
+    return Re*Pr*fd/8./(1 + (fd/8.)**0.5*(5.19*Re_e**0.2*Pr**0.44 - 8.48))
 
 
 def turbulent_Gowen_Smith(Re=None, Pr=None, fd=None):
@@ -1170,8 +1146,7 @@ def turbulent_Gowen_Smith(Re=None, Pr=None, fd=None):
        and Rough Surfaces.” International Journal of Heat and Mass Transfer 11,
        no. 11 (November 1968): 1657–74. doi:10.1016/0017-9310(68)90046-X.
     '''
-    Nu = Re*Pr*(fd/8.)**0.5/(4.5 + (0.155*(Re*(fd/8.)**0.5)**0.54 + (8./fd)**0.5)*Pr**0.5)
-    return Nu
+    return Re*Pr*(fd/8.)**0.5/(4.5 + (0.155*(Re*(fd/8.)**0.5)**0.54 + (8./fd)**0.5)*Pr**0.5)
 
 
 def turbulent_Kawase_Ulbrecht(Re=None, Pr=None, fd=None):
@@ -1212,8 +1187,7 @@ def turbulent_Kawase_Ulbrecht(Re=None, Pr=None, fd=None):
        Transfer in Dilute Polymer Solutions.” Chemical Engineering Science 37,
        no. 7 (1982): 1039–46. doi:10.1016/0009-2509(82)80134-6.
     '''
-    Nu = 0.0523*Re*Pr**0.5*(fd/4.)**0.5
-    return Nu
+    return 0.0523*Re*Pr**0.5*(fd/4.)**0.5
 
 
 def turbulent_Kawase_De(Re=None, Pr=None, fd=None):
@@ -1255,8 +1229,7 @@ def turbulent_Kawase_De(Re=None, Pr=None, fd=None):
        International Journal of Heat and Mass Transfer 27, no. 1
        (January 1984): 140–42. doi:10.1016/0017-9310(84)90246-1.
     '''
-    Nu = 0.0471*Re*Pr**0.5*(fd/4.)**0.5*(1.11 + 0.44*Pr**(-1/3.) - 0.7*Pr**(-1/6.))
-    return Nu
+    return 0.0471*Re*Pr**0.5*(fd/4.)**0.5*(1.11 + 0.44*Pr**(-1/3.) - 0.7*Pr**(-1/6.))
 
 
 def turbulent_Bhatti_Shah(Re=None, Pr=None, fd=None, eD=None):
@@ -1307,10 +1280,7 @@ def turbulent_Bhatti_Shah(Re=None, Pr=None, fd=None, eD=None):
        chapter 4. Wiley-Interscience, New York, 1987.
     '''
     Re_e = Re*eD*(fd/8.)**0.5
-    Nu = Re*Pr*fd/8./(1 + (fd/8.)**0.5*(4.5*Re_e**0.2*Pr**0.5 - 8.48))
-    return Nu
-
-#print [turbulent_Bhatti_Shah(Re=1E5, Pr=1.2, fd=0.0185, eD=1E-3)]
+    return Re*Pr*fd/8./(1 + (fd/8.)**0.5*(4.5*Re_e**0.2*Pr**0.5 - 8.48))
 
 
 def Nu_conv_internal(Re=None, Pr=None, fd=None, eD=None, Di=None, x=None,
@@ -1519,5 +1489,4 @@ def Morimoto_Hotta(Re, Pr, Dh, Rm):
        Heat and Mass Transfer, July 7, 2016, 1-18. 
        doi:10.1007/s00231-016-1861-y.
     '''
-    Nu = 0.0239*(1 + 5.54*Dh/Rm)*Re**0.806*Pr**0.268
-    return Nu
+    return 0.0239*(1 + 5.54*Dh/Rm)*Re**0.806*Pr**0.268

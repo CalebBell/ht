@@ -106,10 +106,9 @@ def dP_Kern(m=None, rho=None, mu=None, DShell=None, LSpacing=None,
     Re = rho*De*Vs/mu
     f = float(Kern_f_Re(Re))
     if mu_w:
-        _dP = f*(Vs*rho)**2*DShell*(NBaffles+1)/(2*rho*De*(mu/mu_w)**0.14)
+        return f*(Vs*rho)**2*DShell*(NBaffles+1)/(2*rho*De*(mu/mu_w)**0.14)
     else:
-        _dP = f*(Vs*rho)**2*DShell*(NBaffles+1)/(2*rho*De)
-    return _dP
+        return f*(Vs*rho)**2*DShell*(NBaffles+1)/(2*rho*De)
 
 
 
@@ -215,6 +214,5 @@ def dP_Zukauskas(Re=None, n=None, ST=None, SL=None, D=None, rho=None, Vmax=None)
         f = float(dP_staggered_f(Re, a))
         x = float(dP_staggered_correction(parameter, Re))
 
-    dP = n*x*f*rho/2*Vmax**2
-    return dP
+    return n*x*f*rho/2*Vmax**2
 

@@ -99,8 +99,7 @@ def Nu_packed_bed_Gnielinski(dp, voidage, vs, rho, mu, Pr, fa=None):
     Nu_sphere = 2 + (Nu_lam**2 + Nu_turb**2)**0.5
     if not fa:
         fa = 1 + 1.5*(1-voidage)
-    Nu = fa*Nu_sphere
-    return Nu
+    return fa*Nu_sphere
 
 
 def Nu_Wakao_Kagei(Re, Pr):
@@ -233,6 +232,5 @@ def Nu_KTA(Re, Pr, voidage):
        Engineering and Design 284 (April 1, 2015): 143-52. 
        doi:10.1016/j.nucengdes.2014.11.041.
     '''
-    Nu = (1.27*Pr**(1/3.)*Re**0.36/voidage**1.18 
-        + 0.033*Pr**0.5/voidage**1.07*Re**0.86)
-    return Nu
+    return (1.27*Pr**(1/3.)*Re**0.36/voidage**1.18 
+            + 0.033*Pr**0.5/voidage**1.07*Re**0.86)

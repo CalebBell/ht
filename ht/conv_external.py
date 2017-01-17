@@ -154,9 +154,8 @@ def Nu_cylinder_Churchill_Bernstein(Re, Pr):
        David P. DeWitt. Introduction to Heat Transfer. 6E. Hoboken, NJ:
        Wiley, 2011.
     '''
-    Nu = 0.3 + (0.62*Re**0.5*Pr**(1/3.))/(1 + (0.4/Pr)**(2/3.))**0.25*(
+    return 0.3 + (0.62*Re**0.5*Pr**(1/3.))/(1 + (0.4/Pr)**(2/3.))**0.25*(
     1 +(Re/282000.)**(0.625))**0.8
-    return Nu
 
 #print [Nu_cylinder_Churchill_Bernstein(6071, 0.7)]
 
@@ -202,9 +201,8 @@ def Nu_cylinder_Sanitjai_Goldstein(Re, Pr):
        Journal of Heat and Mass Transfer 47, no. 22 (October 2004): 4795-4805.
        doi:10.1016/j.ijheatmasstransfer.2004.05.012.
     '''
-    Nu = 0.446*Re**0.5*Pr**0.35 + 0.528*((6.5*exp(Re/5000.))**-5
+    return 0.446*Re**0.5*Pr**0.35 + 0.528*((6.5*exp(Re/5000.))**-5
     + (0.031*Re**0.8)**-5)**-0.2*Pr**0.42
-    return Nu
 
 
 def Nu_cylinder_Fand(Re, Pr):
@@ -249,8 +247,7 @@ def Nu_cylinder_Fand(Re, Pr):
        Journal of Heat and Mass Transfer 47, no. 22 (October 2004): 4795-4805.
        doi:10.1016/j.ijheatmasstransfer.2004.05.012.
     '''
-    Nu = (0.35 + 0.34*Re**0.5 + 0.15*Re**0.58)*Pr**0.3
-    return Nu
+    return (0.35 + 0.34*Re**0.5 + 0.15*Re**0.58)*Pr**0.3
 
 
 def Nu_cylinder_McAdams(Re, Pr):
@@ -291,8 +288,7 @@ def Nu_cylinder_McAdams(Re, Pr):
        Water in Crossflow." International Journal of Heat and Mass Transfer 8,
        no. 7 (July 1, 1965): 995-1010. doi:10.1016/0017-9310(65)90084-0.
     '''
-    Nu = (0.35 + 0.56*Re**0.52)*Pr**0.3
-    return Nu
+    return (0.35 + 0.56*Re**0.52)*Pr**0.3
 
 
 def Nu_cylinder_Whitaker(Re, Pr, mu=None, muw=None):

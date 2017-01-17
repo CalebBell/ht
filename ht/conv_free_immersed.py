@@ -322,13 +322,9 @@ def Nu_vertical_cylinder_Carne_Morgan(Pr, Gr, turbulent=None):
     '''
     Ra = Pr*Gr
     if turbulent or (Ra > 2E8 and turbulent is None):
-        Nu = 0.152*Ra**0.38
+        return 0.152*Ra**0.38
     else:
-        Nu = 1.07*Ra**0.28
-    return Nu
-
-#print [[Nu_vertical_cylinder_Carne_Morgan(i, 2E8, j) for i in (0.999999, 1.000001)]
-#        for j in (True, False, None)]
+        return 1.07*Ra**0.28
 
 
 def Nu_vertical_cylinder_Eigenson_Morgan(Pr, Gr, turbulent=None):
@@ -393,14 +389,11 @@ def Nu_vertical_cylinder_Eigenson_Morgan(Pr, Gr, turbulent=None):
     '''
     Ra = Pr*Gr
     if turbulent or (Ra > 1.69E10 and turbulent is None):
-        Nu = 0.148*Ra**(1/3.) - 127.6
+        return 0.148*Ra**(1/3.) - 127.6
     elif 1E9 < Ra < 1.69E10 and turbulent is not False:
-        Nu = 51.5 + 0.0000726*Ra**0.63
+        return 51.5 + 0.0000726*Ra**0.63
     else:
-        Nu = 0.48*Ra**0.25
-    return Nu
-
-#print [[Nu_vertical_cylinder_Eigenson_Morgan(i, 1.69E10, j) for i in (0.999999, 1.000001)] for j in (True, False, None)]
+        return 0.48*Ra**0.25
 
 
 def Nu_vertical_cylinder_Touloukian_Morgan(Pr, Gr, turbulent=None):
@@ -459,10 +452,9 @@ def Nu_vertical_cylinder_Touloukian_Morgan(Pr, Gr, turbulent=None):
     '''
     Ra = Pr*Gr
     if turbulent or (Ra > 4E10 and turbulent is None):
-        Nu = 0.0674*(Gr*Pr**1.29)**(1/3.)
+        return 0.0674*(Gr*Pr**1.29)**(1/3.)
     else:
-        Nu = 0.726*Ra**0.25
-    return Nu
+        return 0.726*Ra**0.25
 
 
 def Nu_vertical_cylinder_McAdams_Weiss_Saunders(Pr, Gr, turbulent=None):
@@ -524,10 +516,9 @@ def Nu_vertical_cylinder_McAdams_Weiss_Saunders(Pr, Gr, turbulent=None):
     '''
     Ra = Pr*Gr
     if turbulent or (Ra > 1E9 and turbulent is None):
-        Nu = 0.13*Ra**(1/3.)
+        return 0.13*Ra**(1/3.)
     else:
-        Nu = 0.59*Ra**0.25
-    return Nu
+        return 0.59*Ra**0.25
 
 
 def Nu_vertical_cylinder_Kreith_Eckert(Pr, Gr, turbulent=None):
@@ -586,10 +577,9 @@ def Nu_vertical_cylinder_Kreith_Eckert(Pr, Gr, turbulent=None):
     '''
     Ra = Pr*Gr
     if turbulent or (Ra > 1E9 and turbulent is None):
-        Nu = 0.021*Ra**0.4
+        return 0.021*Ra**0.4
     else:
-        Nu = 0.555*Ra**0.25
-    return Nu
+        return 0.555*Ra**0.25
 
 
 def Nu_vertical_cylinder_Hanesian_Kalish_Morgan(Pr, Gr):
@@ -639,8 +629,7 @@ def Nu_vertical_cylinder_Hanesian_Kalish_Morgan(Pr, Gr):
        23-42. Springer, 2014.
     '''
     Ra = Pr*Gr
-    Nu = 0.48*Ra**0.23
-    return Nu
+    return 0.48*Ra**0.23
 
 
 ### Vertical cylinders, more complex correlations
@@ -703,10 +692,9 @@ def Nu_vertical_cylinder_Al_Arabi_Khamis(Pr, Gr, L, D, turbulent=None):
     Gr_D = Gr/L**3*D**3
     Ra = Pr*Gr
     if turbulent or (Ra > 2.6E9 and turbulent is None):
-        Nu = 0.47*Ra**(1/3.)*Gr_D**(-1/12.)
+        return 0.47*Ra**(1/3.)*Gr_D**(-1/12.)
     else:
-        Nu = 2.9*Ra**0.25*Gr_D**(-1/12.)
-    return Nu
+        return 2.9*Ra**0.25*Gr_D**(-1/12.)
 
 
 def Nu_vertical_cylinder_Popiel_Churchill(Pr, Gr, L, D,
@@ -766,8 +754,7 @@ def Nu_vertical_cylinder_Popiel_Churchill(Pr, Gr, L, D,
     B = 0.0571322 + 0.20305*Pr**-0.43
     C = 0.9165 - 0.0043*Pr**0.5 + 0.01333*log(Pr) + 0.0004809/Pr
     Nu_fp = Nu_vertical_plate_correlation(Pr, Gr)
-    Nu = Nu_fp*(1 + B*(32**0.5*Gr**-0.25*L/D)**C)
-    return Nu
+    return Nu_fp*(1 + B*(32**0.5*Gr**-0.25*L/D)**C)
 
 
 
@@ -924,8 +911,7 @@ def Nu_horizontal_cylinder_Churchill_Chu(Pr, Gr):
        Wiley, 2011.
     '''
     Ra = Pr*Gr
-    Nu = (0.6 + 0.387*Ra**(1/6.)/(1 + (0.559/Pr)**(9/16.))**(8/27.))**2
-    return Nu
+    return (0.6 + 0.387*Ra**(1/6.)/(1 + (0.559/Pr)**(9/16.))**(8/27.))**2
 
 
 def Nu_horizontal_cylinder_Kuehn_Goldstein(Pr, Gr):
@@ -971,8 +957,8 @@ def Nu_horizontal_cylinder_Kuehn_Goldstein(Pr, Gr):
        23-42. Springer, 2014.
     '''
     Ra = Pr*Gr
-    Nu = 2./log(1 + 2./((0.518*Ra**0.25*(1. + (0.559/Pr)**0.6)**(-5/12.))**15. + (0.1*Ra**(1/3.))**15)**(1/15.))
-    return Nu
+    return 2./log(1 + 2./((0.518*Ra**0.25*(1. + (0.559/Pr)**0.6)**(-5/12.))**15
+                  + (0.1*Ra**(1/3.))**15)**(1/15.))
 
 
 def Nu_horizontal_cylinder_Morgan(Pr, Gr):
@@ -1044,8 +1030,7 @@ def Nu_horizontal_cylinder_Morgan(Pr, Gr):
     else:
         # up to 1E12
         C, n = 0.125, 0.333
-    Nu = C*Ra**n
-    return Nu
+    return C*Ra**n
 
 
 horizontal_cylinder_correlations = {

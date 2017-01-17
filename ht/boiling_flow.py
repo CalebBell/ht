@@ -105,13 +105,12 @@ def Lazarek_Black(m, D, mul, kl, Hvap, q=None, Te=None):
     Relo = G*D/mul
     if q:
         Bg = Boiling(G=G, q=q, Hvap=Hvap)
-        htp = 30*Relo**0.857*Bg**0.714*kl/D
+        return 30*Relo**0.857*Bg**0.714*kl/D
     elif Te:
         # Solved with sympy
-        htp = 27000*30**(71/143)*(1./(G*Hvap))**(357/143)*Relo**(857/286)*Te**(357/143)*kl**(500/143)/D**(500/143)
+        return 27000*30**(71/143)*(1./(G*Hvap))**(357/143)*Relo**(857/286)*Te**(357/143)*kl**(500/143)/D**(500/143)
     else:
         raise Exception('Either q or Te is needed for this correlation')
-    return htp
 
 
 def Li_Wu(m, x, D, rhol, rhog, mul, kl, Hvap, sigma, q=None, Te=None):
@@ -191,13 +190,12 @@ def Li_Wu(m, x, D, rhol, rhog, mul, kl, Hvap, sigma, q=None, Te=None):
     Bo = Bond(rhol=rhol, rhog=rhog, sigma=sigma, L=D)
     if q:
         Bg = Boiling(G=G, q=q, Hvap=Hvap)
-        htp = 334*Bg**0.3*(Bo*Rel**0.36)**0.4*kl/D
+        return 334*Bg**0.3*(Bo*Rel**0.36)**0.4*kl/D
     elif Te:
         A = 334*(Bo*Rel**0.36)**0.4*kl/D
-        htp = A**(10/7.)*Te**(3/7.)/(G**(3/7.)*Hvap**(3/7.))
+        return A**(10/7.)*Te**(3/7.)/(G**(3/7.)*Hvap**(3/7.))
     else:
         raise Exception('Either q or Te is needed for this correlation')
-    return htp
 
 
 def Sun_Mishima(m, D, rhol, rhog, mul, kl, Hvap, sigma, q=None, Te=None):
@@ -274,13 +272,12 @@ def Sun_Mishima(m, D, rhol, rhog, mul, kl, Hvap, sigma, q=None, Te=None):
     We = Weber(V=V, L=D, rho=rhol, sigma=sigma)
     if q:
         Bg = Boiling(G=G, q=q, Hvap=Hvap)
-        htp = 6*Relo**1.05*Bg**0.54/(We**0.191*(rhol/rhog)**0.142)*kl/D
+        return 6*Relo**1.05*Bg**0.54/(We**0.191*(rhol/rhog)**0.142)*kl/D
     elif Te:
         A = 6*Relo**1.05/(We**0.191*(rhol/rhog)**0.142)*kl/D
-        htp = A**(50/23.)*Te**(27/23.)/(G**(27/23.)*Hvap**(27/23.))
+        return A**(50/23.)*Te**(27/23.)/(G**(27/23.)*Hvap**(27/23.))
     else:
         raise Exception('Either q or Te is needed for this correlation')
-    return htp
 
 
 def Thome(m, x, D, rhol, rhog, mul, mug, kl, kg, Cpl, Cpg, Hvap, sigma, Psat, 
@@ -440,7 +437,6 @@ def Thome(m, x, D, rhol, rhog, mul, mug, kl, kg, Cpl, Cpg, Hvap, sigma, Psat,
     if q is None and Te:
         to_solve = lambda q : q/Thome(m=m, x=x, D=D, rhol=rhol, rhog=rhog, kl=kl, kg=kg, mul=mul, mug=mug, Cpl=Cpl, Cpg=Cpg, sigma=sigma, Hvap=Hvap, Psat=Psat, Pc=Pc, q=q) - Te
         q = newton(to_solve, 1E4)
-#       q = fsolve(to_solve, 1E4)
         return Thome(m=m, x=x, D=D, rhol=rhol, rhog=rhog, kl=kl, kg=kg, mul=mul, mug=mug, Cpl=Cpl, Cpg=Cpg, sigma=sigma, Hvap=Hvap, Psat=Psat, Pc=Pc, q=q)
     elif q is None and Te is None:
         raise Exception('Either q or Te is needed for this correlation')
@@ -490,8 +486,7 @@ def Thome(m, x, D, rhol, rhog, mul, mug, kl, kg, Cpl, Cpg, Hvap, sigma, Psat,
     h_Zl = kl/D*(Nu_lam_Zl**4 + Nu_trans_Zl**4)**0.25
         
     h_film = 2*kl/(delta0 + C_delta0)
-    h = tl/tau*h_Zl + t_film/tau*h_film + t_dry/tau*h_Zg
-    return h
+    return tl/tau*h_Zl + t_film/tau*h_film + t_dry/tau*h_Zg
         
 
 def Yun_Heo_Kim(m, x, D, rhol, mul, Hvap, sigma, q=None, Te=None):
@@ -567,13 +562,12 @@ def Yun_Heo_Kim(m, x, D, rhol, mul, Hvap, sigma, q=None, Te=None):
     We = Weber(V=V, L=D, rho=rhol, sigma=sigma)
     if q:
         Bg = Boiling(G=G, q=q, Hvap=Hvap)
-        htp = 136876*(Bg*We)**0.1993*Rel**-0.1626
+        return 136876*(Bg*We)**0.1993*Rel**-0.1626
     elif Te:
         A = 136876*(We)**0.1993*Rel**-0.1626*(Te/G/Hvap)**0.1993
-        htp = A**(10000/8007.)
+        return A**(10000/8007.)
     else:
         raise Exception('Either q or Te is needed for this correlation')
-    return htp
 
 
 def Chen_Edelstein(m, x, D, rhol, rhog, mul, mug, kl, Cpl, Hvap, sigma, 
@@ -682,9 +676,7 @@ def Chen_Edelstein(m, x, D, rhol, rhog, mul, mug, kl, Cpl, Hvap, sigma,
     S = 0.9622 - 0.5822*atan(Re/6.18E4)
     hnb = Forster_Zuber(Te=Te, dPsat=dPsat, Cpl=Cpl, kl=kl, mul=mul, sigma=sigma,
                        Hvap=Hvap, rhol=rhol, rhog=rhog)
-    h = hnb*S + hl*F
-    return h
-
+    return hnb*S + hl*F
 
 
 def Chen_Bennett(m, x, D, rhol, rhog, mul, mug, kl, Cpl, Hvap, sigma, 
@@ -796,8 +788,7 @@ def Chen_Bennett(m, x, D, rhol, rhog, mul, mug, kl, Cpl, Hvap, sigma,
     
     hnb = Forster_Zuber(Te=Te, dPsat=dPsat, Cpl=Cpl, kl=kl, mul=mul, sigma=sigma,
                        Hvap=Hvap, rhol=rhol, rhog=rhog)
-    h = hnb*S + hl*F
-    return h
+    return hnb*S + hl*F
 
 
 def Liu_Winterton(m, x, D, rhol, rhog, mul, kl, Cpl, MW, P,  Pc, Te):
@@ -899,8 +890,7 @@ def Liu_Winterton(m, x, D, rhol, rhog, mul, kl, Cpl, MW, P,  Pc, Te):
 #            F *= ef
 #            S *= es
     h_nb = Cooper(Te=Te, P=P, Pc=Pc, MW=MW)
-    h_tp = ((F*hl)**2 + (S*h_nb)**2)**0.5
-    return h_tp
+    return ((F*hl)**2 + (S*h_nb)**2)**0.5
 
 
 

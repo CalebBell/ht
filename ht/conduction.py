@@ -72,8 +72,7 @@ def R_to_k(R, t, A=1.):
        David P. DeWitt. Introduction to Heat Transfer. 6E. Hoboken, NJ:
        Wiley, 2011.
     '''
-    k = t/(A*R)
-    return k
+    return t/(A*R)
 
 
 def k_to_R(k, t, A=1.):
@@ -114,8 +113,7 @@ def k_to_R(k, t, A=1.):
        David P. DeWitt. Introduction to Heat Transfer. 6E. Hoboken, NJ:
        Wiley, 2011.
     '''
-    R = t/(k*A)
-    return R
+    return t/(k*A)
 
 
 def k_to_thermal_resistivity(k):
@@ -152,8 +150,7 @@ def k_to_thermal_resistivity(k):
     .. [1] Gesellschaft, V. D. I., ed. VDI Heat Atlas. 2nd edition.
        Berlin; New York:: Springer, 2010.
     '''
-    r = 1./k
-    return r
+    return 1./k
 
 
 def thermal_resistivity_to_k(r):
@@ -189,8 +186,7 @@ def thermal_resistivity_to_k(r):
     .. [1] Gesellschaft, V. D. I., ed. VDI Heat Atlas. 2nd edition.
        Berlin; New York:: Springer, 2010.
     '''
-    k = 1./r
-    return k
+    return 1./r
 
 
 def R_value_to_k(R_value, SI=True):
@@ -232,8 +228,7 @@ def R_value_to_k(R_value, SI=True):
         r = R_value/inch
     else:
         r = R_value*foot**2*degree_Fahrenheit*hour/Btu/inch
-    k = thermal_resistivity_to_k(r)
-    return k
+    return thermal_resistivity_to_k(r)
 
 #print [R_value_to_k(0.12), R_value_to_k(0.71, SI=False)]
 #print [R_value_to_k(1., SI=False)/R_value_to_k(1.)]
@@ -272,10 +267,9 @@ def k_to_R_value(k, SI=True):
     '''
     r = k_to_thermal_resistivity(k)
     if SI:
-        R_value = r*inch
+        return r*inch
     else:
-        R_value = r/(foot**2*degree_Fahrenheit*hour/Btu/inch)
-    return R_value
+        return r/(foot**2*degree_Fahrenheit*hour/Btu/inch)
 
 #print [k_to_R_value(R_value_to_k(0.12)), k_to_R_value(R_value_to_k(0.71, SI=False), SI=False)]
 
@@ -321,8 +315,7 @@ def R_cylinder(Di, Do, k, L):
        Wiley, 2011.
     '''
     hA = k*2*pi*L/log(Do/Di)
-    R = 1./hA
-    return R
+    return 1./hA
 
 ### Shape Factors
 
@@ -365,8 +358,7 @@ def S_isothermal_sphere_to_plane(D, Z):
        David P. DeWitt. Introduction to Heat Transfer. 6E. Hoboken, NJ:
        Wiley, 2011.
     '''
-    S = 2*pi*D/(1. - D/(4.*Z))
-    return S
+    return 2*pi*D/(1. - D/(4.*Z))
 
 
 def S_isothermal_pipe_to_plane(D, Z, L=1):
@@ -412,8 +404,7 @@ def S_isothermal_pipe_to_plane(D, Z, L=1):
        David P. DeWitt. Introduction to Heat Transfer. 6E. Hoboken, NJ:
        Wiley, 2011.
     '''
-    S = 2*pi*L/acosh(2*Z/D)
-    return S
+    return 2*pi*L/acosh(2*Z/D)
 
 
 def S_isothermal_pipe_normal_to_plane(D, L):
@@ -456,8 +447,7 @@ def S_isothermal_pipe_normal_to_plane(D, L):
        David P. DeWitt. Introduction to Heat Transfer. 6E. Hoboken, NJ:
        Wiley, 2011.
     '''
-    S = 2*pi*L/log(4*L/D)
-    return S
+    return 2*pi*L/log(4*L/D)
 
 
 def S_isothermal_pipe_to_isothermal_pipe(D1, D2, W, L=1.):
@@ -505,8 +495,7 @@ def S_isothermal_pipe_to_isothermal_pipe(D1, D2, W, L=1.):
        David P. DeWitt. Introduction to Heat Transfer. 6E. Hoboken, NJ:
        Wiley, 2011.
     '''
-    S = 2*pi*L/acosh((4*W**2 - D1**2 - D2**2)/(2*D1*D2))
-    return S
+    return 2*pi*L/acosh((4*W**2 - D1**2 - D2**2)/(2*D1*D2))
 
 
 def S_isothermal_pipe_to_two_planes(D, Z, L=1.):
@@ -554,8 +543,7 @@ def S_isothermal_pipe_to_two_planes(D, Z, L=1.):
        David P. DeWitt. Introduction to Heat Transfer. 6E. Hoboken, NJ:
        Wiley, 2011.
     '''
-    S = 2*pi*L/log(8*Z/(pi*D))
-    return S
+    return 2*pi*L/log(8*Z/(pi*D))
 
 
 def S_isothermal_pipe_eccentric_to_isothermal_pipe(D1, D2, Z, L=1.):
@@ -604,5 +592,4 @@ def S_isothermal_pipe_eccentric_to_isothermal_pipe(D1, D2, Z, L=1.):
        David P. DeWitt. Introduction to Heat Transfer. 6E. Hoboken, NJ:
        Wiley, 2011.
     '''
-    S = 2*pi*L/acosh((D2**2 + D1**2 - 4*Z**2)/(2*D1*D2))
-    return S
+    return 2*pi*L/acosh((D2**2 + D1**2 - 4*Z**2)/(2*D1*D2))

@@ -1028,8 +1028,7 @@ def Nu_Yamagata(Re, Pr, Pr_pc=None, Cp_avg=None, Cp_b=None, T_b=None,
         elif 0 < E < 1:
             n1 = -0.77*(1 + 1/Pr_pc) + 1.49
             F = 0.67*Pr_pc**-0.05*(Cp_avg/Cp_b)**n1
-    Nu = 0.0138*Re**0.85*Pr**0.8*F
-    return Nu
+    return 0.0138*Re**0.85*Pr**0.8*F
 
 
 def Nu_Kitoh(Re, Pr, H=None, G=None, q=None):
@@ -1129,8 +1128,7 @@ def Nu_Kitoh(Re, Pr, H=None, G=None, q=None):
         m = 0.69 - 81000./qht + fc*q
     else:
         m = 0.69
-    Nu = 0.015*Re**0.85*Pr**m
-    return Nu
+    return 0.015*Re**0.85*Pr**m
 
 
 def Nu_Krasnoshchekov_Protopopov(Re, Pr, Cp_avg=None, Cp_b=None, k_w=None, 
@@ -1284,8 +1282,7 @@ def Nu_Petukhov(Re, Pr, rho_w=None, rho_b=None, mu_w=None, mu_b=None):
         fd *= (rho_w/rho_b)**0.4
     if mu_w and mu_b:
         fd *= (mu_w/mu_b)**0.2
-    Nu = (fd/8.)*Re*Pr/(1 + 900./Re + 12.7*(fd/8.)**0.5*(Pr**(2/3.)-1))
-    return Nu
+    return (fd/8.)*Re*Pr/(1 + 900./Re + 12.7*(fd/8.)**0.5*(Pr**(2/3.)-1))
 
 
 def Nu_Krasnoshchekov(Re, Pr, rho_w=None, rho_b=None, Cp_avg=None, Cp_b=None, 

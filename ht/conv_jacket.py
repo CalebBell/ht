@@ -147,8 +147,7 @@ def Lehrer(m=None, Dtank=None, Djacket=None, H=None, Dinlet=None,
         NuSL = (0.03*Res**0.75*Pr)/(1 + 1.74*(Pr-1)/Res**0.125)*(mu/muw)**0.14
     else:
         NuSL = (0.03*Res**0.75*Pr)/(1 + 1.74*(Pr-1)/Res**0.125)
-    h = NuSL*k/dg
-    return h
+    return NuSL*k/dg
 
 
 def Stein_Schmidt(m=None, Dtank=None, Djacket=None, H=None, Dinlet=None,
@@ -331,6 +330,4 @@ def Stein_Schmidt(m=None, Dtank=None, Djacket=None, H=None, Dinlet=None,
         NuJ = (NuA**3 + NuB**3 + NuC**3 + NuD**3)**(1/3.)*(mu/muw)**0.14
     else:
         NuJ = (NuA**3 + NuB**3 + NuC**3 + NuD**3)**(1/3.)
-    h = NuJ*k/dch
-    return h
-# Eveything here is good.
+    return NuJ*k/dch

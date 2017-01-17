@@ -91,8 +91,7 @@ def Davis_David(m, x, D, rhol, rhog, Cpl, kl, mul):
     G = m/(pi/4*D**2)
     Prl = Prandtl(Cp=Cpl, mu=mul, k=kl)
     Nu_TP = 0.060*(rhol/rhog)**0.28*(D*G*x/mul)**0.87*Prl**0.4
-    h = Nu_TP*kl/D
-    return h
+    return Nu_TP*kl/D
 
 
 def Elamvaluthi_Srinivas(m, x, D, rhol, rhog, Cpl, kl, mug, mu_b, mu_w=None):
@@ -171,8 +170,7 @@ def Elamvaluthi_Srinivas(m, x, D, rhol, rhog, Cpl, kl, mug, mu_b, mu_w=None):
     Nu_TP = 0.5*(mug/mu_b)**0.25*ReM**0.7*Prl**(1/3.)
     if mu_w:
         Nu_TP *= (mu_b/mu_w)**0.14
-    h_TP = Nu_TP*kl/D
-    return h_TP
+    return Nu_TP*kl/D
 
 
 def Groothuis_Hendal(m, x, D, rhol, rhog, Cpl, kl, mug, mu_b, mu_w=None, 
@@ -262,8 +260,7 @@ def Groothuis_Hendal(m, x, D, rhol, rhog, Cpl, kl, mug, mu_b, mu_w=None,
         Nu_TP = 2.6*ReM**0.39*Prl**(1/3.)
     if mu_w:
         Nu_TP *= (mu_b/mu_w)**0.14
-    h_TP = Nu_TP*kl/D
-    return h_TP
+    return Nu_TP*kl/D
 
 
 def Hughmark(m, x, alpha, D, L, Cpl, kl, mu_b=None, mu_w=None):
@@ -337,8 +334,7 @@ def Hughmark(m, x, alpha, D, L, Cpl, kl, mu_b=None, mu_w=None):
     Nu_TP = 1.75*(RL)**-0.5*(ml*Cpl/RL/kl/L)**(1/3.)
     if mu_b and mu_w:
         Nu_TP *= (mu_b/mu_w)**0.14
-    h = Nu_TP*kl/D
-    return h
+    return Nu_TP*kl/D
 
 
 def Knott(m, x, D, rhol, rhog, Cpl=None, kl=None, mu_b=None, mu_w=None, L=None,
@@ -499,8 +495,7 @@ def Kudirka_Grosh_McFadden(m, x, D, rhol, rhog, Cpl, kl, mug, mu_b, mu_w=None):
     Nu = 125*(Vgs/Vls)**0.125*(mug/mu_b)**0.6*Rels**0.25*Prl**(1/3.)
     if mu_w:
         Nu *= (mu_b/mu_w)**0.14
-    h_TP = Nu*kl/D
-    return h_TP
+    return Nu*kl/D
 
 
 def Martin_Sims(m, x, D, rhol, rhog, hl):
@@ -630,8 +625,7 @@ def Ravipudi_Godbold(m, x, D, rhol, rhog, Cpl, kl, mug, mu_b, mu_w=None):
     Nu = 0.56*(Vgs/Vls)**0.3*(mug/mu_b)**0.2*Rels**0.6*Prl**(1/3.)
     if mu_w:
         Nu *= (mu_b/mu_w)**0.14
-    h_TP = Nu*kl/D
-    return h_TP
+    return Nu*kl/D
 
 
 def Aggour(m, x, alpha, D, rhol, Cpl, kl, mu_b, mu_w=None, L=None, 
@@ -720,13 +714,12 @@ def Aggour(m, x, alpha, D, rhol, Cpl, kl, mu_b, mu_w=None, L=None,
 
     if turbulent or (Rel > 2000 and turbulent is None):
         hl = 0.0155*(kl/D)*Rel**0.83*Prl**0.5
-        h_TP = hl*(1-alpha)**-0.83
+        return hl*(1-alpha)**-0.83
     else:
         hl = 1.615*(kl/D)*(Rel*Prl*D/L)**(1/3.)
         if mu_w:
             hl *= (mu_b/mu_w)**0.14
-        h_TP = hl*(1-alpha)**(-1/3.)
-    return h_TP
+        return hl*(1-alpha)**(-1/3.)
 
 #print([Aggour(m=1, x=.9, D=.3, alpha=.9, rhol=1000, Cpl=2300, kl=.6, mu_b=1E-3)])
 #print([Aggour(m=.1, x=.9, D=.3, alpha=.9, rhol=1000, Cpl=2300, kl=.6, mu_b=1E-3, mu_w=1.2E-3, L=4)])

@@ -82,5 +82,5 @@ def LMTD(Thi, Tho, Tci, Tco, counterflow=True):
     else:
         dTF1 = Thi-Tci
         dTF2 = Tho-Tco
-    return (dTF2-dTF1)/log(dTF2/dTF1)
+    return (dTF2 - dTF1)/log(dTF2/dTF1)
 

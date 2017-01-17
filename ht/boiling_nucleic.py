@@ -102,13 +102,12 @@ def Rohsenow(rhol, rhog, mul, kl, Cpl, Hvap, sigma, Te=None, q=None, Csf=0.013, 
        Division of Industrial Cooporation, 1951
     '''
     if Te:
-        h = mul*Hvap*(g*(rhol-rhog)/sigma)**0.5*(Cpl*Te**(2/3.)/Csf/Hvap/(Cpl*mul/kl)**n)**3
+        return mul*Hvap*(g*(rhol-rhog)/sigma)**0.5*(Cpl*Te**(2/3.)/Csf/Hvap/(Cpl*mul/kl)**n)**3
     elif q:
         A = mul*Hvap*(g*(rhol-rhog)/sigma)**0.5*(Cpl/Csf/Hvap/(Cpl*mul/kl)**n)**3
-        h = A**(1/3.)*q**(2/3.)
+        return A**(1/3.)*q**(2/3.)
     else:
         raise Exception('Either q or Te is needed for this correlation')
-    return h
 
 
 def McNelly(rhol, rhog, kl, Cpl, Hvap, sigma, P, Te=None, q=None):
@@ -176,13 +175,12 @@ def McNelly(rhol, rhog, kl, Cpl, Hvap, sigma, P, Te=None, q=None):
        ucleate boiling liquids," J. Imp Coll. Chem Eng Soc 7:18, 1953.
     '''
     if Te:
-        h = (0.225*(Te*Cpl/Hvap)**0.69*(P*kl/sigma)**0.31*(rhol/rhog-1.)**0.33
+        return (0.225*(Te*Cpl/Hvap)**0.69*(P*kl/sigma)**0.31*(rhol/rhog-1.)**0.33
             )**(1./0.31)
     elif q:
-        h = 0.225*(q*Cpl/Hvap)**0.69*(P*kl/sigma)**0.31*(rhol/rhog-1.)**0.33
+        return 0.225*(q*Cpl/Hvap)**0.69*(P*kl/sigma)**0.31*(rhol/rhog-1.)**0.33
     else:
         raise Exception('Either q or Te is needed for this correlation')
-    return h
 
 
 def Forster_Zuber(rhol, rhog, mul, kl, Cpl, Hvap, sigma, dPsat, Te=None, q=None):
@@ -256,12 +254,11 @@ def Forster_Zuber(rhol, rhog, mul, kl, Cpl, Hvap, sigma, dPsat, Te=None, q=None)
        Applications and Rules of Thumb. 2E. Amsterdam: Academic Press, 2014.
     '''
     if Te:
-        h = 0.00122*(kl**0.79*Cpl**0.45*rhol**0.49/sigma**0.5/mul**0.29/Hvap**0.24/rhog**0.24)*Te**0.24*dPsat**0.75
+        return 0.00122*(kl**0.79*Cpl**0.45*rhol**0.49/sigma**0.5/mul**0.29/Hvap**0.24/rhog**0.24)*Te**0.24*dPsat**0.75
     elif q:
-        h = (0.00122*(kl**0.79*Cpl**0.45*rhol**0.49/sigma**0.5/mul**0.29/Hvap**0.24/rhog**0.24)*q**0.24*dPsat**0.75)**(1/1.24)
+        return (0.00122*(kl**0.79*Cpl**0.45*rhol**0.49/sigma**0.5/mul**0.29/Hvap**0.24/rhog**0.24)*q**0.24*dPsat**0.75)**(1/1.24)
     else:
         raise Exception('Either q or Te is needed for this correlation')
-    return h
 
 
 def Montinsky(P, Pc, Te=None, q=None):
@@ -327,14 +324,13 @@ def Montinsky(P, Pc, Te=None, q=None):
        Applications and Rules of Thumb. 2E. Amsterdam: Academic Press, 2014.
     '''
     if Te:
-        h = (0.00417*(Pc/1000.)**0.69*Te**0.7*(1.8*(P/Pc)**0.17 + 4*(P/Pc)**1.2
+        return (0.00417*(Pc/1000.)**0.69*Te**0.7*(1.8*(P/Pc)**0.17 + 4*(P/Pc)**1.2
         +10*(P/Pc)**10))**(1/0.3)
     elif q:
-        h = (0.00417*(Pc/1000.)**0.69*q**0.7*(1.8*(P/Pc)**0.17 + 4*(P/Pc)**1.2
+        return (0.00417*(Pc/1000.)**0.69*q**0.7*(1.8*(P/Pc)**0.17 + 4*(P/Pc)**1.2
         +10*(P/Pc)**10))
     else:
         raise Exception('Either q or Te is needed for this correlation')
-    return h
 
 
 _angles_Stephan_Abdelsalam = {'general': 35, 'water': 45, 'hydrocarbon': 35,
@@ -560,14 +556,13 @@ def HEDH_Taborek(P, Pc, Te=None, q=None):
     '''
     Pr = P/Pc
     if Te:
-        h = (0.00417*(Pc/1000.)**0.69*Te**0.7*(2.1*Pr**0.27
+        return (0.00417*(Pc/1000.)**0.69*Te**0.7*(2.1*Pr**0.27
         + (9 + 1./(1-Pr**2))*Pr**2))**(1/0.3)
     elif q:
-        h = (0.00417*(Pc/1000.)**0.69*q**0.7*(2.1*Pr**0.27
+        return (0.00417*(Pc/1000.)**0.69*q**0.7*(2.1*Pr**0.27
         + (9 + 1./(1-Pr**2))*Pr**2))
     else:
         raise Exception('Either q or Te is needed for this correlation')
-    return h
 
 
 def Bier(P, Pc, Te=None, q=None):
@@ -623,12 +618,11 @@ def Bier(P, Pc, Te=None, q=None):
     '''
     Pr = P/Pc
     if Te:
-        h = (0.00417*(Pc/1000.)**0.69*Te**0.7*(0.7 + 2*Pr*(4 + 1/(1.-Pr))))**(1/0.3)
+        return (0.00417*(Pc/1000.)**0.69*Te**0.7*(0.7 + 2*Pr*(4 + 1/(1.-Pr))))**(1/0.3)
     elif q:
-        h = 0.00417*(Pc/1000.)**0.69*q**0.7*(0.7 + 2*Pr*(4 + 1/(1. - Pr)))
+        return 0.00417*(Pc/1000.)**0.69*q**0.7*(0.7 + 2*Pr*(4 + 1/(1. - Pr)))
     else:
         raise Exception('Either q or Te is needed for this correlation')
-    return h
 
 
 def Cooper(P, Pc, MW, Te=None, q=None, Rp=1E-6):
@@ -695,14 +689,13 @@ def Cooper(P, Pc, MW, Te=None, q=None, Rp=1E-6):
     '''
     Rp*= 1E6
     if Te:
-        h = (55*Te**0.67*(P/Pc)**(0.12 - 0.2*log10(Rp))*(
+        return (55*Te**0.67*(P/Pc)**(0.12 - 0.2*log10(Rp))*(
              -log10(P/Pc))**-0.55*MW**-0.5)**(1/0.33)
     elif q:
-        h = (55*q**0.67*(P/Pc)**(0.12 - 0.2*log10(Rp))*(
+        return (55*q**0.67*(P/Pc)**(0.12 - 0.2*log10(Rp))*(
              -log10(P/Pc))**-0.55*MW**-0.5)
     else:
         raise Exception('Either q or Te is needed for this correlation')
-    return h
 
 
 h0_Gorenflow_1993 = {'74-82-8': 7000, '74-84-0': 4500, '74-98-6': 4000, 
@@ -815,13 +808,12 @@ def Gorenflo(P, Pc, q=None, Te=None, CASRN=None, h0=None, Ra=4E-7):
         Fp = 1.73*Pr**0.27 + (6.1 + 0.68/(1-Pr))*Pr**2
     CW = (Ra/Ra0)**0.133
     if q:
-        h = h0*CW*Fp*(q/q0)**n
+        return h0*CW*Fp*(q/q0)**n
     elif Te:
         A = h0*CW*Fp*(Te/q0)**n
-        h = A**(-1./(n - 1.))
+        return A**(-1./(n - 1.))
     else:
         raise Exception('Either q or Te is needed for this correlation')
-    return h
         
 
 h0_VDI_2e = {'74-82-8': 7200, '74-85-1': 4200, '74-84-0': 4600, 
@@ -986,8 +978,7 @@ def Zuber(sigma, Hvap, rhol, rhog, K=0.18):
     .. [5] Kreith, Frank, Raj Manglik, and Mark Bohn. Principles of Heat
        Transfer, 7E.Mason, OH: Cengage Learning, 2010.
     '''
-    q = K*Hvap*rhog**0.5*(g*sigma*(rhol-rhog))**0.25
-    return q
+    return K*Hvap*rhog**0.5*(g*sigma*(rhol-rhog))**0.25
 
 #print [Zuber(sigma=8.2E-3, Hvap=272E3, rhol=567, rhog=18.09, K=0.18)]
 
@@ -1046,8 +1037,7 @@ def Serth_HEDH(D, sigma, Hvap, rhol, rhog):
         K = 0.125*R**-0.25
     else:
         K = 0.118
-    q = K*Hvap*rhog**0.5*(g*sigma*(rhol-rhog))**0.25
-    return q
+    return K*Hvap*rhog**0.5*(g*sigma*(rhol-rhog))**0.25
 
 #print [Serth_HEDH(D=0.00127, sigma=8.2E-3, Hvap=272E3, rhol=567, rhog=18.09)]
 
@@ -1096,8 +1086,7 @@ def HEDH_Montinsky(P, Pc):
        Applications and Rules of Thumb. 2E. Amsterdam: Academic Press, 2014.
     '''
     Pr = P/Pc
-    q = 367*(Pc/1000.)*Pr**0.35*(1-Pr)**0.9
-    return q
+    return 367*(Pc/1000.)*Pr**0.35*(1-Pr)**0.9
 
 
 def qmax_boiling(rhol=None, rhog=None, sigma=None, Hvap=None, D=None, P=None, Pc=None,

@@ -85,8 +85,7 @@ def Nusselt_laminar(Tsat, Tw, rhog, rhol, kl, mul, Hvap, L, angle=90):
     .. [1] Hewitt, G. L. Shires T. Reg Bott G. F., George L. Shires, and
        T. R. Bott. Process Heat Transfer. 1E. Boca Raton: CRC Press, 1994.
     '''
-    h = 2*2**0.5/3.*(kl**3*rhol*(rhol-rhog)*g*sin(angle/180.*pi)*Hvap/(mul*(Tsat-Tw)*L))**0.25
-    return h
+    return 2*2**0.5/3.*(kl**3*rhol*(rhol-rhog)*g*sin(angle/180.*pi)*Hvap/(mul*(Tsat-Tw)*L))**0.25
 
 
 def Boyko_Kruzhilin(m, rhog, rhol, kl, mul, Cpl, D, x):
@@ -149,8 +148,7 @@ def Boyko_Kruzhilin(m, rhog, rhol, kl, mul, Cpl, D, x):
     Relo = rhol*Vlo*D/mul
     Prl = mul*Cpl/kl
     hlo = 0.021*kl/D*Relo**0.8*Prl**0.43
-    h = hlo*(1. + x*(rhol/rhog - 1.))**0.5
-    return h
+    return hlo*(1. + x*(rhol/rhog - 1.))**0.5
 
 
 def Akers_Deans_Crosser(m, rhog, rhol, kl, mul, Cpl, D, x):
@@ -219,8 +217,7 @@ def Akers_Deans_Crosser(m, rhog, rhol, kl, mul, Cpl, D, x):
     else:
         C, n = 5.03, 1/3.
     Nu = C*Ree**n*Prl**(1/3.)
-    h = Nu*kl/D
-    return h
+    return Nu*kl/D
 
 #print([Akers_Deans_Crosser(m=0.01, rhog=6.36, rhol=582.9, kl=0.098, mul=159E-6, Cpl=2520., D=0.03, x=0.85)])
 
@@ -278,8 +275,7 @@ def h_kinetic(T, P, MW, Hvap, f=1):
        by C. V. Green. Softcover reprint of the original 1st ed. 1992 edition. 
        Berlin; New York: Springer, 2013.
     '''
-    h = (2*f)/(2-f)*(MW/(1000*2*pi*R*T))**0.5*(Hvap**2*P*MW)/(1000*R*T**2)
-    return h
+    return (2*f)/(2-f)*(MW/(1000*2*pi*R*T))**0.5*(Hvap**2*P*MW)/(1000*R*T**2)
     
 
 
@@ -360,8 +356,7 @@ def Cavallini_Smith_Zecchin(m, x, D, rhol, rhog, mul, mug, kl, Cpl):
     Reg = Re*x/(mug/mul)'''
     Reeq = Reg*(mug/mul)*(rhol/rhog)**0.5 + Rel
     Nul = 0.05*Reeq**0.8*Prl**0.33
-    h = Nul*kl/D # confirmed to be with respect to the liquid
-    return h
+    return Nul*kl/D # confirmed to be with respect to the liquid
 
 
 def Shah(m, x, D, rhol, mul, kl, Cpl, P, Pc):
@@ -427,6 +422,5 @@ def Shah(m, x, D, rhol, mul, kl, Cpl, P, Pc):
     Prl = Prandtl(Cp=Cpl, k=kl, mu=mul)
     hL = turbulent_Dittus_Boelter(ReL, Prl)*kl/D
     Pr = P/Pc
-    h_TP = hL*((1-x)**0.8 + 3.8*x**0.76*(1-x)**0.04/Pr**0.38)
-    return h_TP
+    return hL*((1-x)**0.8 + 3.8*x**0.76*(1-x)**0.04/Pr**0.38)
 

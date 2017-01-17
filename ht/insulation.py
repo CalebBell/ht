@@ -437,16 +437,12 @@ def ASHRAE_k(ID):
     '''
     values = ASHRAE[ID]
     if values[2]:
-        k = values[2]
+        return values[2]
     else:
         R = values[3]
         t = values[4]/1000. # mm to m
-        k = R_to_k(R, t)
-    return k
+        return R_to_k(R, t)
 
-#print [ASHRAE_k(ID='Mineral fiber')]
-#print [sum([ASHRAE_k(ID) for ID in ASHRAE])]
-#print [len([ASHRAE_k(ID) for ID in ASHRAE])]
 
 _refractory_Ts = [673.15, 873.15, 1073.15, 1273.15, 1473.15]
 
@@ -528,7 +524,7 @@ def refractory_VDI_k(ID, T=None):
        Berlin; New York:: Springer, 2010.
     '''
     if T is None:
-        k = float(refractories[ID][1][0])
+        return float(refractories[ID][1][0])
     else:
         ks = refractories[ID][1]
         to_interp = interp1d(_refractory_Ts, ks)
@@ -536,8 +532,7 @@ def refractory_VDI_k(ID, T=None):
             T = _refractory_Ts[0]
         elif T > _refractory_Ts[-1]:
             T = _refractory_Ts[-1]
-        k = float(to_interp(T))
-    return k
+        return float(to_interp(T))
 
 
 def refractory_VDI_Cp(ID, T=None):
@@ -572,7 +567,7 @@ def refractory_VDI_Cp(ID, T=None):
        Berlin; New York:: Springer, 2010.
     '''
     if T is None:
-        Cp = float(refractories[ID][2][0])
+        return float(refractories[ID][2][0])
     else:
         Cps = refractories[ID][2]
         to_interp = interp1d(_refractory_Ts, Cps)
@@ -580,8 +575,7 @@ def refractory_VDI_Cp(ID, T=None):
             T = _refractory_Ts[0]
         elif T > _refractory_Ts[-1]:
             T = _refractory_Ts[-1]
-        Cp = float(to_interp(T))
-    return Cp
+        return float(to_interp(T))
 
 
 def nearest_material(name, complete=False):
@@ -671,12 +665,11 @@ def k_material(ID, T=298.15):
     if ID not in materials_dict:
         ID = nearest_material(ID)
     if ID in refractories:
-        k = refractory_VDI_k(ID, T)
+        return refractory_VDI_k(ID, T)
     elif ID in ASHRAE:
-        k = ASHRAE_k(ID)
+        return ASHRAE_k(ID)
     else:
-        k = float(building_materials[ID][1])
-    return k
+        return float(building_materials[ID][1])
 
 
 def rho_material(ID):

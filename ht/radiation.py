@@ -64,8 +64,7 @@ def blackbody_spectral_radiance(T, wavelength):
     .. [2] Spectral-calc.com. Blackbody Calculator, 2015.
        http://www.spectralcalc.com/blackbody_calculator/blackbody.php
     '''
-    I = 2*h*c**2/wavelength**5/(exp(h*c/wavelength/T/k)-1)
-    return I
+    return 2.*h*c**2/wavelength**5/(exp(h*c/wavelength/T/k) - 1.)
 
 
 def q_rad(emissivity, T, T2=0):
@@ -107,5 +106,4 @@ def q_rad(emissivity, T, T2=0):
        David P. DeWitt. Introduction to Heat Transfer. 6E. Hoboken, NJ:
        Wiley, 2011.
     '''
-    q = sigma*emissivity*(T**4-T2**4)
-    return q
+    return sigma*emissivity*(T**4-T2**4)
