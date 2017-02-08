@@ -90,7 +90,7 @@ def q_rad(emissivity, T, T2=0):
 
     Notes
     -----
-    Emissivity must be less than 1. T2 mat be larger than T.
+    Emissivity must be less than 1. T2 may be larger than T.
 
     Examples
     --------
