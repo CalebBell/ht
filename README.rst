@@ -1,6 +1,6 @@
-==
-ht
-==
+==================
+Heat Transfer (ht)
+==================
 
 .. image:: http://img.shields.io/pypi/v/ht.svg?style=flat
    :target: https://pypi.python.org/pypi/ht
@@ -26,7 +26,6 @@ ht
 .. image:: https://zenodo.org/badge/48963057.svg
    :alt: Zendo
    :target: https://zenodo.org/badge/latestdoi/48963057
-
 
 
 .. contents::
@@ -64,7 +63,7 @@ Documentation
 
 ht's documentation is available on the web:
 
-    https://ht.readthedocs.org/en/latest/index.html
+    https://ht.readthedocs.io/en/latest/index.html
 
 
 Latest source code
