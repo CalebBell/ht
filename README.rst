@@ -32,7 +32,7 @@ ht
 .. contents::
 
 What is ht?
----------------
+-----------
 
 ht is open-source software for engineers and technicians working in the
 fields of chemical or mechanical engineering. It includes modules

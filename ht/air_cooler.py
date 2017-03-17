@@ -189,16 +189,10 @@ def Ft_aircooler(Thi=None, Tho=None, Tci=None, Tco=None, Ntp=1, rows=1):
         # A bad assumption, but hey, gotta pick something.
         coefs = _crossflow_4_rows_2_pass
     tot = 0
-
     atanR = atan(R)
-    
-    for k in range(len(coefs)):
-        for i in range(len(coefs)):
-            tot += coefs[k][i]*(1-rlm)**(k+1)*sin(2*(i+1)*atanR)
-    return 1-tot
-
-
-#print Ft_aircooler(Thi=66.82794, Tho=47.52647, Tci=15.4667, Tco=51.5889) # some example?
-#print [Ft_aircooler(Thi=93., Tho=52., Tci=35, Tco=54.59, Ntp=2, rows=4)] # , 0.957045612383, works, _crossflow_4_rows_2_pass
-#print [Ft_aircooler(Thi=125., Tho=45., Tci=25., Tco=95., Ntp=1, rows=4)] # , _crossflow_4_rows_1_pass, 0.550509360409, close enough
-#print [[Ft_aircooler(Thi=125., Tho=80., Tci=25., Tco=95., Ntp=i, rows=j) for i in range(1,6)] for j in range(1, 6)] # , _crossflow_4_rows_1_pass, 0.550509360409, close enough
+    cmps = range(len(coefs))
+    for k in cmps:
+        x0 = (1. - rlm)**(k + 1.)
+        for i in cmps:
+            tot += coefs[k][i]*x0*sin(2.*(i + 1.)*atanR)
+    return 1. - tot
