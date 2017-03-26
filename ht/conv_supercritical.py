@@ -39,7 +39,7 @@ def Nu_McAdams(Re, Pr):
     which was better than and of the other reviewed correlations.
     
     .. math::
-        Nu_b = 0.0243*Re_b^{0.8}Pr_b^{0.4}
+        Nu_b = 0.0243Re_b^{0.8}Pr_b^{0.4}
 
     Parameters
     ----------

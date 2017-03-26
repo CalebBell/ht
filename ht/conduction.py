@@ -230,9 +230,6 @@ def R_value_to_k(R_value, SI=True):
         r = R_value*foot**2*degree_Fahrenheit*hour/Btu/inch
     return thermal_resistivity_to_k(r)
 
-#print [R_value_to_k(0.12), R_value_to_k(0.71, SI=False)]
-#print [R_value_to_k(1., SI=False)/R_value_to_k(1.)]
-
 
 def k_to_R_value(k, SI=True):
     r'''Returns the R-value of a substance given its thermal conductivity,
@@ -270,11 +267,6 @@ def k_to_R_value(k, SI=True):
         return r*inch
     else:
         return r/(foot**2*degree_Fahrenheit*hour/Btu/inch)
-
-#print [k_to_R_value(R_value_to_k(0.12)), k_to_R_value(R_value_to_k(0.71, SI=False), SI=False)]
-
-#print k_to_R_value(0.7, SI=False)
-
 
 
 def R_cylinder(Di, Do, k, L):
@@ -404,7 +396,7 @@ def S_isothermal_pipe_to_plane(D, Z, L=1):
        David P. DeWitt. Introduction to Heat Transfer. 6E. Hoboken, NJ:
        Wiley, 2011.
     '''
-    return 2*pi*L/acosh(2*Z/D)
+    return 2.*pi*L/acosh(2.*Z/D)
 
 
 def S_isothermal_pipe_normal_to_plane(D, L):
@@ -447,7 +439,7 @@ def S_isothermal_pipe_normal_to_plane(D, L):
        David P. DeWitt. Introduction to Heat Transfer. 6E. Hoboken, NJ:
        Wiley, 2011.
     '''
-    return 2*pi*L/log(4*L/D)
+    return 2.*pi*L/log(4.*L/D)
 
 
 def S_isothermal_pipe_to_isothermal_pipe(D1, D2, W, L=1.):
@@ -495,7 +487,7 @@ def S_isothermal_pipe_to_isothermal_pipe(D1, D2, W, L=1.):
        David P. DeWitt. Introduction to Heat Transfer. 6E. Hoboken, NJ:
        Wiley, 2011.
     '''
-    return 2*pi*L/acosh((4*W**2 - D1**2 - D2**2)/(2*D1*D2))
+    return 2.*pi*L/acosh((4*W**2 - D1**2 - D2**2)/(2.*D1*D2))
 
 
 def S_isothermal_pipe_to_two_planes(D, Z, L=1.):
@@ -543,7 +535,7 @@ def S_isothermal_pipe_to_two_planes(D, Z, L=1.):
        David P. DeWitt. Introduction to Heat Transfer. 6E. Hoboken, NJ:
        Wiley, 2011.
     '''
-    return 2*pi*L/log(8*Z/(pi*D))
+    return 2.*pi*L/log(8.*Z/(pi*D))
 
 
 def S_isothermal_pipe_eccentric_to_isothermal_pipe(D1, D2, Z, L=1.):
@@ -592,4 +584,4 @@ def S_isothermal_pipe_eccentric_to_isothermal_pipe(D1, D2, Z, L=1.):
        David P. DeWitt. Introduction to Heat Transfer. 6E. Hoboken, NJ:
        Wiley, 2011.
     '''
-    return 2*pi*L/acosh((D2**2 + D1**2 - 4*Z**2)/(2*D1*D2))
+    return 2*pi*L/acosh((D2**2 + D1**2 - 4.*Z**2)/(2.*D1*D2))
