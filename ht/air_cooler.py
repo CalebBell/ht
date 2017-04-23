@@ -92,7 +92,7 @@ _crossflow_4_rows_2_pass = [[-6.05E-1, 2.31E-2, 2.94E-1, 1.98E-2],
 
 
 
-def Ft_aircooler(Thi=None, Tho=None, Tci=None, Tco=None, Ntp=1, rows=1):
+def Ft_aircooler(Thi, Tho, Tci, Tco, Ntp=1, rows=1):
     r'''Calculates log-mean temperature difference correction factor for
     a crossflow heat exchanger, as in an Air Cooler. Method presented in [1]_,
     fit to other's nonexplicit work. Error is < 0.1%. Requires number of rows

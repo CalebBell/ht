@@ -42,8 +42,7 @@ Kern_f_Re = UnivariateSpline(_Kern_dP_Res, _Kern_dP_fs, s=0.1)
 # This uses Darcy's friction factor.
 
 
-def dP_Kern(m=None, rho=None, mu=None, DShell=None, LSpacing=None,
-            pitch=None, Do=None, NBaffles=None, mu_w=None):
+def dP_Kern(m, rho, mu, DShell, LSpacing, pitch, Do, NBaffles, mu_w=None):
     r'''Calculates pressure drop for crossflow across a tube bank
     according to the equivalent-diameter method developed by Kern [1]_,
     presented in [2]_.
@@ -152,7 +151,7 @@ _dP_inline_correction_Re_parameters = np.array([_dP_inline_correction_Re_1000, _
 dP_inline_correction = RectBivariateSpline(_dP_inline_correction_parameters, np.array([1E3, 1E4, 1E5, 1E6]), _dP_inline_correction_Re_parameters, kx=1, ky=3, s=0.002)
 
 
-def dP_Zukauskas(Re=None, n=None, ST=None, SL=None, D=None, rho=None, Vmax=None):
+def dP_Zukauskas(Re, n, ST, SL, D, rho, Vmax):
     r'''Calculates pressure drop for crossflow across a tube bank
     of tube number n at a specified Re. Method presented in [1]_.
     Also presented in [2]_.
