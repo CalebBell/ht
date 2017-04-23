@@ -584,4 +584,4 @@ def S_isothermal_pipe_eccentric_to_isothermal_pipe(D1, D2, Z, L=1.):
        David P. DeWitt. Introduction to Heat Transfer. 6E. Hoboken, NJ:
        Wiley, 2011.
     '''
-    return 2*pi*L/acosh((D2**2 + D1**2 - 4.*Z**2)/(2.*D1*D2))
+    return 2.*pi*L/acosh((D2**2 + D1**2 - 4.*Z**2)/(2.*D1*D2))

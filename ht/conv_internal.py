@@ -34,7 +34,7 @@ __all__ = ['laminar_T_const', 'laminar_Q_const',
 'turbulent_Churchill_Zajic', 'turbulent_ESDU', 'turbulent_Martinelli',
 'turbulent_Nunner', 'turbulent_Dipprey_Sabersky', 'turbulent_Gowen_Smith',
 'turbulent_Kawase_Ulbrecht', 'turbulent_Kawase_De', 'turbulent_Bhatti_Shah',
-'Nu_conv_internal', 'Morimoto_Hotta']
+'Nu_conv_internal', 'Morimoto_Hotta', 'helical_turbulent_Nu_Mori_Nakayama']
 
 ### Laminar
 
@@ -1489,4 +1489,82 @@ def Morimoto_Hotta(Re, Pr, Dh, Rm):
        Heat and Mass Transfer, July 7, 2016, 1-18. 
        doi:10.1007/s00231-016-1861-y.
     '''
-    return 0.0239*(1 + 5.54*Dh/Rm)*Re**0.806*Pr**0.268
+    return 0.0239*(1. + 5.54*Dh/Rm)*Re**0.806*Pr**0.268
+
+
+
+### Helical/curved coils
+
+
+def helical_turbulent_Nu_Mori_Nakayama(Re, Pr, Di, Dc):
+    r'''Calculates Nusselt number for a fluid flowing inside a curved 
+    pipe such as a helical coil under turbulent conditions, using the method of 
+    Mori and Nakayama [1]_, also shown in [2]_ and [3]_.
+            
+    For :math:`Pr < 1`:
+        
+    .. math::
+        Nu = \frac{Pr}{26.2(Pr^{2/3}-0.074)}Re^{0.8}\left(\frac{D_i}{D_c}
+        \right)^{0.1}\left[1 + \frac{0.098}{\left[Re\left(\frac{D_i}{D_c}
+        \right)^2\right]^{0.2}}\right]
+            
+    For :math:`Pr \ge 1`:
+        
+    .. math::
+        Nu = \frac{Pr^{0.4}}{41}Re^{5/6}\left(\frac{D_i}{D_c}\right)^{1/12}
+        \left[1 + \frac{0.061}{\left[Re\left(\frac{D_i}{D_c}\right)^{2.5}
+        \right]^{1/6}}\right]
+        
+    Parameters
+    ----------
+    Re : float
+        Reynolds number with `D=Di`, [-]
+    Pr : float
+        Prandtl number with bulk properties [-]
+    Di : float
+        Inner diameter of the coil, [m]
+    Dc : float
+        Diameter of the helix/coil measured from the center of the tube on one
+        side to the center of the tube on the other side, [m]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number with respect to `Di`, [-]
+
+    Notes
+    -----    
+    At very low curvatuves, the predicted heat transfer coefficient
+    grows unbounded.
+    
+    Applicable for :math:`Re\left(\frac{D_i}{D_c}\right)^2 > 0.1`
+
+    Examples
+    --------
+    >>> helical_turbulent_Nu_Mori_Nakayama(2E5, 0.7, 0.01, .2)
+    496.2522480663327
+
+    References
+    ----------
+    .. [1] Mori, Yasuo, and Wataru Nakayama. "Study on Forced Convective Heat 
+       Transfer in Curved Pipes." International Journal of Heat and Mass 
+       Transfer 10, no. 5 (May 1, 1967): 681-95. 
+       doi:10.1016/0017-9310(67)90113-5. 
+    .. [2] El-Genk, Mohamed S., and Timothy M. Schriener. "A Review and 
+       Correlations for Convection Heat Transfer and Pressure Losses in 
+       Toroidal and Helically Coiled Tubes." Heat Transfer Engineering 0, no. 0
+       (June 7, 2016): 1-28. doi:10.1080/01457632.2016.1194693.
+    .. [3] Hardik, B. K., P. K. Baburajan, and S. V. Prabhu. "Local Heat 
+       Transfer Coefficient in Helical Coils with Single Phase Flow." 
+       International Journal of Heat and Mass Transfer 89 (October 2015): 
+       522-38. doi:10.1016/j.ijheatmasstransfer.2015.05.069.
+    '''
+    D_ratio = Di/Dc
+    if Pr < 1:
+        term1 = Pr/(26.2*(Pr**(2/3.) - 0.074))*Re**0.8*D_ratio**0.1
+        term2 = 1. + 0.098*(Re*D_ratio*D_ratio)**-0.2
+    else:
+        term1 = Pr**0.4/41.*Re**(5/6.)*(Di/Dc)**(1/12.)
+        term2 = 1. + 0.061/(Re*(Di/Dc)**2.5)**(1/6.)
+    return term1*term2
+

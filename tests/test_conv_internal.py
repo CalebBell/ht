@@ -126,3 +126,19 @@ def test_turbulent_rough():
 def test_Morimoto_Hotta():
     Nu = Morimoto_Hotta(1E5, 5.7, .05, .5)
     assert_allclose(Nu, 634.4879473869859)
+    
+    
+def test_helical_turbulent_Nu_Mori_Nakayama():
+    Nu = helical_turbulent_Nu_Mori_Nakayama(2E5, 0.7, 0.01, .2)
+    assert_allclose(Nu, 496.2522480663327)
+    # High Pr
+    Nu = helical_turbulent_Nu_Mori_Nakayama(2E5, 4, 0.01, .2)
+    assert_allclose(Nu, 889.3060078437253)
+    
+    # Bad behavior!
+    # 1 sun power output per m^2 per K
+    assert 4E24 < helical_turbulent_Nu_Mori_Nakayama(2E6, 0.7, 1, 1E80)
+    
+    # .[3]_ specified that the high-Pr formula is calculated using Dean number, 
+    # but the actual article says it is not. We use the 2.5 power specified 
+    # in the original.
