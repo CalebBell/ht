@@ -35,7 +35,7 @@ __all__ = ['laminar_T_const', 'laminar_Q_const',
 'turbulent_Nunner', 'turbulent_Dipprey_Sabersky', 'turbulent_Gowen_Smith',
 'turbulent_Kawase_Ulbrecht', 'turbulent_Kawase_De', 'turbulent_Bhatti_Shah',
 'Nu_conv_internal', 'Morimoto_Hotta', 'helical_turbulent_Nu_Mori_Nakayama',
-'helical_turbulent_Nu_Schmidt']
+'helical_turbulent_Nu_Schmidt', 'helical_turbulent_Nu_Xin_Ebadian']
 
 ### Laminar
 
@@ -1634,3 +1634,60 @@ def helical_turbulent_Nu_Schmidt(Re, Pr, Di, Dc):
     else:
         return 0.023*(1. + 3.6*(1. - D_ratio)*D_ratio**0.8)*Re**0.8*Pr**(1/3.)
 
+
+def helical_turbulent_Nu_Xin_Ebadian(Re, Pr, Di, Dc):
+    r'''Calculates Nusselt number for a fluid flowing inside a curved 
+    pipe such as a helical coil under turbulent conditions, using the method of 
+    Xin and Ebadian [1]_, also shown in [2]_ and [3]_.
+            
+    For :math:`Re_{crit} < Re < 1\times 10^5`:
+        
+    .. math::
+        Nu = 0.00619Re^{0.92} Pr^{0.4}\left[1 + 3.455\left(\frac{D_i}{D_c}
+        \right)\right]
+        
+    Parameters
+    ----------
+    Re : float
+        Reynolds number with `D=Di`, [-]
+    Pr : float
+        Prandtl number with bulk properties [-]
+    Di : float
+        Inner diameter of the coil, [m]
+    Dc : float
+        Diameter of the helix/coil measured from the center of the tube on one
+        side to the center of the tube on the other side, [m]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number with respect to `Di`, [-]
+        
+    Notes
+    -----
+    For very low curvatures, reasonable results are returned.
+    
+    The correlation was developed with data in the range of 
+    :math:`0.7 < Pr < 5; 0.0267 < \frac{D_i}{D_c} < 0.0884`.
+
+    Examples
+    --------
+    >>> helical_turbulent_Nu_Xin_Ebadian(2E5, 0.7, 0.01, .2)
+    474.11413424344755
+
+    References
+    ----------
+    .. [1] Xin, R. C., and M. A. Ebadian. "The Effects of Prandtl Numbers on 
+       Local and Average Convective Heat Transfer Characteristics in Helical 
+       Pipes." Journal of Heat Transfer 119, no. 3 (August 1, 1997): 467-73. 
+       doi:10.1115/1.2824120.
+    .. [2] El-Genk, Mohamed S., and Timothy M. Schriener. "A Review and 
+       Correlations for Convection Heat Transfer and Pressure Losses in 
+       Toroidal and Helically Coiled Tubes." Heat Transfer Engineering 0, no. 0
+       (June 7, 2016): 1-28. doi:10.1080/01457632.2016.1194693.
+    .. [3] Hardik, B. K., P. K. Baburajan, and S. V. Prabhu. "Local Heat 
+       Transfer Coefficient in Helical Coils with Single Phase Flow." 
+       International Journal of Heat and Mass Transfer 89 (October 2015): 
+       522-38. doi:10.1016/j.ijheatmasstransfer.2015.05.069.
+    '''
+    return 0.00619*Re**0.92*Pr**0.4*(1. + 3.455*Di/Dc)

@@ -148,3 +148,11 @@ def test_helical_turbulent_Nu_Schmidt():
     assert_allclose(Nu, 466.2569996832083)
     Nus = [helical_turbulent_Nu_Schmidt(i, 0.7, 0.01, .2) for i in [2.2E4, 2.2E4+1E-9]]
     assert_allclose(Nus, [80.1111786843, 79.75161984693375])
+    
+    
+def test_helical_turbulent_Nu_Xin_Ebadian():
+    Nu = helical_turbulent_Nu_Xin_Ebadian(2E5, 0.7, 0.01, .2)
+    assert_allclose(Nu, 474.11413424344755)
+    
+    # No bad behavior
+    # Checked with the original
