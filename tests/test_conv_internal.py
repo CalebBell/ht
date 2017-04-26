@@ -142,3 +142,9 @@ def test_helical_turbulent_Nu_Mori_Nakayama():
     # .[3]_ specified that the high-Pr formula is calculated using Dean number, 
     # but the actual article says it is not. We use the 2.5 power specified 
     # in the original.
+    
+def test_helical_turbulent_Nu_Schmidt():
+    Nu = helical_turbulent_Nu_Schmidt(2E5, 0.7, 0.01, .2)
+    assert_allclose(Nu, 466.2569996832083)
+    Nus = [helical_turbulent_Nu_Schmidt(i, 0.7, 0.01, .2) for i in [2.2E4, 2.2E4+1E-9]]
+    assert_allclose(Nus, [80.1111786843, 79.75161984693375])

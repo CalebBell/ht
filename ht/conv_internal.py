@@ -34,7 +34,8 @@ __all__ = ['laminar_T_const', 'laminar_Q_const',
 'turbulent_Churchill_Zajic', 'turbulent_ESDU', 'turbulent_Martinelli',
 'turbulent_Nunner', 'turbulent_Dipprey_Sabersky', 'turbulent_Gowen_Smith',
 'turbulent_Kawase_Ulbrecht', 'turbulent_Kawase_De', 'turbulent_Bhatti_Shah',
-'Nu_conv_internal', 'Morimoto_Hotta', 'helical_turbulent_Nu_Mori_Nakayama']
+'Nu_conv_internal', 'Morimoto_Hotta', 'helical_turbulent_Nu_Mori_Nakayama',
+'helical_turbulent_Nu_Schmidt']
 
 ### Laminar
 
@@ -1565,4 +1566,71 @@ def helical_turbulent_Nu_Mori_Nakayama(Re, Pr, Di, Dc):
         term1 = Pr**0.4/41.*Re**(5/6.)*(Di/Dc)**(1/12.)
         term2 = 1. + 0.061/(Re*(Di/Dc)**2.5)**(1/6.)
     return term1*term2
+
+
+def helical_turbulent_Nu_Schmidt(Re, Pr, Di, Dc):
+    r'''Calculates Nusselt number for a fluid flowing inside a curved 
+    pipe such as a helical coil under turbulent conditions, using the method of 
+    Schmidt [1]_, also shown in [2]_ and [3]_.
+            
+    For :math:`Re_{crit} < Re < 2.2\times 10 ^4`:
+        
+    .. math::
+        Nu = 0.023\left[1 + 14.8\left(1 + \frac{D_i}{D_c}\right)\left(
+        \frac{D_i}{D_c}\right)^{1/3}\right]Re^{0.8-0.22\left(\frac{D_i}{D_c}
+        \right)^{0.1}}Pr^{1/3}
+            
+    For :math:`2.2\times 10^4 < Re < 1.5\times 10^5`:
+        
+    .. math::
+        Nu = 0.023\left[1 + 3.6\left(1 - \frac{D_i}{D_c}\right)\left(\frac{D_i}
+        {D_c}\right)^{0.8}\right]Re^{0.8}Pr^{1/3}
+        
+    Parameters
+    ----------
+    Re : float
+        Reynolds number with `D=Di`, [-]
+    Pr : float
+        Prandtl number with bulk properties [-]
+    Di : float
+        Inner diameter of the coil, [m]
+    Dc : float
+        Diameter of the helix/coil measured from the center of the tube on one
+        side to the center of the tube on the other side, [m]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number with respect to `Di`, [-]
+        
+    Notes
+    -----
+    For very low curvatures, reasonable results are returned by both cases
+    of Reynolds numbers.
+
+    Examples
+    --------
+    >>> helical_turbulent_Nu_Schmidt(2E5, 0.7, 0.01, .2)
+    466.2569996832083
+
+    References
+    ----------
+    .. [1] Schmidt, Eckehard F. "Wärmeübergang Und Druckverlust in 
+       Rohrschlangen." Chemie Ingenieur Technik 39, no. 13 (July 10, 1967): 
+       781-89. doi:10.1002/cite.330391302. 
+    .. [2] El-Genk, Mohamed S., and Timothy M. Schriener. "A Review and 
+       Correlations for Convection Heat Transfer and Pressure Losses in 
+       Toroidal and Helically Coiled Tubes." Heat Transfer Engineering 0, no. 0
+       (June 7, 2016): 1-28. doi:10.1080/01457632.2016.1194693.
+    .. [3] Hardik, B. K., P. K. Baburajan, and S. V. Prabhu. "Local Heat 
+       Transfer Coefficient in Helical Coils with Single Phase Flow." 
+       International Journal of Heat and Mass Transfer 89 (October 2015): 
+       522-38. doi:10.1016/j.ijheatmasstransfer.2015.05.069.
+    '''
+    D_ratio = Di/Dc
+    if Re <= 2.2E4:
+        term = Re**(0.8 - 0.22*D_ratio**0.1)*Pr**(1/3.)
+        return 0.023*(1. + 14.8*(1. + D_ratio)*D_ratio**(1/3.))*term
+    else:
+        return 0.023*(1. + 3.6*(1. - D_ratio)*D_ratio**0.8)*Re**0.8*Pr**(1/3.)
 

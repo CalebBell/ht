@@ -31,7 +31,8 @@ __all__ = ['effectiveness_from_NTU', 'calc_Cmin', 'calc_Cmax', 'calc_Cr',
 'NTU_from_UA', 'UA_from_NTU', 'check_tubing_TEMA', 'get_tube_TEMA',
 'DBundle_min', 'shell_clearance', 'baffle_thickness', 'D_baffle_holes',
 'L_unsupported_max', 'Ntubes_Perrys', 'Ntubes_VDI', 'Ntubes_Phadkeb',
-'Ntubes_HEDH', 'Ntubes', 'D_for_Ntubes_VDI']
+'Ntubes_HEDH', 'Ntubes', 'D_for_Ntubes_VDI', 'TEMA_heads', 'TEMA_shells', 
+'TEMA_rears', 'TEMA_services', 'baffle_types']
 
 
 # TODO: Implement selection algorithms for heat exchangers from
@@ -1220,7 +1221,7 @@ def Ntubes(DBundle=None, Ntp=1, do=None, pitch=None, angle=30, pitch_ratio=1.25,
         if Ntp == 1 or Ntp == 2 or Ntp == 4 or Ntp == 8:
             methods.append('VDI')
         if Ntp == 1 or Ntp == 2 or Ntp == 4 or Ntp == 6: # Also restricted to 1.25 pitch ratio but not hard coded
-            methods.append('Perry\'s')
+            methods.append("Perry's")
         methods.append('None')
         return methods
     if AvailableMethods:
@@ -1236,7 +1237,7 @@ def Ntubes(DBundle=None, Ntp=1, do=None, pitch=None, angle=30, pitch_ratio=1.25,
         N = Ntubes_HEDH(DBundle=DBundle, do=do, pitch=pitch, angle=angle)
     elif Method == 'VDI':
         N = Ntubes_VDI(DBundle=DBundle, Ntp=Ntp, do=do, pitch=pitch, angle=angle)
-    elif Method == 'Perry\'s':
+    elif Method == "Perry's":
         N = Ntubes_Perrys(DBundle=DBundle, do=do, Ntp=Ntp, angle=angle)
     elif Method == 'None':
         return None
@@ -1314,8 +1315,8 @@ def D_for_Ntubes_VDI(Nt=None, Ntp=None, do=None, pitch=None, angle=30):
     return Dshell
 
 
-_heads = {'A': 'Removable Channel and Cover', 'B': 'Bonnet (Integral Cover)', 'C': 'Integral With Tubesheet Removable Cover', 'N': 'Channel Integral With Tubesheet and Removable Cover', 'D': 'Special High-Pressure Closures'}
-_shells = {'E': 'One-Pass Shell', 'F': 'Two-Pass Shell with Longitudinal Baffle', 'G': 'Split Flow', 'H': 'Double Split Flow', 'J': 'Divided Flow', 'K': 'Kettle-Type Reboiler',  'X': 'Cross Flow'}
-_rears = {'L': 'Fixed Tube Sheet; Like "A" Stationary Head', 'M': 'Fixed Tube Sheet; Like "B" Stationary Head', 'N': 'Fixed Tube Sheet; Like "C" Stationary Head', 'P': 'Outside Packed Floating Head', 'S': 'Floating Head with Backing Device', 'T': 'Pull-Through Floating Head', 'U': 'U-Tube Bundle', 'W': 'Externally Sealed Floating Tubesheet'}
-_services = {'B': 'Chemical', 'R': 'Refinery', 'C': 'General'}
-_baffle_types = ['segmental', 'double segmental', 'triple segmental', 'disk and doughnut', 'no tubes in window', 'orifice', 'rod']
+TEMA_heads = {'A': 'Removable Channel and Cover', 'B': 'Bonnet (Integral Cover)', 'C': 'Integral With Tubesheet Removable Cover', 'N': 'Channel Integral With Tubesheet and Removable Cover', 'D': 'Special High-Pressure Closures'}
+TEMA_shells = {'E': 'One-Pass Shell', 'F': 'Two-Pass Shell with Longitudinal Baffle', 'G': 'Split Flow', 'H': 'Double Split Flow', 'J': 'Divided Flow', 'K': 'Kettle-Type Reboiler',  'X': 'Cross Flow'}
+TEMA_rears = {'L': 'Fixed Tube Sheet; Like "A" Stationary Head', 'M': 'Fixed Tube Sheet; Like "B" Stationary Head', 'N': 'Fixed Tube Sheet; Like "C" Stationary Head', 'P': 'Outside Packed Floating Head', 'S': 'Floating Head with Backing Device', 'T': 'Pull-Through Floating Head', 'U': 'U-Tube Bundle', 'W': 'Externally Sealed Floating Tubesheet'}
+TEMA_services = {'B': 'Chemical', 'R': 'Refinery', 'C': 'General'}
+baffle_types = ['segmental', 'double segmental', 'triple segmental', 'disk and doughnut', 'no tubes in window', 'orifice', 'rod']
