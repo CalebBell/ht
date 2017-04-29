@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 '''Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
-Copyright (C) 2016, Caleb Bell <Caleb.Andrew.Bell@gmail.com>
+Copyright (C) 2017, Caleb Bell <Caleb.Andrew.Bell@gmail.com>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -16,23 +16,13 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from __future__ import division
-from ht import core, hx, conv_internal, conv_jacket, boiling_nucleic
-
-if __name__ == '__main__':
-    import doctest
-    doctest.testmod(core)
-    doctest.testmod(hx)
-    doctest.testmod(conv_internal)
-    doctest.testmod(conv_jacket)
-    doctest.testmod(boiling_nucleic)
-    doctest.testmod(condensation)
-    doctest.testmod(air_cooler)
-    doctest.testmod(radiation)
-    doctest.testmod(insulation)
-    doctest.testmod(conduction)
-    doctest.testmod(conv_free_immersed)
-    doctest.testmod(conv_tube_bank)
-    doctest.testmod(conv_packed_bed)
-    doctest.testmod(conv_external)
+from numpy.testing import assert_allclose
+import ht
+import ht.vectorized
+import numpy as np
 
 
+def test_LMTD_vect():
+    dTlms = [ht.LMTD(T, 60., 30., 40.2) for T in [100, 101]]
+    dTlms_vect = ht.vectorized.LMTD([100, 101], 60., 30., 40.2)
+    assert_allclose(dTlms, dTlms_vect)

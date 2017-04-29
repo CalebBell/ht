@@ -1571,7 +1571,7 @@ def helical_turbulent_Nu_Mori_Nakayama(Re, Pr, Di, Dc):
 def helical_turbulent_Nu_Schmidt(Re, Pr, Di, Dc):
     r'''Calculates Nusselt number for a fluid flowing inside a curved 
     pipe such as a helical coil under turbulent conditions, using the method of 
-    Schmidt [1]_, also shown in [2]_ and [3]_.
+    Schmidt [1]_, also shown in [2]_, [3]_, and [4]_.
             
     For :math:`Re_{crit} < Re < 2.2\times 10 ^4`:
         
@@ -1626,6 +1626,8 @@ def helical_turbulent_Nu_Schmidt(Re, Pr, Di, Dc):
        Transfer Coefficient in Helical Coils with Single Phase Flow." 
        International Journal of Heat and Mass Transfer 89 (October 2015): 
        522-38. doi:10.1016/j.ijheatmasstransfer.2015.05.069.
+    .. [4] Rohsenow, Warren and James Hartnett and Young Cho. Handbook of Heat
+       Transfer, 3E. New York: McGraw-Hill, 1998.
     '''
     D_ratio = Di/Dc
     if Re <= 2.2E4:

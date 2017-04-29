@@ -27,8 +27,7 @@ from fluids.friction import friction_factor
 
 __all__ =['Lehrer', 'Stein_Schmidt']
 
-def Lehrer(m=None, Dtank=None, Djacket=None, H=None, Dinlet=None,
-           rho=None, Cp=None, k=None, mu=None, muw=None,
+def Lehrer(m, Dtank, Djacket, H, Dinlet, rho, Cp, k, mu, muw=None,
            isobaric_expansion=None, dT=None, inlettype='tangential',
            inletlocation='auto'):
     r'''Calculates average heat transfer coefficient for a jacket around a
@@ -150,8 +149,8 @@ def Lehrer(m=None, Dtank=None, Djacket=None, H=None, Dinlet=None,
     return NuSL*k/dg
 
 
-def Stein_Schmidt(m=None, Dtank=None, Djacket=None, H=None, Dinlet=None,
-                  rho=None, Cp=None, k=None, mu=None, muw=None, rhow=None,
+def Stein_Schmidt(m, Dtank, Djacket, H, Dinlet,
+                  rho, Cp, k, mu, muw=None, rhow=None,
                   inlettype='tangential', inletlocation='auto', roughness=0):
     r'''Calculates average heat transfer coefficient for a jacket around a
     vessel according to [1]_ as described in [2]_.
