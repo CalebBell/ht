@@ -22,4 +22,5 @@ Submodules
    ht.hx
    ht.insulation
    ht.radiation
+   ht.vectorized
 

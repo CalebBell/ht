@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from __future__ import division
-from ht import core, hx, conv_internal, conv_jacket, boiling_nucleic
+from ht import *
 
 if __name__ == '__main__':
     import doctest
