@@ -82,5 +82,5 @@ __all__.extend(conv_supercritical.__all__)
 __all__.extend(conv_two_phase.__all__)
 
 
-__version__ = '0.1.48'
+__version__ = '0.1.49'
 
