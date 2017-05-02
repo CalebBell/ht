@@ -1,5 +1,5 @@
-ht.conv_packed_bed module
-=========================
+Convection to packed beds (ht.conv_packed_bed)
+==============================================
 
 .. automodule:: ht.conv_packed_bed
     :members:

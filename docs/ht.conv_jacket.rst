@@ -1,5 +1,5 @@
-ht.conv_jacket module
-=====================
+Convection to jacketed vessels (ht.conv_jacket)
+===============================================
 
 .. automodule:: ht.conv_jacket
     :members:

@@ -1,5 +1,5 @@
-ht.boiling_nucleic module
-=========================
+Nucleic boiling and critical heat flux (ht.boiling_nucleic)
+===========================================================
 
 .. automodule:: ht.boiling_nucleic
     :members:

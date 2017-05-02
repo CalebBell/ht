@@ -1,5 +1,5 @@
-ht.conv_tube_bank module
-========================
+Heat transfer and pressure drop across tube bundles (ht.conv_tube_bank)
+=======================================================================
 
 .. automodule:: ht.conv_tube_bank
     :members:

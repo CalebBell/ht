@@ -1,5 +1,5 @@
-ht.condensation module
-======================
+Condensation (ht.condensation)
+==============================
 
 .. automodule:: ht.condensation
     :members:

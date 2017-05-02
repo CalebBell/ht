@@ -23,7 +23,9 @@ SOFTWARE.'''
 from __future__ import division
 from math import exp
 from scipy.constants import sigma, h, c, k, pi
+
 __all__ = ['blackbody_spectral_radiance', 'q_rad']
+
 
 def blackbody_spectral_radiance(T, wavelength):
     r'''Returns the spectral radiance, in units of W/m^3/sr.
@@ -64,7 +66,7 @@ def blackbody_spectral_radiance(T, wavelength):
     .. [2] Spectral-calc.com. Blackbody Calculator, 2015.
        http://www.spectralcalc.com/blackbody_calculator/blackbody.php
     '''
-    return 2.*h*c**2/wavelength**5/(exp(h*c/wavelength/T/k) - 1.)
+    return 2.*h*c**2/wavelength**5/(exp(h*c/(wavelength*T*k)) - 1.)
 
 
 def q_rad(emissivity, T, T2=0):
@@ -94,10 +96,10 @@ def q_rad(emissivity, T, T2=0):
 
     Examples
     --------
-    >>> q_rad(1., 400)
+    >>> q_rad(emissivity=1, T=400)
     1451.613952
 
-    >>> q_rad(.85, 400, 305.)
+    >>> q_rad(.85, T=400, T2=305.)
     816.7821722650002
 
     References
@@ -106,4 +108,4 @@ def q_rad(emissivity, T, T2=0):
        David P. DeWitt. Introduction to Heat Transfer. 6E. Hoboken, NJ:
        Wiley, 2011.
     '''
-    return sigma*emissivity*(T**4-T2**4)
+    return sigma*emissivity*(T**4 - T2**4)

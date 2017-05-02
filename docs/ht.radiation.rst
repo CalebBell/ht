@@ -1,5 +1,5 @@
-ht.radiation module
-===================
+Heat transfer by radiation (ht.radiation)
+=========================================
 
 .. automodule:: ht.radiation
     :members:

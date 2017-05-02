@@ -278,7 +278,6 @@ def h_kinetic(T, P, MW, Hvap, f=1):
     return (2*f)/(2-f)*(MW/(1000*2*pi*R*T))**0.5*(Hvap**2*P*MW)/(1000*R*T**2)
     
 
-
 def Cavallini_Smith_Zecchin(m, x, D, rhol, rhog, mul, mug, kl, Cpl):
     r'''Calculates heat transfer coefficient for condensation
     of a fluid inside a tube, as presented in
@@ -330,9 +329,8 @@ def Cavallini_Smith_Zecchin(m, x, D, rhol, rhog, mul, mug, kl, Cpl):
     References
     ----------
     .. [1] A. Cavallini, J. R. Smith and R. Zecchin, A dimensionless correlation
-       for heat transfer in forced convection condensa- tion, 6th International 
+       for heat transfer in forced convection condensation, 6th International 
        Heat Transfer Conference., Tokyo, Japan (1974) 309-313. 
-       http://www.ibrarian.net/navon/paper/A_Dimensionless_Correlation_for_Heat_Transfer_in_.pdf?paperid=4413524
     .. [2] Kakaç, Sadik, ed. Boilers, Evaporators, and Condensers. 1st. 
        Wiley-Interscience, 1991.
     .. [3] Balcılar, Muhammet, Ahmet Selim Dalkılıç, Berna Bolat, and Somchai 

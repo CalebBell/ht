@@ -1,5 +1,5 @@
-ht.hx module
-============
+Heat exchanger sizing and rating (ht.hx)
+========================================
 
 .. automodule:: ht.hx
     :members:

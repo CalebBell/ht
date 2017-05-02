@@ -1,5 +1,5 @@
-ht.conv_external module
-=======================
+External convection (ht.conv_external)
+======================================
 
 .. automodule:: ht.conv_external
     :members:

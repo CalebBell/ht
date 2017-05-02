@@ -1,5 +1,5 @@
-ht.conv_internal module
-=======================
+Internal convection (ht.conv_internal)
+======================================
 
 .. automodule:: ht.conv_internal
     :members:

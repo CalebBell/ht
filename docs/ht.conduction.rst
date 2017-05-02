@@ -1,5 +1,5 @@
-ht.conduction module
-====================
+Conduction and shape factors (ht.conduction)
+============================================
 
 .. automodule:: ht.conduction
     :members:

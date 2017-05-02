@@ -1,9 +1,3 @@
-ht package
-==========
-
-Submodules
-----------
-
 .. toctree::
 
    ht.air_cooler

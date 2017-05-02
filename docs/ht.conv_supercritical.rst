@@ -1,5 +1,5 @@
-ht.conv_supercritical module
-============================
+Convection with supercritical fluids (ht.conv_supercritical)
+============================================================
 
 .. automodule:: ht.conv_supercritical
     :members:

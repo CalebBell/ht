@@ -1,5 +1,5 @@
-ht.core module
-==============
+Miscellaneous utilities (ht.core)
+=================================
 
 .. automodule:: ht.core
     :members:

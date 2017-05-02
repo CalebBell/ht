@@ -14,16 +14,16 @@ Heat Transfer (ht)
 .. image:: http://img.shields.io/badge/license-MIT-blue.svg?style=flat 
    :target: https://github.com/CalebBell/ht/blob/master/LICENSE.txt
    :alt: license
-.. image:: https://img.shields.io/coveralls/CalebBell/ht.svg
+.. image:: https://img.shields.io/coveralls/CalebBell/ht.svg?
    :target: https://coveralls.io/github/CalebBell/ht
    :alt: Coverage
-.. image:: https://img.shields.io/pypi/pyversions/ht.svg
+.. image:: https://img.shields.io/pypi/pyversions/ht.svg?
    :target: https://pypi.python.org/pypi/ht
    :alt: Supported_versions
-.. image:: http://img.shields.io/appveyor/ci/calebbell/ht.svg
+.. image:: http://img.shields.io/appveyor/ci/calebbell/ht.svg?
    :target: https://ci.appveyor.com/project/calebbell/ht/branch/master
    :alt: Build_status
-.. image:: https://zenodo.org/badge/48963057.svg
+.. image:: https://zenodo.org/badge/48963057.svg?
    :alt: Zendo
    :target: https://zenodo.org/badge/latestdoi/48963057
 
@@ -85,8 +85,8 @@ To report bugs, please use the ht's Bug Tracker at:
 License information
 -------------------
 
-See ``LICENSE.txt`` for information on the terms & conditions for usage
-of this software, and a DISCLAIMER OF ALL WARRANTIES.
+ht is MIT licensed. See ``LICENSE.txt`` for information on the terms & 
+conditions for usage of this software, and a DISCLAIMER OF ALL WARRANTIES.
 
 Although not required by the ht license, if it is convenient for you,
 please cite ht if used in your work. Please also consider contributing
