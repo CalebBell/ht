@@ -29,6 +29,14 @@ level parameters. The Nu_conv_internal correlation does not accept pipe diameter
 velocity, viscosity, density, heat capacity, and thermal conductivity - it accepts 
 Reynolds number and Prandtl number. This makes the API cleaner and encourages modular design.
 
+All functions are desiged to accept inputs in base SI units. However, any 
+set of consistent units given to a function will return a consistent result;
+for instance, a function calculating volume doesn't care if given an input in
+inches or meters; the output units will be the cube of those given to it.
+The user is directed to unit conversion libraries such as 
+`pint <https://github.com/hgrecco/pint>`_ to perform unit conversions if they
+prefer not to work in SI units.
+
 The standard math library is used in all functions except where special
 functions from numpy or scipy are necessary. SciPy is used for root finding,
 interpolation, scientific constants, ode integration, and its many special
@@ -116,3 +124,5 @@ of the object and the wavelength to be considered.
 >>> blackbody_spectral_radiance(T=800., wavelength=4E-6)
 1311692056.2430143
 
+Effectiveness-NTU heat exchanger sizing
+---------------------------------------

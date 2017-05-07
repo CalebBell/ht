@@ -1254,7 +1254,7 @@ def Nu_Petukhov(Re, Pr, rho_w=None, rho_b=None, mu_w=None, mu_b=None):
 
     Notes
     -----    
-    For the heat transfer database in [3]_, this correlation was 5th most
+    For the heat transfer database in [2]_, this correlation was 5th most
     accurate in the enhaced heat transfer category, and second in the normal
     heat transfer category with MADs of 13.8% and 12.0% respectively.
     

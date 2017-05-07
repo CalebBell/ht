@@ -24,10 +24,12 @@ from __future__ import division
 from math import exp, log, floor
 from math import tanh # 1/coth
 from scipy.interpolate import interp1d
+from scipy.optimize import ridder 
 from fluids.piping import BWG_integers, BWG_inch, BWG_SI
 TEMA_R_to_metric = 0.17611018
 
-__all__ = ['effectiveness_from_NTU', 'calc_Cmin', 'calc_Cmax', 'calc_Cr',
+__all__ = ['effectiveness_from_NTU', 'NTU_from_effectiveness', 'calc_Cmin',
+'calc_Cmax', 'calc_Cr',
 'NTU_from_UA', 'UA_from_NTU', 'check_tubing_TEMA', 'get_tube_TEMA',
 'DBundle_min', 'shell_clearance', 'baffle_thickness', 'D_baffle_holes',
 'L_unsupported_max', 'Ntubes_Perrys', 'Ntubes_VDI', 'Ntubes_Phadkeb',
@@ -40,55 +42,68 @@ __all__ = ['effectiveness_from_NTU', 'calc_Cmin', 'calc_Cmax', 'calc_Cr',
 # 10.1243/PIME_PROC_1983_197_006_02
 
 
-def effectiveness_from_NTU(NTU, Cr, Ntp=1, shells=1, counterflow=True,
-                           subtype='double-pipe', Cmin_mixed=False, Cmax_mixed=False):
-    r'''Returns the effectiveness of a heat exchanger with a given NTU and Cr,
-    number of tube passes, number of shells, and if it is counterflow or not,
-    and if it is the subtype double-pipe, and if the shell and/or tube fluids
-    are mixed or not.
-
-    For Parallel Double pipe exchangers:
+def effectiveness_from_NTU(NTU, Cr, subtype='counterflow'):
+    r'''Returns the effectiveness of a heat exchanger at a specified heat 
+    capacity rate, number of transfer units, and configuration. The following
+    configurations are supported:
+        
+        * Counterflow (ex. double-pipe)
+        * Parallel (ex. double pipe inefficient configuration)
+        * Shell and tube exchangers with even numbers of tube passes,
+          one or more shells in series
+        * Crossflow, single pass, fluids unmixed
+        * Crossflow, single pass, Cmax mixed, Cmin unmixed
+        * Crossflow, single pass, Cmin mixed, Cmax unmixed
+    
+    These situations are normally not those which occur in real heat exchangers,
+    but are useful for academic purposes. More complicated expressions are 
+    available for other methods.
+    
+    For parallel flow heat exchangers:
 
     .. math::
         \epsilon = \frac{1 - \exp[-NTU(1+C_r)]}{1+C_r}
 
-    For Counterflow Double pipe exchangers:
+    For counterflow heat exchangers:
 
     .. math::
         \epsilon = \frac{1 - \exp[-NTU(1-C_r)]}{1-C_r\exp[-NTU(1-C_r)]},\; C_r < 1
 
         \epsilon = \frac{NTU}{1+NTU},\; C_r = 1
 
-    For Shell-and-tube exchangers with one shell pass, 2n tube passes:
+    For shell-and-tube heat exchangers with one shell pass, 2n tube passes:
 
     .. math::
         \epsilon_1 = 2\left\{1 + C_r + \sqrt{1+C_r^2}\times\frac{1+\exp
         [-(NTU)_1\sqrt{1+C_r^2}]}{1-\exp[-(NTU)_1\sqrt{1+C_r^2}]}\right\}^{-1}
 
-    For Shell-and-tube exchangers with one shell pass, 2n tube passes:
+    For shell-and-tube heat exchangers with more than one shell pass, 2n tube 
+    passes (this model assumes each exchanger has an equal share of the overall
+    NTU or said more plainly, the same UA):
 
     .. math::
         \epsilon = \left[\left(\frac{1-\epsilon_1 C_r}{1-\epsilon_1}\right)^2
         -1\right]\left[\left(\frac{1-\epsilon_1 C_r}{1-\epsilon_1}\right)^n
         - C_r\right]^{-1}
 
-    For Cross-flow (single-pass) exchangers with both fluids unmixed:
+    For cross-flow (single-pass) heat exchangers with both fluids unmixed:
 
     .. math::
         \epsilon = 1 - \exp\left[\left(\frac{1}{C_r}\right)
         (NTU)^{0.22}\left\{\exp\left[C_r(NTU)^{0.78}\right]-1\right\}\right]
 
-    For Cross-flow (single-pass) exchangers with Cmax mixed:
+    For cross-flow (single-pass) heat exchangers with Cmax mixed, Cmin unmixed:
 
     .. math::
         \epsilon = \left(\frac{1}{C_r}\right)(1 - \exp\left\{-C_r[1-\exp(-NTU)]\right\})
 
-    For Cross-flow (single-pass) exchangers with Cmin mixed:
+    For cross-flow (single-pass) heat exchangers with Cmin mixed, Cmax unmixed:
 
     .. math::
         \epsilon = 1 - \exp(-C_r^{-1}\{1 - \exp[-C_r(NTU)]\})
 
-    For all other cases, and especially for boilers and condensers:
+    For cases where `Cr` = 0, as in an exchanger with latent heat exchange,
+    flow arrangement does not matter: 
 
     .. math::
         \epsilon = 1 - \exp(-NTU)
@@ -100,20 +115,10 @@ def effectiveness_from_NTU(NTU, Cr, Ntp=1, shells=1, counterflow=True,
     Cr : float
         The heat capacity rate ratio, of the smaller fluid to the larger
         fluid, [-]
-    Ntp : float, optional
-        Number of tube passes, [-]
-    shells: float, optional
-        Number of shells in series
-    counterflow : bool, optional
-        Whether the exchanger is counterflow or co-current
     subtype : str, optional
-        The subtype of exchanger; one of 'shell and tube' or 'double-pipe'
-    Cmin_mixed : bool, optional
-        Whether or not the minimum heat capacity rate fluid is mized in the
-        heat exchanger
-    Cmax_mixed : bool, optional
-        Whether or not the minimum heat capacity rate fluid is mized in the
-        heat exchanger
+        The subtype of exchanger; one of 'counterflow', 'parallel', 'crossflow'
+        'crossflow, mixed Cmin', 'crossflow, mixed Cmax', 'S&T', or 'nS&T' 
+        where n is the number of shell and tube exchangers in a row.
 
     Returns
     -------
@@ -122,10 +127,34 @@ def effectiveness_from_NTU(NTU, Cr, Ntp=1, shells=1, counterflow=True,
 
     Notes
     -----
-    Many more correlations exist.
+
 
     Examples
     --------
+    Worst case, parallel flow:
+    
+    >>> effectiveness_from_NTU(NTU=5, Cr=0.7, subtype='parallel')
+    0.5881156068417585
+    
+    Crossflow, somewhat higher effectiveness:
+        
+    >>> effectiveness_from_NTU(NTU=5, Cr=0.7, subtype='crossflow')
+    0.8444804481910532
+
+    Counterflow, better than either crossflow or parallel flow:
+
+    >>> effectiveness_from_NTU(NTU=5, Cr=0.7, subtype='counterflow')
+    0.9206703686051108
+    
+    One shell and tube heat exchanger gives worse performance than counterflow,
+    but they are designed to be economical and compact which a counterflow
+    exchanger would not be. As the number of shells approaches infinity,
+    the counterflow result is obtained exactly.
+    
+    >>> effectiveness_from_NTU(NTU=5, Cr=0.7, subtype='S&T')
+    0.6834977044311439
+    >>> effectiveness_from_NTU(NTU=5, Cr=0.7, subtype='50S&T')
+    0.9205058702789254
 
     References
     ----------
@@ -133,39 +162,191 @@ def effectiveness_from_NTU(NTU, Cr, Ntp=1, shells=1, counterflow=True,
        David P. DeWitt. Introduction to Heat Transfer. 6E. Hoboken, NJ:
        Wiley, 2011.
     '''
-    if subtype == 'double-pipe':
-        if not counterflow:
-            effectiveness = (1-exp(-NTU*(1+Cr)))/(1+Cr)
-        else:
-            if Cr < 1:
-                effectiveness = (1-exp(-NTU*(1-Cr)))/(1-Cr*exp(-NTU*(1-Cr)))
-            elif Cr == 1:
-                effectiveness = NTU/(1+NTU)
-    elif Ntp > 1 and subtype == 'shell and tube':
-        if not counterflow:
-            raise Exception('Formulas for S&T are only for counterflow, not parallel')
-        if Ntp % 2:
-            raise Exception('For shell and tube exchangers with 2n tube passes, odd tube numbers not allowed')
-        top = 1+exp(-NTU*(1+Cr**2)**.5)
-        bottom = 1-exp(-NTU*(1+Cr**2)**.5)
-        effectiveness = 2.0/(1+Cr+(1+Cr**2)**.5*top/bottom)
+    if Cr > 1:
+        raise Exception('Heat capacity rate must be less than 1 by definition.')
+        
+    if subtype == 'counterflow':
+        if Cr < 1:
+            return (1. - exp(-NTU*(1. - Cr)))/(1. - Cr*exp(-NTU*(1. - Cr)))
+        elif Cr == 1:
+            return NTU/(1. + NTU)
+    elif subtype == 'parallel':
+            return (1. - exp(-NTU*(1. + Cr)))/(1. + Cr)
+    elif 'S&T' in subtype:
+        str_shells = subtype.split('S&T')[0]
+        shells = int(str_shells) if str_shells else 1
+        NTU = NTU/shells
+        
+        top = 1. + exp(-NTU*(1. + Cr**2)**.5)
+        bottom = 1. - exp(-NTU*(1. + Cr**2)**.5)
+        effectiveness = 2./(1. + Cr + (1. + Cr**2)**.5*top/bottom)
         if shells > 1:
-            term = ((1-effectiveness*Cr)/(1-effectiveness))**shells
-            effectiveness = (term-1)/(term-Cr)
-    elif Ntp == 1 and subtype == 'shell and tube':
-        if not Cmin_mixed and not Cmax_mixed:
-            effectiveness = 1-exp(1./Cr*NTU**.22*(exp(-Cr*NTU**.78)-1))
-        elif Cmax_mixed:
-            effectiveness = (1./Cr)*(1-exp(-Cr**-1*(1-exp(-NTU))))
-        elif Cmin_mixed:
-            effectiveness = 1-exp(-Cr**-1*(1-exp(-Cr*NTU)))
+            term = ((1. - effectiveness*Cr)/(1. - effectiveness))**shells
+            effectiveness = (term - 1.)/(term - Cr)
+        return effectiveness
+    
+    elif subtype == 'crossflow':
+        return 1. - exp(1./Cr*NTU**0.22*(exp(-Cr*NTU**0.78) - 1.))
+    elif subtype == 'crossflow, mixed Cmin':
+        return 1. -exp(-Cr**-1*(1. - exp(-Cr*NTU)))
+    elif subtype ==  'crossflow, mixed Cmax':
+        return (1./Cr)*(1. - exp(-Cr*(1. - exp(-NTU))))
     else:
-        effectiveness = 1-exp(-NTU)
-    return effectiveness
+        return  1. - exp(-NTU)
+        
+
+def NTU_from_effectiveness(effectiveness, Cr, subtype='counterflow'):
+    r'''Returns the Number of Transfer Units of a heat exchanger at a specified 
+    heat capacity rate, effectiveness, and configuration. The following
+    configurations are supported:
+        
+        * Counterflow (ex. double-pipe)
+        * Parallel (ex. double pipe inefficient configuration)
+        * Shell and tube exchangers with even numbers of tube passes,
+          one or more shells in series
+        * Crossflow, single pass, fluids unmixed
+        * Crossflow, single pass, Cmax mixed, Cmin unmixed
+        * Crossflow, single pass, Cmin mixed, Cmax unmixed
+    
+    These situations are normally not those which occur in real heat exchangers,
+    but are useful for academic purposes. More complicated expressions are 
+    available for other methods.
+    
+    For parallel flow heat exchangers:
+
+    .. math::
+        \epsilon = \frac{1 - \exp[-NTU(1+C_r)]}{1+C_r}
+
+    For counterflow heat exchangers:
+
+    .. math::
+
+    For shell-and-tube heat exchangers with one shell pass, 2n tube passes:
+
+    .. math::
+
+    For shell-and-tube heat exchangers with more than one shell pass, 2n tube 
+    passes (this model assumes each exchanger has an equal share of the overall
+    NTU or said more plainly, the same UA):
+
+    .. math::
+
+    For cross-flow (single-pass) heat exchangers with both fluids unmixed:
+
+    .. math::
+
+    For cross-flow (single-pass) heat exchangers with Cmax mixed, Cmin unmixed:
+
+    .. math::
+
+    For cross-flow (single-pass) heat exchangers with Cmin mixed, Cmax unmixed:
+
+    .. math::
+
+    For cases where `Cr` = 0, as in an exchanger with latent heat exchange,
+    flow arrangement does not matter: 
+
+    .. math::
+
+    Parameters
+    ----------
+    effectiveness : float
+        The thermal effectiveness of the heat exchanger, [-]
+    Cr : float
+        The heat capacity rate ratio, of the smaller fluid to the larger
+        fluid, [-]
+    subtype : str, optional
+        The subtype of exchanger; one of 'counterflow', 'parallel', 'crossflow'
+        'crossflow, mixed Cmin', 'crossflow, mixed Cmax', 'S&T', or 'nS&T' 
+        where n is the number of shell and tube exchangers in a row.
+
+    Returns
+    -------
+    NTU : float
+        Thermal Number of Transfer Units [-]
+
+    Notes
+    -----
 
 
+    Examples
+    --------
+    Worst case, parallel flow:
+    
+    >>> NTU_from_effectiveness(effectiveness=0.5881156068417585, Cr=0.7, subtype='parallel')
+    5.000000000000012
+    
+    Crossflow, somewhat higher effectiveness:
+        
+    >>> NTU_from_effectiveness(effectiveness=0.8444804481910532, Cr=0.7, subtype='crossflow')
+    5.000000000000001
 
+    Counterflow, better than either crossflow or parallel flow:
 
+    >>> NTU_from_effectiveness(effectiveness=0.9206703686051108, Cr=0.7, subtype='counterflow')
+    5.0
+    
+    Shell and tube exchangers:
+    
+    >>> NTU_from_effectiveness(effectiveness=0.6834977044311439, Cr=0.7, subtype='S&T')
+    5.000000000000071
+    >>> NTU_from_effectiveness(effectiveness=0.9205058702789254, Cr=0.7, subtype='50S&T')
+    4.999999999999996
+
+    References
+    ----------
+    .. [1] Bergman, Theodore L., Adrienne S. Lavine, Frank P. Incropera, and
+       David P. DeWitt. Introduction to Heat Transfer. 6E. Hoboken, NJ:
+       Wiley, 2011.
+    '''
+    if Cr > 1:
+        raise Exception('Heat capacity rate must be less than 1 by definition.')
+
+    if subtype == 'counterflow':
+        if Cr < 1:
+            return 1./(Cr - 1.)*log((effectiveness - 1.)/(effectiveness*Cr - 1.))
+        elif Cr == 1:
+            return effectiveness/(1. - effectiveness)
+    elif subtype == 'parallel':
+        if effectiveness*(1. + Cr) > 1:
+            raise Exception('The specified effectiveness is not physically \
+possible for this configuration; the maximum effectiveness possible is %s.' % (1./(Cr + 1.)))
+        return -log(1. - effectiveness*(1. + Cr))/(1. + Cr)
+    elif 'S&T' in subtype:
+        str_shells = subtype.split('S&T')[0]
+        shells = int(str_shells) if str_shells else 1
+        
+        F = ((effectiveness*Cr - 1.)/(effectiveness - 1.))**(1/shells)
+        e1 = (F - 1.)/(F - Cr)
+        E = (2./e1 - (1. + Cr))/(1. + Cr**2)**0.5
+        NTU = -(1 + Cr**2)**-0.5*log((E - 1.)/(E + 1.))
+        return shells*NTU
+    
+    elif subtype == 'crossflow':
+        # This will fail if NTU is more than 10,000 or less than 1E-7, but
+        # this is extremely unlikely to occur in normal usage.
+        # Maple and SymPy and Wolfram Alpha all failed to obtain an exact
+        # analytical expression even with coefficients for 0.22 and 0.78 or 
+        # with an explicit value for Cr. The function has been plotted,
+        # and appears to be monotonic - there is only one solution.
+        def to_solve(NTU, Cr, effectiveness):
+            return (1. - exp(1./Cr*NTU**0.22*(exp(-Cr*NTU**0.78) - 1.))) - effectiveness
+        return ridder(to_solve, a=1E-7, b=1E5, args=(Cr, effectiveness))
+    
+    elif subtype == 'crossflow, mixed Cmin':
+        if Cr*log(1. - effectiveness) < -1:
+            raise Exception('The specified effectiveness is not physically \
+possible for this configuration; the maximum effectiveness possible is %s.' % (1. - exp(-1./Cr)))
+        return -1./Cr*log(Cr*log(1. - effectiveness) + 1.)
+    
+    elif subtype ==  'crossflow, mixed Cmax':
+        if 1./Cr*log(1. - effectiveness*Cr) < -1:
+            raise Exception('The specified effectiveness is not physically \
+possible for this configuration; the maximum effectiveness possible is %s.' % (((exp(Cr) - 1.0)*exp(-Cr)/Cr)))
+        return -log(1. + 1./Cr*log(1. - effectiveness*Cr))
+    
+    else:
+        return  -log(1. - effectiveness)
 
 
 
@@ -194,7 +375,7 @@ def calc_Cmin(mh, mc, Cph, Cpc):
     Returns
     -------
     Cmin : float
-        The heat capacity rate of the smaller fluid, [-]
+        The heat capacity rate of the smaller fluid, [W/K]
 
     Notes
     -----
@@ -216,9 +397,7 @@ def calc_Cmin(mh, mc, Cph, Cpc):
     '''
     Ch = mh*Cph
     Cc = mc*Cpc
-    Cmin = min(Ch, Cc)
-    return Cmin
-#print [calc_Cmin(mh=22., mc=5.5, Cph=2200, Cpc=4400.)]
+    return min(Ch, Cc)
 
 
 def calc_Cmax(mh, mc, Cph, Cpc):
@@ -246,7 +425,7 @@ def calc_Cmax(mh, mc, Cph, Cpc):
     Returns
     -------
     Cmax : float
-        The heat capacity rate of the larger fluid, [-]
+        The heat capacity rate of the larger fluid, [W/K]
 
     Notes
     -----
@@ -268,10 +447,8 @@ def calc_Cmax(mh, mc, Cph, Cpc):
     '''
     Ch = mh*Cph
     Cc = mc*Cpc
-    Cmax = max(Ch, Cc)
-    return Cmax
+    return max(Ch, Cc)
 
-#print [calc_Cmax(mh=22., mc=5.5, Cph=2200, Cpc=4400.)]
 
 def calc_Cr(mh, mc, Cph, Cpc):
     r'''Returns the heat capacity rate ratio for a heat exchanger
@@ -295,7 +472,7 @@ def calc_Cr(mh, mc, Cph, Cpc):
     -------
     Cr : float
         The heat capacity rate ratio, of the smaller fluid to the larger
-        fluid, [-]
+        fluid, [W/K]
 
     Notes
     -----
@@ -319,15 +496,12 @@ def calc_Cr(mh, mc, Cph, Cpc):
     Cc = mc*Cpc
     Cmin = min(Ch, Cc)
     Cmax = max(Ch, Cc)
-    Cr = Cmin/Cmax
-    return Cr
-
-#print [calc_Cr(mh=22., mc=5.5, Cph=2200, Cpc=4400.)]
+    return Cmin/Cmax
 
 
 def NTU_from_UA(UA, Cmin):
     r'''Returns the Number of Transfer Units for a heat exchanger having
-    UA, and with Cmin heat capacity rate.
+    `UA`, and with `Cmin` heat capacity rate.
 
     .. math::
         NTU = \frac{UA}{C_{min}}
@@ -359,15 +533,12 @@ def NTU_from_UA(UA, Cmin):
        David P. DeWitt. Introduction to Heat Transfer. 6E. Hoboken, NJ:
        Wiley, 2011.
     '''
-    NTU = UA/Cmin
-    return NTU
-
-#print [NTU_from_UA(4400., 22.)]
+    return UA/Cmin
 
 
 def UA_from_NTU(NTU, Cmin):
-    r'''Returns the combined Area-heat transfer term for a heat exchanger
-    having a specified NTU, and with Cmin heat capacity rate.
+    r'''Returns the combined area-heat transfer term for a heat exchanger
+    having a specified `NTU`, and with `Cmin` heat capacity rate.
 
     .. math::
         UA = NTU C_{min}
@@ -399,10 +570,8 @@ def UA_from_NTU(NTU, Cmin):
        David P. DeWitt. Introduction to Heat Transfer. 6E. Hoboken, NJ:
        Wiley, 2011.
     '''
-    UA = NTU*Cmin
-    return UA
+    return NTU*Cmin
 
-#print [UA_from_NTU(200., 22.)]
 
 #print NTU_effectiveness(3.5, .2345, n=3.0, Type='Counterflow')
 #print NTU_NTU(.67, 9, .238, Type='Counterflow', n=3.0)
