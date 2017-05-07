@@ -21,7 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.'''
 
 from __future__ import division
-from math import exp, log, floor
+from math import exp, log, floor, sqrt
 from math import tanh # 1/coth
 from scipy.interpolate import interp1d
 from scipy.optimize import ridder 
@@ -267,7 +267,15 @@ def NTU_from_effectiveness(effectiveness, Cr, subtype='counterflow'):
 
     Notes
     -----
-
+    Unlike :obj:`ht.hx.effectiveness_from_NTU`, not all inputs can 
+    calculate the NTU - many exchanger types have effectiveness limits
+    below 1 which depend on `Cr` and the number of shells in the case of
+    heat exchangers. If an impossible input is given, an error will be raised
+    and the maximum possible effectiveness will be printed.
+    
+    >>> NTU_from_effectiveness(.99, Cr=.7, subtype='5S&T')
+    Traceback (most recent call last):
+    Exception: The specified effectiveness is not physically possible for this configuration; the maximum effectiveness possible is 0.974122977755.
 
     Examples
     --------
@@ -319,6 +327,13 @@ possible for this configuration; the maximum effectiveness possible is %s.' % (1
         F = ((effectiveness*Cr - 1.)/(effectiveness - 1.))**(1/shells)
         e1 = (F - 1.)/(F - Cr)
         E = (2./e1 - (1. + Cr))/(1. + Cr**2)**0.5
+        
+        if (E - 1.)/(E + 1.) <= 0:
+            # Derived with SymPy
+            max_effectiveness = (-((-Cr + sqrt(Cr**2 + 1) + 1)/(Cr + sqrt(Cr**2 + 1) - 1))**shells + 1)/(Cr - ((-Cr + sqrt(Cr**2 + 1) + 1)/(Cr + sqrt(Cr**2 + 1) - 1))**shells)
+            raise Exception('The specified effectiveness is not physically \
+possible for this configuration; the maximum effectiveness possible is %s.' % (max_effectiveness))
+        
         NTU = -(1 + Cr**2)**-0.5*log((E - 1.)/(E + 1.))
         return shells*NTU
     

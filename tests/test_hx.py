@@ -16,12 +16,12 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from __future__ import division
-from math import log, exp
+from math import log, exp, sqrt
 from ht import *
 import numpy as np
 from numpy.testing import assert_allclose
 import pytest
-from random import uniform
+from random import uniform, randint
 
 
 ### TODO hx requires testing, but perhaps first improvement
@@ -140,6 +140,20 @@ def test_effectiveness_NTU():
         eff_calc = effectiveness_from_NTU(N, Cr=Cr, subtype='crossflow')
         assert_allclose(eff, eff_calc)
 
+    # Shell and tube - this one doesn't have a nice effectiveness limit,
+    # and it depends on the number of shells
+    
+    for i in range(1000):
+        Cr = uniform(0, 1)
+        shells = randint(1, 10)
+        eff_max = (-((-Cr + sqrt(Cr**2 + 1) + 1)/(Cr + sqrt(Cr**2 + 1) - 1))**shells + 1)/(Cr - ((-Cr + sqrt(Cr**2 + 1) + 1)/(Cr + sqrt(Cr**2 + 1) - 1))**shells)
+        eff = uniform(0, eff_max-1E-5)
+        N = NTU_from_effectiveness(eff, Cr=Cr, subtype=str(shells)+'S&T')
+        eff_calc = effectiveness_from_NTU(N, Cr=Cr, subtype=str(shells)+'S&T')
+        assert_allclose(eff, eff_calc)
+        
+    with pytest.raises(Exception):
+        NTU_from_effectiveness(.99, Cr=.7, subtype='5S&T')
         
     # Easy tests
     effectiveness = effectiveness_from_NTU(NTU=5, Cr=0.7, subtype='crossflow, mixed Cmin')
