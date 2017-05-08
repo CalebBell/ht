@@ -158,6 +158,41 @@ def effectiveness_from_NTU(NTU, Cr, subtype='counterflow'):
     >>> effectiveness_from_NTU(NTU=5, Cr=0.7, subtype='50S&T')
     0.9205058702789254
 
+    
+    Overall case of rating an existing heat exchanger where a known flowrate
+    of steam and oil are contacted in crossflow, with the steam side mixed
+    (example 10-9 in [3]_):
+        
+    >>> U = 275 # W/m^2/K
+    >>> A = 10.82 # m^2
+    >>> Cp_oil = 1900 # J/kg/K
+    >>> Cp_steam = 1860 # J/kg/K
+    
+    >>> m_steam = 5.2 # kg/s
+    >>> m_oil = 0.725 # kg/s
+    
+    >>> Thi = 130 # °C
+    >>> Tci = 15 # °C
+    
+    >>> Cmin = calc_Cmin(mh=m_steam, mc=m_oil, Cph=Cp_steam, Cpc=Cp_oil)
+    >>> Cmax = calc_Cmax(mh=m_steam, mc=m_oil, Cph=Cp_steam, Cpc=Cp_oil)
+    >>> Cr = calc_Cr(mh=m_steam, mc=m_oil, Cph=Cp_steam, Cpc=Cp_oil)
+    >>> NTU = NTU_from_UA(UA=U*A, Cmin=Cmin)
+    >>> eff = effectiveness_from_NTU(NTU=NTU, Cr=Cr, subtype='crossflow, mixed Cmax')
+    >>> Q = eff*Cmin*(Thi - Tci)
+    >>> Tco = Tci + Q/(m_oil*Cp_oil)
+    >>> Tho = Thi +  Q/(m_steam*Cp_steam)
+
+    >>> Cmin, Cmax, Cr
+    (1377.5, 9672.0, 0.14242142266335814)
+    >>> NTU, eff, Q
+    (2.160072595281307, 0.8312180361425988, 131675.32715043944)
+    >>> Tco, Tho
+    (110.59007415639887, 143.61407435385024)
+
+
+
+
     References
     ----------
     .. [1] Bergman, Theodore L., Adrienne S. Lavine, Frank P. Incropera, and
@@ -323,6 +358,44 @@ def NTU_from_effectiveness(effectiveness, Cr, subtype='counterflow'):
     5.000000000000071
     >>> NTU_from_effectiveness(effectiveness=0.9205058702789254, Cr=0.7, subtype='50S&T')
     4.999999999999996
+
+
+    Overall case of rating an existing heat exchanger where a known flowrate
+    of steam and oil are contacted in crossflow, with the steam side mixed,
+    known inlet and outlet temperatures, and unknown UA
+    (based on example 10-8 in [3]_):
+
+    >>> Cp_oil = 1900 # J/kg/K
+    >>> Cp_steam = 1860 # J/kg/K
+
+    >>> m_steam = 5.2 # kg/s
+    >>> m_oil = 1.45 # kg/s
+
+    >>> Thi = 130 # °C
+    >>> Tci = 15 # °C
+    >>> Tco = 85 # °C # Design specification
+
+    >>> Q = Cp_oil*m_oil*(Tci-Tco)
+    >>> dTh = Q/(m_steam*Cp_steam)
+    >>> Tho = Thi + dTh
+
+    >>> Cmin = calc_Cmin(mh=m_steam, mc=m_oil, Cph=Cp_steam, Cpc=Cp_oil)
+    >>> Cmax = calc_Cmax(mh=m_steam, mc=m_oil, Cph=Cp_steam, Cpc=Cp_oil)
+    >>> Cr = calc_Cr(mh=m_steam, mc=m_oil, Cph=Cp_steam, Cpc=Cp_oil)
+
+    >>> effectiveness = -Q/Cmin/(Thi-Tci)
+
+    >>> NTU = NTU_from_effectiveness(effectiveness, Cr, subtype='crossflow, mixed Cmax')
+    >>> UA = UA_from_NTU(NTU, Cmin)
+
+    >>> U = 200 # Assume this was calculated; would actually need to be obtained iteratively as U depends on the exchanger geometry
+    >>> A = UA/U
+
+    >>> Cmin, Cmax, Cr
+    (2755.0, 9672.0, 0.2848428453267163)
+    
+    >>> effectiveness, NTU, UA, A
+    (0.6086956521739131, 1.1040839095588, 3041.751170834494, 15.208755854172471)
 
     References
     ----------
