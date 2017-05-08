@@ -170,5 +170,10 @@ def test_effectiveness_NTU():
     assert_allclose(eff, 0.9932620530009145)
     NTU = NTU_from_effectiveness(eff, Cr=0, subtype='boiler')
     assert_allclose(NTU, 5)
+    
+    with pytest.raises(Exception):
+        effectiveness_from_NTU(NTU=5, Cr=1.01, subtype='crossflow, mixed Cmin')
 
+    with pytest.raises(Exception):
+        NTU_from_effectiveness(effectiveness=.2, Cr=1.01, subtype='crossflow, mixed Cmin')
     

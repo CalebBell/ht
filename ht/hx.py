@@ -57,7 +57,8 @@ def effectiveness_from_NTU(NTU, Cr, subtype='counterflow'):
     
     These situations are normally not those which occur in real heat exchangers,
     but are useful for academic purposes. More complicated expressions are 
-    available for other methods.
+    available for other methods. These equations are confirmed in [1]_,
+    [2]_, and [3]_.
     
     For parallel flow heat exchangers:
 
@@ -71,15 +72,16 @@ def effectiveness_from_NTU(NTU, Cr, subtype='counterflow'):
 
         \epsilon = \frac{NTU}{1+NTU},\; C_r = 1
 
-    For shell-and-tube heat exchangers with one shell pass, 2n tube passes:
+    For TEMA E shell-and-tube heat exchangers with one shell pass, 2n tube 
+    passes:
 
     .. math::
         \epsilon_1 = 2\left\{1 + C_r + \sqrt{1+C_r^2}\times\frac{1+\exp
         [-(NTU)_1\sqrt{1+C_r^2}]}{1-\exp[-(NTU)_1\sqrt{1+C_r^2}]}\right\}^{-1}
 
-    For shell-and-tube heat exchangers with more than one shell pass, 2n tube 
-    passes (this model assumes each exchanger has an equal share of the overall
-    NTU or said more plainly, the same UA):
+    For TEMA E shell-and-tube heat exchangers with more than one shell pass, 2n  
+    tube passes (this model assumes each exchanger has an equal share of the 
+    overall NTU or said more plainly, the same UA):
 
     .. math::
         \epsilon = \left[\left(\frac{1-\epsilon_1 C_r}{1-\epsilon_1}\right)^2
@@ -161,6 +163,10 @@ def effectiveness_from_NTU(NTU, Cr, subtype='counterflow'):
     .. [1] Bergman, Theodore L., Adrienne S. Lavine, Frank P. Incropera, and
        David P. DeWitt. Introduction to Heat Transfer. 6E. Hoboken, NJ:
        Wiley, 2011.
+    .. [2] Shah, Ramesh K., and Dusan P. Sekulic. Fundamentals of Heat 
+       Exchanger Design. 1st edition. Hoboken, NJ: Wiley, 2002.
+    .. [3] Holman, Jack. Heat Transfer. 10th edition. Boston: McGraw-Hill 
+       Education, 2009.
     '''
     if Cr > 1:
         raise Exception('Heat capacity rate must be less than 1 by definition.')
@@ -203,50 +209,67 @@ def NTU_from_effectiveness(effectiveness, Cr, subtype='counterflow'):
         * Counterflow (ex. double-pipe)
         * Parallel (ex. double pipe inefficient configuration)
         * Shell and tube exchangers with even numbers of tube passes,
-          one or more shells in series
+          one or more shells in series (TEMA E (one pass shell) only)
         * Crossflow, single pass, fluids unmixed
         * Crossflow, single pass, Cmax mixed, Cmin unmixed
         * Crossflow, single pass, Cmin mixed, Cmax unmixed
     
     These situations are normally not those which occur in real heat exchangers,
     but are useful for academic purposes. More complicated expressions are 
-    available for other methods.
+    available for other methods. These equations are confirmed in [1]_, [2]_,
+    and [3]_.
     
     For parallel flow heat exchangers:
 
     .. math::
-        \epsilon = \frac{1 - \exp[-NTU(1+C_r)]}{1+C_r}
-
+        NTU = -\frac{\ln[1 - \epsilon(1+C_r)]}{1+C_r}
+        
     For counterflow heat exchangers:
 
     .. math::
+        NTU = \frac{1}{C_r-1}\ln\left(\frac{\epsilon-1}{\epsilon C_r-1}\right)
+        
+        NTU = \frac{\epsilon}{1-\epsilon} \text{ if } C_r = 1
 
-    For shell-and-tube heat exchangers with one shell pass, 2n tube passes:
-
-    .. math::
-
-    For shell-and-tube heat exchangers with more than one shell pass, 2n tube 
-    passes (this model assumes each exchanger has an equal share of the overall
-    NTU or said more plainly, the same UA):
+    For TEMA E shell-and-tube heat exchangers with one shell pass, 2n tube 
+    passes:
 
     .. math::
+        (NTU)_1 = -(1 + C_r^2)^{-0.5}\ln\left(\frac{E-1}{E+1}\right)
+        
+        E = \frac{2/\epsilon_1 - (1 + C_r)}{(1 + C_r^2)^{0.5}}
 
-    For cross-flow (single-pass) heat exchangers with both fluids unmixed:
+    For TEMA E shell-and-tube heat exchangers with more than one shell pass, 2n  
+    tube passes (this model assumes each exchanger has an equal share of the 
+    overall NTU or said more plainly, the same UA):
 
     .. math::
+        \epsilon_1 = \frac{F-1}{F-C_r}
+        
+        F = \left(\frac{\epsilon C_r-1}{\epsilon-1}\right)^{1/n}
+        
+        NTU = n(NTU)_1
+        
+    For cross-flow (single-pass) heat exchangers with both fluids unmixed, 
+    there is no analytical solution. However, the function is monotonically
+    increasing, and a closed-form solver is implemented, guaranteed to solve
+    for :math:`10^{-7} < NTU < 10^5`.
 
     For cross-flow (single-pass) heat exchangers with Cmax mixed, Cmin unmixed:
 
     .. math::
-
+        NTU = -\ln\left[1 + \frac{1}{C_r}\ln(1 - \epsilon C_r)\right]
+        
     For cross-flow (single-pass) heat exchangers with Cmin mixed, Cmax unmixed:
 
     .. math::
+        NTU = -\frac{1}{C_r}\ln[C_r\ln(1-\epsilon)+1]
 
     For cases where `Cr` = 0, as in an exchanger with latent heat exchange,
     flow arrangement does not matter: 
 
     .. math::
+        NTU = -\ln(1-\epsilon)
 
     Parameters
     ----------
@@ -306,11 +329,17 @@ def NTU_from_effectiveness(effectiveness, Cr, subtype='counterflow'):
     .. [1] Bergman, Theodore L., Adrienne S. Lavine, Frank P. Incropera, and
        David P. DeWitt. Introduction to Heat Transfer. 6E. Hoboken, NJ:
        Wiley, 2011.
+    .. [2] Shah, Ramesh K., and Dusan P. Sekulic. Fundamentals of Heat 
+       Exchanger Design. 1st edition. Hoboken, NJ: Wiley, 2002.
+    .. [3] Holman, Jack. Heat Transfer. 10th edition. Boston: McGraw-Hill 
+       Education, 2009.
     '''
     if Cr > 1:
         raise Exception('Heat capacity rate must be less than 1 by definition.')
 
     if subtype == 'counterflow':
+        # [2]_ gives the expression 1./(1-Cr)*log((1-Cr*eff)/(1-eff)), but
+        # this is just the same equation rearranged differently.
         if Cr < 1:
             return 1./(Cr - 1.)*log((effectiveness - 1.)/(effectiveness*Cr - 1.))
         elif Cr == 1:
@@ -321,6 +350,11 @@ def NTU_from_effectiveness(effectiveness, Cr, subtype='counterflow'):
 possible for this configuration; the maximum effectiveness possible is %s.' % (1./(Cr + 1.)))
         return -log(1. - effectiveness*(1. + Cr))/(1. + Cr)
     elif 'S&T' in subtype:
+        # [2]_ gives the expression
+        # D = (1+Cr**2)**0.5
+        # 1/D*log((2-eff*(1+Cr-D))/(2-eff*(1+Cr + D)))
+        # This is confirmed numerically to be the same equation rearranged
+        # differently
         str_shells = subtype.split('S&T')[0]
         shells = int(str_shells) if str_shells else 1
         
