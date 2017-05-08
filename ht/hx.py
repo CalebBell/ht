@@ -129,6 +129,19 @@ def effectiveness_from_NTU(NTU, Cr, subtype='counterflow'):
 
     Notes
     -----
+    More helpful equations with this model are as follows:
+        
+    .. math::
+        Q=\epsilon C_{min}(T_{h,i}-T_{c,i})
+        
+        Q_{max}=C_{min}(T_{h,i}-T_{c,i})
+        
+        \epsilon=\text{effectiveness}=\frac{Q}{Q_{max}}
+        
+        Q = C_c(T_{c,o} - T_{c,i} = C_h(T_{h,i} - T_{h,o})
+        
+        Q = \frac{\epsilon C_{min}C_{hot}C_{cold}(T_{c,o}-T_{h,o})}
+        {\epsilon  C_{min}(C_{hot} +C_{cold}) - (C_{hot}C_{cold}) }
 
 
     Examples
@@ -179,17 +192,28 @@ def effectiveness_from_NTU(NTU, Cr, subtype='counterflow'):
     >>> Cr = calc_Cr(mh=m_steam, mc=m_oil, Cph=Cp_steam, Cpc=Cp_oil)
     >>> NTU = NTU_from_UA(UA=U*A, Cmin=Cmin)
     >>> eff = effectiveness_from_NTU(NTU=NTU, Cr=Cr, subtype='crossflow, mixed Cmax')
+    
     >>> Q = eff*Cmin*(Thi - Tci)
     >>> Tco = Tci + Q/(m_oil*Cp_oil)
-    >>> Tho = Thi +  Q/(m_steam*Cp_steam)
+    >>> Tho = Thi - Q/(m_steam*Cp_steam)
 
     >>> Cmin, Cmax, Cr
     (1377.5, 9672.0, 0.14242142266335814)
     >>> NTU, eff, Q
     (2.160072595281307, 0.8312180361425988, 131675.32715043944)
     >>> Tco, Tho
-    (110.59007415639887, 143.61407435385024)
-
+    (110.59007415639887, 116.38592564614977)
+    
+    Alternatively, if only the outlet temperatures had been known:
+        
+    >>> Tco = 110.59007415639887
+    >>> Tho = 116.38592564614977
+    >>> Cc, Ch = Cmin, Cmax # In this case but not always
+    >>> Q = eff*Cmin*Cc*Ch*(Tco - Tho)/(eff*Cmin*(Cc+Ch) - Ch*Cc)
+    >>> Thi = Tho + Q/Ch
+    >>> Tci = Tco - Q/Cc
+    >>> Q, Tci, Thi
+    (131675.32715043964, 14.999999999999858, 130.00000000000003)
 
 
 
