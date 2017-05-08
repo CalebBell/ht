@@ -129,21 +129,46 @@ def effectiveness_from_NTU(NTU, Cr, subtype='counterflow'):
 
     Notes
     -----
-    More helpful equations with this model are as follows:
+    Once the effectiveness of the exchanger has been calculated, the total
+    heat transfered can be calculated according to the following formulas,
+    depending on which stream temperatures are known:
+        
+    If the inlet temperatures for both sides are known:
         
     .. math::
         Q=\epsilon C_{min}(T_{h,i}-T_{c,i})
         
-        Q_{max}=C_{min}(T_{h,i}-T_{c,i})
+    If the outlet temperatures for both sides are known:
         
-        \epsilon=\text{effectiveness}=\frac{Q}{Q_{max}}
-        
-        Q = C_c(T_{c,o} - T_{c,i} = C_h(T_{h,i} - T_{h,o})
-        
+    .. math::
         Q = \frac{\epsilon C_{min}C_{hot}C_{cold}(T_{c,o}-T_{h,o})}
         {\epsilon  C_{min}(C_{hot} +C_{cold}) - (C_{hot}C_{cold}) }
-
-
+    
+    If the hot inlet and cold outlet are known:
+        
+    .. math::
+        Q = \frac{\epsilon C_{min}C_c(T_{co}-T_{hi})}{\epsilon C_{min}-C_c}
+        
+    If the hot outlet stream and cold inlet stream are known:
+        
+    .. math::
+        Q = \frac{\epsilon C_{min}C_h(T_{ci}-T_{ho})}{\epsilon C_{min}-C_h}
+    
+    
+    If the inlet and outlet conditions for a single side are known, the
+    effectiveness wasn't needed for it to be calculated. For completeness,
+    the formulas are as follows:
+        
+    .. math::
+        Q = C_c(T_{c,o} - T_{c,i}) = C_h(T_{h,i} - T_{h,o})
+        
+    There is also a term called :math:`Q_{max}`, which is the heat which would
+    have been transfered if the effectiveness was 1. It is calculated as
+    follows:
+        
+    .. math::
+        Q_{max} = \frac{Q}{\text{effectiveness}}
+        
     Examples
     --------
     Worst case, parallel flow:
@@ -415,8 +440,8 @@ def NTU_from_effectiveness(effectiveness, Cr, subtype='counterflow'):
     >>> U = 200 # Assume this was calculated; would actually need to be obtained iteratively as U depends on the exchanger geometry
     >>> A = UA/U
 
-    >>> Cmin, Cmax, Cr
-    (2755.0, 9672.0, 0.2848428453267163)
+    >>> Tho, Cmin, Cmax, Cr
+    (110.06100082712986, 2755.0, 9672.0, 0.2848428453267163)
     
     >>> effectiveness, NTU, UA, A
     (0.6086956521739131, 1.1040839095588, 3041.751170834494, 15.208755854172471)
