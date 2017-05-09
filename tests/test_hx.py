@@ -78,7 +78,7 @@ def test_D_for_Ntubes_VDI():
 
 def test_effectiveness_NTU():
     # Counterflow
-    for i in range(1000):
+    for i in range(20):
         eff = uniform(0, 1)
         Cr = uniform(0, 1)
         units = NTU_from_effectiveness(effectiveness=eff, Cr=Cr, subtype='counterflow')
@@ -92,7 +92,7 @@ def test_effectiveness_NTU():
         
         
     # Parallel
-    for i in range(1000):
+    for i in range(20):
         Cr = uniform(0, 1)
         eff = uniform(0, 1./(Cr + 1.)*(1-1E-7))
         units = NTU_from_effectiveness(effectiveness=eff, Cr=Cr, subtype='parallel')
@@ -106,7 +106,7 @@ def test_effectiveness_NTU():
         
     # Crossflow, Cmin mixed, Cmax unmixed
     
-    for i in range(1000):
+    for i in range(20):
         Cr = uniform(0, 1)
         eff = uniform(0, (1 - exp(-1/Cr))*(1-1E-7))
         N = NTU_from_effectiveness(eff, Cr=Cr, subtype='crossflow, mixed Cmin')
@@ -119,7 +119,7 @@ def test_effectiveness_NTU():
         
             
     # Crossflow, Cmax mixed, Cmin unmixed
-    for i in range(1000):
+    for i in range(20):
         Cr = uniform(0, 1)
         eff = uniform(0, (exp(Cr) - 1)*exp(-Cr)/Cr-1E-5)
         N = NTU_from_effectiveness(eff, Cr=Cr, subtype='crossflow, mixed Cmax')
@@ -143,7 +143,7 @@ def test_effectiveness_NTU():
     # Shell and tube - this one doesn't have a nice effectiveness limit,
     # and it depends on the number of shells
     
-    for i in range(1000):
+    for i in range(20):
         Cr = uniform(0, 1)
         shells = randint(1, 10)
         eff_max = (-((-Cr + sqrt(Cr**2 + 1) + 1)/(Cr + sqrt(Cr**2 + 1) - 1))**shells + 1)/(Cr - ((-Cr + sqrt(Cr**2 + 1) + 1)/(Cr + sqrt(Cr**2 + 1) - 1))**shells)
@@ -177,3 +177,47 @@ def test_effectiveness_NTU():
     with pytest.raises(Exception):
         NTU_from_effectiveness(effectiveness=.2, Cr=1.01, subtype='crossflow, mixed Cmin')
     
+    
+def test_effectiveness_NTU_method():
+    ans_known = {'Q': 192850.0, 'Thi': 130, 'Cmax': 9672.0, 'Tho': 110.06100082712986, 'Cmin': 2755.0, 'NTU': 1.1040839095588, 'Tco': 85, 'Tci': 15, 'Cr': 0.2848428453267163, 'effectiveness': 0.6086956521739131, 'UA': 3041.751170834494}
+    ans = effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, subtype='crossflow, mixed Cmax', Tci=15, Tco=85, Tho=110.06100082712986)
+    [assert_allclose(ans_known[i], ans[i]) for i in ans_known.keys()]
+    ans = effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, subtype='crossflow, mixed Cmax', Tci=15, Tco=85, Thi=130)
+    [assert_allclose(ans_known[i], ans[i]) for i in ans_known.keys()]
+
+    ans = effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, subtype='crossflow, mixed Cmax', Thi=130, Tho=110.06100082712986, Tci=15)
+    [assert_allclose(ans_known[i], ans[i]) for i in ans_known.keys()]
+    ans = effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, subtype='crossflow, mixed Cmax', Thi=130, Tho=110.06100082712986, Tco=85)
+    [assert_allclose(ans_known[i], ans[i]) for i in ans_known.keys()]
+
+    ans = effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, subtype='crossflow, mixed Cmax', Tco=85, Tho=110.06100082712986, UA=3041.751170834494)
+    [assert_allclose(ans_known[i], ans[i]) for i in ans_known.keys()]
+    ans = effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, subtype='crossflow, mixed Cmax', Tci=15, Thi=130, UA=3041.751170834494)
+    [assert_allclose(ans_known[i], ans[i]) for i in ans_known.keys()]
+    
+    ans = effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, subtype='crossflow, mixed Cmax', Tci=15, Tho=110.06100082712986, UA=3041.751170834494)
+    [assert_allclose(ans_known[i], ans[i]) for i in ans_known.keys()]
+    ans = effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, subtype='crossflow, mixed Cmax', Tco=85, Thi=130, UA=3041.751170834494)
+    [assert_allclose(ans_known[i], ans[i]) for i in ans_known.keys()]
+    
+    ans = effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, subtype='crossflow, mixed Cmax', Tci=15, Tco=85, Tho=110.06100082712986, UA=3041.751170834494)
+    [assert_allclose(ans_known[i], ans[i]) for i in ans_known.keys()]
+    ans = effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, subtype='crossflow, mixed Cmax', Tco=85, Thi=130, Tho=110.06100082712986, UA=3041.751170834494)
+    [assert_allclose(ans_known[i], ans[i]) for i in ans_known.keys()]
+
+    with pytest.raises(Exception):
+        # Test raising an error with only on set of stream information 
+        effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, subtype='crossflow, mixed Cmax', Thi=130, Tho=110.06100082712986, UA=3041.751170834494)
+        
+    with pytest.raises(Exception):
+        # Inconsistent hot and cold temperatures and heat capacity ratios
+        effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, subtype='crossflow, mixed Cmax', Thi=130, Tho=110.06100082712986, Tco=85, Tci=5)
+
+    with pytest.raises(Exception):
+        # Calculate UA, but no code side temperature information given
+        effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, subtype='crossflow, mixed Cmax', Thi=130, Tho=110.06100082712986)
+        
+    with pytest.raises(Exception):
+        # Calculate UA, but no hot side temperature information given
+        effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, subtype='crossflow, mixed Cmax', Tci=15, Tco=85)
+        
