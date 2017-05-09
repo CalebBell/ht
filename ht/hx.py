@@ -31,8 +31,8 @@ TEMA_R_to_metric = 0.17611018
 
 __all__ = ['effectiveness_from_NTU', 'NTU_from_effectiveness', 'calc_Cmin',
 'calc_Cmax', 'calc_Cr',
-'NTU_from_UA', 'UA_from_NTU', 'effectiveness_NTU_method', 'check_tubing_TEMA',
- 'get_tube_TEMA',
+'NTU_from_UA', 'UA_from_NTU', 'effectiveness_NTU_method', 'F_LMTD_Fakheri', 
+'check_tubing_TEMA', 'get_tube_TEMA',
 'DBundle_min', 'shell_clearance', 'baffle_thickness', 'D_baffle_holes',
 'L_unsupported_max', 'Ntubes_Perrys', 'Ntubes_VDI', 'Ntubes_Phadkeb',
 'Ntubes_HEDH', 'Ntubes', 'D_for_Ntubes_VDI', 'TEMA_heads', 'TEMA_shells', 
@@ -898,6 +898,78 @@ def effectiveness_NTU_method(mh, mc, Cph, Cpc, subtype='counterflow', Thi=None,
             'Tci': Tci, 'Tco': Tco} 
 
 
+def F_LMTD_Fakheri(Thi, Tho, Tci, Tco, shells=1):
+    r'''Calculates the log-mean temperature difference correction factor `Ft` 
+    for a shell-and-tube heat exchanger with one or an even number of tube 
+    passes, and a given number of shell passes, with the expression given in 
+    [1]_ and also shown in [2]_.
+    
+    .. math::
+        F_t=\frac{S\ln W}{\ln \frac{1+W-S+SW}{1+W+S-SW}}
+
+        S = \frac{\sqrt{R^2+1}}{R-1}
+        
+        W = \left(\frac{1-PR}{1-P}\right)^{1/N}
+        
+        R = \frac{T_{in}-T_{out}}{t_{out}-t_{in}}
+        
+        P = \frac{t_{out}-t_{in}}{T_{in}-t_{in}}
+        
+    If R = 1 and logarithms cannot be evaluated:
+        
+    .. math::
+        W' = \frac{N-NP}{N-NP+P}
+        
+        F_t = \frac{\sqrt{2}\frac{1-W'}{W'}}{\ln\frac{\frac{W'}{1-W'}+\frac{1}
+        {\sqrt{2}}}{\frac{W'}{1-W'}-\frac{1}{\sqrt{2}}}}
+        
+    Parameters
+    ----------
+    Thi : float
+        Inlet temperature of hot fluid, [K]
+    Tho : float
+        Outlet temperature of hot fluid, [K]
+    Tci : float
+        Inlet temperature of cold fluid, [K]
+    Tco : float
+        Outlet temperature of cold fluid, [K]        
+    shells : int, optional
+        Number of shell-side passes, [-]
+
+    Returns
+    -------
+    Ft : float
+        Log-mean temperature difference correction factor, [-]
+
+    Notes
+    -----
+    This expression is symmetric - the same result is calculated if the cold
+    side values are swapped with the hot side values. It also does not 
+    depend on the units of the temperature given.
+
+    Examples
+    --------
+    >>> F_LMTD_Fakheri(Tci=15, Tco=85, Thi=130, Tho=110, shells=1)
+    0.9438358829645933
+
+    References
+    ----------
+    .. [1] Fakheri, Ahmad. "A General Expression for the Determination of the 
+       Log Mean Temperature Correction Factor for Shell and Tube Heat 
+       Exchangers." Journal of Heat Transfer 125, no. 3 (May 20, 2003): 527-30.
+       doi:10.1115/1.1571078.
+    .. [2] Hall, Stephen. Rules of Thumb for Chemical Engineers, Fifth Edition.
+       Oxford; Waltham, MA: Butterworth-Heinemann, 2012.
+    '''
+    R = (Thi - Tho)/(Tco - Tci)
+    P = (Tco - Tci)/(Thi - Tci)
+    if R == 1.0:
+        W2 = (shells - shells*P)/(shells - shells*P + P)
+        return (2**0.5*(1. - W2)/W2)/log(((W2/(1. - W2) + 2**-0.5)/(W2/(1. - W2) - 2**-0.5)))
+    else:
+        W = ((1. - P*R)/(1. - P))**(1./shells)
+        S = (R*R + 1.)**0.5/(R - 1.)
+        return S*log(W)/log((1. + W - S + S*W)/(1. + W + S - S*W))
 
 ### Tubes
 

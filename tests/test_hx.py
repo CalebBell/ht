@@ -221,3 +221,31 @@ def test_effectiveness_NTU_method():
         # Calculate UA, but no hot side temperature information given
         effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, subtype='crossflow, mixed Cmax', Tci=15, Tco=85)
         
+        
+def test_F_LMTD_Fakheri():
+    '''Number of tube passes must be a multiple of 2N for correlation to work.
+    N can be 1.
+
+    Example from http://excelcalculations.blogspot.ca/2011/06/lmtd-correction-factor.html 
+    spreadsheet file which Bowman et al (1940).
+    This matches for 3, 6, and 11 shell passes perfectly.
+
+    This also matches that from the sheet: 
+    http://www.mhprofessional.com/getpage.php?c=0071624082_download.php&cat=113
+    '''    
+    F_calc = F_LMTD_Fakheri(Tci=15, Tco=85, Thi=130, Tho=110, shells=1)
+    assert_allclose(F_calc, 0.9438358829645933)
+    
+    # R = 1 check
+    F_calc = F_LMTD_Fakheri(Tci=15, Tco=35, Thi=130, Tho=110, shells=1)
+    assert_allclose(F_calc, 0.9925689447100824)
+    
+    for i in range(1, 10):
+        ans = effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, subtype=str(i)+'S&T', Tci=15, Tco=85, Thi=130)
+        dTlm = LMTD(Thi=130, Tho=110.06100082712986,  Tci=15, Tco=85)
+        F_expect = ans['Q']/ans['UA']/dTlm
+        
+        F_calc = F_LMTD_Fakheri(Tci=15, Tco=85, Thi=130, Tho=110.06100082712986, shells=i)
+        assert_allclose(F_expect, F_calc)
+        F_calc = F_LMTD_Fakheri(Thi=15, Tho=85, Tci=130, Tco=110.06100082712986, shells=i)
+        assert_allclose(F_expect, F_calc)
