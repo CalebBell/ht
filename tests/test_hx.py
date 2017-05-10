@@ -297,3 +297,55 @@ def test_temperature_effectiveness_TEMA_J():
     
     with pytest.raises(Exception):
         temperature_effectiveness_TEMA_J(R1=1/3., NTU1=1., Ntp=3)
+        
+        
+def test_temperature_effectiveness_TEMA_H():
+    P1 = temperature_effectiveness_TEMA_H(R1=1/3., NTU1=1., Ntp=1)
+    assert_allclose(P1, 0.5730728284905833)
+    P1 = temperature_effectiveness_TEMA_H(R1=2., NTU1=1., Ntp=1) # R = 2 case
+    assert_allclose(P1, 0.3640257049950876)
+    P1 = temperature_effectiveness_TEMA_H(R1=1/3., NTU1=1., Ntp=2)
+    assert_allclose(P1, 0.5824437803128222)
+    P1 = temperature_effectiveness_TEMA_H(R1=4., NTU1=1., Ntp=2) # R = 4 case
+    assert_allclose(P1, 0.2366953352462191)
+    
+    P1 = temperature_effectiveness_TEMA_H(R1=1/3., NTU1=1., Ntp=2, optimal=False)
+    assert_allclose(P1, 0.5560057072310012)
+    P1 = temperature_effectiveness_TEMA_H(R1=4, NTU1=1., Ntp=2, optimal=False)
+    assert_allclose(P1, 0.19223481412807347) # R2 = 0.25
+    
+    # The 1 and 2 case by default are checked with Rosenhow and Shah
+    # for the two pass unoptimal case, the result is from Thulukkanam only.
+    # The 2-pass optimal arrangement from  Rosenhow and Shaw is the same
+    # as that of Thulukkanam however, and shown below.
+    m1 = .5
+    m2 = 1.2
+    Cp1 = 1800.
+    Cp2 = 2200.
+    UA = 500.
+    C1 = m1*Cp1
+    C2 = m2*Cp2
+    R1_orig = R1 = C1/C2
+    NTU1 = UA/C1
+    R2 = C2/C1
+    NTU2 = UA/C2
+    
+    R1 = R2
+    NTU1 = NTU2
+    
+    alpha = NTU1*(4*R1 + 1)/8.
+    beta = NTU1*(4*R1 - 1)/8.
+    D = (1 - exp(-alpha))/(4.*R1 + 1)
+    
+    E = (1 - exp(-beta))/(4*R1 - 1)
+    H = (1 - exp(-2*beta))/(4.*R1 - 1)
+    
+    G = (1-D)**2*(D**2 + E**2) + D**2*(1+E)**2
+    B = (1 + H)*(1 + E)**2
+    P1 = (1 - (1-D)**4/(B - 4.*R1*G))
+    P1 = P1/R1_orig 
+    assert_allclose(P1, 0.40026600037802335)
+
+
+    with pytest.raises(Exception):
+        temperature_effectiveness_TEMA_H(R1=1/3., NTU1=1., Ntp=5)

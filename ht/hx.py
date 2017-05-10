@@ -33,6 +33,7 @@ __all__ = ['effectiveness_from_NTU', 'NTU_from_effectiveness', 'calc_Cmin',
 'calc_Cmax', 'calc_Cr',
 'NTU_from_UA', 'UA_from_NTU', 'effectiveness_NTU_method', 'F_LMTD_Fakheri', 
 'temperature_effectiveness_basic', 'temperature_effectiveness_TEMA_J',
+'temperature_effectiveness_TEMA_H',
 'check_tubing_TEMA', 'get_tube_TEMA',
 'DBundle_min', 'shell_clearance', 'baffle_thickness', 'D_baffle_holes',
 'L_unsupported_max', 'Ntubes_Perrys', 'Ntubes_VDI', 'Ntubes_Phadkeb',
@@ -1119,26 +1120,177 @@ def temperature_effectiveness_TEMA_J(R1, NTU1, Ntp):
         A = exp(NTU1)
         B = exp(-NTU1*R1/2.)
         if R1 != 2:
-            P1 = 1/R1*(1 - (2-R1)*(2*A + R1*B)/(2+R1)/(2*A - R1/B))
+            P1 = 1./R1*(1. - (2. - R1)*(2.*A + R1*B)/(2. + R1)/(2.*A - R1/B))
         else:
-            P1 = 0.5*(1 - (1 + A**-2)/2./(1+NTU1))
+            P1 = 0.5*(1. - (1. + A**-2)/2./(1. + NTU1))
     elif Ntp == 2:
-        lambda1 = (1 + R1**2/4.)**0.5
+        lambda1 = (1. + R1**2/4.)**0.5
         A = exp(NTU1)
-        D = 1 + lambda1*A**((lambda1-1)/2.)/(A**lambda1-1.)
-        C = A**((1+lambda1)/2.)/(lambda1 - 1 + (1 + lambda1)*A**lambda1)
-        B = (A**lambda1 + 1)/(A**lambda1-1)
-        P1 = 1./(1 + R1/2. + lambda1*B - 2*lambda1*C*D)
+        D = 1. + lambda1*A**((lambda1 - 1.)/2.)/(A**lambda1 - 1.)
+        C = A**((1+lambda1)/2.)/(lambda1 - 1. + (1. + lambda1)*A**lambda1)
+        B = (A**lambda1 + 1.)/(A**lambda1 - 1.)
+        P1 = 1./(1. + R1/2. + lambda1*B - 2.*lambda1*C*D)
     elif Ntp == 4:
-        lambda1 = (1 + R1**2/16.)**0.5
+        lambda1 = (1. + R1**2/16.)**0.5
         E = exp(R1*NTU1/2.)
         A = exp(NTU1)
-        D = 1 + lambda1*A**((lambda1-1)/2.)/(A**lambda1-1.)
-        C = A**((1+lambda1)/2.)/(lambda1 - 1 + (1 + lambda1)*A**lambda1)
-        B = (A**lambda1 + 1)/(A**lambda1-1)
-        P1 = 1/(1 + R1/4.*(1 + 3*E)/(1 + E) + lambda1*B - 2*lambda1*C*D)
+        D = 1. + lambda1*A**((lambda1-1)/2.)/(A**lambda1-1.)
+        C = A**((1+lambda1)/2.)/(lambda1 - 1. + (1. + lambda1)*A**lambda1)
+        B = (A**lambda1 + 1.)/(A**lambda1-1)
+        P1 = 1./(1. + R1/4.*(1. + 3.*E)/(1. + E) + lambda1*B - 2.*lambda1*C*D)
     else:
         raise Exception('Supported numbers of tube passes are 1, 2, and 4.')
+    return P1
+
+
+def temperature_effectiveness_TEMA_H(R1, NTU1, Ntp, optimal=True):
+    r'''Returns temperature effectiveness `P1` of a TEMA H type heat exchanger  
+    with a specified heat capacity ratio, number of transfer units `NTU1`,
+    and of number of tube passes `Ntp`. For the two tube pass case, there are
+    two possible orientations, one inefficient and one efficient controlled
+    by the `optimal` option. The suported cases are as follows:
+        
+    * One tube pass (tube fluid split into two streams individually mixed,  
+      shell fluid mixed)
+    * Two tube passes (shell fluid mixed, tube pass mixed between passes)
+    * Two tube passes (shell fluid mixed, tube pass mixed between passes, inlet
+      tube side next to inlet shell-side)
+    
+    1-1 TEMA H, tube fluid split into two streams individually mixed, shell 
+    fluid mixed:
+
+    .. math::
+        P_1 = E[1 + (1 - BR_1/2)(1 - A R_1/2 + ABR_1)] - AB(1 - BR_1/2)
+        
+        A = \frac{1}{1 + R_1/2}\{1 - \exp[-NTU_1(1 + R_1/2)/2]\}
+        
+        B = \frac{1-D}{1-R_1 D/2}
+        
+        D = \exp[-NTU_1(1-R_1/2)/2]
+        
+        E = (A + B - ABR_1/2)/2
+        
+    1-2 TEMA H, shell and tube fluids mixed in each pass at the cross section:
+        
+    .. math::
+        P_1 = \frac{1}{R_1}\left[1 - \frac{(1-D)^4}{B - 4G/R_1}\right]
+        
+        B = (1+H)(1+E)^2
+        
+        G = (1-D)^2(D^2 + E^2) + D^2(1 + E)^2
+        
+        H = [1 - \exp(-2\beta)]/(4/R_1 -1)
+        
+        E = [1 - \exp(-\beta)]/(4/R_1 - 1)
+        
+        D = [1 - \exp(-\alpha)]/(4/R_1 + 1)
+        
+        \alpha = NTU_1(4 + R_1)/8
+        
+        \beta = NTU_1(4-R_1)/8
+        
+    1-2 TEMA H, shell and tube fluids mixed in each pass at the cross section
+    but with the inlet tube stream coming in next to the shell fluid inlet
+    in an inefficient way (this is only shown in [2]_, and the stream 1/2 
+    convention in it is different but converted here; P1 is still returned):
+        
+    .. math::
+        P_2 = \left[1 - \frac{B + 4GR_2}{(1-D)^4}\right]
+    
+        B = (1 + H)(1 + E)^2
+        
+        G = (1-D)^2(D^2 + E^2) + D^2(1 + E)^2
+        
+        D = \frac{1 - \exp(-\alpha)}{1 - 4R_2}
+        
+        E = \frac{\exp(-\beta) - 1}{4R_2 +1}
+        
+        H = \frac{\exp(-2\beta) - 1}{4R_2 +1}
+        
+        \alpha = \frac{NTU_2}{8}(4R_2 -1)
+        
+        \beta = \frac{NTU_2}{8}(4R_2 +1)
+                
+    Parameters
+    ----------
+    R1 : float
+        Heat capacity ratio of the heat exchanger in the P-NTU method,
+        calculated with respect to stream 1 [-]
+    NTU1 : float
+        Thermal number of transfer units of the heat exchanger in the P-NTU 
+        method, calculated with respect to stream 1 [-]
+    Ntp : int
+        Number of tube passes, 1, or 2, [-]
+        
+    Returns
+    -------
+    P1 : float
+        Thermal effectiveness of the heat exchanger in the P-NTU method,
+        calculated with respect to stream 1 [-]
+
+    Notes
+    -----
+    For numbers of tube passes greater than 1 or 2, an exception is raised.
+
+    Examples
+    --------
+    >>> temperature_effectiveness_TEMA_H(R1=1/3., NTU1=1., Ntp=1)
+    0.5730728284905833
+
+    References
+    ----------
+    .. [1] Shah, Ramesh K., and Dusan P. Sekulic. Fundamentals of Heat 
+       Exchanger Design. 1st edition. Hoboken, NJ: Wiley, 2002.
+    .. [2] Thulukkanam, Kuppan. Heat Exchanger Design Handbook, Second Edition. 
+       CRC Press, 2013.
+    .. [3] Rohsenow, Warren and James Hartnett and Young Cho. Handbook of Heat
+       Transfer, 3E. New York: McGraw-Hill, 1998.
+    '''
+    if Ntp == 1:
+        A = 1./(1 + R1/2.)*(1. - exp(-NTU1*(1. + R1/2.)/2.))
+        D = exp(-NTU1*(1. - R1/2.)/2.)
+        if R1 != 2:
+            B = (1. - D)/(1. - R1*D/2.)
+        else:
+            B = NTU1/(2. + NTU1)
+        E = (A + B - A*B*R1/2.)/2.
+        P1 = E*(1. + (1. - B*R1/2.)*(1. - A*R1/2. + A*B*R1)) - A*B*(1. - B*R1/2.)
+    elif Ntp == 2 and optimal:
+        alpha = NTU1*(4. + R1)/8.
+        beta = NTU1*(4. - R1)/8.
+        D = (1. - exp(-alpha))/(4./R1 + 1)
+        if R1 != 4:
+            E = (1. - exp(-beta))/(4./R1 - 1.)
+            H = (1. - exp(-2.*beta))/(4./R1 - 1.)
+        else:
+            E = NTU1/2.
+            H = NTU1
+        G = (1-D)**2*(D**2 + E**2) + D**2*(1+E)**2
+        B = (1. + H)*(1. + E)**2
+        P1 = 1./R1*(1. - (1. - D)**4/(B - 4.*G/R1))
+    elif Ntp == 2 and not optimal:
+        R1_orig = R1
+        #NTU2 = NTU1*R1_orig but we want to treat it as NTU1 in this case
+        NTU1 = NTU1*R1_orig # switch 1
+        # R2 = 1/R1 but we want to treat it as R1 in this case
+        R1 = 1./R1_orig # switch 2
+        
+        beta = NTU1*(4.*R1 + 1)/8.
+        alpha = NTU1/8.*(4.*R1 - 1.)
+        H = (exp(-2.*beta) - 1.)/(4.*R1 + 1.)
+        E = (exp(-beta) - 1.)/(4.*R1 + 1.)
+        B = (1. + H)*(1. + E)**2
+        if R1 != 0.25:
+            D = (1. - exp(-alpha))/(1. - 4.*R1)
+            G = (1. - D)**2*(D**2 + E**2) + D**2*(1. + E)**2
+            P1 = (1. - (B + 4.*G*R1)/(1. - D)**4)
+        else:
+            D = -NTU1/8.
+            G = (1. - D)**2*(D**2 + E**2) + D**2*(1. + E)**2
+            P1 = (1. - (B + 4.*G*R1)/(1. - D)**4)
+        P1 = P1/R1_orig # switch 3, confirmed
+    else:
+        raise Exception('Number of tube passes exceeds available correlation data')
     return P1
 
 
