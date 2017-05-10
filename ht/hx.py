@@ -32,6 +32,7 @@ TEMA_R_to_metric = 0.17611018
 __all__ = ['effectiveness_from_NTU', 'NTU_from_effectiveness', 'calc_Cmin',
 'calc_Cmax', 'calc_Cr',
 'NTU_from_UA', 'UA_from_NTU', 'effectiveness_NTU_method', 'F_LMTD_Fakheri', 
+'temperature_effectiveness_basic',
 'check_tubing_TEMA', 'get_tube_TEMA',
 'DBundle_min', 'shell_clearance', 'baffle_thickness', 'D_baffle_holes',
 'L_unsupported_max', 'Ntubes_Perrys', 'Ntubes_VDI', 'Ntubes_Phadkeb',
@@ -56,6 +57,7 @@ def effectiveness_from_NTU(NTU, Cr, subtype='counterflow'):
         * Crossflow, single pass, fluids unmixed
         * Crossflow, single pass, Cmax mixed, Cmin unmixed
         * Crossflow, single pass, Cmin mixed, Cmax unmixed
+        * Boiler or condenser
     
     These situations are normally not those which occur in real heat exchangers,
     but are useful for academic purposes. More complicated expressions are 
@@ -121,8 +123,9 @@ def effectiveness_from_NTU(NTU, Cr, subtype='counterflow'):
         fluid, [-]
     subtype : str, optional
         The subtype of exchanger; one of 'counterflow', 'parallel', 'crossflow'
-        'crossflow, mixed Cmin', 'crossflow, mixed Cmax', 'S&T', or 'nS&T' 
-        where n is the number of shell and tube exchangers in a row.
+        'crossflow, mixed Cmin', 'crossflow, mixed Cmax', 'boiler', 'condenser',
+        'S&T', or 'nS&T' where n is the number of shell and tube exchangers in 
+        a row
 
     Returns
     -------
@@ -278,8 +281,10 @@ def effectiveness_from_NTU(NTU, Cr, subtype='counterflow'):
         return 1. -exp(-Cr**-1*(1. - exp(-Cr*NTU)))
     elif subtype ==  'crossflow, mixed Cmax':
         return (1./Cr)*(1. - exp(-Cr*(1. - exp(-NTU))))
-    else:
+    elif subtype in ['boiler', 'condenser']:
         return  1. - exp(-NTU)
+    else:
+        raise Exception('Input heat exchanger type not recognized')
         
 
 def NTU_from_effectiveness(effectiveness, Cr, subtype='counterflow'):
@@ -294,7 +299,8 @@ def NTU_from_effectiveness(effectiveness, Cr, subtype='counterflow'):
         * Crossflow, single pass, fluids unmixed
         * Crossflow, single pass, Cmax mixed, Cmin unmixed
         * Crossflow, single pass, Cmin mixed, Cmax unmixed
-    
+        * Boiler or condenser
+
     These situations are normally not those which occur in real heat exchangers,
     but are useful for academic purposes. More complicated expressions are 
     available for other methods. These equations are confirmed in [1]_, [2]_,
@@ -361,8 +367,9 @@ def NTU_from_effectiveness(effectiveness, Cr, subtype='counterflow'):
         fluid, [-]
     subtype : str, optional
         The subtype of exchanger; one of 'counterflow', 'parallel', 'crossflow'
-        'crossflow, mixed Cmin', 'crossflow, mixed Cmax', 'S&T', or 'nS&T' 
-        where n is the number of shell and tube exchangers in a row.
+        'crossflow, mixed Cmin', 'crossflow, mixed Cmax', 'boiler', 'condenser',
+        'S&T', or 'nS&T' where n is the number of shell and tube exchangers in 
+        a row
 
     Returns
     -------
@@ -504,9 +511,10 @@ possible for this configuration; the maximum effectiveness possible is %s.' % (1
 possible for this configuration; the maximum effectiveness possible is %s.' % (((exp(Cr) - 1.0)*exp(-Cr)/Cr)))
         return -log(1. + 1./Cr*log(1. - effectiveness*Cr))
     
+    elif subtype in ['boiler', 'condenser']:
+        return -log(1. - effectiveness)
     else:
-        return  -log(1. - effectiveness)
-
+        raise Exception('Input heat exchanger type not recognized')
 
 
 def calc_Cmin(mh, mc, Cph, Cpc):
@@ -744,7 +752,8 @@ def effectiveness_NTU_method(mh, mc, Cph, Cpc, subtype='counterflow', Thi=None,
     * Temperatures for the cold inlet and hot inlet and UA
     * Temperatures for the cold inlet and hot outlet and UA
     * Temperatures for the cold outlet and hot inlet and UA
-            
+    * Boiler or condenser
+      
     Parameters
     ----------
     mh : float
@@ -757,8 +766,9 @@ def effectiveness_NTU_method(mh, mc, Cph, Cpc, subtype='counterflow', Thi=None,
         Averaged heat capacity of cold stream, [J/kg/K]
     subtype : str, optional
         The subtype of exchanger; one of 'counterflow', 'parallel', 'crossflow'
-        'crossflow, mixed Cmin', 'crossflow, mixed Cmax', 'S&T', or 'nS&T' 
-        where n is the number of shell and tube exchangers in a row.
+        'crossflow, mixed Cmin', 'crossflow, mixed Cmax', 'boiler', 'condenser',
+        'S&T', or 'nS&T' where n is the number of shell and tube exchangers in 
+        a row
     Thi : float, optional
         Inlet temperature of hot fluid, [K]
     Tho : float, optional
@@ -896,6 +906,34 @@ def effectiveness_NTU_method(mh, mc, Cph, Cpc, subtype='counterflow', Thi=None,
     return {'Q': Q, 'UA': UA, 'Cr':Cr, 'Cmin': Cmin, 'Cmax':Cmax, 
             'effectiveness': effectiveness, 'NTU': NTU, 'Thi': Thi, 'Tho': Tho,
             'Tci': Tci, 'Tco': Tco} 
+
+
+def temperature_effectiveness_basic(R1, NTU1, subtype='crossflow'):
+    if subtype == 'counterflow':
+        P1 = (1 - exp(-NTU1*(1 - R1)))/(1 - R1*exp(-NTU1*(1-R1)))
+    elif subtype == 'parallel':
+        P1 = (1 - exp(-NTU1*(1 + R1)))/(1 + R1)
+    elif subtype == 'crossflow':
+        # This isn't technically accurate, an infinite sum is required
+        # It has been computed from two different sources
+        # but is found not to be within the 1% claimed of this equation
+        P1 = 1 - exp(NTU1**0.22/R1*(exp(-R1*NTU1**0.78) - 1.))
+    elif subtype == 'crossflow, mixed 1':
+        # Not symmetric
+        K = 1 - exp(-R1*NTU1)
+        P1 = 1 - exp(-K/R1)
+    elif subtype == 'crossflow, mixed 2':
+        # Not symmetric
+        K = 1 - exp(-NTU1)
+        P1 = (1 - exp(-K*R1))/R1
+    elif subtype == 'crossflow, mixed 1&2':
+        K1 = 1 - exp(-NTU1)
+        K2 = 1 - exp(-R1*NTU1)
+        P1 = (1./K1 + R1/K2 - 1./NTU1)**-1
+    else:
+        raise Exception('Subtype not recognized.')
+    return P1
+
 
 
 def F_LMTD_Fakheri(Thi, Tho, Tci, Tco, shells=1):

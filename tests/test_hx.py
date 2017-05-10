@@ -138,7 +138,7 @@ def test_effectiveness_NTU():
         eff = uniform(0, 1)
         N = NTU_from_effectiveness(eff, Cr=Cr, subtype='crossflow')
         eff_calc = effectiveness_from_NTU(N, Cr=Cr, subtype='crossflow')
-        assert_allclose(eff, eff_calc)
+        assert_allclose(eff, eff_calc, rtol=1E-6) # brenth differs in old Python versions, rtol is needed 
 
     # Shell and tube - this one doesn't have a nice effectiveness limit,
     # and it depends on the number of shells
@@ -176,6 +176,14 @@ def test_effectiveness_NTU():
 
     with pytest.raises(Exception):
         NTU_from_effectiveness(effectiveness=.2, Cr=1.01, subtype='crossflow, mixed Cmin')
+        
+        
+    # bad names
+    with pytest.raises(Exception):
+        NTU_from_effectiveness(.99, Cr=.7, subtype='FAIL')
+    with pytest.raises(Exception):
+        effectiveness_from_NTU(NTU=5, Cr=.5, subtype='FAIL')
+
     
     
 def test_effectiveness_NTU_method():
@@ -249,3 +257,25 @@ def test_F_LMTD_Fakheri():
         assert_allclose(F_expect, F_calc)
         F_calc = F_LMTD_Fakheri(Thi=15, Tho=85, Tci=130, Tco=110.06100082712986, shells=i)
         assert_allclose(F_expect, F_calc)
+
+
+def test_temperature_effectiveness_basic():
+    # Except for the crossflow mixed 1&2 cases, taken from an example and checked that
+    # it matches the e-NTU method. The approximate formula for crossflow is somewhat
+    # different - it is believed the approximations are different.
+    
+    P1 = temperature_effectiveness_basic(R1=3.5107078039927404, NTU1=0.29786672449248663, subtype='counterflow')
+    assert_allclose(P1, 0.173382601503)
+    P1 = temperature_effectiveness_basic(R1=3.5107078039927404, NTU1=0.29786672449248663, subtype='parallel')
+    assert_allclose(P1, 0.163852912049)
+    P1 = temperature_effectiveness_basic(R1=3.5107078039927404, NTU1=0.29786672449248663, subtype='crossflow')
+    assert_allclose(P1, 0.149974594007)
+    P1 = temperature_effectiveness_basic(R1=3.5107078039927404, NTU1=0.29786672449248663, subtype='crossflow, mixed 1')
+    assert_allclose(P1, 0.168678230894)
+    P1 = temperature_effectiveness_basic(R1=3.5107078039927404, NTU1=0.29786672449248663, subtype='crossflow, mixed 2')
+    assert_allclose(P1, 0.16953790774)
+    P1 = temperature_effectiveness_basic(R1=3.5107078039927404, NTU1=0.29786672449248663, subtype='crossflow, mixed 1&2')
+    assert_allclose(P1, 0.168411216829)
+
+    with pytest.raises(Exception):
+        temperature_effectiveness_basic(R1=3.5107078039927404, NTU1=0.29786672449248663, subtype='FAIL')
