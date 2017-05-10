@@ -281,3 +281,19 @@ def test_temperature_effectiveness_basic():
         temperature_effectiveness_basic(R1=3.5107078039927404, NTU1=0.29786672449248663, subtype='FAIL')
         
     # Formulas are in [1]_, [3]_, and [2]_.
+    
+def test_temperature_effectiveness_TEMA_J():
+    # All three models are checked with Rosenhow and then Shaw
+    # Formulas presented in Thulukkanam are with respect to the other side of the
+    # exchanger
+    P1 = temperature_effectiveness_TEMA_J(R1=1/3., NTU1=1., Ntp=1)
+    assert_allclose(P1, 0.5699085193651295)
+    P1 = temperature_effectiveness_TEMA_J(R1=2., NTU1=1.,  Ntp=1) # R = 2 case
+    assert_allclose(P1, 0.3580830895954234)
+    P1 = temperature_effectiveness_TEMA_J(R1=1/3., NTU1=1., Ntp=2)
+    assert_allclose(P1, 0.5688878232315694)
+    P1 = temperature_effectiveness_TEMA_J(R1=1/3., NTU1=1., Ntp=4)
+    assert_allclose(P1, 0.5688711846568247)
+    
+    with pytest.raises(Exception):
+        temperature_effectiveness_TEMA_J(R1=1/3., NTU1=1., Ntp=3)

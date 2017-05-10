@@ -32,7 +32,7 @@ TEMA_R_to_metric = 0.17611018
 __all__ = ['effectiveness_from_NTU', 'NTU_from_effectiveness', 'calc_Cmin',
 'calc_Cmax', 'calc_Cr',
 'NTU_from_UA', 'UA_from_NTU', 'effectiveness_NTU_method', 'F_LMTD_Fakheri', 
-'temperature_effectiveness_basic',
+'temperature_effectiveness_basic', 'temperature_effectiveness_TEMA_J',
 'check_tubing_TEMA', 'get_tube_TEMA',
 'DBundle_min', 'shell_clearance', 'baffle_thickness', 'D_baffle_holes',
 'L_unsupported_max', 'Ntubes_Perrys', 'Ntubes_VDI', 'Ntubes_Phadkeb',
@@ -912,7 +912,7 @@ def temperature_effectiveness_basic(R1, NTU1, subtype='crossflow'):
     r'''Returns temperature effectiveness `P1` of a heat exchanger with 
     a specified heat capacity ratio, number of transfer units `NTU1`,
     and of type `subtype`. This function performs the calculations for the
-    basic cases, not actual shell-and-tube exchangers. The suuported cases
+    basic cases, not actual shell-and-tube exchangers. The suported cases
     are as follows:
         
     * Counterflow (ex. double-pipe)
@@ -987,7 +987,7 @@ def temperature_effectiveness_basic(R1, NTU1, subtype='crossflow'):
     Notes
     -----
     The crossflow case is an approximation only. There is an actual
-    solution involving an infinite sum. THis was implemented, but found to 
+    solution involving an infinite sum. This was implemented, but found to 
     differ substantially so the approximation is used instead.
 
     Examples
@@ -1029,6 +1029,117 @@ def temperature_effectiveness_basic(R1, NTU1, subtype='crossflow'):
         raise Exception('Subtype not recognized.')
     return P1
 
+
+def temperature_effectiveness_TEMA_J(R1, NTU1, Ntp):
+    r'''Returns temperature effectiveness `P1` of a TEMA J type heat exchanger  
+    with a specified heat capacity ratio, number of transfer units `NTU1`,
+    and of number of tube passes `Ntp`. The suported cases are as follows:
+        
+    * One tube pass (shell fluid mixed)
+    * Two tube passes (shell fluid mixed, tube pass mixed between passes)
+    * Four tube passes (shell fluid mixed, tube pass mixed between passes)
+    
+    For 1-1 TEMA J shell and tube exchangers, shell and tube fluids mixed:
+
+    .. math::
+        P_1 = \frac{1}{R_1}\left[1- \frac{(2-R_1)(2E + R_1 B)}{(2+R_1)
+        (2E - R_1/B)}\right]
+        
+    For 1-2 TEMA J, shell and tube fluids mixed. There are two possible 
+    arrangements for the flow and the number of tube passes, but the equation
+    is the same in both:
+        
+    .. math::
+        P_1 = \left[1 + \frac{R_1}{2} + \lambda B - 2\lambda C D\right]^{-1}
+        
+        B = \frac{(A^\lambda +1)}{A^\lambda -1}
+        
+        C = \frac{A^{(1 + \lambda)/2}}{\lambda - 1 + (1 + \lambda)A^\lambda}
+        
+        D = 1 + \frac{\lambda A^{(\lambda-1)/2}}{A^\lambda -1}
+        
+        A = \exp(NTU_1)
+        
+        \lambda = (1 + R_1^2/4)^{0.5}
+        
+    For 1-4 TEMA J, shell and tube exchanger with both sides mixed:
+        
+    .. math::
+        P_1 = \left[1 + \frac{R_1}{4}\left(\frac{1+3E}{1+E}\right) + \lambda B 
+        - 2 \lambda C D\right]^{-1}
+        
+        B = \frac{A^\lambda +1}{A^\lambda -1}
+        
+        C = \frac{A^{(1+\lambda)/2}}{\lambda - 1 + (1 + \lambda)A^\lambda}
+        
+        D = 1 + \frac{\lambda A^{(\lambda-1)/2}}{A^\lambda -1}
+        
+        A = \exp(NTU_1)
+        
+        E = \exp(R_1 NTU_1/2)
+        
+        \lambda = (1 + R_1^2/16)^{0.5}
+        
+    Parameters
+    ----------
+    R1 : float
+        Heat capacity ratio of the heat exchanger in the P-NTU method,
+        calculated with respect to stream 1 [-]
+    NTU1 : float
+        Thermal number of transfer units of the heat exchanger in the P-NTU 
+        method, calculated with respect to stream 1 [-]
+    Ntp : int
+        Number of tube passes, 1, 2, or 4, [-]
+        
+    Returns
+    -------
+    P1 : float
+        Thermal effectiveness of the heat exchanger in the P-NTU method,
+        calculated with respect to stream 1 [-]
+
+    Notes
+    -----
+    For numbers of tube passes greater than 4 or 3, an exception is raised.
+
+    Examples
+    --------
+    >>> temperature_effectiveness_TEMA_J(R1=1/3., NTU1=1., Ntp=1)
+    0.5699085193651295
+
+    References
+    ----------
+    .. [1] Shah, Ramesh K., and Dusan P. Sekulic. Fundamentals of Heat 
+       Exchanger Design. 1st edition. Hoboken, NJ: Wiley, 2002.
+    .. [2] Thulukkanam, Kuppan. Heat Exchanger Design Handbook, Second Edition. 
+       CRC Press, 2013.
+    .. [3] Rohsenow, Warren and James Hartnett and Young Cho. Handbook of Heat
+       Transfer, 3E. New York: McGraw-Hill, 1998.
+    '''
+    if Ntp == 1:
+        A = exp(NTU1)
+        B = exp(-NTU1*R1/2.)
+        if R1 != 2:
+            P1 = 1/R1*(1 - (2-R1)*(2*A + R1*B)/(2+R1)/(2*A - R1/B))
+        else:
+            P1 = 0.5*(1 - (1 + A**-2)/2./(1+NTU1))
+    elif Ntp == 2:
+        lambda1 = (1 + R1**2/4.)**0.5
+        A = exp(NTU1)
+        D = 1 + lambda1*A**((lambda1-1)/2.)/(A**lambda1-1.)
+        C = A**((1+lambda1)/2.)/(lambda1 - 1 + (1 + lambda1)*A**lambda1)
+        B = (A**lambda1 + 1)/(A**lambda1-1)
+        P1 = 1./(1 + R1/2. + lambda1*B - 2*lambda1*C*D)
+    elif Ntp == 4:
+        lambda1 = (1 + R1**2/16.)**0.5
+        E = exp(R1*NTU1/2.)
+        A = exp(NTU1)
+        D = 1 + lambda1*A**((lambda1-1)/2.)/(A**lambda1-1.)
+        C = A**((1+lambda1)/2.)/(lambda1 - 1 + (1 + lambda1)*A**lambda1)
+        B = (A**lambda1 + 1)/(A**lambda1-1)
+        P1 = 1/(1 + R1/4.*(1 + 3*E)/(1 + E) + lambda1*B - 2*lambda1*C*D)
+    else:
+        raise Exception('Supported numbers of tube passes are 1, 2, and 4.')
+    return P1
 
 
 def F_LMTD_Fakheri(Thi, Tho, Tci, Tco, shells=1):
