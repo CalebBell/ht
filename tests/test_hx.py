@@ -279,3 +279,5 @@ def test_temperature_effectiveness_basic():
 
     with pytest.raises(Exception):
         temperature_effectiveness_basic(R1=3.5107078039927404, NTU1=0.29786672449248663, subtype='FAIL')
+        
+    # Formulas are in [1]_, [3]_, and [2]_.

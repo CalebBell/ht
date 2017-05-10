@@ -909,6 +909,101 @@ def effectiveness_NTU_method(mh, mc, Cph, Cpc, subtype='counterflow', Thi=None,
 
 
 def temperature_effectiveness_basic(R1, NTU1, subtype='crossflow'):
+    r'''Returns temperature effectiveness `P1` of a heat exchanger with 
+    a specified heat capacity ratio, number of transfer units `NTU1`,
+    and of type `subtype`. This function performs the calculations for the
+    basic cases, not actual shell-and-tube exchangers. The suuported cases
+    are as follows:
+        
+    * Counterflow (ex. double-pipe)
+    * Parallel (ex. double pipe inefficient configuration)
+    * Crossflow, single pass, fluids unmixed
+    * Crossflow, single pass, fluid 1 mixed, fluid 2 unmixed
+    * Crossflow, single pass, fluid 2 mixed, fluid 1 unmixed
+    * Crossflow, single pass, both fluids mixed
+    
+    For parallel flow heat exchangers (this configuration is symmetric):
+
+    .. math::
+        P_1 = \frac{1 - \exp[-NTU_1(1+R_1)]}{1 + R_1}
+
+    For counterflow heat exchangers (this configuration is symmetric):
+
+    .. math::
+        P_1 = \frac{1 - \exp[-NTU_1(1-R_1)]}{1 - R_1 \exp[-NTU_1(1-R_1)]}
+
+    For cross-flow (single-pass) heat exchangers with both fluids unmixed
+    (this configuration is symmetric):
+
+    .. math::
+        P_1 \approx 1 - \exp\left[\frac{NTU_1^{0.22}}{R_1}
+        (\exp(-R_1 NTU_1^{0.78})-1)\right]
+
+    For cross-flow (single-pass) heat exchangers with fluid 1 mixed, fluid 2
+    unmixed:
+
+    .. math::
+        P_1 = 1 - \exp\left(-\frac{K}{R_1}\right)
+        
+        K = 1 - \exp(-R_1 NTU_1)
+
+    For cross-flow (single-pass) heat exchangers with fluid 2 mixed, fluid 1 
+    unmixed:
+
+    .. math::
+        P_1 = \frac{1 - \exp(-K R_1)}{R_1}
+        
+        K = 1 - \exp(-NTU_1)
+
+    For cross-flow (single-pass) heat exchangers with both fluids mixed 
+    (this configuration is symmetric):
+
+    .. math::
+        P_1 = \left(\frac{1}{K_1} + \frac{R_1}{K_2} - \frac{1}{NTU_1}\right)^{-1}
+        
+        K_1 = 1 - \exp(-NTU_1)
+        
+        K_2 = 1 - \exp(-R_1 NTU_1)
+        
+    Parameters
+    ----------
+    R1 : float
+        Heat capacity ratio of the heat exchanger in the P-NTU method,
+        calculated with respect to stream 1 [-]
+    NTU1 : float
+        Thermal number of transfer units of the heat exchanger in the P-NTU 
+        method, calculated with respect to stream 1 [-]
+    subtype : float
+        The type of heat exchanger; one of 'counterflow', 'parallel', 
+        'crossflow', 'crossflow, mixed 1', 'crossflow, mixed 2', 
+        'crossflow, mixed 1&2'.
+        
+    Returns
+    -------
+    P1 : float
+        Thermal effectiveness of the heat exchanger in the P-NTU method,
+        calculated with respect to stream 1 [-]
+
+    Notes
+    -----
+    The crossflow case is an approximation only. There is an actual
+    solution involving an infinite sum. THis was implemented, but found to 
+    differ substantially so the approximation is used instead.
+
+    Examples
+    --------
+    >>> temperature_effectiveness_basic(R1=.1, NTU1=4, subtype='counterflow')
+    0.9753412729761263
+
+    References
+    ----------
+    .. [1] Shah, Ramesh K., and Dusan P. Sekulic. Fundamentals of Heat 
+       Exchanger Design. 1st edition. Hoboken, NJ: Wiley, 2002.
+    .. [2] Thulukkanam, Kuppan. Heat Exchanger Design Handbook, Second Edition. 
+       CRC Press, 2013.
+    .. [3] Rohsenow, Warren and James Hartnett and Young Cho. Handbook of Heat
+       Transfer, 3E. New York: McGraw-Hill, 1998.
+    '''
     if subtype == 'counterflow':
         P1 = (1 - exp(-NTU1*(1 - R1)))/(1 - R1*exp(-NTU1*(1-R1)))
     elif subtype == 'parallel':
