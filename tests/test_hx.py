@@ -349,3 +349,70 @@ def test_temperature_effectiveness_TEMA_H():
 
     with pytest.raises(Exception):
         temperature_effectiveness_TEMA_H(R1=1/3., NTU1=1., Ntp=5)
+
+
+def test_temperature_effectiveness_TEMA_G():
+        # Checked with Shah and Rosenhow, formula typed and then the other case is working
+    P1 = temperature_effectiveness_TEMA_G(R1=1/3., NTU1=1., Ntp=1)
+    assert_allclose(P1, 0.5730149350867675)
+    P1 = temperature_effectiveness_TEMA_G(R1=1/3., NTU1=1., Ntp=2) # TEST CASSE
+    assert_allclose(P1, 0.5824238778134628)
+    
+    # Ntp = 1, R=1 case
+    P1_Ntp_R1 = 0.8024466201983814
+    P1 = temperature_effectiveness_TEMA_G(R1=1., NTU1=7., Ntp=1) # R = 1 case
+    assert_allclose(P1, P1_Ntp_R1)
+    P1_near = temperature_effectiveness_TEMA_G(R1=1-1E-9, NTU1=7, Ntp=1)
+    assert_allclose(P1_near, P1_Ntp_R1)
+    
+    # Ntp = 2, optimal, R=2 case
+    P1_Ntp_R1 = 0.4838424889135673
+    P1 = temperature_effectiveness_TEMA_G(R1=2., NTU1=7., Ntp=2) # R = 2 case
+    assert_allclose(P1, P1_Ntp_R1)
+    P1_near = temperature_effectiveness_TEMA_G(R1=2-1E-9, NTU1=7., Ntp=2)
+    assert_allclose(P1_near, P1_Ntp_R1)
+
+
+    # Ntp = 2, not optimal case, R1=0.5 case
+    P1 = temperature_effectiveness_TEMA_G(R1=1/3., NTU1=1., Ntp=2, optimal=False)
+    assert_allclose(P1, 0.5559883028569507)
+
+    P1_Ntp_R1 = 0.3182960796403764
+    P1 = temperature_effectiveness_TEMA_G(R1=2, NTU1=1., Ntp=2, optimal=False)
+    assert_allclose(P1, P1_Ntp_R1)
+    P1_near = temperature_effectiveness_TEMA_G(R1=2-1E-9, NTU1=1., Ntp=2, optimal=False)
+    assert_allclose(P1_near, P1_Ntp_R1)
+    
+    with pytest.raises(Exception):
+        temperature_effectiveness_TEMA_G(R1=2., NTU1=7., Ntp=5)
+
+    # The optimal 2 pass case from Thulukkanam is checked with the following case
+    # to be the same as those in Rosenhow and Shah
+    # Believed working great.
+    m1 = .5
+    m2 = 1.2
+    Cp1 = 1800.
+    Cp2 = 2200.
+    UA = 500.
+    C1 = m1*Cp1
+    C2 = m2*Cp2
+    R1_orig = R1 = C1/C2
+    NTU1 = UA/C1
+    R2 = C2/C1
+    NTU2 = UA/C2
+    
+    P1_good = temperature_effectiveness_TEMA_G(R1=R1, NTU1=NTU1, Ntp=2)
+
+
+    # Good G 2 pass case, working
+    R1 = R2
+    NTU1 = NTU2
+    
+    beta = exp(-NTU1*(2*R1 - 1)/2.)
+    alpha = exp(-NTU1*(2*R1 + 1)/4.)
+    B = (4*R1 - beta*(2*R1 + 1))/(2*R1 - 1.)
+    A = -1*(1-alpha)**2/(R1 + 0.5)
+    P1 = (B - alpha**2)/(R1*(A + 2 + B/R1))
+    
+    P1 = P1/R1_orig 
+    assert_allclose(P1, P1_good)

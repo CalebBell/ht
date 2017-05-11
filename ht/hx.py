@@ -33,7 +33,7 @@ __all__ = ['effectiveness_from_NTU', 'NTU_from_effectiveness', 'calc_Cmin',
 'calc_Cmax', 'calc_Cr',
 'NTU_from_UA', 'UA_from_NTU', 'effectiveness_NTU_method', 'F_LMTD_Fakheri', 
 'temperature_effectiveness_basic', 'temperature_effectiveness_TEMA_J',
-'temperature_effectiveness_TEMA_H',
+'temperature_effectiveness_TEMA_H', 'temperature_effectiveness_TEMA_G',
 'check_tubing_TEMA', 'get_tube_TEMA',
 'DBundle_min', 'shell_clearance', 'baffle_thickness', 'D_baffle_holes',
 'L_unsupported_max', 'Ntubes_Perrys', 'Ntubes_VDI', 'Ntubes_Phadkeb',
@@ -1085,10 +1085,11 @@ def temperature_effectiveness_TEMA_J(R1, NTU1, Ntp):
     ----------
     R1 : float
         Heat capacity ratio of the heat exchanger in the P-NTU method,
-        calculated with respect to stream 1 [-]
+        calculated with respect to stream 1 (shell side = 1, tube side = 2) [-]
     NTU1 : float
         Thermal number of transfer units of the heat exchanger in the P-NTU 
-        method, calculated with respect to stream 1 [-]
+        method, calculated with respect to stream 1 (shell side = 1, tube side
+        = 2) [-]
     Ntp : int
         Number of tube passes, 1, 2, or 4, [-]
         
@@ -1100,7 +1101,10 @@ def temperature_effectiveness_TEMA_J(R1, NTU1, Ntp):
 
     Notes
     -----
-    For numbers of tube passes greater than 4 or 3, an exception is raised.
+    For numbers of tube passes that are not 1, 2, or 4, an exception is raised.
+    The convention for the formulas in [1]_ and [3]_ are with the shell side
+    as side 1, and the tube side as side 2. [2]_ has formulas with the 
+    opposite convention.
 
     Examples
     --------
@@ -1215,10 +1219,11 @@ def temperature_effectiveness_TEMA_H(R1, NTU1, Ntp, optimal=True):
     ----------
     R1 : float
         Heat capacity ratio of the heat exchanger in the P-NTU method,
-        calculated with respect to stream 1 [-]
+        calculated with respect to stream 1 (shell side = 1, tube side = 2) [-]
     NTU1 : float
         Thermal number of transfer units of the heat exchanger in the P-NTU 
-        method, calculated with respect to stream 1 [-]
+        method, calculated with respect to stream 1 (shell side = 1, tube side
+        = 2) [-]
     Ntp : int
         Number of tube passes, 1, or 2, [-]
         
@@ -1231,6 +1236,9 @@ def temperature_effectiveness_TEMA_H(R1, NTU1, Ntp, optimal=True):
     Notes
     -----
     For numbers of tube passes greater than 1 or 2, an exception is raised.
+    The convention for the formulas in [1]_ and [3]_ are with the shell side
+    as side 1, and the tube side as side 2. [2]_ has formulas with the 
+    opposite convention.
 
     Examples
     --------
@@ -1290,7 +1298,141 @@ def temperature_effectiveness_TEMA_H(R1, NTU1, Ntp, optimal=True):
             P1 = (1. - (B + 4.*G*R1)/(1. - D)**4)
         P1 = P1/R1_orig # switch 3, confirmed
     else:
-        raise Exception('Number of tube passes exceeds available correlation data')
+        raise Exception('Supported numbers of tube passes are 1 and 2.')
+    return P1
+
+
+def temperature_effectiveness_TEMA_G(R1, NTU1, Ntp, optimal=True):
+    r'''Returns temperature effectiveness `P1` of a TEMA G type heat exchanger  
+    with a specified heat capacity ratio, number of transfer units `NTU1`,
+    and of number of tube passes `Ntp`. For the two tube pass case, there are
+    two possible orientations, one inefficient and one efficient controlled
+    by the `optimal` option. The suported cases are as follows:
+        
+    * One tube pass (tube fluid split into two streams individually mixed,  
+      shell fluid mixed)
+    * Two tube passes (shell and tube exchanger with shell and tube fluids  
+      mixed in each pass at the cross section), counterflow arrangement
+    * Two tube passes (shell and tube exchanger with shell and tube fluids  
+      mixed in each pass at the cross section), parallelflow arrangement
+    
+    1-1 TEMA G, tube fluid split into two streams individually mixed, shell
+    fluid mixed (this configuration is symmetric):
+    
+    .. math::
+        P_1 = A + B - AB(1 + R_1) + R_1 AB^2
+        
+        A = \frac{1}{1 + R_1}\{1 - \exp(-NTU_1(1+R_1)/2)\}
+        
+        B = \frac{1 - D}{1 - R_1 D}
+        
+        D = \exp[-NTU_1(1-R_1)/2]
+        
+    1-2 TEMA G, shell and tube exchanger with shell and tube fluids mixed in 
+    each pass at the cross section:
+        
+    .. math::
+        P_1 = (B - \alpha^2)/(A + 2 + R_1 B)
+        
+        A = -2 R_1(1-\alpha)^2/(2 + R_1)
+        
+        B = [4 - \beta(2+R_1)]/(2 - R_1)
+        
+        \alpha = \exp[-NTU_1(2+R_1)/4]
+        
+        \beta = \exp[-NTU_1(2 - R_1)/2]
+        
+    1-2 TEMA G, shell and tube exchanger in overall parallelflow arrangement 
+    with shell and tube fluids mixed in each pass at the cross section
+    (this is only shown in [2]_, and the stream convention in it is different
+    but converted here; P1 is still returned):
+        
+    .. math::
+        P_2 = \frac{(B-\alpha^2)}{R_2(A - \alpha^2/R_2 + 2)}
+        
+        A = \frac{(1-\alpha)^2}{(R_2-0.5)}
+        
+        B = \frac{4R_2 - \beta(2R_2 - 1)}{2R_2 + 1}
+        
+        \alpha = \exp\left(\frac{-NTU_2(2R_2-1)}{4}\right)
+        
+        \beta = \exp\left(\frac{-NTU_2(2R_2+1)}{2}\right)
+        
+    Parameters
+    ----------
+    R1 : float
+        Heat capacity ratio of the heat exchanger in the P-NTU method,
+        calculated with respect to stream 1 (shell side = 1, tube side = 2) [-]
+    NTU1 : float
+        Thermal number of transfer units of the heat exchanger in the P-NTU 
+        method, calculated with respect to stream 1 (shell side = 1, tube side
+        = 2) [-]
+    Ntp : int
+        Number of tube passes, 1 or 2, [-]
+        
+    Returns
+    -------
+    P1 : float
+        Thermal effectiveness of the heat exchanger in the P-NTU method,
+        calculated with respect to stream 1 [-]
+
+    Notes
+    -----
+    For numbers of tube passes greater than 1 or 2, an exception is raised.
+    The convention for the formulas in [1]_ and [3]_ are with the shell side
+    as side 1, and the tube side as side 2. [2]_ has formulas with the 
+    opposite convention.
+
+    Examples
+    --------
+    >>> temperature_effectiveness_TEMA_G(R1=1/3., NTU1=1., Ntp=1)
+    0.5730149350867675
+
+    References
+    ----------
+    .. [1] Shah, Ramesh K., and Dusan P. Sekulic. Fundamentals of Heat 
+       Exchanger Design. 1st edition. Hoboken, NJ: Wiley, 2002.
+    .. [2] Thulukkanam, Kuppan. Heat Exchanger Design Handbook, Second Edition. 
+       CRC Press, 2013.
+    .. [3] Rohsenow, Warren and James Hartnett and Young Cho. Handbook of Heat
+       Transfer, 3E. New York: McGraw-Hill, 1998.
+    '''
+    if Ntp == 1:
+        D = exp(-NTU1*(1. - R1)/2.)
+        if R1 != 1:
+            B = (1. - D)/(1. - R1*D)
+        else:
+            B = NTU1/(2. + NTU1)
+        A = 1./(1. + R1)*(1. - exp(-NTU1*(1. + R1)/2.))
+        P1 = A + B - A*B*(1. + R1) + R1*A*B**2
+    elif Ntp == 2 and optimal:
+        if R1 != 2:
+            beta = exp(-NTU1*(2. - R1)/2.)
+            alpha = exp(-NTU1*(2. + R1)/4.)
+            B = (4. - beta*(2. + R1))/(2. - R1)
+            A = -2.*R1*(1-alpha)**2/(2. + R1)
+            P1 = (B - alpha**2)/(A + 2. + R1*B)
+        else:
+            alpha = exp(-NTU1)
+            P1 = (1. + 2.*NTU1 - alpha**2)/(4. + 4.*NTU1 - (1. - alpha)**2)
+    elif Ntp == 2 and not optimal:
+        R1_orig = R1
+        #NTU2 = NTU1*R1_orig but we want to treat it as NTU1 in this case
+        NTU1 = NTU1*R1_orig # switch 1
+        # R2 = 1/R1 but we want to treat it as R1 in this case
+        R1 = 1./R1_orig # switch 2
+        if R1 != 0.5:
+            beta = exp(-NTU1*(2.*R1 + 1.)/2.)
+            alpha = exp(-NTU1*(2.*R1 - 1.)/4.)
+            B = (4.*R1 - beta*(2.*R1 - 1.))/(2.*R1 + 1.)
+            A = (1. - alpha)**2/(R1 - 0.5)
+            P1 = (B - alpha**2)/(R1*(A - alpha**2/R1 + 2.))
+        else:
+            beta = exp(-2.*R1*NTU1)
+            P1 = (1. + 2.*R1*NTU1 - beta)/R1/(4. + 4.*R1*NTU1 + R1**2*NTU1**2)
+        P1 = P1/R1_orig # switch 3, confirmed
+    else:
+        raise Exception('Supported numbers of tube passes are 1 and 2.')
     return P1
 
 
