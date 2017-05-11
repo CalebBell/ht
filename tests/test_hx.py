@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from __future__ import division
-from math import log, exp, sqrt
+from math import log, exp, sqrt, tanh
 from ht import *
 import numpy as np
 from numpy.testing import assert_allclose
@@ -416,3 +416,51 @@ def test_temperature_effectiveness_TEMA_G():
     
     P1 = P1/R1_orig 
     assert_allclose(P1, P1_good)
+    
+    
+def test_temperature_effectiveness_TEMA_E():
+    # 1, 2 both cases are perfect
+    eff = temperature_effectiveness_TEMA_E(R1=1/3., NTU1=1., Ntp=1)
+    assert_allclose(eff, 0.5870500654031314)
+    eff = temperature_effectiveness_TEMA_E(R1=1., NTU1=7., Ntp=1)
+    assert_allclose(eff, 0.875)
+    
+    # Remaining E-shells, checked
+    eff = temperature_effectiveness_TEMA_E(R1=1/3., NTU1=1., Ntp=2)
+    assert_allclose(eff, 0.5689613217664634)
+    eff = temperature_effectiveness_TEMA_E(R1=1., NTU1=7., Ntp=2) # R = 1 case
+    assert_allclose(eff, 0.5857620762776082)
+    
+    eff = temperature_effectiveness_TEMA_E(R1=1/3., NTU1=1., Ntp=2, optimal=False)
+    assert_allclose(eff, 0.5699085193651295) # unoptimal case
+    eff = temperature_effectiveness_TEMA_E(R1=2, NTU1=1., Ntp=2, optimal=False)
+    assert_allclose(eff, 0.3580830895954234)
+    
+    
+    
+    eff = temperature_effectiveness_TEMA_E(R1=1/3., NTU1=1., Ntp=3)
+    assert_allclose(eff, 0.5708624888990603)
+    eff = temperature_effectiveness_TEMA_E(R1=1., NTU1=7., Ntp=3) # R = 1 case
+    assert_allclose(eff, 0.6366132064792461)
+    
+    eff = temperature_effectiveness_TEMA_E(R1=3., NTU1=1., Ntp=3, optimal=False)
+    assert_allclose(eff, 0.276815590660033)
+    
+    eff = temperature_effectiveness_TEMA_E(R1=1/3., NTU1=1., Ntp=4)
+    assert_allclose(eff, 0.56888933865756)
+    eff = temperature_effectiveness_TEMA_E(R1=1., NTU1=7., Ntp=4) # R = 1 case, even though it's no longer used
+    assert_allclose(eff, 0.5571628802075902)
+    
+    
+    with pytest.raises(Exception):
+         temperature_effectiveness_TEMA_E(R1=1., NTU1=7., Ntp=7)
+
+    # Compare the expression for 4 tube passes in two of the sources with that
+    # in the third.
+    R1 = 1/3.
+    NTU1 = 1
+    D = (4 + R1**2)**0.5
+    B = tanh(R1*NTU1/4.)
+    A = 1/tanh(D*NTU1/4.)
+    P1 = 4*(2*(1 + R1) + D*A + R1*B)**-1
+    assert_allclose(P1, 0.56888933865756)

@@ -34,7 +34,7 @@ __all__ = ['effectiveness_from_NTU', 'NTU_from_effectiveness', 'calc_Cmin',
 'NTU_from_UA', 'UA_from_NTU', 'effectiveness_NTU_method', 'F_LMTD_Fakheri', 
 'temperature_effectiveness_basic', 'temperature_effectiveness_TEMA_J',
 'temperature_effectiveness_TEMA_H', 'temperature_effectiveness_TEMA_G',
-'check_tubing_TEMA', 'get_tube_TEMA',
+'temperature_effectiveness_TEMA_E', 'check_tubing_TEMA', 'get_tube_TEMA',
 'DBundle_min', 'shell_clearance', 'baffle_thickness', 'D_baffle_holes',
 'L_unsupported_max', 'Ntubes_Perrys', 'Ntubes_VDI', 'Ntubes_Phadkeb',
 'Ntubes_HEDH', 'Ntubes', 'D_for_Ntubes_VDI', 'TEMA_heads', 'TEMA_shells', 
@@ -1226,6 +1226,10 @@ def temperature_effectiveness_TEMA_H(R1, NTU1, Ntp, optimal=True):
         = 2) [-]
     Ntp : int
         Number of tube passes, 1, or 2, [-]
+    optimal : bool, optional
+        Whether or not the arrangement is configured to give more of a
+        countercurrent and efficient (True) case or an inefficient parallel
+        case, [-]
         
     Returns
     -------
@@ -1369,7 +1373,11 @@ def temperature_effectiveness_TEMA_G(R1, NTU1, Ntp, optimal=True):
         = 2) [-]
     Ntp : int
         Number of tube passes, 1 or 2, [-]
-        
+    optimal : bool, optional
+        Whether or not the arrangement is configured to give more of a
+        countercurrent and efficient (True) case or an inefficient parallel
+        case, [-]
+
     Returns
     -------
     P1 : float
@@ -1433,6 +1441,239 @@ def temperature_effectiveness_TEMA_G(R1, NTU1, Ntp, optimal=True):
         P1 = P1/R1_orig # switch 3, confirmed
     else:
         raise Exception('Supported numbers of tube passes are 1 and 2.')
+    return P1
+
+
+def temperature_effectiveness_TEMA_E(R1, NTU1, Ntp=1, optimal=True):
+    r'''Returns temperature effectiveness `P1` of a TEMA E type heat exchanger  
+    with a specified heat capacity ratio, number of transfer units `NTU1`,
+    number of tube passes `Ntp`, and whether or not it is arranged in a more 
+    countercurrent (optimal configuration) way or a more parallel (optimal=False)
+    case. The suported cases are as follows:
+        
+    * 1-1 TEMA E, shell fluid mixed
+    * 1-2 TEMA E, shell fluid mixed (this configuration is symmetric)
+    * 1-2 TEMA E, shell fluid split into two steams individually mixed
+    * 1-3 TEMA E, shell and tube fluids mixed, one parallel pass and two 
+      counterflow passes (efficient)
+    * 1-3 TEMA E, shell and tube fluids mixed, two parallel passes and one 
+      counteflow pass (inefficient)
+    * 1-N TEMA E, shall and tube fluids mixed, efficient counterflow orientation,
+      N an even number
+      
+    1-1 TEMA E, shell fluid mixed:
+        
+    .. math::
+        P_1 = \frac{1 - \exp[-NTU_1(1-R_1)]}{1 - R_1 \exp[-NTU_1(1-R_1)]}
+    
+    1-2 TEMA E, shell fluid mixed (this configuration is symmetric):
+
+    .. math::
+        P_1 = \frac{2}{1 + R_1 + E\coth(E\cdot NTU_1/2)}
+        
+        E = [1 + R_1^2]^{1/2}
+    
+    1-2 TEMA E, shell fluid split into two steams individually mixed:
+        
+    .. math::
+        P_1 = \frac{1}{R_1}\left[1 - \frac{(2-R_1)(2E+R_1B)}{(2+R_1)(2E-R_1/B)}
+        \right]
+        
+        E = \exp(NTU_1)
+        
+        B = \exp(-NTU_1 R_1/2)
+        
+    1-3 TEMA E, shell and tube fluids mixed, one parallel pass and two 
+    counterflow passes (efficient):
+        
+    .. math::
+        P_1 = \frac{1}{R_1} \left[1 - \frac{C}{AC + B^2}\right]
+        
+        A = X_1(R_1 + \lambda_1)(R_1 - \lambda_2)/(2\lambda_1) - X_3 \delta
+        - X_2(R_1 + \lambda_2)(R_1-\lambda_1)/(2\lambda_2) + 1/(1-R_1)
+        
+        B = X_1(R_1-\lambda_2) - X_2(R_1-\lambda_1) + X_3\delta
+        
+        C = X_2(3R_1 + \lambda_1) - X_1(3R_1 + \lambda_2) + X_3 \delta
+        
+        X_i = \exp(\lambda_i NTU_1/3)/(2\delta),\;\; i = 1,2,3
+        
+        \delta = \lambda_1 - \lambda_2
+        
+        \lambda_1 = -\frac{3}{2} + \left[\frac{9}{4} + R_1(R_1-1)\right]^{1/2}
+        
+        \lambda_2 = -\frac{3}{2} - \left[\frac{9}{4} + R_1(R_1-1)\right]^{1/2}
+        
+        \lambda_3 = R_1
+        
+    1-3 TEMA E, shell and tube fluids mixed, two parallel passes and one 
+    counteflow pass (inefficient):
+        
+    .. math::
+        P_2 = \left[1 - \frac{C}{(AC + B^2)}\right]
+        
+        A = \chi_1(1 + R_2 \lambda_1)(1 - R_2\lambda_2)/(2R_2^2\lambda_1) - E
+        -\chi_2(1 + R_2\lambda_2)(1 - R_2\lambda_1)/(2R^2\lambda_2) + R/(R-1)
+        
+        B = \chi_1(1 - R_2\lambda_2)/R_2 - \chi_2(1 - R_2 \lambda_1)/R_2 + E
+        
+        C = -\chi_1(3 + R_2\lambda_2)/R_2 + \chi_2(3 + R_2\lambda_1)/R_2 + E
+        
+        E = 0.5\exp(NTU_2/3)
+        
+        \lambda_1 = (-3 + \delta)/2
+        
+        \lambda_2 = (-3 - \delta)/2
+        
+        \delta = \frac{[9R_2^2 + 4(1-R_2))]^{0.5}}{R_2}
+            
+        \chi_1 = \frac{\exp(\lambda_1 R_2 NTU_2/3)}{2\delta}
+        
+        \chi_2 = \frac{\exp(\lambda_2 R_2 NTU_2/3)}{2\delta}
+        
+    1-N TEMA E, shall and tube fluids mixed, efficient counterflow orientation,
+    N an even number:
+        
+    .. math::
+        P_2 = \frac{2}{A + B + C}
+        
+        A = 1 + R_2 + \coth(NTU_2/2)
+        
+        B = \frac{-1}{N_1}\coth\left(\frac{NTU_2}{2N_1}\right)
+        
+        C = \frac{1}{N_1}\sqrt{1 + N_1^2 R_2^2}
+        \coth\left(\frac{NTU_2}{2N_1}\sqrt{1 + N_1^2 R_2^2}\right)
+        
+        N_1 = \frac{N_{tp}}{2}
+        
+    Parameters
+    ----------
+    R1 : float
+        Heat capacity ratio of the heat exchanger in the P-NTU method,
+        calculated with respect to stream 1 (shell side = 1, tube side = 2) [-]
+    NTU1 : float
+        Thermal number of transfer units of the heat exchanger in the P-NTU 
+        method, calculated with respect to stream 1 (shell side = 1, tube side
+        = 2) [-]
+    Ntp : int
+        Number of tube passes, 1, 2, 3, 4, or an even number[-]
+    optimal : bool, optional
+        Whether or not the arrangement is configured to give more of a
+        countercurrent and efficient (True) case or an inefficient parallel
+        case, [-]
+
+    Returns
+    -------
+    P1 : float
+        Thermal effectiveness of the heat exchanger in the P-NTU method,
+        calculated with respect to stream 1 [-]
+
+    Notes
+    -----
+    For odd numbers of tube passes greater than 3, an exception is raised. 
+    [2]_ actually has a formula for 5 tube passes, but it is an entire page 
+    long.
+    The convention for the formulas in [1]_ and [3]_ are with the shell side
+    as side 1, and the tube side as side 2. [2]_ has formulas with the 
+    opposite convention.
+
+    Examples
+    --------
+    >>> temperature_effectiveness_TEMA_E(R1=1/3., NTU1=1., Ntp=1)
+    0.5870500654031314
+
+    References
+    ----------
+    .. [1] Shah, Ramesh K., and Dusan P. Sekulic. Fundamentals of Heat 
+       Exchanger Design. 1st edition. Hoboken, NJ: Wiley, 2002.
+    .. [2] Thulukkanam, Kuppan. Heat Exchanger Design Handbook, Second Edition. 
+       CRC Press, 2013.
+    .. [3] Rohsenow, Warren and James Hartnett and Young Cho. Handbook of Heat
+       Transfer, 3E. New York: McGraw-Hill, 1998.
+    '''
+    if Ntp == 1:
+        # Just the basic counterflow case
+        if R1 != 1:
+            P1 = (1-exp(-NTU1*(1-R1))) / (1 - R1*exp(-NTU1*(1-R1)))
+        else:
+            P1 = NTU1/(1. + NTU1)
+    elif Ntp == 2 and optimal:
+        if R1 != 1:
+            E = (1. + R1**2)**0.5
+            P1 = 2./(1 + R1 + E/tanh(E*NTU1/2.))
+        else:
+            P1 = 1/(1 + 1/tanh(NTU1*2**-0.5)*2**-0.5)
+    elif Ntp == 2 and not optimal:
+        # Shah, reverse flow but with divider; without divider would be parallel.
+        # Same as J-1, but E = A and B = B.
+        A = exp(NTU1)
+        B = exp(-NTU1*R1/2.)
+        if R1 != 2:
+            P1 = 1/R1*(1 - (2-R1)*(2*A + R1*B)/(2+R1)/(2*A - R1/B))
+        else:
+            P1 = 0.5*(1 - (1 + A**-2)/2./(1+NTU1))
+    elif Ntp == 3 and optimal:
+        # This gives slightly different results than in Thulukkanam!
+        lambda3 = R1 # in Rosehnhow, this is minus. makes a small diff though
+        lambda2 = -1.5 - (2.25 + R1*(R1-1))**0.5
+        lambda1 = -1.5 + (2.25 + R1*(R1-1))**0.5
+        delta = lambda1 - lambda2
+        X1 = exp(lambda1*NTU1/3.)/2/delta
+        X2 = exp(lambda2*NTU1/3.)/2/delta
+        X3 = exp(lambda3*NTU1/3.)/2/delta
+        C = X2*(3*R1 + lambda1) - X1*(3*R1 + lambda2) + X3*delta
+        B = X1*(R1 - lambda2) - X2*(R1 - lambda1) + X3*delta
+        if R1 != 1:
+            A = X1*(R1 + lambda1)*(R1 - lambda2)/2/lambda1 - X3*delta - X2*(R1 + lambda2)*(R1 - lambda1)/2/lambda2 + 1./(1-R1)
+        else:
+            A = -exp(-NTU1)/18 - exp(NTU1/3.)/2 + (NTU1 + 5)/9.
+        P1 = 1./R1*(1 - C/(A*C + B**2))
+    elif Ntp == 3 and not optimal:
+        # Thulukkanam, Parallel instead of direct.
+        R1_orig = R1
+        #NTU2 = NTU1*R1_orig but we want to treat it as NTU1 in this case
+        NTU1 = NTU1*R1_orig # switch 1
+        # R2 = 1/R1 but we want to treat it as R1 in this case
+        R1 = 1./R1_orig # switch 2
+        
+        delta = (9*R1**2 + 4*(1 - R1))**0.5/R1
+        l1 = (-3 + delta)/2.
+        l2 = (-3 - delta)/2.
+        chi1 = exp(l1*R1*NTU1/3.)/2/delta
+        chi2 = exp(l2*R1*NTU1/3.)/2/delta
+        E = 0.5*exp(NTU1/3.)
+        C = -chi1*(3 + R1*l2)/R1 + chi2*(3 + R1*l1)/R1 + E
+        B = chi1*(1 - R1*l2)/R1 - chi2*(1 - R1*l1)/R1 + E
+#        if R1 != 1:
+        A = (chi1*(1 + R1*l1)*(1 - R1*l2)/(2*R1**2*l1) - E 
+             - chi2*(1 + R1*l2)*(1 - R1*l1)/(2*R1**2*l2) + R1*(R1 -1))
+        # The below change is NOT CONSISTENT with the main expression and is disabled
+#        else:
+#            A = -exp(-NTU1)/18. - exp(NTU1/3)/2. + (5 + NTU1)/9.
+        P1 = (1 - C/(A*C + B**2))
+        
+        P1 = P1/R1_orig # switch 3, confirmed
+
+    elif Ntp == 4 or Ntp %2 == 0:
+        # The 4 pass case is present in all three sources, and is confirmed to
+        # give the same results for all three for Ntp = 4. However, 
+        # what is awesome about the Thulukkanam version is that it supports
+        # n tube passes so long as n is even.
+        R1_orig = R1
+        #NTU2 = NTU1*R1_orig but we want to treat it as NTU1 in this case
+        NTU1 = NTU1*R1_orig # switch 1
+        # R2 = 1/R1 but we want to treat it as R1 in this case
+        R1 = 1./R1_orig # switch 2
+
+        N1 = Ntp/2.
+        C = 1/N1*(1 + N1**2*R1**2)**0.5/tanh(NTU1/(2*N1)*(1 + N1**2*R1**2)**0.5)
+        B = -1/N1/tanh(NTU1/(2*N1))
+        A = 1 + R1 + 1/tanh(NTU1/2.)
+        P1 = 2/(A + B + C)
+        
+        P1 = P1/R1_orig # switch 3, confirmed
+    else:
+        raise Exception('For TEMA E shells with an odd number of tube passes more than 3, no solution is implemented.')
     return P1
 
 
