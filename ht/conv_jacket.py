@@ -94,8 +94,8 @@ def Lehrer(m, Dtank, Djacket, H, Dinlet, rho, Cp, k, mu, muw=None,
     Notes
     -----
     If the fluid is heated and enters from the bottom, natural convection
-    assists the heat tansfer and the Grashof term is added; if it were to enter
-    from the top, it would be substracted. The situation is reversed if entry
+    assists the heat transfer and the Grashof term is added; if it were to enter
+    from the top, it would be subtracted. The situation is reversed if entry
     is from the top.
 
     Examples
@@ -260,8 +260,8 @@ def Stein_Schmidt(m, Dtank, Djacket, H, Dinlet,
     are considered in [1]_.
 
     If the fluid is heated and enters from the bottom, natural convection
-    assists the heat tansfer and the Grashof term is added; if it were to enter
-    from the top, it would be substracted. The situation is reversed if entry
+    assists the heat transfer and the Grashof term is added; if it were to enter
+    from the top, it would be subtracted. The situation is reversed if entry
     is from the top.
 
     Examples

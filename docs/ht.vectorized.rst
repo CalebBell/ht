@@ -9,7 +9,7 @@ will be imported from here.
 
 >>> from ht.vectorized import *
 
-Inputs do not need to be numpy arrays; they can be any interable:
+Inputs do not need to be numpy arrays; they can be any iterable:
 
 >>> import ht.vectorized
 >>> ht.vectorized.LMTD([100, 101], 60., 30., 40.2)

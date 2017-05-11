@@ -55,7 +55,7 @@ def Nusselt_laminar(Tsat, Tw, rhog, rhol, kl, mul, Hvap, L, angle=90):
     Hvap : float
         Heat of vaporization of the fluid at P, [J/kg]
     L : float
-        Lenth of the plate [m]
+        Length of the plate [m]
     angle : float, optional
         Angle of inclination of the plate [degrees]
 

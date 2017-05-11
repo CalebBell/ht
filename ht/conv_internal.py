@@ -260,7 +260,7 @@ def laminar_entry_Baehr_Stephan(Re=None, Pr=None, L=None, Di=None):
             + 0.0499*Gz*tanh(1./Gz))/tanh(2.432*Pr**(1/6.0)*Gz**(-1/6.0))
 
 
-### Turbulent - Equations with more comlicated options
+### Turbulent - Equations with more complicated options
 def turbulent_Dittus_Boelter(Re, Pr, heating=True, revised=True):
     r'''Calculates internal convection Nusselt number for turbulent flows
     in pipe according to [1]_, and [2]_, a reprint of [3]_.
@@ -477,7 +477,7 @@ def turbulent_Drexel_McAdams(Re, Pr):
     Re : float
         Reynolds number, [-]
     Pr : float
-            Prandtl number, [-]
+        Prandtl number, [-]
 
     Returns
     -------
@@ -1533,7 +1533,7 @@ def helical_turbulent_Nu_Mori_Nakayama(Re, Pr, Di, Dc):
 
     Notes
     -----    
-    At very low curvatuves, the predicted heat transfer coefficient
+    At very low curvatures, the predicted heat transfer coefficient
     grows unbounded.
     
     Applicable for :math:`Re\left(\frac{D_i}{D_c}\right)^2 > 0.1`

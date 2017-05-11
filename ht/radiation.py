@@ -71,7 +71,7 @@ def blackbody_spectral_radiance(T, wavelength):
 
 def q_rad(emissivity, T, T2=0):
     r'''Returns the radiant heat flux of a surface, optionally including
-    assuming radiant heat transfer back to the suface.
+    assuming radiant heat transfer back to the surface.
 
     .. math::
         q = \epsilon \sigma (T_1^4 - T_2^4)
@@ -79,7 +79,7 @@ def q_rad(emissivity, T, T2=0):
     Parameters
     ----------
     emissivity : float
-        Fraction of black-body radiation which is emmited, []
+        Fraction of black-body radiation which is emitted, []
     T : float
         Temperature of the surface, [K]
     T2 : float, optional

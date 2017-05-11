@@ -83,7 +83,7 @@ def dP_Kern(m, rho, mu, DShell, LSpacing, pitch, Do, NBaffles, mu_w=None):
     Notes
     -----
     Adjustment for viscosity left out of this function.
-    Example is from [2]_. Rougly 10% difference due to reading of graph.
+    Example is from [2]_. Roughly 10% difference due to reading of graph.
     Graph scanned from [1]_, and interpolation is used to read it.
 
     Examples

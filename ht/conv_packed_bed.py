@@ -28,7 +28,7 @@ __all__ = ['Nu_packed_bed_Gnielinski', 'Nu_Wakao_Kagei', 'Nu_Achenbach',
 def Nu_packed_bed_Gnielinski(dp, voidage, vs, rho, mu, Pr, fa=None):
     r'''Calculates Nusselt number of a fluid passing over a bed of particles
     using a correlation shown in [3]_ and cited as from [1]_ and [2]_. Likely
-    the best available model as the author of [1]_ is the sams as [2]_ and
+    the best available model as the author of [1]_ is the same as [2]_ and
     [3]_.
 
     .. math::
@@ -73,7 +73,7 @@ def Nu_packed_bed_Gnielinski(dp, voidage, vs, rho, mu, Pr, fa=None):
     use `fa` = 2.1 For Berl saddles, use `fa` = 2.3. fa is calculated with
     the relationship for spheres if not provided.
 
-    Confirmed with experiemental data for a range of :math:`1E-1 < Re <1,000`
+    Confirmed with experimental data for a range of :math:`1E-1 < Re <1,000`
     and :math:`0.4 < Pr < 1000` for spheres. Limits are smaller for other
     shapes.
 

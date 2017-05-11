@@ -136,7 +136,7 @@ def effectiveness_from_NTU(NTU, Cr, subtype='counterflow'):
     Notes
     -----
     Once the effectiveness of the exchanger has been calculated, the total
-    heat transfered can be calculated according to the following formulas,
+    heat transferred can be calculated according to the following formulas,
     depending on which stream temperatures are known:
         
     If the inlet temperatures for both sides are known:
@@ -169,7 +169,7 @@ def effectiveness_from_NTU(NTU, Cr, subtype='counterflow'):
         Q = C_c(T_{c,o} - T_{c,i}) = C_h(T_{h,i} - T_{h,o})
         
     There is also a term called :math:`Q_{max}`, which is the heat which would
-    have been transfered if the effectiveness was 1. It is calculated as
+    have been transferred if the effectiveness was 1. It is calculated as
     follows:
         
     .. math::
@@ -913,7 +913,7 @@ def temperature_effectiveness_basic(R1, NTU1, subtype='crossflow'):
     r'''Returns temperature effectiveness `P1` of a heat exchanger with 
     a specified heat capacity ratio, number of transfer units `NTU1`,
     and of type `subtype`. This function performs the calculations for the
-    basic cases, not actual shell-and-tube exchangers. The suported cases
+    basic cases, not actual shell-and-tube exchangers. The supported cases
     are as follows:
         
     * Counterflow (ex. double-pipe)
@@ -1034,7 +1034,7 @@ def temperature_effectiveness_basic(R1, NTU1, subtype='crossflow'):
 def temperature_effectiveness_TEMA_J(R1, NTU1, Ntp):
     r'''Returns temperature effectiveness `P1` of a TEMA J type heat exchanger  
     with a specified heat capacity ratio, number of transfer units `NTU1`,
-    and of number of tube passes `Ntp`. The suported cases are as follows:
+    and of number of tube passes `Ntp`. The supported cases are as follows:
         
     * One tube pass (shell fluid mixed)
     * Two tube passes (shell fluid mixed, tube pass mixed between passes)
@@ -1152,7 +1152,7 @@ def temperature_effectiveness_TEMA_H(R1, NTU1, Ntp, optimal=True):
     with a specified heat capacity ratio, number of transfer units `NTU1`,
     and of number of tube passes `Ntp`. For the two tube pass case, there are
     two possible orientations, one inefficient and one efficient controlled
-    by the `optimal` option. The suported cases are as follows:
+    by the `optimal` option. The supported cases are as follows:
         
     * One tube pass (tube fluid split into two streams individually mixed,  
       shell fluid mixed)
@@ -1311,7 +1311,7 @@ def temperature_effectiveness_TEMA_G(R1, NTU1, Ntp, optimal=True):
     with a specified heat capacity ratio, number of transfer units `NTU1`,
     and of number of tube passes `Ntp`. For the two tube pass case, there are
     two possible orientations, one inefficient and one efficient controlled
-    by the `optimal` option. The suported cases are as follows:
+    by the `optimal` option. The supported cases are as follows:
         
     * One tube pass (tube fluid split into two streams individually mixed,  
       shell fluid mixed)
@@ -1449,7 +1449,7 @@ def temperature_effectiveness_TEMA_E(R1, NTU1, Ntp=1, optimal=True):
     with a specified heat capacity ratio, number of transfer units `NTU1`,
     number of tube passes `Ntp`, and whether or not it is arranged in a more 
     countercurrent (optimal configuration) way or a more parallel (optimal=False)
-    case. The suported cases are as follows:
+    case. The supported cases are as follows:
         
     * 1-1 TEMA E, shell fluid mixed
     * 1-2 TEMA E, shell fluid mixed (this configuration is symmetric)

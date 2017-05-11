@@ -358,7 +358,7 @@ def Nu_Gupta(Re, Pr, rho_w=None, rho_b=None, mu_w=None, mu_b=None):
     was 10 mm. G varied from 200-1500 kg/m^2/s and q varied from 0 to 1250 
     kW/m^2.
     
-    Cp used in the calculation of Prantl number should be the average value
+    Cp used in the calculation of Prandtl number should be the average value
     of those at the wall and the bulk temperatures.
 
     For deteriorated heat transfer, this was the most accurate correlation in 
@@ -426,7 +426,7 @@ def Nu_Swenson(Re, Pr, rho_w=None, rho_b=None):
     Re from 7.5E4 to 3.16E6; T_b from 75 to 576 degrees Celsius and T_w from
     93 to 649 degrees Celsius.
     
-    Cp used in the calculation of Prantl number should be the average value
+    Cp used in the calculation of Prandtl number should be the average value
     of those at the wall and the bulk temperatures.
 
     For deteriorated heat transfer, this was the most accurate correlation in 
@@ -505,7 +505,7 @@ def Nu_Xu(Re, Pr, rho_w=None, rho_b=None, mu_w=None, mu_b=None):
     and D was 12 mm. G varied from 600-1200 kg/m^2/s and q varied from 100 to 
     600 kW/m^2.
     
-    Cp used in the calculation of Prantl number should be the average value
+    Cp used in the calculation of Prandtl number should be the average value
     of those at the wall and the bulk temperatures.
 
     For deteriorated heat transfer, this was the third most accurate  
@@ -572,14 +572,14 @@ def Nu_Mokry(Re, Pr, rho_w=None, rho_b=None):
     was 10 mm. G varied from 200-1500 kg/m^2/s and q varied from 0 to 1250
     kW/m^2.
     
-    Cp used in the calculation of Prantl number should be the average value
+    Cp used in the calculation of Prandtl number should be the average value
     of those at the wall and the bulk temperatures.
 
     For deteriorated heat transfer, this was the four most accurate correlation  
     in [2]_ with a MAD of 24.0%. It was also the 7th most accurate against
     enhanced heat transfer, with a MAD of 14.7%, and the most accurate for the
     normal heat transfer database as well as the top correlation in all 
-    categories compined.
+    categories combined.
     
     If the extra density information is not provided, it will not be used.
 
@@ -695,7 +695,7 @@ def Nu_Ornatsky(Re, Pr_b, Pr_w, rho_w=None, rho_b=None):
     -----
     [2]_ ranked it thirteenth in the enhanced heat transfer
     category, with a MAD of 19.8% and 11th in the normal heat transfer with a
-    MAD of17.6%. [3]_ ranked it seventh on a combined database.
+    MAD of 17.6%. [3]_ ranked it seventh on a combined database.
     
     If the extra density information is not provided, it will not be used.
 
@@ -811,7 +811,7 @@ def Nu_Zhu(Re, Pr, rho_w=None, rho_b=None, k_w=None, k_b=None):
     and D was 26 mm. G varied from 600-1200 kg/m^2/s and q varied from 200 to 
     600 kW/m^2.    
     
-    Cp used in the calculation of Prantl number should be the average value
+    Cp used in the calculation of Prandtl number should be the average value
     of those at the wall and the bulk temperatures.
 
     On the overall database in [2]_, this was the 8th most accurate 
@@ -884,7 +884,7 @@ def Nu_Bishop(Re, Pr, rho_w=None, rho_b=None, D=None, x=None):
     q varied from 310 to 3460 kW/m^2. T_b varied from 282 to 527 degrees 
     Celsius.
     
-    Cp used in the calculation of Prantl number should be the average value
+    Cp used in the calculation of Prandtl number should be the average value
     of those at the wall and the bulk temperatures.
 
     For enhanced heat transfer, this was the 11th most accurate correlation in 
@@ -1255,7 +1255,7 @@ def Nu_Petukhov(Re, Pr, rho_w=None, rho_b=None, mu_w=None, mu_b=None):
     Notes
     -----    
     For the heat transfer database in [2]_, this correlation was 5th most
-    accurate in the enhaced heat transfer category, and second in the normal
+    accurate in the enhanced heat transfer category, and second in the normal
     heat transfer category with MADs of 13.8% and 12.0% respectively.
     
     If the extra viscosity and density information is not provided, it will not

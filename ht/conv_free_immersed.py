@@ -424,7 +424,7 @@ def Nu_vertical_cylinder_Touloukian_Morgan(Pr, Gr, turbulent=None):
     Notes
     -----
     Cylinder of diameters 2.75 inch, with heights of 6, 18, and 36.25 inch.
-    Temperature was controlled via multiple seperately controlled heating
+    Temperature was controlled via multiple separately controlled heating
     sections. Fluids were water and ethylene-glycol. Transition between ranges
     is not smooth. If outside of range, no warning is given. [2]_, [3]_, and
     [4]_ are in complete agreement about this formulation.
@@ -781,7 +781,7 @@ def Nu_vertical_cylinder(Pr=None, Gr=None, L=None, D=None,
     used directly. Will automatically select the correlation to use if none is
     provided; returns None if insufficient information is provided.
 
-    Prefered functions are 'Popiel & Churchill' for fully defined geometries,
+    Preferred functions are 'Popiel & Churchill' for fully defined geometries,
     and 'McAdams, Weiss & Saunders' otherwise.
 
     Examples

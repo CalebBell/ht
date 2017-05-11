@@ -120,7 +120,7 @@ def Li_Wu(m, x, D, rhol, rhog, mul, kl, Hvap, sigma, q=None, Te=None):
     
     Either the heat flux or excess temperature is required for the calculation
     of heat transfer coefficient. Uses liquid Reynolds number, Bond number,
-    and Boiling numer.
+    and Boiling number.
     
     .. math::
         h_{tp} = 334 Bg^{0.3}(Bo\cdot Re_l^{0.36})^{0.4}\frac{k_l}{D}
@@ -205,7 +205,7 @@ def Sun_Mishima(m, D, rhol, rhog, mul, kl, Hvap, sigma, q=None, Te=None):
     
     Either the heat flux or excess temperature is required for the calculation
     of heat transfer coefficient. Uses liquid-only Reynolds number, Weber
-    number, and Boiling numer. Weber number is defined in terms of the velocity
+    number, and Boiling number. Weber number is defined in terms of the velocity
     if all fluid were liquid.
 
     .. math::
@@ -496,7 +496,7 @@ def Yun_Heo_Kim(m, x, D, rhol, mul, Hvap, sigma, q=None, Te=None):
     
     Either the heat flux or excess temperature is required for the calculation
     of heat transfer coefficient. Uses liquid Reynolds number, Weber
-    number, and Boiling numer. Weber number is defined in terms of the velocity
+    number, and Boiling number. Weber number is defined in terms of the velocity
     if all fluid were liquid.
 
     .. math::

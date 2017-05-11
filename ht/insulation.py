@@ -418,7 +418,7 @@ def ASHRAE_k(ID):
     Parameters
     ----------
     ID : str
-        ID conresponding to a material in the dictionary `ASHRAE`
+        ID corresponding to a material in the dictionary `ASHRAE`
 
     Returns
     -------
@@ -497,14 +497,14 @@ def refractory_VDI_k(ID, T=None):
     [1]_. Here, thermal conductivity is a function of temperature between
     673.15 K and 1473.15 K according to linear interpolation among 5
     equally-spaced points. Here, thermal conductivity is not a function of
-    porosity, which can affect it. If T is outside the acceptible range, it is
-    rounded to the nearest limit. If T is not provied, the lowest temperature's
+    porosity, which can affect it. If T is outside the acceptable range, it is
+    rounded to the nearest limit. If T is not provided, the lowest temperature's
     value is provided.
 
     Parameters
     ----------
     ID : str
-        ID conresponding to a material in the dictionary `refractories`
+        ID corresponding to a material in the dictionary `refractories`
     T : float, optional
         Temperature of the refractory material, [K]
 
@@ -540,14 +540,14 @@ def refractory_VDI_Cp(ID, T=None):
     [1]_. Here, heat capacity is a function of temperature between
     673.15 K and 1473.15 K according to linear interpolation among 5
     equally-spaced points. Here, heat capacity is not a function of
-    porosity, affects it. If T is outside the acceptible range, it is
-    rounded to the nearest limit. If T is not provied, the lowest temperature's
+    porosity, affects it. If T is outside the acceptable range, it is
+    rounded to the nearest limit. If T is not provided, the lowest temperature's
     value is provided.
 
     Parameters
     ----------
     ID : str
-        ID conresponding to a material in the dictionary `refractories`
+        ID corresponding to a material in the dictionary `refractories`
     T : float, optional
         Temperature of the refractory material, [K]
 

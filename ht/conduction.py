@@ -142,7 +142,7 @@ def k_to_thermal_resistivity(k):
     -----
     Do not confuse this with thermal resistance! Often not introduced in heat
     transfer textbooks to avoid further confusion. Used almost exclusively
-    as a desrciption of solids. Thermal resistivity has different units than
+    as a description of solids. Thermal resistivity has different units than
     R-value, but is of the same dimensionality.
 
     References
@@ -178,7 +178,7 @@ def thermal_resistivity_to_k(r):
     Notes
     -----
     Do not confuse this with thermal resistance! Often not introduced in heat
-    as a desrciption of solids. Thermal resistivity has different units than
+    as a description of solids. Thermal resistivity has different units than
     R-value, but is of the same dimensionality.
 
     References

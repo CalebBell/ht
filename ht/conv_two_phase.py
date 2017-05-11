@@ -600,7 +600,7 @@ def Ravipudi_Godbold(m, x, D, rhol, rhog, Cpl, kl, mug, mu_b, mu_w=None):
     
     Developed with a vertical pipe, superficial gas/liquid velocity ratios of 
     1-90, in the froth regime, and for fluid mixtures of air and water, 
-    toluene, benezne, and methanol.
+    toluene, benzene, and methanol.
     
     Examples
     --------
@@ -681,7 +681,7 @@ def Aggour(m, x, alpha, D, rhol, Cpl, kl, mu_b, mu_w=None, L=None,
 
     Notes
     -----
-    Developed with mixtures of air-water, helium-water, and freon12-water and 
+    Developed with mixtures of air-water, helium-water, and freon-12-water and 
     vertical tests. Studied flow patterns were bubbly, slug, annular, 
     bubbly-slug, and slug-annular regimes. Superficial velocity ratios ranged 
     from 0.02 to 470.
