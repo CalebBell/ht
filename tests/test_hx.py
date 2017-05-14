@@ -464,3 +464,55 @@ def test_temperature_effectiveness_TEMA_E():
     A = 1/tanh(D*NTU1/4.)
     P1 = 4*(2*(1 + R1) + D*A + R1*B)**-1
     assert_allclose(P1, 0.56888933865756)
+    
+    
+def test_P_NTU_method():
+    # Counterflow case
+    ans = effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, subtype='counterflow', Tci=15, Tco=85, Tho=110.06100082712986)
+    ans2 = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., UA=ans['UA'], T1i=130, T2i=15, subtype='counterflow')
+    assert_allclose(ans2['Q'], ans['Q'])
+    # Parallel flow case
+    ans = effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, subtype='parallel', Tci=15, Tco=85, Tho=110.06100082712986)
+    ans2 = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., UA=ans['UA'], T1i=130, T2i=15, subtype='parallel')
+    assert_allclose(ans2['Q'], ans['Q'])
+    # Mixed Cmax/ 1
+    ans = effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, subtype='crossflow, mixed Cmax', Tci=15, Tco=85, Tho=110.06100082712986)
+    ans2 = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., UA=ans['UA'], T1i=130, T2i=15, subtype='crossflow, mixed 1')
+    assert_allclose(ans2['Q'], ans['Q'])
+    # Mixed Cmin/2
+    ans = effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, subtype='crossflow, mixed Cmin', Tci=15, Tco=85, Tho=110.06100082712986)
+    ans2 = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., UA=ans['UA'], T1i=130, T2i=15, subtype='crossflow, mixed 2')
+    assert_allclose(ans2['Q'], ans['Q'])
+    
+    # Counterflow case but with all five different temperature input cases (both inlets known already done)
+    ans = effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, subtype='counterflow', Tci=15, Tco=85, Tho=110.06100082712986)
+    ans2 = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., UA=ans['UA'], T1o=110.06100082712986, T2o=85, subtype='counterflow')
+    assert_allclose(ans2['Q'], ans['Q'])
+    ans2 = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., UA=ans['UA'], T1i=130, T2o=85, subtype='counterflow')
+    assert_allclose(ans2['Q'], ans['Q'])
+    ans2 = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., UA=ans['UA'], T1o=110.06100082712986, T2i=15, subtype='counterflow')
+    assert_allclose(ans2['Q'], ans['Q'])
+    ans2 = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., UA=ans['UA'], T2o=85, T2i=15, subtype='counterflow')
+    assert_allclose(ans2['Q'], ans['Q'])
+    ans2 = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., UA=ans['UA'], T1o=110.06100082712986, T1i=130, subtype='counterflow')
+    assert_allclose(ans2['Q'], ans['Q'])
+    
+    # Only 1 temperature input
+    with pytest.raises(Exception):
+        P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., UA=300, T1i=130, subtype='counterflow')
+        
+    # Bad HX type input
+    with pytest.raises(Exception):
+        P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., UA=300, T1i=130, T2i=15, subtype='BADTYPE')
+
+    ans = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., UA=300, T1i=130, T2i=15, subtype='E', Ntp=10)
+    assert_allclose(ans['Q'], 32212.185563086336,)
+
+    ans = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., UA=300, T1i=130, T2i=15, subtype='G', Ntp=2)
+    assert_allclose(ans['Q'], 32224.88788570008)
+    
+    ans = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., UA=300, T1i=130, T2i=15, subtype='H', Ntp=2)
+    assert_allclose(ans['Q'], 32224.888572366734)
+    
+    ans = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., UA=300, T1i=130, T2i=15, subtype='J', Ntp=2)
+    assert_allclose(ans['Q'], 32212.185699719837)

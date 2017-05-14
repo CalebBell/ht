@@ -21,8 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.'''
 
 from __future__ import division
-from math import exp, log, floor, sqrt
-from math import tanh # 1/coth
+from math import exp, log, floor, sqrt, tanh  # tanh= 1/coth
 from scipy.interpolate import interp1d
 from scipy.optimize import ridder 
 from fluids.piping import BWG_integers, BWG_inch, BWG_SI
@@ -34,7 +33,8 @@ __all__ = ['effectiveness_from_NTU', 'NTU_from_effectiveness', 'calc_Cmin',
 'NTU_from_UA', 'UA_from_NTU', 'effectiveness_NTU_method', 'F_LMTD_Fakheri', 
 'temperature_effectiveness_basic', 'temperature_effectiveness_TEMA_J',
 'temperature_effectiveness_TEMA_H', 'temperature_effectiveness_TEMA_G',
-'temperature_effectiveness_TEMA_E', 'check_tubing_TEMA', 'get_tube_TEMA',
+'temperature_effectiveness_TEMA_E', 'P_NTU_method', 
+'check_tubing_TEMA', 'get_tube_TEMA',
 'DBundle_min', 'shell_clearance', 'baffle_thickness', 'D_baffle_holes',
 'L_unsupported_max', 'Ntubes_Perrys', 'Ntubes_VDI', 'Ntubes_Phadkeb',
 'Ntubes_HEDH', 'Ntubes', 'D_for_Ntubes_VDI', 'TEMA_heads', 'TEMA_shells', 
@@ -753,7 +753,6 @@ def effectiveness_NTU_method(mh, mc, Cph, Cpc, subtype='counterflow', Thi=None,
     * Temperatures for the cold inlet and hot inlet and UA
     * Temperatures for the cold inlet and hot outlet and UA
     * Temperatures for the cold outlet and hot inlet and UA
-    * Boiler or condenser
       
     Parameters
     ----------
@@ -1675,6 +1674,248 @@ def temperature_effectiveness_TEMA_E(R1, NTU1, Ntp=1, optimal=True):
     else:
         raise Exception('For TEMA E shells with an odd number of tube passes more than 3, no solution is implemented.')
     return P1
+
+
+def P_NTU_method(m1, m2, Cp1, Cp2, UA, T1i=None, T1o=None, T2i=None, T2o=None, 
+                 subtype='crossflow', Ntp=1, optimal=True):
+    r'''Wrapper for the various P-NTU method function calls,
+    which can solve a heat exchanger. The heat capacities and mass flows
+    of each stream and the type of the heat exchanger are always required.
+    Currently, `UA` is required as well.
+    As additional inputs, any two of the stream temperatures need to be 
+    specified. 
+    
+    Computes the total heat exchanged as well as both temperatures of both
+    streams.
+      
+    Parameters
+    ----------
+    m1 : float
+        Mass flow rate of stream 1 (shell side = 1, tube side = 2), [kg/s]
+    m2 : float
+        Mass flow rate of stream 2 (shell side = 1, tube side = 2), [kg/s]
+    Cp1 : float
+        Averaged heat capacity of stream 1 (shell side), [J/kg/K]
+    Cp2 : float
+        Averaged heat capacity of stream 2 (tube side), [J/kg/K]
+    UA : float
+        Combined Area-heat transfer coefficient term, [W/K]
+    T1i : float, optional
+        Inlet temperature of stream 1 (shell side), [K]
+    T1o : float, optional
+        Outlet temperature of stream 1 (shell side), [K]
+    T2i : float, optional
+        Inlet temperature of stream 2 (tube side), [K]
+    T2o : float, optional
+        Outlet temperature of stream 2 (tube-side), [K]
+    subtype : str, optional
+        The subtype of exchanger; one of 'E', 'G', 'H', 'J', 'counterflow',
+        'parallel', 'crossflow', 'crossflow, mixed 1', 'crossflow, mixed 2', or
+        'crossflow, mixed 1&2'.
+    Ntp : int, optional
+        For real heat exchangers (types 'E', 'G', 'H', and 'J'), the number of 
+        tube passes needss to be specified as well. Not all types support
+        any number of tube passes.
+    optimal : bool, optional
+        For real heat exchangers (types 'E', 'G', 'H', and 'J'), there is often
+        a more countercurrent (optimal) way to arrange the tube passes and a
+        more parallel (optimal=False) way to arrange them. This controls that.
+
+    Returns
+    -------
+    results : dict
+        * Q : Heat exchanged in the heat exchanger, [W]
+        * UA : Combined area-heat transfer coefficient term, [W/K]
+        * T1i : Inlet temperature of stream 1, [K]
+        * T1o : Outlet temperature of stream 1, [K]
+        * T2i : Inlet temperature of stream 2, [K]
+        * T2o : Outlet temperature of stream 2, [K]
+        * P1 : Thermal effectiveness with respect to stream 1, [-]
+        * P2 : Thermal effectiveness with respect to stream 2, [-]
+        * R1 : Heat capacity ratio with respect to stream 1, [-]
+        * R2 : Heat capacity ratio with respect to stream 2, [-]
+        * C1 : The heat capacity rate of fluid 1, [W/K]
+        * C2 : The heat capacity rate of fluid 2, [W/K]
+        * NTU1 : Thermal Number of Transfer Units with respect to stream 1 [-]
+        * NTU2 : Thermal Number of Transfer Units with respect to stream 2 [-]
+    
+    Notes
+    -----
+    The main equations used in this method are as follows. For the individual
+    expressions used to calculate `P1`, see the `See Also` section.
+    
+    .. math::
+        Q = P_1 C_1 \Delta T_{max} = P_2 C_2 \Delta T_{max}
+        
+        \Delta T_{max} = T_{h,i} - T_{c,i} = |T_{2,i} - T_{1,i}|
+        
+        R_1 = \frac{C_1}{C_2} = \frac{T_{2,i} - T_{2,o}}{T_{1,o} - T_{1, i}}
+        
+        R_2 = \frac{C_2}{C_1} = \frac{T_{1,o} - T_{1, i}}{T_{2,i} - T_{2,o}}
+
+        R_1 = \frac{1}{R_2}
+        
+        NTU_1 = \frac{UA}{C_1}
+        
+        NTU_2 = \frac{UA}{C_2}
+        
+        NTU_1 = NTU_2 R_2
+        
+        NTU_2 = NTU_1 R_1
+        
+        P_1 = \frac{T_{1,o} - T_{1,i}}{T_{2,i} - T_{1,i}}
+        
+        P_2 = \frac{T_{2,i} - T_{2,o}}{T_{2,i} - T_{1,i}}
+        
+        P_1 = P_2 R_2
+        
+        P_2 = P_1 R_1
+        
+    Once `P1` has been calculated, there are six different cases for calculating
+    the other stream temperatures depending on the two temperatures provided. 
+    They were derived with SymPy.
+        
+    Two known inlet temperatures:
+        
+    .. math::
+        T_{1,o} = - P_{1} T_{1,i} + P_{1} T_{2,i} + T_{1,i}
+        
+        P_{2,o} = P_{1} R_{1} T_{1,i} - P_{1} R_{1} T_{2,i} + T_{2,i}
+        
+    Two known outlet temperatures:
+        
+    .. math::
+        T_{1,i} = \frac{P_{1} R_{1} T_{1,o} + P_{1} T_{2,o} 
+        - T_{1,o}}{P_{1} R_{1} + P_{1} - 1}
+        
+        T_{2,i} = \frac{P_{1} R_{1} T_{1,o} + P_{1} T_{2,o}
+        - T_{2,o}}{P_{1} R_{1} + P_{1} - 1}
+        
+    Inlet 1 known, outlet 2 known:
+        
+    .. math::
+        T_{1,o} = \frac{1}{P_{1} R_{1} - 1} \left(P_{1} R_{1} T_{1,i}
+        + P_{1} T_{1,i} - P_{1} T_{2,o} - T_{1,i}\right)
+        
+        T_{2,i} = \frac{P_{1} R_{1} T_{1,i} - T_{2,o}}{P_{1} R_{1} - 1}
+        
+    Outlet 1 known, inlet 2 known:
+        
+    .. math::
+        T_{1,i} = \frac{P_{1} T_{2,i} - T_{1,o}}{P_{1} - 1}
+        
+        T_{2,o}  = \frac{1}{P_{1} - 1} \left(R_{1} \left(P_{1} T_{2,i}
+        - T_{1,o}\right) - \left(P_{1} - 1\right) \left(R_{1} T_{1,o}
+        - T_{2,i}\right)\right)
+    
+    Input and output of 2 known:
+        
+    ..math::
+        T_{1,i} = \frac{1}{P_{1} R_{1}} \left(P_{1} R_{1} T_{2,i} 
+        - T_{2,i} + T_{2,o}\right)
+        
+        T_{1,o} = \frac{1}{P_{1} R_{1}} \left(P_{1} R_{1} T_{2,i} 
+        + \left(P_{1} - 1\right) \left(T_{2,i} - T_{2,o}\right)\right)
+        
+    Input and output of 1 known:
+        
+    .. math::
+        T_{2,i} = \frac{1}{P_{1}} \left(P_{1} T_{1,i} - T_{1,i} 
+        + T_{1,o}\right)
+        
+        T_{2,o} = \frac{1}{P_{1}} \left(P_{1} R_{1} \left(T_{1,i} 
+        - T_{1,o}\right) + P_{1} T_{1,i} - T_{1,i} + T_{1,o}\right)
+        
+    See also
+    --------
+    temperature_effectiveness_basic
+    temperature_effectiveness_TEMA_E
+    temperature_effectiveness_TEMA_G
+    temperature_effectiveness_TEMA_H
+    temperature_effectiveness_TEMA_J
+
+    Examples
+    --------
+    Solve a heat exchanger with the UA specified, and known inlet temperatures:
+        
+    >>> pprint(P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900, 
+    ... subtype='E', Ntp=4, T2i=15, T1i=130, UA=3041.75))
+    {'C1': 9672.0,
+     'C2': 2755.0,
+     'NTU1': 0.3144902812241522,
+     'NTU2': 1.1040834845735028,
+     'P1': 0.1730811614360235,
+     'P2': 0.6076373841775751,
+     'Q': 192514.71424206023,
+     'R1': 3.5107078039927404,
+     'R2': 0.2848428453267163,
+     'T1i': 130,
+     'T1o': 110.09566643485729,
+     'T2i': 15,
+     'T2o': 84.87829918042112}
+
+    References
+    ----------
+    .. [1] Shah, Ramesh K., and Dusan P. Sekulic. Fundamentals of Heat 
+       Exchanger Design. 1st edition. Hoboken, NJ: Wiley, 2002.
+    .. [2] Thulukkanam, Kuppan. Heat Exchanger Design Handbook, Second Edition. 
+       CRC Press, 2013.
+    .. [3] Rohsenow, Warren and James Hartnett and Young Cho. Handbook of Heat
+       Transfer, 3E. New York: McGraw-Hill, 1998.
+    '''
+    # Shellside: 1
+    # Tubeside: 2
+    C1 = m1*Cp1
+    C2 = m2*Cp2
+    R1 = C1/C2
+    NTU1 = UA/C1
+    # Extras
+    R2 = C2/C1
+    NTU2 = UA/C2
+    
+    if subtype in ['counterflow', 'parallel', 'crossflow', 'crossflow, mixed 1', 'crossflow, mixed 2', 'crossflow, mixed 1&2']:
+        P1 = temperature_effectiveness_basic(R1, NTU1, subtype=subtype)
+    elif subtype == 'E':
+        P1 = temperature_effectiveness_TEMA_E(R1=R1, NTU1=NTU1, Ntp=Ntp, optimal=optimal)
+    elif subtype == 'G':
+        P1 = temperature_effectiveness_TEMA_G(R1=R1, NTU1=NTU1, Ntp=Ntp, optimal=optimal)
+    elif subtype == 'H':
+        P1 = temperature_effectiveness_TEMA_H(R1=R1, NTU1=NTU1, Ntp=Ntp, optimal=optimal)
+    elif subtype == 'J':
+        P1 = temperature_effectiveness_TEMA_J(R1=R1, NTU1=NTU1, Ntp=Ntp)
+    else:
+        raise Exception("Supported types are 'E', 'G', 'H', 'J', 'counterflow', 'parallel', 'crossflow', 'crossflow, mixed 1', 'crossflow, mixed 2', and 'crossflow, mixed 1&2'")
+    
+    possible_inputs = [(T1i, T2i), (T1o, T2o), (T1i, T2o), (T1o, T2i), (T1i, T1o), (T2i, T2o)]
+    if not any([i for i in possible_inputs if None not in i]):
+        raise Exception('One set of (T1i, T2i), (T1o, T2o), (T1i, T2o), (T1o, T2i), (T1i, T1o), or (T2i, T2o) is required along with UA.')
+    
+    # Deal with different temperature inputs, generated with SymPy
+    if T1i and T2i:
+        T2o = P1*R1*T1i - P1*R1*T2i + T2i
+        T1o = -P1*T1i + P1*T2i + T1i
+    elif T1o and T2o:
+        T2i = (P1*R1*T1o + P1*T2o - T2o)/(P1*R1 + P1 - 1.)
+        T1i = (P1*R1*T1o + P1*T2o - T1o)/(P1*R1 + P1 - 1.)
+    elif T1o and T2i:
+        T2o = (R1*(P1*T2i - T1o) - (P1 - 1.)*(R1*T1o - T2i))/(P1 - 1.)
+        T1i = (P1*T2i - T1o)/(P1 - 1.)
+    elif T1i and T2o:
+        T1o = (P1*R1*T1i + P1*T1i - P1*T2o - T1i)/(P1*R1 - 1.)
+        T2i = (P1*R1*T1i - T2o)/(P1*R1 - 1.)
+    elif T2i and T2o:
+        T1o = (P1*R1*T2i + (P1 - 1.)*(T2i - T2o))/(P1*R1)
+        T1i = (P1*R1*T2i - T2i + T2o)/(P1*R1)
+    elif T1i and T1o:
+        T2o = (P1*R1*(T1i - T1o) + P1*T1i - T1i + T1o)/P1
+        T2i = (P1*T1i - T1i + T1o)/P1
+
+    Q = abs(T1i-T2i)*P1*C1
+    # extra:
+    P2 = P1*R1
+    results = {'Q': Q, 'T1i': T1i, 'T1o': T1o, 'T2i': T2i, 'T2o': T2o, 
+          'C1': C1, 'C2': C2, 'R1': R1, 'R2': R2, 'P1': P1, 'P2': P2, 'NTU1': NTU1, 'NTU2': NTU2}
+    return results
 
 
 def F_LMTD_Fakheri(Thi, Tho, Tci, Tco, shells=1):
