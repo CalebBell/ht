@@ -46,7 +46,82 @@ def test_Ntubes_VDI():
     with pytest.raises(Exception):
         Ntubes_VDI(DBundle=1.184, Ntp=2, do=.028, pitch=.036, angle=40)
 
-    # TODO: Phadke
+
+def test_Ntubes_Phadkeb():
+    
+    Ntubes_calc = [Ntubes_Phadkeb(DBundle=1.200-.008*2, do=.028, pitch=.036, Ntp=i, angle=45.) for i in [1,2,4,6,8]]
+    assert_allclose(Ntubes_calc, [805, 782, 760, 698, 680])
+    Ntubes_calc = [Ntubes_Phadkeb(DBundle=1.200-.008*2, do=.028, pitch=.035, Ntp=i, angle=45.) for i in [1,2,4,6,8]]
+    assert_allclose(Ntubes_calc, [861, 838, 816, 750, 732])
+
+
+@pytest.mark.slow
+def test_Phadkeb_numbers():
+    from ht.hx import triangular_Ns, triangular_C1s, square_Ns, square_C1s
+    from math import floor, ceil
+    # Triangular Ns 
+    # https://oeis.org/A003136
+    # Translated expression originally in Wolfram Mathematica
+    # nn = 14; Select[Union[Flatten[Table[x^2 + x*y + y^2, {x, 0, nn}, {y, 0, x}]]], # <= nn^2 &] (* T. D. Noe, Apr 18 2011 *) 
+    nums = []
+    nn = 400 # Increase this to generate more numbers
+    for x in range(0, nn+1):
+        for y in range(0, x+1):
+            nums.append(x*x + x*y + y*y)
+    
+    nums = sorted(list(set(nums)))
+    nums = [i for i in nums if i < nn**2]
+    
+    nums = nums[0:len(triangular_Ns)]
+    assert nums == triangular_Ns
+    
+    
+    # triangular C1s
+    # https://oeis.org/A038590 is the sequence, and it is the unique numbers in: 
+    # https://oeis.org/A038589
+    # Translated from pari expression a(n)=1+6*sum(k=0, n\3, (n\(3*k+1))-(n\(3*k+2)))
+    # Tested with the online interpreter http://pari.math.u-bordeaux.fr/gp.html
+    # This one is very slow, 300 seconds+
+    
+    def a(n):
+        tot = 0
+        for k in range(0, int(ceil(n/3.))):
+            tot += floor(n/(3.*k + 1.)) - floor(n/(3.*k + 2.))
+        return 1 + 6*int(tot)
+    ans = [a(i) for i in range(50000)]
+    ans = sorted(list(set(ans)))
+    ans = ans[0:len(triangular_C1s)]
+    assert ans == triangular_C1s
+    
+    # square Ns
+    # https://oeis.org/A001481
+    # Quick and efficient
+    # Translated from Mathematica
+    # upTo = 160; With[{max = Ceiling[Sqrt[upTo]]}, Select[Union[Total /@ (Tuples[Range[0, max], {2}]^2)], # <= upTo &]]  (* Harvey P. Dale, Apr 22 2011 *) 
+    upTo = 100000
+    max_range = int(ceil(upTo**0.5))
+    squares = [i*i for i in range(max_range+1)]
+    seq = [i+j for i in squares for j in squares]
+    seq = [i for i in set(seq) if i < upTo] # optional
+    nums = seq[0:len(square_Ns)]
+    assert nums == square_Ns
+
+    # square C1s
+    # https://oeis.org/A057961 is the sequence, there is one mathematica expression
+    # but it needs SymPy or some hard work to be done
+    # It is also the uniqiue elements in https://oeis.org/A057655
+    # That has a convenient expression for pari, tested online and translated
+    # a(n)=1+4*sum(k=0, sqrtint(n), sqrtint(n-k^2) ); /* Benoit Cloitre, Oct 08 2012 */ 
+    def a2(n):
+        sqrtint = lambda i: int(i**0.5)
+        return 1 + 4*sum([sqrtint(n - k*k) for k in range(0, sqrtint(n) + 1)])
+    
+    ans = set([a2(i) for i in range(35000)])
+    ans = sorted(list(ans))
+    nums = ans[0:len(square_C1s)]
+    assert nums == square_C1s
+
+
 
 def test_Ntubes_HEDH():
     Ntubes_HEDH_c = [Ntubes_HEDH(DBundle=1.200-.008*2, do=.028, pitch=.036, angle=i) for i in [30, 45, 60, 90]]
