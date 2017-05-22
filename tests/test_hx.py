@@ -21,7 +21,8 @@ from ht import *
 import numpy as np
 from numpy.testing import assert_allclose
 import pytest
-from random import uniform, randint
+from random import uniform, randint, seed
+seed(0)
 
 
 ### TODO hx requires testing, but perhaps first improvement

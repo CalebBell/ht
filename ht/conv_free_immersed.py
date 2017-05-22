@@ -128,8 +128,8 @@ def Nu_sphere_Churchill(Pr, Gr):
 
     Examples
     --------
-    >>> Nu_sphere_Churchill(.7, 1E1), Nu_sphere_Churchill(.7, 1E7)
-    (2.738104002574638, 25.670869440317578)
+    >>> Nu_sphere_Churchill(.7, 1E7)
+    25.670869440317578
 
     References
     ----------
@@ -137,9 +137,9 @@ def Nu_sphere_Churchill(Pr, Gr):
        Transfer. Heat Exchanger Design Handbook. Washington:
        Hemisphere Pub. Corp., 1987.
     '''
-    Ra = Pr * Gr
+    Ra = Pr*Gr
     Nu = 2 + (0.589*Ra**0.25/(1 + (0.469/Pr)**(9/16.))**(4/9.)*(
-    1 + 7.44E-8*Ra/(1 + (0.469/Pr)**(9/16.))**(16/9.))**(1/12.))
+         1 + 7.44E-8*Ra/(1 + (0.469/Pr)**(9/16.))**(16/9.))**(1/12.))
     return Nu
 
 
@@ -178,9 +178,8 @@ def Nu_vertical_cylinder_Griffiths_Davis_Morgan(Pr, Gr, turbulent=None):
 
     Examples
     --------
-    >>> [Nu_vertical_cylinder_Griffiths_Davis_Morgan(.999, 1E9),
-    ... Nu_vertical_cylinder_Griffiths_Davis_Morgan(.7, 1.43E9)]
-    [119.11492311615193, 127.75023824044263]
+    >>> Nu_vertical_cylinder_Griffiths_Davis_Morgan(.7, 2E10)
+    327.6230596100138
 
     References
     ----------
@@ -238,9 +237,8 @@ def Nu_vertical_cylinder_Jakob_Linke_Morgan(Pr, Gr, turbulent=None):
 
     Examples
     --------
-    >>> [Nu_vertical_cylinder_Jakob_Linke_Morgan(.7, 1.42E8),
-    ... Nu_vertical_cylinder_Jakob_Linke_Morgan(.7, 1.43E8)]
-    [55.4165620291897, 59.89644813633899]
+    >>> Nu_vertical_cylinder_Jakob_Linke_Morgan(.7, 2E10)
+    310.90835207860454
 
     References
     ----------
@@ -300,10 +298,9 @@ def Nu_vertical_cylinder_Carne_Morgan(Pr, Gr, turbulent=None):
 
     Examples
     --------
-    >>> [Nu_vertical_cylinder_Carne_Morgan(.7, 2.85E8),
-    ... Nu_vertical_cylinder_Carne_Morgan(.7, 2.86E8)]
-    [225.6149061669447, 216.97012327590352]
-
+    >>> Nu_vertical_cylinder_Carne_Morgan(.7, 2E8)
+    204.31470629065677
+    
     References
     ----------
     .. [1] J. B. Carne. "LIX. Heat Loss by Natural Convection from Vertical
@@ -366,11 +363,8 @@ def Nu_vertical_cylinder_Eigenson_Morgan(Pr, Gr, turbulent=None):
 
     Examples
     --------
-    >>> [Nu_vertical_cylinder_Eigenson_Morgan(0.7, 1.42E9),
-    ... Nu_vertical_cylinder_Eigenson_Morgan(0.7, 1.43E9),
-    ... Nu_vertical_cylinder_Eigenson_Morgan(0.7, 2.4E10),
-    ... Nu_vertical_cylinder_Eigenson_Morgan(0.7, 2.5E10)]
-    [85.22908647061865, 85.47896057139417, 252.35445465640387, 256.64456353698154]
+    >>> Nu_vertical_cylinder_Eigenson_Morgan(0.7, 2E10)
+    230.55946525499715
 
     References
     ----------
@@ -431,9 +425,8 @@ def Nu_vertical_cylinder_Touloukian_Morgan(Pr, Gr, turbulent=None):
 
     Examples
     --------
-    >>> [Nu_vertical_cylinder_Touloukian_Morgan(.7, 5.7E10),
-    ... Nu_vertical_cylinder_Touloukian_Morgan(.7, 5.8E10)]
-    [324.47395664562873, 223.80067132541936]
+    >>> Nu_vertical_cylinder_Touloukian_Morgan(.7, 2E10)
+    249.72879961097854
 
     References
     ----------
@@ -489,9 +482,8 @@ def Nu_vertical_cylinder_McAdams_Weiss_Saunders(Pr, Gr, turbulent=None):
 
     Examples
     --------
-    >>> [Nu_vertical_cylinder_McAdams_Weiss_Saunders(.7, 1.42E9),
-    ... Nu_vertical_cylinder_McAdams_Weiss_Saunders(.7, 1.43E9)]
-    [104.76075212013542, 130.04331889690818]
+    >>> Nu_vertical_cylinder_McAdams_Weiss_Saunders(.7, 2E10)
+    313.31849434277973
 
     References
     ----------
@@ -553,9 +545,8 @@ def Nu_vertical_cylinder_Kreith_Eckert(Pr, Gr, turbulent=None):
 
     Examples
     --------
-    >>> [Nu_vertical_cylinder_Kreith_Eckert(.7, 1.42E9),
-    ... Nu_vertical_cylinder_Kreith_Eckert(.7, 1.43E9)]
-    [98.54613123165282, 83.63593679160734]
+    >>> Nu_vertical_cylinder_Kreith_Eckert(.7, 2E10)
+    240.25393473033196
 
     References
     ----------
@@ -673,9 +664,8 @@ def Nu_vertical_cylinder_Al_Arabi_Khamis(Pr, Gr, L, D, turbulent=None):
 
     Examples
     --------
-    >>> [Nu_vertical_cylinder_Al_Arabi_Khamis(.71, 3.6E9, 10, 1),
-    ... Nu_vertical_cylinder_Al_Arabi_Khamis(.71, 3.7E9, 10, 1)]
-    [185.32314790756703, 183.89407579255627]
+    >>> Nu_vertical_cylinder_Al_Arabi_Khamis(.71, 2E10, 10, 1)
+    280.39793209114765
 
     References
     ----------
@@ -774,7 +764,7 @@ vertical_cylinder_correlations = {
 }
 
 
-def Nu_vertical_cylinder(Pr=None, Gr=None, L=None, D=None,
+def Nu_vertical_cylinder(Pr, Gr, L=None, D=None,
                          AvailableMethods=False, Method=None):
     r'''This function handles choosing which vertical cylinder free convection
     correlation is used. Generally this is used by a helper class, but can be
@@ -794,7 +784,11 @@ def Nu_vertical_cylinder(Pr=None, Gr=None, L=None, D=None,
     Pr : float
         Prandtl number [-]
     Gr : float
-        Grashof number [-]
+        Grashof number with respect to cylinder height [-]
+    L : float, optional
+        Length of vertical cylinder, [m]
+    D : float, optional
+        Diameter of cylinder, [m]
 
     Returns
     -------
@@ -814,11 +808,9 @@ def Nu_vertical_cylinder(Pr=None, Gr=None, L=None, D=None,
     '''
     def list_methods():
         methods = []
-        if all((Pr, Gr)):
-            for key, values in vertical_cylinder_correlations.items():
-                if values[4] or all((L, D)):
-                    methods.append(key)
-        methods.append('None')
+        for key, values in vertical_cylinder_correlations.items():
+            if values[4] or all((L, D)):
+                methods.append(key)
         if 'Popiel & Churchill' in methods:
             methods.remove('Popiel & Churchill')
             methods.insert(0, 'Popiel & Churchill')
@@ -834,16 +826,11 @@ def Nu_vertical_cylinder(Pr=None, Gr=None, L=None, D=None,
 
     if Method in vertical_cylinder_correlations:
         if vertical_cylinder_correlations[Method][4]:
-            Nu = vertical_cylinder_correlations[Method][0](Pr=Pr, Gr=Gr)
+            return vertical_cylinder_correlations[Method][0](Pr=Pr, Gr=Gr)
         else:
-            Nu = vertical_cylinder_correlations[Method][0](Pr=Pr, Gr=Gr, L=L, D=D)
-    elif Method == 'None':
-        Nu = None
+            return vertical_cylinder_correlations[Method][0](Pr=Pr, Gr=Gr, L=L, D=D)
     else:
         raise Exception('Failure in in function')
-    return Nu
-
-#print [ Nu_vertical_cylinder(0.72, 1E7)]
 
 #import matplotlib.pyplot as plt
 #import numpy as np
@@ -911,7 +898,7 @@ def Nu_horizontal_cylinder_Churchill_Chu(Pr, Gr):
        Wiley, 2011.
     '''
     Ra = Pr*Gr
-    return (0.6 + 0.387*Ra**(1/6.)/(1 + (0.559/Pr)**(9/16.))**(8/27.))**2
+    return (0.6 + 0.387*Ra**(1/6.)/(1. + (0.559/Pr)**(9/16.))**(8/27.))**2
 
 
 def Nu_horizontal_cylinder_Kuehn_Goldstein(Pr, Gr):
@@ -1004,8 +991,6 @@ def Nu_horizontal_cylinder_Morgan(Pr, Gr):
 
     Examples
     --------
-    >>> [Nu_horizontal_cylinder_Morgan(.9, i) for i in (1E-2, 1E2, 1E4, 1E7, 1E10)]
-    [0.5136293570857408, 1.9853087795801612, 4.707783879945983, 26.290682760247975, 258.0315247153301]
     >>> Nu_horizontal_cylinder_Morgan(0.69, 2.63E9)
     151.3881997228419
 
@@ -1039,8 +1024,7 @@ horizontal_cylinder_correlations = {
 'Morgan': (Nu_horizontal_cylinder_Morgan)
 }
 
-def Nu_horizontal_cylinder(Pr=None, Gr=None,
-                           AvailableMethods=False, Method=None):
+def Nu_horizontal_cylinder(Pr, Gr, AvailableMethods=False, Method=None):
     r'''This function handles choosing which horizontal cylinder free convection
     correlation is used. Generally this is used by a helper class, but can be
     used directly. Will automatically select the correlation to use if none is
@@ -1079,10 +1063,8 @@ def Nu_horizontal_cylinder(Pr=None, Gr=None,
     '''
     def list_methods():
         methods = []
-        if all((Pr, Gr)):
-            for key, values in horizontal_cylinder_correlations.items():
-                    methods.append(key)
-        methods.append('None')
+        for key, values in horizontal_cylinder_correlations.items():
+                methods.append(key)
         if 'Morgan' in methods:
             methods.remove('Morgan')
             methods.insert(0, 'Morgan')
@@ -1094,12 +1076,9 @@ def Nu_horizontal_cylinder(Pr=None, Gr=None,
         Method = list_methods()[0]
 
     if Method in horizontal_cylinder_correlations:
-        Nu = horizontal_cylinder_correlations[Method](Pr=Pr, Gr=Gr)
-    elif Method == 'None':
-        Nu = None
+        return horizontal_cylinder_correlations[Method](Pr=Pr, Gr=Gr)
     else:
         raise Exception('Failure in in function')
-    return Nu
 
 
 #import matplotlib.pyplot as plt

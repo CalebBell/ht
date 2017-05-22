@@ -2149,7 +2149,7 @@ def DBundle_min(Do):
        Transfer. Heat Exchanger Design Handbook. Washington:
        Hemisphere Pub. Corp., 1983.
     '''
-    data = [(0.006, .1), (0.01, .1), (.014, .3), (0.02, .5), (0.03, 1)]
+    data = [(0.006, 0.1), (0.01, 0.1), (.014, 0.3), (0.02, 0.5), (0.03, 1.0)]
     for Do_tabulated, DBundle in data:
         if Do <= Do_tabulated:
             return DBundle
@@ -3973,14 +3973,6 @@ def Ntubes_Phadkeb(DBundle, do, pitch, Ntp, angle=30):
         ans = 0
     return ans
 
-
-#print Ntubes_Phadkeb(Dshell=1.00, do=.0135, pitch=.025, Ntp=1, angle=30.), 'good'
-#print [Ntubes_Phadkeb(Dshell=1.200-.008*2, do=.028, pitch=.035, Ntp=i, angle=90.) for i in [1,2,4,6,8]]
-#print [Ntubes_Phadkeb(DBundle=1.200-.008*2, do=.028, pitch=.036, Ntp=i, angle=45.) for i in [1,2,4,6,8]]
-
-
-
-#print [[Ntubes_Phadkeb(DBundle=1.200-.008*2, do=.028, pitch=.028*1.25, Ntp=i, angle=j) for i in [1,2,4,6,8]] for j in [30, 45, 60, 90]]
 
 def DBundle_for_Ntubes_Phadkeb(Ntubes, do, pitch, Ntp, angle=30):
     r'''Using tabulated values and correction factors for number of passes,
