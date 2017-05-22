@@ -613,3 +613,20 @@ def test_shell_clearance():
     assert_allclose(shell_clearance(DShell=4), 0.011)
     assert_allclose(shell_clearance(DShell=.2), .0032)
     assert_allclose(shell_clearance(DShell=1.778), 0.0095)
+    
+    with pytest.raises(Exception):
+        shell_clearance()
+
+def test_L_unsupported_max():
+    assert_allclose(L_unsupported_max(Do=.0254, material='CS'), 1.88)
+    assert_allclose(L_unsupported_max(Do=.0253, material='CS'), 1.753)
+    assert_allclose(L_unsupported_max(Do=1E-5, material='CS'), 0.66)
+    assert_allclose(L_unsupported_max(Do=.00635, material='CS'), 0.66)
+    
+    assert_allclose(L_unsupported_max(Do=.00635, material='aluminium'), 0.559)
+    
+    with pytest.raises(Exception):
+        L_unsupported_max(Do=.0254, material='BADMATERIAL')
+        
+    # Terribly pessimistic
+    assert_allclose(L_unsupported_max(Do=10, material='CS'), 3.175)

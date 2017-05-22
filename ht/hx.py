@@ -22,10 +22,11 @@ SOFTWARE.'''
 
 from __future__ import division
 from math import exp, log, floor, sqrt, tanh  # tanh= 1/coth
-from bisect import bisect
+from bisect import bisect, bisect_left, bisect_right
 import numpy as np
 from scipy.interpolate import interp1d
 from scipy.optimize import ridder 
+from scipy.constants import inch
 from fluids.piping import BWG_integers, BWG_inch, BWG_SI
 from pprint import pprint
 TEMA_R_to_metric = 0.17611018
@@ -2216,9 +2217,10 @@ _TEMA_baffles_other = [[0.0016, 0.0032, 0.0048, 0.0064, 0.0095, 0.0095],
 [0.0064, 0.0064, 0.0095, 0.0127, 0.0159, 0.0159],
 [0.0064, 0.0095, 0.0127, 0.0127, 0.0191, 0.0191]]
 
-def baffle_thickness(Dshell=None, L_unsupported=None, service='C'):
+def baffle_thickness(Dshell, L_unsupported, service='C'):
     r'''Determines the thickness of baffles and support plates in TEMA HX
-    [1]_. Does not apply to longitudinal baffles.
+    [1]_. Applies to latitudinal baffles along the diameter of the HX, but
+    not longitudinal baffles parallel to the tubes.
 
     Parameters
     ----------
@@ -2236,9 +2238,10 @@ def baffle_thickness(Dshell=None, L_unsupported=None, service='C'):
 
     Notes
     -----
-    No checks are provided to ensure sizes are TEMA compatible.
-    As pressure concerns are not relevant, these are simple.
-    Mandatory sizes. Uses specified limits in mm.
+    No checks are implemented to ensure the given shell size is TEMA compatible.
+    The baffles do not need to be strongas the pressure is almost the same on 
+    both of their sides. `L_unsupported` is a design choice; the more baffles
+    in a given length, the higher the pressure drop.
 
     Examples
     --------
@@ -2333,20 +2336,26 @@ def D_baffle_holes(do=None, L_unsupported=None):
     return d
 
 
-_L_unsupported_steel = [0.66, 0.889, 1.118, 1.321, 1.524, 1.753, 1.88, 2.235, 2.54, 3.175, 3.175, 3.175]
-_L_unsupported_aluminium = [0.559, 0.762, 0.965, 1.143, 1.321, 1.524, 1.626, 1.93, 2.21, 2.794, 2.794, 2.794]
-_L_unsupported_lengths = [0.25, 0.375, 0.5, 0.628, 0.75, 0.875, 1., 1.25, 1.5, 2., 2.5, 3.]
 
-def L_unsupported_max(NPS=None, material='CS'):
-    r'''Determines the maximum length of unsupported tube acording to
-    TEMA [1]_. Temperature limits are ignored.
+_L_unsupported_Do = [0.25, 0.375, 0.5, 0.628, 0.75, 0.875, 1., 1.25, 1.5,
+                          2., 2.5, 3.]
+_L_unsupported_steel = [0.66, 0.889, 1.118, 1.321, 1.524, 1.753, 1.88, 2.235,
+                        2.54, 3.175, 3.175, 3.175]
+_L_unsupported_aluminium = [0.559, 0.762, 0.965, 1.143, 1.321, 1.524, 1.626, 
+                            1.93, 2.21, 2.794, 2.794, 2.794]
+
+
+def L_unsupported_max(Do, material='CS'):
+    r'''Determines the maximum length of a heat exchanger tube can go without
+    a support, acording to TEMA [1]_. The limits provided apply for the 
+    worst-case temperature allowed for the material to be used at.
 
     Inputs
     ------
-    NPS : float
-        Nominal pipe size, [in]
+    Do : float
+        Outer tube diameter, [m]
     material: str
-        Material type, CS or other for the other list
+        Material type, either 'CS' or 'aluminium', [-]
 
     Returns
     -------
@@ -2355,27 +2364,38 @@ def L_unsupported_max(NPS=None, material='CS'):
 
     Notes
     -----
-    Interpolation of available sizes is probably possible.
-
+    The 'CS' results is also listed as representing high alloy steel, low 
+    alloy steel, nickel-copper, nickel, and nickel-chromium-iron alloys.
+    The 'aluminium' results are those of copper and copper alloys and
+    also titanium alloys.
+    
+    The maximum and minimum tube outer diameter tabulated are 3 inch and 1/4  
+    inch respectively. The result is returned for the nearest tube diameter
+    equal or smaller than the provided diameter, which helps ensures the 
+    returned tube length will not be optimistic. However, if the diameter is 
+    under 0.25 inches, the result will be optimistic!
+    
+    
     Examples
     --------
-    >>> L_unsupported_max(NPS=1.5, material='CS')
-    2.54
+    >>> L_unsupported_max(Do=.0254, material='CS')
+    1.88
 
     References
     ----------
     .. [1] Standards of the Tubular Exchanger Manufacturers Association,
-       Ninth edition, 2007, TEMA, New York.
+       Ninth edition, 2007, TEMA, New York, p 5.4-5.
     '''
-    if NPS in _L_unsupported_lengths:
-        i = _L_unsupported_lengths.index(NPS)
-    else:
-        raise Exception('Tube size not in list length unsupported list')
+    Do = Do/inch # convert diameter to inches
+    i = bisect(_L_unsupported_Do, Do)-1
+    i = i if i < 11 else 11 # bisect returns 1+ if above the index
+    i = 0 if i == -1 else i
     if material == 'CS':
-        L = _L_unsupported_steel[i]
+        return _L_unsupported_steel[i]
+    elif material == 'aluminium':
+        return _L_unsupported_aluminium[i]
     else:
-        L = _L_unsupported_aluminium[i]
-    return L
+        raise Exception('Material argument should be one of "CS" or "aluminium"')
 
 
 ### Tube bundle count functions
