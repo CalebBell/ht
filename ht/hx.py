@@ -2154,26 +2154,27 @@ def DBundle_min(Do):
 
 
 def shell_clearance(DBundle=None, DShell=None):
-    r'''Determines the clearance between a shell and tube bundle in a TEMA HX
-    [1].
+    r'''Looks up the recommended clearance between a shell and tube bundle in 
+    a TEMA HX [1]. Either the bundle diameter or the shell diameter are needed 
+    provided.
 
     Inputs
     ------
-        DShell : float
-            Shell inner diameter, optional, [m]
-        DBundle : float
-            Outer diameter of tube bundle, optional, [m]
+    DShell : float, optional
+        Shell inner diameter, [m]
+    DBundle : float, optional
+        Outer diameter of tube bundle, [m]
 
     Returns
     -------
-        c : float
-            Shell-tube bundle clearance, [m]
+    c : float
+        Shell-tube bundle clearance, [m]
 
     Notes
     -----
     Lower limits are extended up to the next limit where intermediate limits
-    are not provided. Only one of shell diameter or bundle are required.
-
+    are not provided. 
+    
     Examples
     --------
     >>> shell_clearance(DBundle=1.245)
@@ -2184,36 +2185,23 @@ def shell_clearance(DBundle=None, DShell=None):
     .. [1] Standards of the Tubular Exchanger Manufacturers Association,
        Ninth edition, 2007, TEMA, New York.
     '''
+    DShell_data = [(0.457, 0.0032), (1.016, 0.0048), (1.397, 0.0064),
+                   (1.778, 0.0079), (2.159, 0.0095)]
+    DBundle_data = [(0.457 - 0.0048, 0.0032), (1.016 - 0.0064, 0.0048),
+                    (1.397 - 0.0079, 0.0064), (1.778 - 0.0095, 0.0079),
+                    (2.159 - 0.011, 0.0095)]
     if DShell:
-        if DShell< 0.457:
-            c = 0.0032
-        elif DShell < 1.016:
-            c = 0.0048
-        elif DShell < 1.397:
-            c = 0.0064
-        elif DShell < 1.778:
-            c = 0.0079
-        elif DShell < 2.159:
-            c = 0.0095
-        else:
-            c = 0.011
-
+        for DShell_tabulated, c in DShell_data:
+            if DShell < DShell_tabulated:
+                return c
+        return 0.011
     elif DBundle:
-        if DBundle < 0.457 - 0.0048:
-            c = 0.0032
-        elif DBundle < 1.016 - 0.0064:
-            c = 0.0048
-        elif DBundle < 1.397 - 0.0079:
-            c = 0.0064
-        elif DBundle < 1.778 - 0.0095:
-            c = 0.0079
-        elif DBundle <2.159 - 0.011:
-            c = 0.0095
-        else:
-            c = 0.011
+        for DBundle_tabulated, c in DBundle_data:
+            if DBundle < DBundle_tabulated:
+                return c
+        return 0.011
     else:
-        raise Exception('DShell or DBundle must be specified')
-    return c
+        raise Exception('Either DShell or DBundle must be specified')
 
 
 _TEMA_baffles_refinery = [[0.0032, 0.0048, 0.0064, 0.0095, 0.0095],

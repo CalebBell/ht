@@ -602,3 +602,14 @@ def test_DBundle_min():
     assert_allclose(DBundle_min(0.005), .1)
     assert_allclose(DBundle_min(0.014), .3)
     assert_allclose(DBundle_min(0.015), .5)
+
+def test_shell_clearance():
+    assert_allclose(shell_clearance(DBundle=1.245), 0.0064)
+    assert_allclose(shell_clearance(DBundle=4), 0.011)
+    assert_allclose(shell_clearance(DBundle=.2), .0032)
+    assert_allclose(shell_clearance(DBundle=1.778), 0.0095)
+    
+    assert_allclose(shell_clearance(DShell=1.245), 0.0064)
+    assert_allclose(shell_clearance(DShell=4), 0.011)
+    assert_allclose(shell_clearance(DShell=.2), .0032)
+    assert_allclose(shell_clearance(DShell=1.778), 0.0095)
