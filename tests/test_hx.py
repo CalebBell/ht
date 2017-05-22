@@ -53,6 +53,32 @@ def test_Ntubes_Phadkeb():
     assert_allclose(Ntubes_calc, [805, 782, 760, 698, 680])
     Ntubes_calc = [Ntubes_Phadkeb(DBundle=1.200-.008*2, do=.028, pitch=.035, Ntp=i, angle=45.) for i in [1,2,4,6,8]]
     assert_allclose(Ntubes_calc, [861, 838, 816, 750, 732])
+    
+    # Extra tests
+    N = Ntubes_Phadkeb(DBundle=1.200-.008*2, do=.028, pitch=.036, Ntp=2, angle=30.)
+    assert N == 898
+    N = Ntubes_Phadkeb(DBundle=1.200-.008*2, do=.028, pitch=.036, Ntp=2, angle=60.)
+    assert N == 876
+    N = Ntubes_Phadkeb(DBundle=1.200-.008*2, do=.028, pitch=.036, Ntp=6, angle=60.)
+    assert N == 858
+    N = Ntubes_Phadkeb(DBundle=1.200-.008*2, do=.028, pitch=.036, Ntp=8, angle=60.)
+    assert N == 808
+    N = Ntubes_Phadkeb(DBundle=1.200-.008*2, do=.028, pitch=.092, Ntp=8, angle=60.)
+    assert N == 100
+    N = Ntubes_Phadkeb(DBundle=1.200-.008*2, do=.028, pitch=.036, Ntp=8, angle=30.)
+    assert N == 788
+    N = Ntubes_Phadkeb(DBundle=1.200-.008*2, do=.028, pitch=.04, Ntp=6, angle=30.)
+    assert N == 652
+    N = Ntubes_Phadkeb(DBundle=1.200-.008*2, do=.028, pitch=.036, Ntp=8, angle=90.)
+    assert N == 684
+    N = Ntubes_Phadkeb(DBundle=1.200-.008*2, do=.028, pitch=.036, Ntp=2, angle=90.)
+    assert N == 772
+    N = Ntubes_Phadkeb(DBundle=1.200-.008*2, do=.028, pitch=.036, Ntp=6, angle=90.)
+    assert N == 712
+    
+    # Big case
+    N = Ntubes_Phadkeb(DBundle=5, do=.028, pitch=.036, Ntp=2, angle=90.)
+    assert N == 14842
 
 
 @pytest.mark.slow
@@ -602,6 +628,7 @@ def test_DBundle_min():
     assert_allclose(DBundle_min(0.005), .1)
     assert_allclose(DBundle_min(0.014), .3)
     assert_allclose(DBundle_min(0.015), .5)
+    assert_allclose(DBundle_min(.1), 1.5)
 
 def test_shell_clearance():
     assert_allclose(shell_clearance(DBundle=1.245), 0.0064)
