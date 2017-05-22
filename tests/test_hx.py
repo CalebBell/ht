@@ -79,6 +79,37 @@ def test_Ntubes_Phadkeb():
     # Big case
     N = Ntubes_Phadkeb(DBundle=5, do=.028, pitch=.036, Ntp=2, angle=90.)
     assert N == 14842
+    
+    # negative case
+    N = Ntubes_Phadkeb(DBundle=0.004750018463796297, do=.001, pitch=.0015, Ntp=8, angle=60)
+    assert N == 0
+    
+    # reverse case
+    # DBundle_for_Ntubes_Phadkeb(Ntubes=17546, do=.001, pitch=.00125, Ntp=6, angle=45) 0.19052937784048926
+
+def test_Ntubes_Phadkeb_fuzz():
+    D_main = 1E-3
+    for angle in [30, 45, 60, 90]:
+        for Ntp in [1, 2, 4, 6, 8]:
+            for pitch_ratio in [1.25, 1.31, 1.33, 1.375, 1.4, 1.42, 1.5]:
+                pitch = D_main*pitch_ratio
+                for _ in range(10):
+                    DBundle = uniform(pitch*2, pitch*300)
+                    N = Ntubes_Phadkeb(DBundle=DBundle, do=D_main, pitch=pitch, Ntp=Ntp, angle=angle)
+
+    # Test the reverse correlation
+    D_main = 1E-2
+    for angle in [30, 45, 60, 90]:
+        for Ntp in [1, 2, 4, 6, 8]:
+            for pitch_ratio in [1.25, 1.31, 1.33, 1.375, 1.4, 1.42, 1.5]:
+                pitch = D_main*pitch_ratio
+                DBundle = uniform(pitch*5, pitch*300)
+                N = Ntubes_Phadkeb(DBundle=DBundle, do=D_main, pitch=pitch, Ntp=Ntp, angle=angle)
+                if N > 2:
+                    DBundle2 = DBundle_for_Ntubes_Phadkeb(Ntubes=N, do=D_main, pitch=pitch, Ntp=Ntp, angle=angle)
+                    N2 = Ntubes_Phadkeb(DBundle=DBundle2, do=D_main, pitch=pitch, Ntp=Ntp, angle=angle)
+                    assert N2 == N
+
 
 
 @pytest.mark.slow

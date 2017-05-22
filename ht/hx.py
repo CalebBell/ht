@@ -24,7 +24,8 @@ from __future__ import division
 from math import exp, log, floor, sqrt, tanh  # tanh= 1/coth
 from bisect import bisect, bisect_left, bisect_right
 import numpy as np
-from scipy.optimize import ridder 
+from scipy.optimize import ridder
+from scipy.optimize import bisect as sp_bisect
 from scipy.constants import inch
 from fluids.piping import BWG_integers, BWG_inch, BWG_SI
 from pprint import pprint
@@ -38,7 +39,8 @@ __all__ = ['effectiveness_from_NTU', 'NTU_from_effectiveness', 'calc_Cmin',
 'temperature_effectiveness_TEMA_E', 'P_NTU_method', 
 'check_tubing_TEMA', 'get_tube_TEMA',
 'DBundle_min', 'shell_clearance', 'baffle_thickness', 'D_baffle_holes',
-'L_unsupported_max', 'Ntubes_Perrys', 'Ntubes_VDI', 'Ntubes_Phadkeb',
+'L_unsupported_max', 'Ntubes_Perrys', 'Ntubes_VDI', 'Ntubes_Phadkeb', 
+'DBundle_for_Ntubes_Phadkeb',
 'Ntubes_HEDH', 'Ntubes', 'D_for_Ntubes_VDI', 'TEMA_heads', 'TEMA_shells', 
 'TEMA_rears', 'TEMA_services', 'baffle_types', 'triangular_Ns', 
 'triangular_C1s', 'square_Ns', 'square_C1s']
@@ -3786,7 +3788,7 @@ square_C1s = np.array([1, 5, 9, 13, 21, 25, 29, 37, 45, 49, 57, 61, 69, 81, 89, 
 99905, 99913, 99929, 99945, 99961, 99977, 99985, 100001], dtype=np.int32)
 
 
-def Ntubes_Phadkeb(DBundle, Ntp, do, pitch, angle=30):
+def Ntubes_Phadkeb(DBundle, do, pitch, Ntp, angle=30):
     r'''Using tabulated values and correction factors for number of passes,
     the highly accurate method of [1]_ is used to obtain the tube count
     of a given tube bundle outer diameter for a given tube size and pitch.
@@ -3824,6 +3826,9 @@ def Ntubes_Phadkeb(DBundle, Ntp, do, pitch, angle=30):
     .. [1] Phadke, P. S., Determining tube counts for shell and tube
        exchangers, Chem. Eng., September, 91, 65-68 (1984).
     '''
+    if DBundle <= do*Ntp:
+        return 0
+    
     if Ntp == 6:
         e = 0.265
     elif Ntp == 8:
@@ -3831,7 +3836,7 @@ def Ntubes_Phadkeb(DBundle, Ntp, do, pitch, angle=30):
     else:
         e = 0.
 
-    r = 0.5*(DBundle-do)/pitch
+    r = 0.5*(DBundle - do)/pitch
     s = r*r
     Ns, Nr = floor(s), floor(r)
     if angle == 30 or angle == 60:
@@ -3877,7 +3882,7 @@ def Ntubes_Phadkeb(DBundle, Ntp, do, pitch, angle=30):
             v = 2.*e*r
             Nv = floor(v)
             u1 = 0.5*Nv
-            z = (s-u1*u1)**0.5
+            z = (s - u1*u1)**0.5
             w1 = 2**2**0.5
             u2 = 0.5*(Nv + 1)
             zs = (s-u2*u2)**0.5
@@ -3950,17 +3955,23 @@ def Ntubes_Phadkeb(DBundle, Ntp, do, pitch, angle=30):
             else: # 8
                 C8 = C4-4*(Nz1 + Nz2)
 
-
     if Ntp == 1:
-        return int(C1)
+        ans = C1
     elif Ntp == 2:
-        return int(C2)
+        ans = C2
     elif Ntp == 4:
-        return int(C4)
+        ans = C4
     elif Ntp == 6:
-        return int(C6)
+        ans = C6
+    elif Ntp == 8:
+        ans = C8
     else:
-        return int(C8)
+        raise Exception('Only 1, 2, 4, 6, or 8 tube passes are supported')
+    ans = int(ans)
+    # In some cases, a negative number would be returned by these formulas
+    if ans < 0:
+        ans = 0
+    return ans
 
 
 #print Ntubes_Phadkeb(Dshell=1.00, do=.0135, pitch=.025, Ntp=1, angle=30.), 'good'
@@ -3970,6 +3981,19 @@ def Ntubes_Phadkeb(DBundle, Ntp, do, pitch, angle=30):
 
 
 #print [[Ntubes_Phadkeb(DBundle=1.200-.008*2, do=.028, pitch=.028*1.25, Ntp=i, angle=j) for i in [1,2,4,6,8]] for j in [30, 45, 60, 90]]
+
+def DBundle_for_Ntubes_Phadkeb(Ntubes, do, pitch, Ntp, angle=30):
+    if angle == 30 or angle == 60:
+        Ns = triangular_Ns[-1]
+    elif angle == 45 or angle == 90:
+        Ns = square_Ns[-1]
+    s = Ns + 1
+    r = s**0.5
+    DBundle_max = (do + 2*pitch*r)*(1 - 1E-8) # Cannot be exact or floor(s) will give an int too high
+    def to_solve(DBundle):
+        ans = Ntubes_Phadkeb(DBundle=DBundle, do=do, pitch=pitch, Ntp=Ntp, angle=angle) - Ntubes
+        return ans
+    return sp_bisect(to_solve, 0, DBundle_max)
 
 
 def Ntubes_HEDH(DBundle=None, do=None, pitch=None, angle=30):
