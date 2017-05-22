@@ -40,6 +40,6 @@ install:
   - python setup.py -q install
 script:
   - python tests/test_doctests.py
-  - py.test . -v --cov-report html --cov=ht --cov-report term-missing 
+  - py.test . -v --cov-report html --cov=ht --cov-report term-missing -m "not slow"
 after_success:
   - coveralls
