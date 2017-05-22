@@ -3983,13 +3983,51 @@ def Ntubes_Phadkeb(DBundle, do, pitch, Ntp, angle=30):
 #print [[Ntubes_Phadkeb(DBundle=1.200-.008*2, do=.028, pitch=.028*1.25, Ntp=i, angle=j) for i in [1,2,4,6,8]] for j in [30, 45, 60, 90]]
 
 def DBundle_for_Ntubes_Phadkeb(Ntubes, do, pitch, Ntp, angle=30):
+    r'''Using tabulated values and correction factors for number of passes,
+    the highly accurate method of [1]_ is used to obtain the tube bundle outer 
+    diameter for a given tube count for a given tube size and pitch.
+
+    Parameters
+    ----------
+    Ntubes : float
+        Number of tubes, [-]
+    Ntp : float
+        Number of tube passes, [-]
+    do : float
+        Tube outer diameter, [m]
+    pitch : float
+        Pitch; distance between two orthogonal tube centers, [m]
+    angle : float, optional
+        The angle the tubes are positioned; 30, 45, 60 or 90, [degrees]
+
+    Returns
+    -------
+    DBundle : float
+        Outer diameter of tube bundle, [m]
+
+    Notes
+    -----
+    This function will fail when there are more than 100,000 tubes. There are 
+    a range of correct diameters for which there can be the given number of 
+    tubes; a number within that range is returned as found by bisection.
+
+    Examples
+    --------
+    >>> DBundle_for_Ntubes_Phadkeb(Ntubes=782, do=.028, pitch=.036, Ntp=2, angle=45.)
+    1.1879392959379533
+
+    References
+    ----------
+    .. [1] Phadke, P. S., Determining tube counts for shell and tube
+       exchangers, Chem. Eng., September, 91, 65-68 (1984).
+    '''
     if angle == 30 or angle == 60:
         Ns = triangular_Ns[-1]
     elif angle == 45 or angle == 90:
         Ns = square_Ns[-1]
     s = Ns + 1
     r = s**0.5
-    DBundle_max = (do + 2*pitch*r)*(1 - 1E-8) # Cannot be exact or floor(s) will give an int too high
+    DBundle_max = (do + 2.*pitch*r)*(1. - 1E-8) # Cannot be exact or floor(s) will give an int too high
     def to_solve(DBundle):
         ans = Ntubes_Phadkeb(DBundle=DBundle, do=do, pitch=pitch, Ntp=Ntp, angle=angle) - Ntubes
         return ans
