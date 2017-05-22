@@ -57,6 +57,8 @@ def test_Ntubes_Phadkeb():
 
 @pytest.mark.slow
 def test_Phadkeb_numbers():
+    # One pain point of this code is that it takes 880 kb to store the results
+    # in memory as a list
     from ht.hx import triangular_Ns, triangular_C1s, square_Ns, square_C1s
     from math import floor, ceil
     # Triangular Ns 
@@ -73,7 +75,7 @@ def test_Phadkeb_numbers():
     nums = [i for i in nums if i < nn**2]
     
     nums = nums[0:len(triangular_Ns)]
-    assert nums == triangular_Ns
+    assert_allclose(nums, triangular_Ns)
     
     
     # triangular C1s
@@ -91,20 +93,21 @@ def test_Phadkeb_numbers():
     ans = [a(i) for i in range(50000)]
     ans = sorted(list(set(ans)))
     ans = ans[0:len(triangular_C1s)]
-    assert ans == triangular_C1s
+    assert_allclose(ans, triangular_C1s)
     
     # square Ns
     # https://oeis.org/A001481
     # Quick and efficient
     # Translated from Mathematica
     # upTo = 160; With[{max = Ceiling[Sqrt[upTo]]}, Select[Union[Total /@ (Tuples[Range[0, max], {2}]^2)], # <= upTo &]]  (* Harvey P. Dale, Apr 22 2011 *) 
+    # 10 loops, best of 3: 17.3 ms per loop
     upTo = 100000
     max_range = int(ceil(upTo**0.5))
     squares = [i*i for i in range(max_range+1)]
     seq = [i+j for i in squares for j in squares]
     seq = [i for i in set(seq) if i < upTo] # optional
     nums = seq[0:len(square_Ns)]
-    assert nums == square_Ns
+    assert_allclose(nums, square_Ns)
 
     # square C1s
     # https://oeis.org/A057961 is the sequence, there is one mathematica expression
@@ -112,6 +115,7 @@ def test_Phadkeb_numbers():
     # It is also the uniqiue elements in https://oeis.org/A057655
     # That has a convenient expression for pari, tested online and translated
     # a(n)=1+4*sum(k=0, sqrtint(n), sqrtint(n-k^2) ); /* Benoit Cloitre, Oct 08 2012 */ 
+    # Currently 1.8 seconds
     def a2(n):
         sqrtint = lambda i: int(i**0.5)
         return 1 + 4*sum([sqrtint(n - k*k) for k in range(0, sqrtint(n) + 1)])
@@ -119,7 +123,7 @@ def test_Phadkeb_numbers():
     ans = set([a2(i) for i in range(35000)])
     ans = sorted(list(ans))
     nums = ans[0:len(square_C1s)]
-    assert nums == square_C1s
+    assert_allclose(nums, square_C1s)
 
 
 
@@ -591,3 +595,10 @@ def test_P_NTU_method():
     
     ans = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., UA=300, T1i=130, T2i=15, subtype='J', Ntp=2)
     assert_allclose(ans['Q'], 32212.185699719837)
+
+
+def test_DBundle_min():
+    assert_allclose(DBundle_min(0.0254), 1)
+    assert_allclose(DBundle_min(0.005), .1)
+    assert_allclose(DBundle_min(0.014), .3)
+    assert_allclose(DBundle_min(0.015), .5)
