@@ -2402,7 +2402,7 @@ def L_unsupported_max(Do, material='CS'):
 
 ### Tube bundle count functions
 
-def Ntubes_Perrys(DBundle=None, do=None, Ntp=None, angle=30):
+def Ntubes_Perrys(DBundle, Do, Ntp, angle=30):
     r'''A rough equation presented in Perry's Handbook [1]_ for estimating
     the number of tubes in a tube bundle of differing geometries and tube
     sizes. Claimed accuracy of 24 tubes.
@@ -2411,16 +2411,16 @@ def Ntubes_Perrys(DBundle=None, do=None, Ntp=None, angle=30):
     ----------
     DBundle : float
         Outer diameter of tube bundle, [m]
+    Do : int
+        Tube outer diameter, [m]
     Ntp : float
         Number of tube passes, [-]
-    do : float
-        Tube outer diameter, [m]
     angle : float
-        The angle the tubes are positioned; 30, 45, 60 or 90
+        The angle the tubes are positioned; 30, 45, 60 or 90, [degrees]
 
     Returns
     -------
-    Nt : float
+    Nt : int
         Number of tubes, [-]
 
     Notes
@@ -2428,11 +2428,12 @@ def Ntubes_Perrys(DBundle=None, do=None, Ntp=None, angle=30):
     Perry's equation 11-74.
     Pitch equal to 1.25 times the tube outside diameter
     No other source for this equation is given.
-    Experience suggests this is accurate to 40 tubes, but is often around 20 tubes off.
+    Experience suggests this is accurate to 40 tubes, but is often around 20 
+    tubes off.
 
     Examples
     --------
-    >>> Ntubes_Perrys(DBundle=1.184, Ntp=2, do=.028, angle=45)
+    >>> Ntubes_Perrys(DBundle=1.184, Do=.028, Ntp=2, angle=45)
     803
     
     References
@@ -2441,7 +2442,7 @@ def Ntubes_Perrys(DBundle=None, do=None, Ntp=None, angle=30):
        Eighth Edition. New York: McGraw-Hill Education, 2007.
     '''
     if angle == 30 or angle == 60:
-        C = 0.75*DBundle/do - 36.
+        C = 0.75*DBundle/Do - 36.
         if Ntp == 1:
             Nt = 1298. + 74.86*C + 1.283*C**2 - .0078*C**3 - .0006*C**4
         elif Ntp == 2:
@@ -2453,7 +2454,7 @@ def Ntubes_Perrys(DBundle=None, do=None, Ntp=None, angle=30):
         else:
             raise Exception('N passes not 1, 2, 4 or 6')
     elif angle == 45 or angle == 90:
-        C = DBundle/do - 36.
+        C = DBundle/Do - 36.
         if Ntp == 1:
             Nt = 593.6 + 33.52*C + .3782*C**2 - .0012*C**3 + .0001*C**4
         elif Ntp == 2:
@@ -2464,13 +2465,12 @@ def Ntubes_Perrys(DBundle=None, do=None, Ntp=None, angle=30):
             Nt = 550.4 + 32.49*C + .3873*C**2 - .0013*C**3 + .0001*C**4
         else:
             raise Exception('N passes not 1, 2, 4 or 6')
-    Nt = int(Nt)
-    return Nt
+    return int(Nt)
 
 
 
 
-def Ntubes_VDI(DBundle=None, Ntp=None, do=None, pitch=None, angle=30.):
+def Ntubes_VDI(DBundle=None, Ntp=None, Do=None, pitch=None, angle=30.):
     r'''A rough equation presented in the VDI Heat Atlas for estimating
     the number of tubes in a tube bundle of differing geometries and tube
     sizes. No accuracy estimation given.
@@ -2481,7 +2481,7 @@ def Ntubes_VDI(DBundle=None, Ntp=None, do=None, pitch=None, angle=30.):
         Outer diameter of tube bundle, [m]
     Ntp : float
         Number of tube passes, [-]
-    do : float
+    Do : float
         Tube outer diameter, [m]
     pitch : float
         Pitch; distance between two orthogonal tube centers, [m]
@@ -2495,16 +2495,15 @@ def Ntubes_VDI(DBundle=None, Ntp=None, do=None, pitch=None, angle=30.):
 
     Notes
     -----
-    6 tube passes is not officially supported, only 1, 2, 4 and 8.
-    However, an estimated constant has been added to support it.
-    f2 = 90.
-    This equation is a rearranged for of that presented in [1]_.
-    Calculated tube count is rounded down to an integer.
+    No coefficients for this method with Ntp=6 are available in [1]_. For
+    consistency, estimated values were added to support 6 tube passes, f2 = 90..
+    This equation is a rearranged form of that presented in [1]_.
+    The calculated tube count is rounded down to an integer.
 
     Examples
     --------
-    >>> [[Ntubes_VDI(DBundle=1.184, Ntp=i, do=.028, pitch=.036, angle=j) for i in [1,2,4,6,8]] for j in [30, 45, 60, 90]]
-    [[983, 966, 929, 914, 903], [832, 818, 790, 778, 769], [983, 966, 929, 914, 903], [832, 818, 790, 778, 769]]
+    >>> Ntubes_VDI(DBundle=1.184, Ntp=2, Do=.028, pitch=.036, angle=30) 
+    966
 
     References
     ----------
@@ -2523,8 +2522,6 @@ def Ntubes_VDI(DBundle=None, Ntp=None, do=None, pitch=None, angle=30.):
         f2 = 90. # Estimated!
     else:
         raise Exception('Only 1, 2, 4 and 8 passes are supported')
-
-
     if angle == 30 or angle == 60:
         f1 = 1.1
     elif angle == 45 or angle == 90:
@@ -2532,24 +2529,11 @@ def Ntubes_VDI(DBundle=None, Ntp=None, do=None, pitch=None, angle=30.):
     else:
         raise Exception('Only 30, 60, 45 and 90 degree layouts are supported')
 
-    DBundle, do, pitch = DBundle*1000, do*1000, pitch*1000 # convert to mm, equation is dimensional.
+    DBundle, Do, pitch = DBundle*1000, Do*1000, pitch*1000 # convert to mm, equation is dimensional.
     t = pitch
-    Ntubes = (-(-4*f1*t**4*f2**2*do + 4*f1*t**4*f2**2*DBundle**2 + t**4*f2**4)**0.5
-    - 2*f1*t**2*do + 2*f1*t**2*DBundle**2 + t**2*f2**2) / (2*f1**2*t**4)
-    Ntubes = int(Ntubes)
-    return Ntubes
-
-#print [[Ntubes_VDI(DBundle=1.184, Ntp=i, do=.028, pitch=.036, angle=j) for i in [1,2,4,6,8]] for j in [30, 45, 60, 90]]
-
-#print [[Ntubes_VDI(DBundle=1.184, Ntp=i, do=.028, pitch=.036, angle=j) for i in [1,2,4,8]] for j in [30, 45, 60, 90]]
-#    >>> [Ntubes_Phadkeb(DBundle=1.200-.008*2, do=.028, pitch=.036, Ntp=i, angle=45.) for i in [1,2,4,6,8]]
-#    [805, 782, 760, 698, 680]
-#
-
-
-
-
-
+    Ntubes = (-(-4*f1*t**4*f2**2*Do + 4*f1*t**4*f2**2*DBundle**2 + t**4*f2**4)**0.5
+    - 2*f1*t**2*Do + 2*f1*t**2*DBundle**2 + t**2*f2**2) / (2*f1**2*t**4)
+    return int(Ntubes)
 
 
 
@@ -3788,7 +3772,7 @@ square_C1s = np.array([1, 5, 9, 13, 21, 25, 29, 37, 45, 49, 57, 61, 69, 81, 89, 
 99905, 99913, 99929, 99945, 99961, 99977, 99985, 100001], dtype=np.int32)
 
 
-def Ntubes_Phadkeb(DBundle, do, pitch, Ntp, angle=30):
+def Ntubes_Phadkeb(DBundle, Do, pitch, Ntp, angle=30):
     r'''Using tabulated values and correction factors for number of passes,
     the highly accurate method of [1]_ is used to obtain the tube count
     of a given tube bundle outer diameter for a given tube size and pitch.
@@ -3797,9 +3781,9 @@ def Ntubes_Phadkeb(DBundle, do, pitch, Ntp, angle=30):
     ----------
     DBundle : float
         Outer diameter of tube bundle, [m]
-    Ntp : float
+    Ntp : int
         Number of tube passes, [-]
-    do : float
+    Do : float
         Tube outer diameter, [m]
     pitch : float
         Pitch; distance between two orthogonal tube centers, [m]
@@ -3808,17 +3792,37 @@ def Ntubes_Phadkeb(DBundle, do, pitch, Ntp, angle=30):
 
     Returns
     -------
-    Nt : float
-        Number of tubes, [-]
+    Nt : int
+        Total number of tubes that fit in the heat exchanger, [-]
 
     Notes
     -----
     This function will fail when there are more than 100,000 tubes.
-    This is due to a limitation in tabulated values presented in [1]_.
+    [1]_ tabulated values up to approximately 3,000 tubes derived with 
+    number theory. The sequesnces of integers were identified in the
+    On-Line Encyclopedia of Integer Sequences (OEIS), and formulas listed in
+    it were used to generate more coefficient to allow up to 100,000 tubes.
+    The integer sequences are A003136, A038590, A001481, and A057961. The 
+    generation of coefficients for A038590 is very slow, but the rest are
+    reasonably fast.
+    
+    The number of tubes that fit generally does not increase one-by-one, but by
+    several.
+    
+    >>> Ntubes_Phadkeb(DBundle=1.007, Do=.028, pitch=.036, Ntp=2, angle=45.)
+    558
+    >>> Ntubes_Phadkeb(DBundle=1.008, Do=.028, pitch=.036, Ntp=2, angle=45.)
+    574
+    
+    Because a pass partition needs to be installed in multiple tube pass
+    shells, more tubes fit in an exchanger the fewer passes are used.
+    
+    >>> Ntubes_Phadkeb(DBundle=1.008, Do=.028, pitch=.036, Ntp=1, angle=45.)
+    593
 
     Examples
     --------
-    >>> Ntubes_Phadkeb(DBundle=1.200-.008*2, do=.028, pitch=.036, Ntp=2, angle=45.)
+    >>> Ntubes_Phadkeb(DBundle=1.200-.008*2, Do=.028, pitch=.036, Ntp=2, angle=45.)
     782
 
     References
@@ -3826,7 +3830,7 @@ def Ntubes_Phadkeb(DBundle, do, pitch, Ntp, angle=30):
     .. [1] Phadke, P. S., Determining tube counts for shell and tube
        exchangers, Chem. Eng., September, 91, 65-68 (1984).
     '''
-    if DBundle <= do*Ntp:
+    if DBundle <= Do*Ntp:
         return 0
     
     if Ntp == 6:
@@ -3836,7 +3840,7 @@ def Ntubes_Phadkeb(DBundle, do, pitch, Ntp, angle=30):
     else:
         e = 0.
 
-    r = 0.5*(DBundle - do)/pitch
+    r = 0.5*(DBundle - Do)/pitch
     s = r*r
     Ns, Nr = floor(s), floor(r)
     if angle == 30 or angle == 60:
@@ -3974,18 +3978,21 @@ def Ntubes_Phadkeb(DBundle, do, pitch, Ntp, angle=30):
     return ans
 
 
-def DBundle_for_Ntubes_Phadkeb(Ntubes, do, pitch, Ntp, angle=30):
-    r'''Using tabulated values and correction factors for number of passes,
-    the highly accurate method of [1]_ is used to obtain the tube bundle outer 
-    diameter for a given tube count for a given tube size and pitch.
+def DBundle_for_Ntubes_Phadkeb(Ntubes, Do, pitch, Ntp, angle=30):
+    r'''Determine the bundle diameter required to fit a specified number of
+    tubes in a heat exchanger. Uses the highly accurate method of [1]_,
+    which takes into account pitch, number of tube passes, angle, 
+    and tube diameter. The method is analytically correct when used in the
+    other direction (calculating number of tubes from bundle diameter); in
+    reverse, it is solved by bisection.
 
     Parameters
     ----------
-    Ntubes : float
-        Number of tubes, [-]
-    Ntp : float
+    Ntubes : int
+        Total number of tubes that fit in the heat exchanger, [-]
+    Ntp : int
         Number of tube passes, [-]
-    do : float
+    Do : float
         Tube outer diameter, [m]
     pitch : float
         Pitch; distance between two orthogonal tube centers, [m]
@@ -4005,7 +4012,7 @@ def DBundle_for_Ntubes_Phadkeb(Ntubes, do, pitch, Ntp, angle=30):
 
     Examples
     --------
-    >>> DBundle_for_Ntubes_Phadkeb(Ntubes=782, do=.028, pitch=.036, Ntp=2, angle=45.)
+    >>> DBundle_for_Ntubes_Phadkeb(Ntubes=782, Do=.028, pitch=.036, Ntp=2, angle=45.)
     1.1879392959379533
 
     References
@@ -4019,14 +4026,14 @@ def DBundle_for_Ntubes_Phadkeb(Ntubes, do, pitch, Ntp, angle=30):
         Ns = square_Ns[-1]
     s = Ns + 1
     r = s**0.5
-    DBundle_max = (do + 2.*pitch*r)*(1. - 1E-8) # Cannot be exact or floor(s) will give an int too high
+    DBundle_max = (Do + 2.*pitch*r)*(1. - 1E-8) # Cannot be exact or floor(s) will give an int too high
     def to_solve(DBundle):
-        ans = Ntubes_Phadkeb(DBundle=DBundle, do=do, pitch=pitch, Ntp=Ntp, angle=angle) - Ntubes
+        ans = Ntubes_Phadkeb(DBundle=DBundle, Do=Do, pitch=pitch, Ntp=Ntp, angle=angle) - Ntubes
         return ans
     return sp_bisect(to_solve, 0, DBundle_max)
 
 
-def Ntubes_HEDH(DBundle=None, do=None, pitch=None, angle=30):
+def Ntubes_HEDH(DBundle=None, Do=None, pitch=None, angle=30):
     r'''A rough equation presented in the HEDH for estimating
     the number of tubes in a tube bundle of differing geometries and tube
     sizes. No accuracy estimation given. Only 1 pass is supported.
@@ -4035,7 +4042,7 @@ def Ntubes_HEDH(DBundle=None, do=None, pitch=None, angle=30):
     ----------
     DBundle : float
         Outer diameter of tube bundle, [m]
-    do : float
+    Do : float
         Tube outer diameter, [m]
     pitch : float
         Pitch; distance between two orthogonal tube centers, [m]
@@ -4053,7 +4060,7 @@ def Ntubes_HEDH(DBundle=None, do=None, pitch=None, angle=30):
 
     Examples
     --------
-    >>> [Ntubes_HEDH(DBundle=1.200-.008*2, do=.028, pitch=.036, angle=i) for i in [30, 45, 60, 90]]
+    >>> [Ntubes_HEDH(DBundle=1.200-.008*2, Do=.028, pitch=.036, angle=i) for i in [30, 45, 60, 90]]
     [928, 804, 928, 804]
 
     References
@@ -4068,17 +4075,17 @@ def Ntubes_HEDH(DBundle=None, do=None, pitch=None, angle=30):
         C1 = 1.
     else:
         raise Exception('Only 30, 60, 45 and 90 degree layouts are supported')
-    Dctl = DBundle-do
+    Dctl = DBundle-Do
     Nt = 0.78*Dctl**2/C1/pitch**2
     Nt = int(Nt)
     return Nt
 
 
-def Ntubes(DBundle=None, Ntp=1, do=None, pitch=None, angle=30, pitch_ratio=1.25, AvailableMethods=False, Method=None):
+def Ntubes(DBundle=None, Ntp=1, Do=None, pitch=None, angle=30, pitch_ratio=1.25, AvailableMethods=False, Method=None):
     '''Function to calculate the number of tubes which can fit in a given tube
     bundle outer diameter.
 
-    >>> Ntubes(DBundle=1.2, do=0.025)
+    >>> Ntubes(DBundle=1.2, Do=0.025)
     1285
     '''
     def list_methods():
@@ -4098,15 +4105,15 @@ def Ntubes(DBundle=None, Ntp=1, do=None, pitch=None, angle=30, pitch_ratio=1.25,
         Method = list_methods()[0]
 
     if pitch_ratio and not pitch:
-        pitch = pitch_ratio*do
+        pitch = pitch_ratio*Do
     if Method == 'Phadkeb':
-        N = Ntubes_Phadkeb(DBundle=DBundle, Ntp=Ntp, do=do, pitch=pitch, angle=angle)
+        N = Ntubes_Phadkeb(DBundle=DBundle, Ntp=Ntp, Do=Do, pitch=pitch, angle=angle)
     elif Method == 'HEDH':
-        N = Ntubes_HEDH(DBundle=DBundle, do=do, pitch=pitch, angle=angle)
+        N = Ntubes_HEDH(DBundle=DBundle, Do=Do, pitch=pitch, angle=angle)
     elif Method == 'VDI':
-        N = Ntubes_VDI(DBundle=DBundle, Ntp=Ntp, do=do, pitch=pitch, angle=angle)
+        N = Ntubes_VDI(DBundle=DBundle, Ntp=Ntp, Do=Do, pitch=pitch, angle=angle)
     elif Method == "Perry's":
-        N = Ntubes_Perrys(DBundle=DBundle, do=do, Ntp=Ntp, angle=angle)
+        N = Ntubes_Perrys(DBundle=DBundle, Do=Do, Ntp=Ntp, angle=angle)
     elif Method == 'None':
         return None
     else:
@@ -4114,7 +4121,7 @@ def Ntubes(DBundle=None, Ntp=1, do=None, pitch=None, angle=30, pitch_ratio=1.25,
     return N
 
 
-def D_for_Ntubes_VDI(Nt=None, Ntp=None, do=None, pitch=None, angle=30):
+def D_for_Ntubes_VDI(Nt=None, Ntp=None, Do=None, pitch=None, angle=30):
     r'''A rough equation presented in the VDI Heat Atlas for estimating
     the size of a tube bundle from a given number of tubes, number of tube
     passes, outer tube diameter, pitch, and arrangement.
@@ -4129,7 +4136,7 @@ def D_for_Ntubes_VDI(Nt=None, Ntp=None, do=None, pitch=None, angle=30):
         Number of tubes, [-]
     Ntp : float
         Number of tube passes, [-]
-    do : float
+    Do : float
         Tube outer diameter, [m]
     pitch : float
         Pitch; distance between two orthogonal tube centers, [m]
@@ -4151,7 +4158,7 @@ def D_for_Ntubes_VDI(Nt=None, Ntp=None, do=None, pitch=None, angle=30):
 
     Examples
     --------
-    >>> D_for_Ntubes_VDI(Nt=970, Ntp=2., do=0.00735, pitch=0.015, angle=30.)
+    >>> D_for_Ntubes_VDI(Nt=970, Ntp=2., Do=0.00735, pitch=0.015, angle=30.)
     0.5003600119829544
 
     References
@@ -4177,8 +4184,8 @@ def D_for_Ntubes_VDI(Nt=None, Ntp=None, do=None, pitch=None, angle=30):
         f1 = 1.3
     else:
         raise Exception('Only 30, 60, 45 and 90 degree layouts are supported')
-    do, pitch = do*1000, pitch*1000 # convert to mm, equation is dimensional.
-    Dshell = (f1*Nt*pitch**2 + f2*Nt**0.5*pitch +do)**0.5
+    Do, pitch = Do*1000, pitch*1000 # convert to mm, equation is dimensional.
+    Dshell = (f1*Nt*pitch**2 + f2*Nt**0.5*pitch +Do)**0.5
     Dshell = Dshell/1000.
     return Dshell
 

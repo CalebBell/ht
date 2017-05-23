@@ -27,66 +27,66 @@ seed(0)
 
 ### TODO hx requires testing, but perhaps first improvement
 def test_Ntubes_Perrys():
-    Nt_perry = [[Ntubes_Perrys(DBundle=1.184, Ntp=i, do=.028, angle=j) for i in [1,2,4,6]] for j in [30, 45, 60, 90]]
+    Nt_perry = [[Ntubes_Perrys(DBundle=1.184, Ntp=i, Do=.028, angle=j) for i in [1,2,4,6]] for j in [30, 45, 60, 90]]
     Nt_values = [[1001, 973, 914, 886], [819, 803, 784, 769], [1001, 973, 914, 886], [819, 803, 784, 769]]
     assert_allclose(Nt_perry, Nt_values)
 #    angle = 30 or 60 and ntubes = 1.5 raise exception
 
     with pytest.raises(Exception):
-        Ntubes_Perrys(DBundle=1.184, Ntp=5, do=.028, angle=30)
+        Ntubes_Perrys(DBundle=1.184, Ntp=5, Do=.028, angle=30)
     with pytest.raises(Exception):
-        Ntubes_Perrys(DBundle=1.184, Ntp=5, do=.028, angle=45)
+        Ntubes_Perrys(DBundle=1.184, Ntp=5, Do=.028, angle=45)
 
 
 def test_Ntubes_VDI():
-    VDI_t = [[Ntubes_VDI(DBundle=1.184, Ntp=i, do=.028, pitch=.036, angle=j) for i in [1,2,4,6,8]] for j in [30, 45, 60, 90]]
+    VDI_t = [[Ntubes_VDI(DBundle=1.184, Ntp=i, Do=.028, pitch=.036, angle=j) for i in [1,2,4,6,8]] for j in [30, 45, 60, 90]]
     VDI_values = [[983, 966, 929, 914, 903], [832, 818, 790, 778, 769], [983, 966, 929, 914, 903], [832, 818, 790, 778, 769]]
     assert_allclose(VDI_t, VDI_values)
     with pytest.raises(Exception):
-        Ntubes_VDI(DBundle=1.184, Ntp=5, do=.028, pitch=.036, angle=30)
+        Ntubes_VDI(DBundle=1.184, Ntp=5, Do=.028, pitch=.036, angle=30)
     with pytest.raises(Exception):
-        Ntubes_VDI(DBundle=1.184, Ntp=2, do=.028, pitch=.036, angle=40)
+        Ntubes_VDI(DBundle=1.184, Ntp=2, Do=.028, pitch=.036, angle=40)
 
 
 def test_Ntubes_Phadkeb():
     
-    Ntubes_calc = [Ntubes_Phadkeb(DBundle=1.200-.008*2, do=.028, pitch=.036, Ntp=i, angle=45.) for i in [1,2,4,6,8]]
+    Ntubes_calc = [Ntubes_Phadkeb(DBundle=1.200-.008*2, Do=.028, pitch=.036, Ntp=i, angle=45.) for i in [1,2,4,6,8]]
     assert_allclose(Ntubes_calc, [805, 782, 760, 698, 680])
-    Ntubes_calc = [Ntubes_Phadkeb(DBundle=1.200-.008*2, do=.028, pitch=.035, Ntp=i, angle=45.) for i in [1,2,4,6,8]]
+    Ntubes_calc = [Ntubes_Phadkeb(DBundle=1.200-.008*2, Do=.028, pitch=.035, Ntp=i, angle=45.) for i in [1,2,4,6,8]]
     assert_allclose(Ntubes_calc, [861, 838, 816, 750, 732])
     
     # Extra tests
-    N = Ntubes_Phadkeb(DBundle=1.200-.008*2, do=.028, pitch=.036, Ntp=2, angle=30.)
+    N = Ntubes_Phadkeb(DBundle=1.200-.008*2, Do=.028, pitch=.036, Ntp=2, angle=30.)
     assert N == 898
-    N = Ntubes_Phadkeb(DBundle=1.200-.008*2, do=.028, pitch=.036, Ntp=2, angle=60.)
+    N = Ntubes_Phadkeb(DBundle=1.200-.008*2, Do=.028, pitch=.036, Ntp=2, angle=60.)
     assert N == 876
-    N = Ntubes_Phadkeb(DBundle=1.200-.008*2, do=.028, pitch=.036, Ntp=6, angle=60.)
+    N = Ntubes_Phadkeb(DBundle=1.200-.008*2, Do=.028, pitch=.036, Ntp=6, angle=60.)
     assert N == 858
-    N = Ntubes_Phadkeb(DBundle=1.200-.008*2, do=.028, pitch=.036, Ntp=8, angle=60.)
+    N = Ntubes_Phadkeb(DBundle=1.200-.008*2, Do=.028, pitch=.036, Ntp=8, angle=60.)
     assert N == 808
-    N = Ntubes_Phadkeb(DBundle=1.200-.008*2, do=.028, pitch=.092, Ntp=8, angle=60.)
+    N = Ntubes_Phadkeb(DBundle=1.200-.008*2, Do=.028, pitch=.092, Ntp=8, angle=60.)
     assert N == 100
-    N = Ntubes_Phadkeb(DBundle=1.200-.008*2, do=.028, pitch=.036, Ntp=8, angle=30.)
+    N = Ntubes_Phadkeb(DBundle=1.200-.008*2, Do=.028, pitch=.036, Ntp=8, angle=30.)
     assert N == 788
-    N = Ntubes_Phadkeb(DBundle=1.200-.008*2, do=.028, pitch=.04, Ntp=6, angle=30.)
+    N = Ntubes_Phadkeb(DBundle=1.200-.008*2, Do=.028, pitch=.04, Ntp=6, angle=30.)
     assert N == 652
-    N = Ntubes_Phadkeb(DBundle=1.200-.008*2, do=.028, pitch=.036, Ntp=8, angle=90.)
+    N = Ntubes_Phadkeb(DBundle=1.200-.008*2, Do=.028, pitch=.036, Ntp=8, angle=90.)
     assert N == 684
-    N = Ntubes_Phadkeb(DBundle=1.200-.008*2, do=.028, pitch=.036, Ntp=2, angle=90.)
+    N = Ntubes_Phadkeb(DBundle=1.200-.008*2, Do=.028, pitch=.036, Ntp=2, angle=90.)
     assert N == 772
-    N = Ntubes_Phadkeb(DBundle=1.200-.008*2, do=.028, pitch=.036, Ntp=6, angle=90.)
+    N = Ntubes_Phadkeb(DBundle=1.200-.008*2, Do=.028, pitch=.036, Ntp=6, angle=90.)
     assert N == 712
     
     # Big case
-    N = Ntubes_Phadkeb(DBundle=5, do=.028, pitch=.036, Ntp=2, angle=90.)
+    N = Ntubes_Phadkeb(DBundle=5, Do=.028, pitch=.036, Ntp=2, angle=90.)
     assert N == 14842
     
     # negative case
-    N = Ntubes_Phadkeb(DBundle=0.004750018463796297, do=.001, pitch=.0015, Ntp=8, angle=60)
+    N = Ntubes_Phadkeb(DBundle=0.004750018463796297, Do=.001, pitch=.0015, Ntp=8, angle=60)
     assert N == 0
     
     # reverse case
-    # DBundle_for_Ntubes_Phadkeb(Ntubes=17546, do=.001, pitch=.00125, Ntp=6, angle=45) 0.19052937784048926
+    # DBundle_for_Ntubes_Phadkeb(Ntubes=17546, Do=.001, pitch=.00125, Ntp=6, angle=45) 0.19052937784048926
 
 def test_Ntubes_Phadkeb_fuzz():
     D_main = 1E-3
@@ -96,7 +96,7 @@ def test_Ntubes_Phadkeb_fuzz():
                 pitch = D_main*pitch_ratio
                 for _ in range(10):
                     DBundle = uniform(pitch*2, pitch*300)
-                    N = Ntubes_Phadkeb(DBundle=DBundle, do=D_main, pitch=pitch, Ntp=Ntp, angle=angle)
+                    N = Ntubes_Phadkeb(DBundle=DBundle, Do=D_main, pitch=pitch, Ntp=Ntp, angle=angle)
 
     # Test the reverse correlation
     D_main = 1E-2
@@ -105,10 +105,10 @@ def test_Ntubes_Phadkeb_fuzz():
             for pitch_ratio in [1.25, 1.31, 1.33, 1.375, 1.4, 1.42, 1.5]:
                 pitch = D_main*pitch_ratio
                 DBundle = uniform(pitch*5, pitch*300)
-                N = Ntubes_Phadkeb(DBundle=DBundle, do=D_main, pitch=pitch, Ntp=Ntp, angle=angle)
+                N = Ntubes_Phadkeb(DBundle=DBundle, Do=D_main, pitch=pitch, Ntp=Ntp, angle=angle)
                 if N > 2:
-                    DBundle2 = DBundle_for_Ntubes_Phadkeb(Ntubes=N, do=D_main, pitch=pitch, Ntp=Ntp, angle=angle)
-                    N2 = Ntubes_Phadkeb(DBundle=DBundle2, do=D_main, pitch=pitch, Ntp=Ntp, angle=angle)
+                    DBundle2 = DBundle_for_Ntubes_Phadkeb(Ntubes=N, Do=D_main, pitch=pitch, Ntp=Ntp, angle=angle)
+                    N2 = Ntubes_Phadkeb(DBundle=DBundle2, Do=D_main, pitch=pitch, Ntp=Ntp, angle=angle)
                     assert N2 == N
 
 
@@ -186,31 +186,31 @@ def test_Phadkeb_numbers():
 
 
 def test_Ntubes_HEDH():
-    Ntubes_HEDH_c = [Ntubes_HEDH(DBundle=1.200-.008*2, do=.028, pitch=.036, angle=i) for i in [30, 45, 60, 90]]
+    Ntubes_HEDH_c = [Ntubes_HEDH(DBundle=1.200-.008*2, Do=.028, pitch=.036, angle=i) for i in [30, 45, 60, 90]]
     assert_allclose(Ntubes_HEDH_c, [928, 804, 928, 804])
     with pytest.raises(Exception):
-        Ntubes_HEDH(DBundle=1.200-.008*2, do=.028, pitch=.036, angle=20)
+        Ntubes_HEDH(DBundle=1.200-.008*2, Do=.028, pitch=.036, angle=20)
 
 def test_Ntubes():
-    methods = Ntubes(DBundle=1.2, do=0.025, AvailableMethods=True)
-    Ntubes_calc = [Ntubes(DBundle=1.2, do=0.025, Method=i) for i in methods]
+    methods = Ntubes(DBundle=1.2, Do=0.025, AvailableMethods=True)
+    Ntubes_calc = [Ntubes(DBundle=1.2, Do=0.025, Method=i) for i in methods]
     assert Ntubes_calc == [1285, 1272, 1340, 1297, None]
 
-    assert_allclose(Ntubes(DBundle=1.2, do=0.025), 1285)
+    assert_allclose(Ntubes(DBundle=1.2, Do=0.025), 1285)
 
     with pytest.raises(Exception):
-        Ntubes(DBundle=1.2, do=0.025, Method='failure')
+        Ntubes(DBundle=1.2, Do=0.025, Method='failure')
 
 
 def test_D_for_Ntubes_VDI():
-    D_VDI =  [[D_for_Ntubes_VDI(Nt=970, Ntp=i, do=0.00735, pitch=0.015, angle=j) for i in [1, 2, 4, 6, 8]] for j in [30, 60, 45, 90]]
+    D_VDI =  [[D_for_Ntubes_VDI(Nt=970, Ntp=i, Do=0.00735, pitch=0.015, angle=j) for i in [1, 2, 4, 6, 8]] for j in [30, 60, 45, 90]]
     D_VDI_values = [[0.489981989464919, 0.5003600119829544, 0.522287673753684, 0.5311570964003711, 0.5377131635291736], [0.489981989464919, 0.5003600119829544, 0.522287673753684, 0.5311570964003711, 0.5377131635291736], [0.5326653264480428, 0.5422270203444146, 0.5625250342473964, 0.5707695340997739, 0.5768755899087357], [0.5326653264480428, 0.5422270203444146, 0.5625250342473964, 0.5707695340997739, 0.5768755899087357]]
     assert_allclose(D_VDI, D_VDI_values)
 
     with pytest.raises(Exception):
-        D_for_Ntubes_VDI(Nt=970, Ntp=5., do=0.00735, pitch=0.015, angle=30.)
+        D_for_Ntubes_VDI(Nt=970, Ntp=5., Do=0.00735, pitch=0.015, angle=30.)
     with pytest.raises(Exception):
-        D_for_Ntubes_VDI(Nt=970, Ntp=2., do=0.00735, pitch=0.015, angle=40.)
+        D_for_Ntubes_VDI(Nt=970, Ntp=2., Do=0.00735, pitch=0.015, angle=40.)
 
 
 def test_effectiveness_NTU():
