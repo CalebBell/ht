@@ -49,7 +49,8 @@ def test_Ntubes_VDI():
 
 
 def test_Ntubes_Phadkeb():
-    
+    # For the 45 degree case, ten exanples are given and known to be correct.
+    # Unfortunately no examples were given for any other case.
     Ntubes_calc = [Ntubes_Phadkeb(DBundle=1.200-.008*2, Do=.028, pitch=.036, Ntp=i, angle=45.) for i in [1,2,4,6,8]]
     assert_allclose(Ntubes_calc, [805, 782, 760, 698, 680])
     Ntubes_calc = [Ntubes_Phadkeb(DBundle=1.200-.008*2, Do=.028, pitch=.035, Ntp=i, angle=45.) for i in [1,2,4,6,8]]
@@ -61,11 +62,11 @@ def test_Ntubes_Phadkeb():
     N = Ntubes_Phadkeb(DBundle=1.200-.008*2, Do=.028, pitch=.036, Ntp=2, angle=60.)
     assert N == 876
     N = Ntubes_Phadkeb(DBundle=1.200-.008*2, Do=.028, pitch=.036, Ntp=6, angle=60.)
-    assert N == 858
+    assert N == 822
     N = Ntubes_Phadkeb(DBundle=1.200-.008*2, Do=.028, pitch=.036, Ntp=8, angle=60.)
-    assert N == 808
+    assert N == 772
     N = Ntubes_Phadkeb(DBundle=1.200-.008*2, Do=.028, pitch=.092, Ntp=8, angle=60.)
-    assert N == 100
+    assert N == 88
     N = Ntubes_Phadkeb(DBundle=1.200-.008*2, Do=.028, pitch=.036, Ntp=8, angle=30.)
     assert N == 788
     N = Ntubes_Phadkeb(DBundle=1.200-.008*2, Do=.028, pitch=.04, Ntp=6, angle=30.)
@@ -89,6 +90,7 @@ def test_Ntubes_Phadkeb():
     # DBundle_for_Ntubes_Phadkeb(Ntubes=17546, Do=.001, pitch=.00125, Ntp=6, angle=45) 0.19052937784048926
 
 def test_Ntubes_Phadkeb_fuzz():
+    seed(100)
     D_main = 1E-3
     for angle in [30, 45, 60, 90]:
         for Ntp in [1, 2, 4, 6, 8]:
@@ -159,6 +161,7 @@ def test_Phadkeb_numbers():
     # Translated from Mathematica
     # upTo = 160; With[{max = Ceiling[Sqrt[upTo]]}, Select[Union[Total /@ (Tuples[Range[0, max], {2}]^2)], # <= upTo &]]  (* Harvey P. Dale, Apr 22 2011 *) 
     # 10 loops, best of 3: 17.3 ms per loop
+    # Confirmed with SymPy
     upTo = 100000
     max_range = int(ceil(upTo**0.5))
     squares = [i*i for i in range(max_range+1)]
@@ -174,6 +177,7 @@ def test_Phadkeb_numbers():
     # That has a convenient expression for pari, tested online and translated
     # a(n)=1+4*sum(k=0, sqrtint(n), sqrtint(n-k^2) ); /* Benoit Cloitre, Oct 08 2012 */ 
     # Currently 1.8 seconds
+    # No numerical issues up to 35000 (confirmed with SymPy to do the root, int)
     def a2(n):
         sqrtint = lambda i: int(i**0.5)
         return 1 + 4*sum([sqrtint(n - k*k) for k in range(0, sqrtint(n) + 1)])

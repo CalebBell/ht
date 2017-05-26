@@ -3797,6 +3797,16 @@ def Ntubes_Phadkeb(DBundle, Do, pitch, Ntp, angle=30):
 
     Notes
     -----
+    For single-pass cases, the result is exact, and no tubes need to be removed
+    for any reason. For 4, 6, 8 pass arrangements, a number of tubes must be 
+    removed to accomodate pass partition plates. The following assumptions
+    are involved with that:
+        * The pass partition plate is where a row of tubes would have been. 
+          Only one or two rows are assumed affected.
+        * The thickness of partition plate is < 70% of the tube outer diameter.
+        * The distance between the centerline of the partition plate and the 
+          centerline of the nearest row of tubes is equal to the pitch.    
+    
     This function will fail when there are more than 100,000 tubes.
     [1]_ tabulated values up to approximately 3,000 tubes derived with 
     number theory. The sequesnces of integers were identified in the
@@ -3843,6 +3853,8 @@ def Ntubes_Phadkeb(DBundle, Do, pitch, Ntp, angle=30):
     r = 0.5*(DBundle - Do)/pitch
     s = r*r
     Ns, Nr = floor(s), floor(r)
+    # If Ns is between two numbers, take the smaller one
+    # C1 is the number of tubes for a single pass arrangement.
     if angle == 30 or angle == 60:
         i = np.searchsorted(triangular_Ns, Ns, side='right')
         C1 = int(triangular_C1s[i-1])
@@ -3850,7 +3862,7 @@ def Ntubes_Phadkeb(DBundle, Do, pitch, Ntp, angle=30):
         i = np.searchsorted(square_Ns, Ns, side='right')
         C1 = int(square_C1s[i-1])
 
-    Cx = 2.*Nr + 1.
+    Cx = 2*Nr + 1.
 
     # triangular and rotated triangular
     if (angle == 30 or angle == 60):
@@ -3887,7 +3899,8 @@ def Ntubes_Phadkeb(DBundle, Do, pitch, Ntp, angle=30):
             Nv = floor(v)
             u1 = 0.5*Nv
             z = (s - u1*u1)**0.5
-            w1 = 2**2**0.5
+            w1 = 2*z/2**0.5
+#            w1 = 2**2**0.5 # WRONG
             u2 = 0.5*(Nv + 1)
             zs = (s-u2*u2)**0.5
             w2 = 2.*zs/3**0.5
@@ -3957,7 +3970,7 @@ def Ntubes_Phadkeb(DBundle, Do, pitch, Ntp, angle=30):
             if Ntp == 6:
                 C6 = C1 - Cx - 4*(Nz1 + Nz2)
             else: # 8
-                C8 = C4-4*(Nz1 + Nz2)
+                C8 = C4 - 4*(Nz1 + Nz2)
 
     if Ntp == 1:
         ans = C1
