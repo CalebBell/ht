@@ -1,8 +1,9 @@
 .. toctree::
 
    ht.air_cooler
-   ht.boiling_nucleic
    ht.boiling_flow
+   ht.boiling_nucleic
+   ht.boiling_plate
    ht.condensation
    ht.conduction
    ht.conv_external

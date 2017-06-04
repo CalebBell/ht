@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 '''Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
-Copyright (C) 2016, Caleb Bell <Caleb.Andrew.Bell@gmail.com>
+Copyright (C) 2016-2017, Caleb Bell <Caleb.Andrew.Bell@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -38,6 +38,7 @@ from . import conv_packed_bed
 from . import conv_external
 from . import conv_supercritical
 from . import conv_two_phase
+from . import boiling_plate
 
 from .core import *
 from .hx import *
@@ -56,11 +57,12 @@ from .conv_packed_bed import *
 from .conv_external import *
 from .conv_supercritical import *
 from .conv_two_phase import *
+from .boiling_plate import *
 
 __all__ = ['core', 'hx', 'conv_internal', 'boiling_nucleic', 'air_cooler',
 'radiation', 'condensation', 'conduction', 'conv_jacket', 'conv_free_immersed',
 'conv_tube_bank', 'insulation', 'conv_packed_bed', 'conv_external', 
-'conv_supercritical', 'conv_two_phase', 'boiling_flow']
+'conv_supercritical', 'conv_two_phase', 'boiling_flow', 'boiling_plate']
 
 
 __all__.extend(core.__all__)
@@ -80,6 +82,7 @@ __all__.extend(conv_packed_bed.__all__)
 __all__.extend(conv_external.__all__)
 __all__.extend(conv_supercritical.__all__)
 __all__.extend(conv_two_phase.__all__)
+__all__.extend(boiling_plate.__all__)
 
 
 __version__ = '0.1.50'
