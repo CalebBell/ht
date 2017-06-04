@@ -22,10 +22,11 @@ SOFTWARE.'''
 
 from __future__ import division
 from math import pi
-from fluids import Reynolds, Prandtl, Bond
+from fluids.core import Reynolds, Prandtl, Bond
+from fluids import Lockhart_Martinelli_Xtt
 
 
-__all__ = ['h_boiling_Amalfi']
+__all__ = ['h_boiling_Amalfi', 'h_boiling_Lee_Kang_Kim']
 
 def h_boiling_Amalfi(m, x, Dh, rhol, rhog, mul, mug, kl, Hvap, sigma, q, 
                      A_channel_flow, chevron_angle=45):
@@ -132,3 +133,98 @@ def h_boiling_Amalfi(m, x, Dh, rhol, rhog, mul, mug, kl, Hvap, sigma, q,
         Re_g = G*x*Dh/mug
         Nu_tp = 18.495*beta_s**0.135*Re_g**0.135*Re_lo**0.351*Bd**0.235*Bo**0.198*rho_s**-0.223
     return kl/Dh*Nu_tp
+
+
+def h_boiling_Lee_Kang_Kim(m, x, D_eq, rhol, rhog, mul, mug, kl, Hvap, q, 
+                           A_channel_flow):
+    r'''Calculates the two-phase boiling heat transfer coefficient of a 
+    liquid and gas flowing inside a plate and frame heat exchanger, as
+    shown in [1]_ and reviewed in [2]_. 
+
+    For :math:`Re_g/Re_l < 9`:
+        
+    .. math::
+        h = 98.7 \left(\frac{k_l}{D_h}\right)\left(\frac{Re_g}{Re_l}
+        \right)^{-0.0848}Bo^{-0.0597} X_{tt}^{0.0973}
+        
+    For :math:`Re_g/Re_l \ge 9`:
+        
+    .. math::
+        h = 234.9 \left(\frac{k_l}{D_h}\right)\left(\frac{Re_g}{Re_l}
+        \right)^{-0.576} Bo^{-0.275} X_{tt}^{0.66}
+
+    .. math::
+        X_{tt} = \left(\frac{1-x}{x}\right)^{0.875} \left(\frac{\rho_g}{\rho_l}
+        \right)^{0.5}\left(\frac{\mu_l}{\mu_g}\right)^{0.125}
+
+    In the above equations, Bo is Boiling number.
+    
+    Note that this model depends on the specific heat flux involved. It also
+    uses equivalent diameter, not hydraulic diameter.
+            
+    Parameters
+    ----------
+    m : float
+        Mass flow rate [kg/s]
+    x : float
+        Quality at the specific point in the plate exchanger []
+    D_eq : float
+        Equivalent diameter of the channels, :math:`D_{eq} = 4a` [m]
+    rhol : float
+        Density of the liquid [kg/m^3]
+    rhog : float
+        Density of the gas [kg/m^3]
+    mul : float
+        Viscosity of the liquid [Pa*s]
+    mug : float
+        Viscosity of the gas [Pa*s]
+    kl : float
+        Thermal conductivity of liquid [W/m/K]
+    Hvap : float
+        Heat of vaporization of the fluid at the system pressure, [J/kg]
+    q : float
+        Heat flux, [W/m^2]
+    A_channel_flow : float
+        The flow area for the fluid, calculated as 
+        :math:`A_{ch} = 2\cdot \text{width} \cdot \text{amplitude}` [m]
+
+    Returns
+    -------
+    h : float
+        Boiling heat transfer coefficient [W/m^2/K]
+
+    Notes
+    -----
+    This correlation was developed with mass fluxes from 14.5 to 33.6 kg/m^2/s, 
+    heat flux from 15 to 30 kW/m^2, qualities from 0.09 to 0.6, 200 < Re < 600,
+    2.3 < Re_g/Re_l < 32.1, 0.00019 < Bo < 0.001, 0.028 < Xtt < 0.3.
+    Mean average deviation of 4.4%.
+        
+    Examples
+    --------
+    >>> h_boiling_Lee_Kang_Kim(m=3E-5, x=.4, D_eq=0.002, rhol=567., rhog=18.09,
+    ... kl=0.086, mul=156E-6, mug=9E-6, Hvap=9E5, q=1E5, A_channel_flow=0.0003)
+    1229.6271295086806
+
+    References
+    ----------
+    .. [1] Lee, Eungchan, Hoon Kang, and Yongchan Kim. "Flow Boiling Heat
+       Transfer and Pressure Drop of Water in a Plate Heat Exchanger with 
+       Corrugated Channels at Low Mass Flux Conditions." International Journal 
+       of Heat and Mass Transfer 77 (October 2014): 37-45. 
+       doi:10.1016/j.ijheatmasstransfer.2014.05.019.
+    .. [2] Amalfi, Raffaele L., Farzad Vakili-Farahani, and John R. Thome. 
+       "Flow Boiling and Frictional Pressure Gradients in Plate Heat Exchangers.
+       Part 1: Review and Experimental Database." International Journal of 
+       Refrigeration 61 (January 2016): 166-84.
+       doi:10.1016/j.ijrefrig.2015.07.010.
+    '''    
+    G = m/A_channel_flow
+    Bo = q/(G*Hvap)
+    Re_ratio = x/(1. - x)*mul/mug
+    Xtt = Lockhart_Martinelli_Xtt(x, rhol, rhog, mul, mug, pow_x=0.875, pow_rho=0.5, pow_mu=0.125)
+    if Re_ratio < 9:
+        h = 98.7*kl/D_eq*Re_ratio**-0.0848*Bo**-0.0597*Xtt**0.0973
+    else:
+        h = 234.9*kl/D_eq*Re_ratio**-0.576*Bo**-0.275*Xtt**0.66
+    return h

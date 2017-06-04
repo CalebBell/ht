@@ -27,3 +27,11 @@ def test_h_boiling_Amalfi():
     
     h = h_boiling_Amalfi(m=3E-5, x=.4, Dh=0.0172, rhol=567., rhog=18.09, kl=0.086, mul=156E-6, mug=7.11E-6, sigma=0.02, Hvap=9E5, q=1E5, A_channel_flow=0.0003)
     assert_allclose(h, 527.4075513650002)
+    
+
+def test_h_boiling_Lee_Kang_Kim():
+    h = h_boiling_Lee_Kang_Kim(m=3E-5, x=.4, D_eq=0.002, rhol=567., rhog=18.09, kl=0.086, mul=156E-6, mug=9E-6, Hvap=9E5, q=1E5, A_channel_flow=0.0003)
+    assert_allclose(h, 1229.6271295086806)
+    
+    h = h_boiling_Lee_Kang_Kim(m=3E-5, x=.1, D_eq=0.002, rhol=567., rhog=18.09, kl=0.086, mul=156E-6, mug=9E-6, Hvap=9E5, q=1E5, A_channel_flow=0.0003)
+    assert_allclose(h, 4211.51881493242)
