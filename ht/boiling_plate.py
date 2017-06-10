@@ -21,12 +21,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.'''
 
 from __future__ import division
-from math import pi
+from math import pi, radians
 from fluids.core import Reynolds, Prandtl, Bond
 from fluids import Lockhart_Martinelli_Xtt
 
 
-__all__ = ['h_boiling_Amalfi', 'h_boiling_Lee_Kang_Kim']
+__all__ = ['h_boiling_Amalfi', 'h_boiling_Lee_Kang_Kim', 'h_boiling_Han_Lee_Kim']
 
 def h_boiling_Amalfi(m, x, Dh, rhol, rhog, mul, mug, kl, Hvap, sigma, q, 
                      A_channel_flow, chevron_angle=45):
@@ -228,3 +228,130 @@ def h_boiling_Lee_Kang_Kim(m, x, D_eq, rhol, rhog, mul, mug, kl, Hvap, q,
     else:
         h = 234.9*kl/D_eq*Re_ratio**-0.576*Bo**-0.275*Xtt**0.66
     return h
+
+
+def h_boiling_Han_Lee_Kim(m, x, Dh, rhol, rhog, mul, kl, Hvap, Cpl, q, 
+                          A_channel_flow, wavelength, chevron_angle=45):
+    r'''Calculates the two-phase boiling heat transfer coefficient of a 
+    liquid and gas flowing inside a plate and frame heat exchanger, as
+    developed in [1]_ from experiments with three plate exchangers and the
+    working fluids R410A and R22. A well-documented and tested correlation,
+    reviewed in [2]_, [3]_, [4]_, [5]_, and [6]_.
+    
+    .. math::
+        h = Ge_1\left(\frac{k_l}{D_h}\right)Re_{eq}^{Ge_2} Pr^{0.4} Bo_{eq}^{0.3}
+        
+        Ge_1 = 2.81\left(\frac{\lambda}{D_h}\right)^{-0.041}\left(\frac{\pi}{2}
+        -\beta\right)^{-2.83}
+        
+        Ge_2 = 0.746\left(\frac{\lambda}{D_h}\right)^{-0.082}\left(\frac{\pi}
+        {2}-\beta\right)^{0.61}
+        
+        Re_{eq} = \frac{G_{eq} D_h}{\mu_l}
+        
+        Bo_{eq} = \frac{q}{G_{eq} H_{vap}}
+        
+        G_{eq} = \frac{m}{A_{flow}}\left[1 - x + x\left(\frac{\rho_l}{\rho_g}
+        \right)^{1/2}\right]
+
+    In the above equations, lambda is the wavelength of the corrugations, and
+    the flow area is specified to be (twice the corrugation amplitude times the
+    width of the plate. The mass flow is that per channel. Radians is used in
+    degrees, and the formulas are for the  inclination angle not the
+    chevron angle (it is converted internally).
+    Note that this model depends on the specific heat flux involved.
+            
+    Parameters
+    ----------
+    m : float
+        Mass flow rate [kg/s]
+    x : float
+        Quality at the specific point in the plate exchanger []
+    Dh : float
+        Hydraulic diameter of the plate, :math:`D_h = \frac{4\lambda}{\phi}` [m]
+    rhol : float
+        Density of the liquid [kg/m^3]
+    rhog : float
+        Density of the gas [kg/m^3]
+    mul : float
+        Viscosity of the liquid [Pa*s]
+    mug : float
+        Viscosity of the gas [Pa*s]
+    kl : float
+        Thermal conductivity of liquid [W/m/K]
+    Hvap : float
+        Heat of vaporization of the fluid at the system pressure, [J/kg]
+    Cpl : float
+        Heat capacity of liquid [J/kg/K]
+    q : float
+        Heat flux, [W/m^2]
+    A_channel_flow : float
+        The flow area for the fluid, calculated as 
+        :math:`A_{ch} = 2\cdot \text{width} \cdot \text{amplitude}` [m]
+    wavelength : float
+        Distance between the bottoms of two of the ridges (sometimes called 
+        pitch), [m]
+    chevron_angle : float, optional
+        Angle of the plate corrugations with respect to the vertical axis
+        (the direction of flow if the plates were straight), between 0 and
+        90. For exchangers with two angles, use the average value. [degrees]
+
+    Returns
+    -------
+    h : float
+        Boiling heat transfer coefficient [W/m^2/K]
+
+    Notes
+    -----
+    Date regression was with the log mean temperature difference, uncorrected
+    for geometry. Developed with three plate heat exchangers with angles of 45, 
+    35, and 20 degrees. Mass fluxes ranged from 13 to 34 kg/m^2/s; evaporating 
+    temperatures of 5, 10, and 15 degrees, vapor quality 0.9 to 0.15, heat 
+    fluxes of 2.5-8.5 kW/m^2.
+        
+    Examples
+    --------
+    >>> h_boiling_Han_Lee_Kim(m=3E-5, x=.4, Dh=0.002, rhol=567., rhog=18.09, 
+    ... kl=0.086, mul=156E-6,  Hvap=9E5, Cpl=2200, q=1E5, A_channel_flow=0.0003,
+    ... wavelength=3.7E-3, chevron_angle=45)
+    675.7322255419421
+
+    References
+    ----------
+    .. [1] Han, Dong-Hyouck, Kyu-Jung Lee, and Yoon-Ho Kim. "Experiments on the
+       Characteristics of Evaporation of R410A in Brazed Plate Heat Exchangers 
+       with Different Geometric Configurations." Applied Thermal Engineering 23,
+       no. 10 (July 2003): 1209-25. doi:10.1016/S1359-4311(03)00061-9.
+    .. [2] Amalfi, Raffaele L., Farzad Vakili-Farahani, and John R. Thome. 
+       "Flow Boiling and Frictional Pressure Gradients in Plate Heat Exchangers.
+       Part 1: Review and Experimental Database." International Journal of 
+       Refrigeration 61 (January 2016): 166-84.
+       doi:10.1016/j.ijrefrig.2015.07.010.
+    .. [3] Eldeeb, Radia, Vikrant Aute, and Reinhard Radermacher. "A Survey of
+       Correlations for Heat Transfer and Pressure Drop for Evaporation and 
+       Condensation in Plate Heat Exchangers." International Journal of 
+       Refrigeration 65 (May 2016): 12-26. doi:10.1016/j.ijrefrig.2015.11.013.
+    .. [4] Solotych, Valentin, Donghyeon Lee, Jungho Kim, Raffaele L. Amalfi, 
+       and John R. Thome. "Boiling Heat Transfer and Two-Phase Pressure Drops
+       within Compact Plate Heat Exchangers: Experiments and Flow 
+       Visualizations." International Journal of Heat and Mass Transfer 94 
+       (March 2016): 239-253. doi:10.1016/j.ijheatmasstransfer.2015.11.037.
+    .. [5] García-Cascales, J. R., F. Vera-García, J. M. Corberán-Salvador, and
+       J. Gonzálvez-Maciá. "Assessment of Boiling and Condensation Heat 
+       Transfer Correlations in the Modelling of Plate Heat Exchangers." 
+       International Journal of Refrigeration 30, no. 6 (September 2007): 
+       1029-41. doi:10.1016/j.ijrefrig.2007.01.004. 
+    .. [6] Solotych, Valentin. "TWO-PHASE HEAT TRANSFER MECHANISMS WITHIN PLATE
+       HEAT EXCHANGERS: EXPERIMENTS AND MODELING," 2016. Thesis. 
+       doi:10.13016/M2DB7G.
+    '''    
+    chevron_angle = radians(chevron_angle)
+    G = m/A_channel_flow # For once, clearly defined in the publication
+    G_eq = G*((1. - x) + x*(rhol/rhog)**0.5)
+    Re_eq = G_eq*Dh/mul
+    Bo_eq = q/(G_eq*Hvap)
+    Pr = Prandtl(Cp=Cpl, k=kl, mu=mul)
+    Ge1 = 2.81*(wavelength/Dh)**-0.041*chevron_angle**-2.83
+    Ge2 = 0.746*(wavelength/Dh)**-0.082*chevron_angle**0.61
+    return Ge1*kl/Dh*Re_eq**Ge2*Bo_eq**0.3*Pr**0.4
+

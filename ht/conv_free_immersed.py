@@ -163,7 +163,8 @@ def Nu_vertical_cylinder_Griffiths_Davis_Morgan(Pr, Gr, turbulent=None):
         Grashof number [-]
     turbulent : bool or None, optional
         Whether or not to force the correlation to return the turbulent
-        result; will return the laminar regime if False
+		 result; will return the laminar regime if False; leave as None for 
+        automatic selection
 
     Returns
     -------
@@ -221,7 +222,8 @@ def Nu_vertical_cylinder_Jakob_Linke_Morgan(Pr, Gr, turbulent=None):
         Grashof number [-]
     turbulent : bool or None, optional
         Whether or not to force the correlation to return the turbulent
-        result; will return the laminar regime if False
+		 result; will return the laminar regime if False; leave as None for 
+        automatic selection
 
     Returns
     -------
@@ -281,7 +283,8 @@ def Nu_vertical_cylinder_Carne_Morgan(Pr, Gr, turbulent=None):
         Grashof number [-]
     turbulent : bool or None, optional
         Whether or not to force the correlation to return the turbulent
-        result; will return the laminar regime if False
+		 result; will return the laminar regime if False; leave as None for 
+        automatic selection
 
     Returns
     -------
@@ -344,7 +347,8 @@ def Nu_vertical_cylinder_Eigenson_Morgan(Pr, Gr, turbulent=None):
         Grashof number [-]
     turbulent : bool or None, optional
         Whether or not to force the correlation to return the turbulent
-        result; will return the laminar regime if False
+		 result; will return the laminar regime if False; leave as None for 
+        automatic selection
 
     Returns
     -------
@@ -408,7 +412,8 @@ def Nu_vertical_cylinder_Touloukian_Morgan(Pr, Gr, turbulent=None):
         Grashof number [-]
     turbulent : bool or None, optional
         Whether or not to force the correlation to return the turbulent
-        result; will return the laminar regime if False
+		 result; will return the laminar regime if False; leave as None for 
+        automatic selection
 
     Returns
     -------
@@ -468,8 +473,8 @@ def Nu_vertical_cylinder_McAdams_Weiss_Saunders(Pr, Gr, turbulent=None):
         Grashof number [-]
     turbulent : bool or None, optional
         Whether or not to force the correlation to return the turbulent
-        result; will return the laminar regime if False
-
+		 result; will return the laminar regime if False; leave as None for 
+        automatic selection
     Returns
     -------
     Nu : float
@@ -531,7 +536,8 @@ def Nu_vertical_cylinder_Kreith_Eckert(Pr, Gr, turbulent=None):
         Grashof number [-]
     turbulent : bool or None, optional
         Whether or not to force the correlation to return the turbulent
-        result; will return the laminar regime if False
+		 result; will return the laminar regime if False; leave as None for 
+        automatic selection
 
     Returns
     -------
@@ -645,7 +651,8 @@ def Nu_vertical_cylinder_Al_Arabi_Khamis(Pr, Gr, L, D, turbulent=None):
         Diameter of cylinder, [m]
     turbulent : bool or None, optional
         Whether or not to force the correlation to return the turbulent
-        result; will return the laminar regime if False
+		 result; will return the laminar regime if False; leave as None for 
+        automatic selection
 
     Returns
     -------
