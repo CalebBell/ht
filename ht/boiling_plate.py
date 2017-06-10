@@ -22,11 +22,13 @@ SOFTWARE.'''
 
 from __future__ import division
 from math import pi, radians
-from fluids.core import Reynolds, Prandtl, Bond
+from fluids.core import Reynolds, Prandtl, Bond, thermal_diffusivity
 from fluids import Lockhart_Martinelli_Xtt
+from scipy.constants import g
 
 
-__all__ = ['h_boiling_Amalfi', 'h_boiling_Lee_Kang_Kim', 'h_boiling_Han_Lee_Kim']
+__all__ = ['h_boiling_Amalfi', 'h_boiling_Lee_Kang_Kim', 
+           'h_boiling_Han_Lee_Kim', 'h_boiling_Huang_Sheer']
 
 def h_boiling_Amalfi(m, x, Dh, rhol, rhog, mul, mug, kl, Hvap, sigma, q, 
                      A_channel_flow, chevron_angle=45):
@@ -341,10 +343,10 @@ def h_boiling_Han_Lee_Kim(m, x, Dh, rhol, rhog, mul, kl, Hvap, Cpl, q,
        Transfer Correlations in the Modelling of Plate Heat Exchangers." 
        International Journal of Refrigeration 30, no. 6 (September 2007): 
        1029-41. doi:10.1016/j.ijrefrig.2007.01.004. 
-    .. [6] Solotych, Valentin. "TWO-PHASE HEAT TRANSFER MECHANISMS WITHIN PLATE
-       HEAT EXCHANGERS: EXPERIMENTS AND MODELING," 2016. Thesis. 
-       doi:10.13016/M2DB7G.
-    '''    
+    .. [6] Huang, Jianchang. "Performance Analysis of Plate Heat Exchangers 
+       Used as Refrigerant Evaporators," 2011. Thesis.
+       http://wiredspace.wits.ac.za/handle/10539/9779
+    '''
     chevron_angle = radians(chevron_angle)
     G = m/A_channel_flow # For once, clearly defined in the publication
     G_eq = G*((1. - x) + x*(rhol/rhog)**0.5)
@@ -354,4 +356,115 @@ def h_boiling_Han_Lee_Kim(m, x, Dh, rhol, rhog, mul, kl, Hvap, Cpl, q,
     Ge1 = 2.81*(wavelength/Dh)**-0.041*chevron_angle**-2.83
     Ge2 = 0.746*(wavelength/Dh)**-0.082*chevron_angle**0.61
     return Ge1*kl/Dh*Re_eq**Ge2*Bo_eq**0.3*Pr**0.4
+
+
+def h_boiling_Huang_Sheer(rhol, rhog, mul, kl, Hvap, sigma, Cpl, q, Tsat, 
+                          angle=35.):
+    r'''Calculates the two-phase boiling heat transfer coefficient of a 
+    liquid and gas flowing inside a plate and frame heat exchanger, as
+    developed in [1]_ and again in the thesis [2]_. Depends on the properties
+    of the fluid and not the heat exchanger's geometry.
+    
+    .. math::
+        h = 1.87\times10^{-3}\left(\frac{k_l}{d_o}\right)\left(\frac{q d_o}
+        {k_l T_{sat}}\right)^{0.56}
+        \left(\frac{H_{vap} d_o^2}{\alpha_l^2}\right)^{0.31} Pr_l^{0.33}
+
+        d_o = 0.0146\theta\left[\frac{2\sigma}{g(\rho_l-\rho_g)}\right]^{0.5}\\
+        \theta =  35^\circ
+
+    Note that this model depends on the specific heat flux involved and
+    the saturation temperature of the fluid.
+            
+    Parameters
+    ----------
+    rhol : float
+        Density of the liquid [kg/m^3]
+    rhog : float
+        Density of the gas [kg/m^3]
+    mul : float
+        Viscosity of the liquid [Pa*s]
+    mug : float
+        Viscosity of the gas [Pa*s]
+    kl : float
+        Thermal conductivity of liquid [W/m/K]
+    Hvap : float
+        Heat of vaporization of the fluid at the system pressure, [J/kg]
+    sigma : float
+        Surface tension of liquid [N/m]
+    Cpl : float
+        Heat capacity of liquid [J/kg/K]
+    q : float
+        Heat flux, [W/m^2]
+    Tsat : float
+        Actual saturation temperature of the fluid at the system pressure, [K]
+    angle : float, optional
+        Contact angle of the bubbles with the wall, assumed 35 for refrigerants 
+        in the development of the correlation [degrees]
+
+    Returns
+    -------
+    h : float
+        Boiling heat transfer coefficient [W/m^2/K]
+
+    Notes
+    -----
+    Developed with 222 data points for R134a and R507A with only two of them
+    for ammonia and R12. Chevron angles ranged from 28 to 60 degrees, heat 
+    fluxes from 1.85 kW/m^2 to 10.75 kW/m^2, mass fluxes 5.6 to 52.25 kg/m^2/s,
+    qualities from 0.21 to 0.95, and saturation temperatures in degrees Celcius
+    of 1.9 to 13.04.
+    
+    The inclusion of the saturation temperature makes this correlation have
+    limited predictive power for other fluids whose saturation tempratures
+    might be much higher or lower than those used in the development of the
+    correlation. For this reason it should be regarded with caution.
+    
+    As first published in [1]_ a power of two was missing in the correlation
+    for bubble diameter in the dimensionless group with a power of 0.31. That
+    made the correlation non-dimensional. 
+    
+    A second variant of this correlation was also published in [2]_ but with
+    less accuracy because it was designed to mimick the standard pool boiling 
+    curve.
+    
+    The correlation is reviewed in [3]_, but without the corrected power. It
+    was also changed there to use hydraulic diameter, not bubble diameter.
+    It still ranked as one of the more accurate correlations reviewed. 
+    [4]_ also reviewed it without the corrected power but found it predicted
+    the lowest results of those surveyed.
+
+    Examples
+    --------
+    >>> h_boiling_Huang_Sheer(rhol=567., rhog=18.09, kl=0.086, mul=156E-6, 
+    ... Hvap=9E5, sigma=0.02, Cpl=2200, q=1E4, Tsat=279.15)
+    4401.055635078054
+
+    References
+    ----------
+    .. [1] Huang, Jianchang, Thomas J. Sheer, and Michael Bailey-McEwan. "Heat 
+       Transfer and Pressure Drop in Plate Heat Exchanger Refrigerant 
+       Evaporators." International Journal of Refrigeration 35, no. 2 (March 
+       2012): 325-35. doi:10.1016/j.ijrefrig.2011.11.002.
+    .. [2] Huang, Jianchang. "Performance Analysis of Plate Heat Exchangers 
+       Used as Refrigerant Evaporators," 2011. Thesis.
+       http://wiredspace.wits.ac.za/handle/10539/9779
+    .. [3] Amalfi, Raffaele L., Farzad Vakili-Farahani, and John R. Thome. 
+       "Flow Boiling and Frictional Pressure Gradients in Plate Heat Exchangers.
+       Part 1: Review and Experimental Database." International Journal of 
+       Refrigeration 61 (January 2016): 166-84.
+       doi:10.1016/j.ijrefrig.2015.07.010.
+    .. [4] Eldeeb, Radia, Vikrant Aute, and Reinhard Radermacher. "A Survey of
+       Correlations for Heat Transfer and Pressure Drop for Evaporation and 
+       Condensation in Plate Heat Exchangers." International Journal of 
+       Refrigeration 65 (May 2016): 12-26. doi:10.1016/j.ijrefrig.2015.11.013.
+    '''
+    do = 0.0146*angle*(2.*sigma/(g*(rhol - rhog)))**0.5
+    Prl = Prandtl(Cp=Cpl, mu=mul, k=kl)
+    alpha_l = thermal_diffusivity(k=kl, rho=rhol, Cp=Cpl)
+    h = 1.87E-3*(kl/do)*(q*do/(kl*Tsat))**0.56*(Hvap*do**2/alpha_l**2)**0.31*Prl**0.33
+    return h
+
+
+
 

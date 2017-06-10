@@ -45,3 +45,8 @@ def test_h_boiling_Han_Lee_Kim():
     
     # Solotych has pi*beta/180 which is the same just written differently
     # Garcia-Cascales documents the original correctly
+    
+    
+def test_h_boiling_Huang_Sheer():
+    h = h_boiling_Huang_Sheer(rhol=567., rhog=18.09, kl=0.086, mul=156E-6, Hvap=9E5, sigma=0.02, Cpl=2200, q=1E4, Tsat=279.15)
+    assert_allclose(h, 4401.055635078054)
