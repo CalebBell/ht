@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from __future__ import division
-from math import log, exp, sqrt, tanh
+from math import log, exp, sqrt, tanh, factorial
 from ht import *
 import numpy as np
 from numpy.testing import assert_allclose
@@ -272,13 +272,12 @@ def test_effectiveness_NTU():
         eff = 0.7201638517265581
         NTU_from_effectiveness(eff, Cr=Cr, subtype='crossflow, mixed Cmax')
         
-        
     # Crossflow, this one needed a closed-form solver
     for i in range(100):
         Cr = uniform(0, 1)
         eff = uniform(0, 1)
-        N = NTU_from_effectiveness(eff, Cr=Cr, subtype='crossflow')
-        eff_calc = effectiveness_from_NTU(N, Cr=Cr, subtype='crossflow')
+        N = NTU_from_effectiveness(eff, Cr=Cr, subtype='crossflow approximate')
+        eff_calc = effectiveness_from_NTU(N, Cr=Cr, subtype='crossflow approximate')
         assert_allclose(eff, eff_calc, rtol=1E-6) # brenth differs in old Python versions, rtol is needed 
 
     # Shell and tube - this one doesn't have a nice effectiveness limit,
@@ -325,6 +324,33 @@ def test_effectiveness_NTU():
     with pytest.raises(Exception):
         effectiveness_from_NTU(NTU=5, Cr=.5, subtype='FAIL')
 
+
+    # Crossflow analytical solution
+    eff = effectiveness_from_NTU(NTU=5, Cr=.7, subtype='crossflow')
+    assert_allclose(eff, 0.8444821799748551)
+
+    def crossflow_unmixed_sum_infinite(NTU, Cr):
+        def Pn(NTU, n):
+            tot = sum([(n+1.-j)/factorial(j)*NTU**(n+j) for j in range(1, n+1)])
+            return tot/factorial(n+1.)
+        tot = sum([Cr**n*Pn(NTU, n) for n in range(1, 150)])
+        return 1 - exp(-NTU) - exp(-(1+Cr)*NTU)*tot
+    
+    eff_old = crossflow_unmixed_sum_infinite(5, .7)
+    assert_allclose(eff, eff_old)
+
+    # Crossflow analytical, this one needed a closed-form solver
+    for i in range(20):
+        Cr = uniform(0, 1)
+        eff = uniform(0, .9)
+        # A good anser is not always obtainable at eff> 0.9 at very high NTU,
+        # because the integral term gets too close to 1 for floating point numbers
+        # to capture any more accuracy
+        # This is not likely to be a problem to users
+        N = NTU_from_effectiveness(eff, Cr=Cr, subtype='crossflow')
+        eff_calc = effectiveness_from_NTU(N, Cr=Cr, subtype='crossflow')
+        assert_allclose(eff, eff_calc, rtol=1E-6) # brenth differs in old Python versions, rtol is needed 
+    
     
     
 def test_effectiveness_NTU_method():

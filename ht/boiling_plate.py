@@ -28,7 +28,8 @@ from scipy.constants import g
 
 
 __all__ = ['h_boiling_Amalfi', 'h_boiling_Lee_Kang_Kim', 
-           'h_boiling_Han_Lee_Kim', 'h_boiling_Huang_Sheer']
+           'h_boiling_Han_Lee_Kim', 'h_boiling_Huang_Sheer',
+           'h_boiling_Yan_Lin']
 
 def h_boiling_Amalfi(m, x, Dh, rhol, rhog, mul, mug, kl, Hvap, sigma, q, 
                      A_channel_flow, chevron_angle=45):
@@ -464,6 +465,102 @@ def h_boiling_Huang_Sheer(rhol, rhog, mul, kl, Hvap, sigma, Cpl, q, Tsat,
     alpha_l = thermal_diffusivity(k=kl, rho=rhol, Cp=Cpl)
     h = 1.87E-3*(kl/do)*(q*do/(kl*Tsat))**0.56*(Hvap*do**2/alpha_l**2)**0.31*Prl**0.33
     return h
+
+
+def h_boiling_Yan_Lin(m, x, Dh, rhol, rhog, mul, kl, Hvap, Cpl, q, 
+                      A_channel_flow):
+    r'''Calculates the two-phase boiling heat transfer coefficient of a 
+    liquid and gas flowing inside a plate and frame heat exchanger, as
+    developed in [1]_. Reviewed in [2]_, [3]_, [4]_, and [5]_.
+    
+    .. math::
+        h = 1.926\left(\frac{k_l}{D_h}\right) Re_{eq} Pr_l^{1/3} Bo_{eq}^{0.3}
+        Re^{-0.5}
+        
+        Re_{eq} = \frac{G_{eq} D_h}{\mu_l}
+        
+        Bo_{eq} = \frac{q}{G_{eq} H_{vap}}
+        
+        G_{eq} = \frac{m}{A_{flow}}\left[1 - x + x\left(\frac{\rho_l}{\rho_g}
+        \right)^{1/2}\right]
+    
+        Re = \frac{G D_h}{\mu_l}
+        
+    Claimed to be valid for :math:`2000 < Re_{eq} < 10000`.
+        
+    Parameters
+    ----------
+    m : float
+        Mass flow rate [kg/s]
+    x : float
+        Quality at the specific point in the plate exchanger []
+    Dh : float
+        Hydraulic diameter of the plate, :math:`D_h = \frac{4\lambda}{\phi}` [m]
+    rhol : float
+        Density of the liquid [kg/m^3]
+    rhog : float
+        Density of the gas [kg/m^3]
+    mul : float
+        Viscosity of the liquid [Pa*s]
+    kl : float
+        Thermal conductivity of liquid [W/m/K]
+    Hvap : float
+        Heat of vaporization of the fluid at the system pressure, [J/kg]
+    Cpl : float
+        Heat capacity of liquid [J/kg/K]
+    q : float
+        Heat flux, [W/m^2]
+    A_channel_flow : float
+        The flow area for the fluid, calculated as 
+        :math:`A_{ch} = 2\cdot \text{width} \cdot \text{amplitude}` [m]
+
+    Returns
+    -------
+    h : float
+        Boiling heat transfer coefficient [W/m^2/K]
+
+    Notes
+    -----
+    Developed with R134a as the refrigerant in a PHD with 2 channels, chevron 
+    angle 60 degrees, quality from 0.1 to 0.8, heat flux 11-15 kW/m^2, and mass
+    fluxes of 55 and 70 kg/m^2/s.
+        
+    Examples
+    --------
+    >>> h_boiling_Yan_Lin(m=3E-5, x=.4, Dh=0.002, rhol=567., rhog=18.09, 
+    ... kl=0.086, Cpl=2200, mul=156E-6, Hvap=9E5, q=1E5, A_channel_flow=0.0003)
+    318.7228565961241
+
+    References
+    ----------
+    .. [1] Yan, Y.-Y., and T.-F. Lin. "Evaporation Heat Transfer and Pressure 
+       Drop of Refrigerant R-134a in a Plate Heat Exchanger." Journal of Heat
+       Transfer 121, no. 1 (February 1, 1999): 118-27. doi:10.1115/1.2825924. 
+    .. [2] Amalfi, Raffaele L., Farzad Vakili-Farahani, and John R. Thome. 
+       "Flow Boiling and Frictional Pressure Gradients in Plate Heat Exchangers.
+       Part 1: Review and Experimental Database." International Journal of 
+       Refrigeration 61 (January 2016): 166-84.
+       doi:10.1016/j.ijrefrig.2015.07.010.
+    .. [3] Eldeeb, Radia, Vikrant Aute, and Reinhard Radermacher. "A Survey of
+       Correlations for Heat Transfer and Pressure Drop for Evaporation and 
+       Condensation in Plate Heat Exchangers." International Journal of 
+       Refrigeration 65 (May 2016): 12-26. doi:10.1016/j.ijrefrig.2015.11.013.
+    .. [4] García-Cascales, J. R., F. Vera-García, J. M. Corberán-Salvador, and
+       J. Gonzálvez-Maciá. "Assessment of Boiling and Condensation Heat 
+       Transfer Correlations in the Modelling of Plate Heat Exchangers." 
+       International Journal of Refrigeration 30, no. 6 (September 2007): 
+       1029-41. doi:10.1016/j.ijrefrig.2007.01.004. 
+    .. [5] Huang, Jianchang. "Performance Analysis of Plate Heat Exchangers 
+       Used as Refrigerant Evaporators," 2011. Thesis.
+       http://wiredspace.wits.ac.za/handle/10539/9779
+    '''
+    G = m/A_channel_flow
+    G_eq = G*((1. - x) + x*(rhol/rhog)**0.5)
+    Re_eq = G_eq*Dh/mul
+    Re = G*Dh/mul #  Not actually specified clearly but it is in another paper by them
+    Bo_eq = q/(G_eq*Hvap)
+    Pr_l = Prandtl(Cp=Cpl, k=kl, mu=mul)
+    return 1.926*(kl/Dh)*Re_eq*Pr_l**(1/3.)*Bo_eq**0.3*Re**-0.5
 
 
 

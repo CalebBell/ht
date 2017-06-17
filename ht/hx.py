@@ -24,8 +24,10 @@ from __future__ import division
 from math import exp, log, floor, sqrt, tanh  # tanh= 1/coth
 from bisect import bisect, bisect_left, bisect_right
 import numpy as np
-from scipy.optimize import ridder
+from scipy.optimize import ridder, newton
 from scipy.optimize import bisect as sp_bisect
+from scipy.integrate import quad
+from scipy.special import iv
 from scipy.constants import inch
 from fluids.piping import BWG_integers, BWG_inch, BWG_SI
 from pprint import pprint
@@ -98,11 +100,22 @@ def effectiveness_from_NTU(NTU, Cr, subtype='counterflow'):
         -1\right]\left[\left(\frac{1-\epsilon_1 C_r}{1-\epsilon_1}\right)^n
         - C_r\right]^{-1}
 
-    For cross-flow (single-pass) heat exchangers with both fluids unmixed:
+    For cross-flow (single-pass) heat exchangers with both fluids unmixed, there
+    is an approximate and an exact formula. The approximate one is:
 
     .. math::
         \epsilon = 1 - \exp\left[\left(\frac{1}{C_r}\right)
         (NTU)^{0.22}\left\{\exp\left[C_r(NTU)^{0.78}\right]-1\right\}\right]
+        
+    The exact solution for crossflow (fluids unmixed) uses SciPy's quad
+    to perform an integral (there is no analytical integral solution available).
+    :math:`I_0(v)` is the modified Bessel function of the first kind. This formula
+    was developed in [4]_.
+    
+    .. math::
+        \epsilon = \frac{1}{C_r} - \frac{\exp(-C_r \cdot NTU)}{2(C_r NTU)^2}
+        \int_0^{2 NTU\sqrt{C_r}} \left(1 + NTU - \frac{v^2}{4C_r NTU}\right)
+        \exp\left(-\frac{v^2}{4C_r NTU}\right)v I_0(v) dv
 
     For cross-flow (single-pass) heat exchangers with Cmax mixed, Cmin unmixed:
 
@@ -129,9 +142,9 @@ def effectiveness_from_NTU(NTU, Cr, subtype='counterflow'):
         fluid, [-]
     subtype : str, optional
         The subtype of exchanger; one of 'counterflow', 'parallel', 'crossflow'
-        'crossflow, mixed Cmin', 'crossflow, mixed Cmax', 'boiler', 'condenser',
-        'S&T', or 'nS&T' where n is the number of shell and tube exchangers in 
-        a row
+        'crossflow approximate', 'crossflow, mixed Cmin', 
+        'crossflow, mixed Cmax', 'boiler', 'condenser', 'S&T', or 'nS&T' where 
+        n is the number of shell and tube exchangers in a row.
 
     Returns
     -------
@@ -190,7 +203,7 @@ def effectiveness_from_NTU(NTU, Cr, subtype='counterflow'):
     Crossflow, somewhat higher effectiveness:
         
     >>> effectiveness_from_NTU(NTU=5, Cr=0.7, subtype='crossflow')
-    0.8444804481910532
+    0.8444821799748551
 
     Counterflow, better than either crossflow or parallel flow:
 
@@ -257,6 +270,10 @@ def effectiveness_from_NTU(NTU, Cr, subtype='counterflow'):
        Exchanger Design. 1st edition. Hoboken, NJ: Wiley, 2002.
     .. [3] Holman, Jack. Heat Transfer. 10th edition. Boston: McGraw-Hill 
        Education, 2009.
+    .. [4] Triboix, Alain. "Exact and Approximate Formulas for Cross Flow Heat 
+       Exchangers with Unmixed Fluids." International Communications in Heat 
+       and Mass Transfer 36, no. 2 (February 1, 2009): 121-24. 
+       doi:10.1016/j.icheatmasstransfer.2008.10.012.
     '''
     if Cr > 1:
         raise Exception('Heat capacity rate must be less than 1 by definition.')
@@ -280,8 +297,12 @@ def effectiveness_from_NTU(NTU, Cr, subtype='counterflow'):
             term = ((1. - effectiveness*Cr)/(1. - effectiveness))**shells
             effectiveness = (term - 1.)/(term - Cr)
         return effectiveness
-    
     elif subtype == 'crossflow':
+        def to_int(v, NTU, Cr):
+            return (1. + NTU - v*v/(4.*Cr*NTU))*exp(-v*v/(4.*Cr*NTU))*v*iv(0, v)
+        int_term = quad(to_int, 0, 2.*NTU*Cr**0.5, args=(NTU, Cr))[0]
+        return 1./Cr - exp(-Cr*NTU)/(2.*(Cr*NTU)**2)*int_term
+    elif subtype == 'crossflow approximate':
         return 1. - exp(1./Cr*NTU**0.22*(exp(-Cr*NTU**0.78) - 1.))
     elif subtype == 'crossflow, mixed Cmin':
         return 1. -exp(-Cr**-1*(1. - exp(-Cr*NTU)))
@@ -345,8 +366,12 @@ def NTU_from_effectiveness(effectiveness, Cr, subtype='counterflow'):
         
     For cross-flow (single-pass) heat exchangers with both fluids unmixed, 
     there is no analytical solution. However, the function is monotonically
-    increasing, and a closed-form solver is implemented, guaranteed to solve
-    for :math:`10^{-7} < NTU < 10^5`.
+    increasing, and a closed-form solver is implemented as 'crossflow approximate',
+    guaranteed to solve for :math:`10^{-7} < NTU < 10^5`. The exact solution
+    for 'crossflow' uses the approximate solution's initial guess as a starting
+    point for Newton's method. Some issues are noted at effectivenesses higher
+    than 0.9 and very high NTUs, because the numerical integral term approaches
+    1 too quickly.
 
     For cross-flow (single-pass) heat exchangers with Cmax mixed, Cmin unmixed:
 
@@ -373,9 +398,9 @@ def NTU_from_effectiveness(effectiveness, Cr, subtype='counterflow'):
         fluid, [-]
     subtype : str, optional
         The subtype of exchanger; one of 'counterflow', 'parallel', 'crossflow'
-        'crossflow, mixed Cmin', 'crossflow, mixed Cmax', 'boiler', 'condenser',
-        'S&T', or 'nS&T' where n is the number of shell and tube exchangers in 
-        a row
+        'crossflow approximate', 'crossflow, mixed Cmin', 
+        'crossflow, mixed Cmax', 'boiler', 'condenser', 'S&T', or 'nS&T' where 
+        n is the number of shell and tube exchangers in a row.
 
     Returns
     -------
@@ -403,8 +428,8 @@ def NTU_from_effectiveness(effectiveness, Cr, subtype='counterflow'):
     
     Crossflow, somewhat higher effectiveness:
         
-    >>> NTU_from_effectiveness(effectiveness=0.8444804481910532, Cr=0.7, subtype='crossflow')
-    5.000000000000001
+    >>> NTU_from_effectiveness(effectiveness=0.8444821799748551, Cr=0.7, subtype='crossflow')
+    5.000000000000859
 
     Counterflow, better than either crossflow or parallel flow:
 
@@ -481,7 +506,7 @@ possible for this configuration; the maximum effectiveness possible is %s.' % (1
         str_shells = subtype.split('S&T')[0]
         shells = int(str_shells) if str_shells else 1
         
-        F = ((effectiveness*Cr - 1.)/(effectiveness - 1.))**(1/shells)
+        F = ((effectiveness*Cr - 1.)/(effectiveness - 1.))**(1./shells)
         e1 = (F - 1.)/(F - Cr)
         E = (2./e1 - (1. + Cr))/(1. + Cr**2)**0.5
         
@@ -491,10 +516,15 @@ possible for this configuration; the maximum effectiveness possible is %s.' % (1
             raise Exception('The specified effectiveness is not physically \
 possible for this configuration; the maximum effectiveness possible is %s.' % (max_effectiveness))
         
-        NTU = -(1 + Cr**2)**-0.5*log((E - 1.)/(E + 1.))
+        NTU = -(1. + Cr*Cr)**-0.5*log((E - 1.)/(E + 1.))
         return shells*NTU
-    
     elif subtype == 'crossflow':
+        guess = NTU_from_effectiveness(effectiveness, Cr, 'crossflow approximate')
+        def to_solve(NTU, Cr, effectiveness):
+            return effectiveness_from_NTU(NTU, Cr, subtype='crossflow') - effectiveness
+        #return ridder(to_solve, a=1E-3, b=1E3, args=(Cr, effectiveness))
+        return newton(to_solve, guess, args=(Cr, effectiveness))
+    elif subtype == 'crossflow approximate':
         # This will fail if NTU is more than 10,000 or less than 1E-7, but
         # this is extremely unlikely to occur in normal usage.
         # Maple and SymPy and Wolfram Alpha all failed to obtain an exact
@@ -1027,8 +1057,8 @@ def temperature_effectiveness_basic(R1, NTU1, subtype='crossflow'):
         K = 1 - exp(-NTU1)
         P1 = (1 - exp(-K*R1))/R1
     elif subtype == 'crossflow, mixed 1&2':
-        K1 = 1 - exp(-NTU1)
-        K2 = 1 - exp(-R1*NTU1)
+        K1 = 1. - exp(-NTU1)
+        K2 = 1. - exp(-R1*NTU1)
         P1 = (1./K1 + R1/K2 - 1./NTU1)**-1
     else:
         raise Exception('Subtype not recognized.')
