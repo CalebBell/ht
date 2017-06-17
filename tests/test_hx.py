@@ -21,7 +21,7 @@ from ht import *
 import numpy as np
 from numpy.testing import assert_allclose
 import pytest
-from random import uniform, randint, seed
+from random import uniform, randint, seed, choice
 seed(0)
 
 
@@ -685,6 +685,124 @@ def test_P_NTU_method():
     
     ans = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., UA=300, T1i=130, T2i=15, subtype='J', Ntp=2)
     assert_allclose(ans['Q'], 32212.185699719837)
+
+
+def test_NTU_from_P_basic():
+    # Analytical result for counterflow
+    R1s = np.logspace(np.log10(2E-5), np.log10(1E2), 10000)
+    NTU1s = np.logspace(np.log10(1E-4), np.log10(1E2), 10000)
+    
+    for i in range(100):
+        R1 = float(choice(R1s))
+        NTU1 = float(choice(NTU1s))
+        try:
+            # Not all of the guesses work forward; some overflow, some divide by 0
+            P1 = temperature_effectiveness_basic(R1=R1, NTU1=NTU1, subtype='counterflow')
+            # Backwards, it's the same divide by zero or log(negative number)
+            NTU1_calc = NTU_from_P_basic(P1, R1, subtype='counterflow')
+        except (ValueError, OverflowError, ZeroDivisionError):
+            continue
+        # Again, multiple values of NTU1 can produce the same P1
+        P1_calc = temperature_effectiveness_basic(R1=R1, NTU1=NTU1_calc, subtype='counterflow')
+        assert_allclose(P1, P1_calc)
+        
+    # Analytical result for parallel flow
+    for i in range(100):
+        R1 = float(choice(R1s))
+        NTU1 = float(choice(NTU1s))
+        try:
+            P1 = temperature_effectiveness_basic(R1=R1, NTU1=NTU1, subtype='parallel')
+            # Backwards, it's the same divide by zero or log(negative number)
+            NTU1_calc = NTU_from_P_basic(P1, R1, subtype='parallel')
+        except (ValueError, OverflowError, ZeroDivisionError):
+            continue
+        P1_calc = temperature_effectiveness_basic(R1=R1, NTU1=NTU1_calc, subtype='parallel')
+        assert_allclose(P1, P1_calc)
+
+    # Analytical result for 'crossflow, mixed 1'
+    for i in range(100):
+        R1 = float(choice(R1s))
+        NTU1 = float(choice(NTU1s))
+        try:
+            # Not all of the guesses work forward; some overflow, some divide by 0
+            P1 = temperature_effectiveness_basic(R1=R1, NTU1=NTU1, subtype='crossflow, mixed 1')
+            # Backwards, it's the same divide by zero or log(negative number)
+            NTU1_calc = NTU_from_P_basic(P1, R1, subtype='crossflow, mixed 1')
+        except (ValueError, OverflowError, ZeroDivisionError):
+            continue
+        # Again, multiple values of NTU1 can produce the same P1
+        P1_calc = temperature_effectiveness_basic(R1=R1, NTU1=NTU1_calc, subtype='crossflow, mixed 1')
+        assert_allclose(P1, P1_calc)
+
+    # Analytical result for 'crossflow, mixed 2'
+    for i in range(100):
+        R1 = float(choice(R1s))
+        NTU1 = float(choice(NTU1s))
+        try:
+            # Not all of the guesses work forward; some overflow, some divide by 0
+            P1 = temperature_effectiveness_basic(R1=R1, NTU1=NTU1, subtype='crossflow, mixed 2')
+            # Backwards, it's the same divide by zero or log(negative number)
+            NTU1_calc = NTU_from_P_basic(P1, R1, subtype='crossflow, mixed 2')
+        except (ValueError, OverflowError, ZeroDivisionError):
+            continue
+        # Again, multiple values of NTU1 can produce the same P1
+        P1_calc = temperature_effectiveness_basic(R1=R1, NTU1=NTU1_calc, subtype='crossflow, mixed 2')
+        assert_allclose(P1, P1_calc)
+
+    
+    # Test 'crossflow, mixed 1&2':
+    R1s = np.logspace(np.log10(2E-5), np.log10(1E2), 10000)
+    NTU1s = np.logspace(np.log10(1E-4), np.log10(1E2), 10000)
+
+    for i in range(100):
+        R1 = choice(R1s)
+        NTU1 = choice(NTU1s)
+        
+        P1 = temperature_effectiveness_basic(R1=R1, NTU1=NTU1, subtype='crossflow, mixed 1&2')
+        try:
+            # Very rarely, the pade approximation will get a result too close to the infeasibility region and
+            # the solver cannot start as it is already outside the region
+            NTU1_calc = NTU_from_P_basic(P1, R1, subtype='crossflow, mixed 1&2')
+        except:
+            continue
+        # May not get the original NTU1, but the found NTU1 needs to produce the same P1.
+        P1_calc = temperature_effectiveness_basic(R1=R1, NTU1=NTU1_calc, subtype='crossflow, mixed 1&2')
+        assert_allclose(P1, P1_calc)
+
+
+    # crossflow approximate - easy as 1 is always a possibility for any R
+    for i in range(100):
+        R1 = float(choice(R1s))
+        NTU1 = float(choice(NTU1s))
+        P1 = temperature_effectiveness_basic(R1=R1, NTU1=NTU1, subtype='crossflow approximate')
+        NTU1_calc = NTU_from_P_basic(P1, R1, subtype='crossflow approximate')
+        # We have to compare the re calculated P1 values, because for many values of NTU1,
+        # at the initial far guess of 10000 P1 = 1 and at the random NTU1 P1 is also 1
+        P1_calc = temperature_effectiveness_basic(R1=R1, NTU1=NTU1_calc, subtype='crossflow approximate')
+        assert_allclose(P1, P1_calc)
+        
+    # Test cross flow - failes VERY OFTEN, should rely on crossflow approximate
+    NTU1 = 10
+    R1 = 0.5
+    P1 = temperature_effectiveness_basic(R1=R1, NTU1=NTU1, subtype='crossflow')
+    NTU1_calc = NTU_from_P_basic(P1, R1=R1, subtype='crossflow')
+    assert_allclose(NTU1, NTU1_calc)
+
+def test_NTU_from_P_J():
+    R1s = np.logspace(np.log10(2E-5), np.log10(1E2), 10000)
+    NTU1s = np.logspace(np.log10(1E-4), np.log10(1E2), 10000)
+    
+    for i in range(100):
+        R1 = float(choice(R1s))
+        NTU1 = float(choice(NTU1s))
+        try:
+            P1 = temperature_effectiveness_TEMA_J(R1=R1, NTU1=NTU1, Ntp=1)
+            NTU1_calc = NTU_from_P_J(P1, R1, Ntp=1)        
+            P1_calc = temperature_effectiveness_TEMA_J(R1=R1, NTU1=NTU1_calc, Ntp=1)
+        except (ValueError, OverflowError, ZeroDivisionError, RuntimeError) as e:
+            continue
+        assert_allclose(P1, P1_calc)
+
 
 
 def test_DBundle_min():
