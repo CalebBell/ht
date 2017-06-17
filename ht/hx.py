@@ -519,10 +519,11 @@ possible for this configuration; the maximum effectiveness possible is %s.' % (m
         NTU = -(1. + Cr*Cr)**-0.5*log((E - 1.)/(E + 1.))
         return shells*NTU
     elif subtype == 'crossflow':
+        # Can't use a bisect solver here because at high NTU there's a derivative of 0
+        # due to the integral term not changing when it's very near one
         guess = NTU_from_effectiveness(effectiveness, Cr, 'crossflow approximate')
         def to_solve(NTU, Cr, effectiveness):
             return effectiveness_from_NTU(NTU, Cr, subtype='crossflow') - effectiveness
-        #return ridder(to_solve, a=1E-3, b=1E3, args=(Cr, effectiveness))
         return newton(to_solve, guess, args=(Cr, effectiveness))
     elif subtype == 'crossflow approximate':
         # This will fail if NTU is more than 10,000 or less than 1E-7, but
@@ -968,11 +969,20 @@ def temperature_effectiveness_basic(R1, NTU1, subtype='crossflow'):
         P_1 = \frac{1 - \exp[-NTU_1(1-R_1)]}{1 - R_1 \exp[-NTU_1(1-R_1)]}
 
     For cross-flow (single-pass) heat exchangers with both fluids unmixed
-    (this configuration is symmetric):
+    (this configuration is symmetric), there are two solutions available;
+    a frequently cited approximation and an exact solution which uses
+    a numerical integration developed in [4]_. The approximate solution is:
 
     .. math::
         P_1 \approx 1 - \exp\left[\frac{NTU_1^{0.22}}{R_1}
         (\exp(-R_1 NTU_1^{0.78})-1)\right]
+
+    The exact solution for crossflow (single pass, fluids unmixed) is:
+        
+    .. math::
+        \epsilon = \frac{1}{R_1} - \frac{\exp(-R_1 \cdot NTU_1)}{2(R_1 NTU_1)^2}
+        \int_0^{2 NTU_1\sqrt{R_1}} \left(1 + NTU_1 - \frac{v^2}{4R_1 NTU_1}
+        \right)\exp\left(-\frac{v^2}{4R_1 NTU_1}\right)v I_0(v) dv
 
     For cross-flow (single-pass) heat exchangers with fluid 1 mixed, fluid 2
     unmixed:
@@ -1010,8 +1020,8 @@ def temperature_effectiveness_basic(R1, NTU1, subtype='crossflow'):
         method, calculated with respect to stream 1 [-]
     subtype : float
         The type of heat exchanger; one of 'counterflow', 'parallel', 
-        'crossflow', 'crossflow, mixed 1', 'crossflow, mixed 2', 
-        'crossflow, mixed 1&2'.
+        'crossflow', 'crossflow approximate', 'crossflow, mixed 1', 
+        'crossflow, mixed 2', 'crossflow, mixed 1&2'.
         
     Returns
     -------
@@ -1038,16 +1048,25 @@ def temperature_effectiveness_basic(R1, NTU1, subtype='crossflow'):
        CRC Press, 2013.
     .. [3] Rohsenow, Warren and James Hartnett and Young Cho. Handbook of Heat
        Transfer, 3E. New York: McGraw-Hill, 1998.
+    .. [4] Triboix, Alain. "Exact and Approximate Formulas for Cross Flow Heat 
+       Exchangers with Unmixed Fluids." International Communications in Heat 
+       and Mass Transfer 36, no. 2 (February 1, 2009): 121-24. 
+       doi:10.1016/j.icheatmasstransfer.2008.10.012.
     '''
     if subtype == 'counterflow':
         P1 = (1 - exp(-NTU1*(1 - R1)))/(1 - R1*exp(-NTU1*(1-R1)))
     elif subtype == 'parallel':
         P1 = (1 - exp(-NTU1*(1 + R1)))/(1 + R1)
-    elif subtype == 'crossflow':
+    elif subtype == 'crossflow approximate':
         # This isn't technically accurate, an infinite sum is required
         # It has been computed from two different sources
         # but is found not to be within the 1% claimed of this equation
         P1 = 1 - exp(NTU1**0.22/R1*(exp(-R1*NTU1**0.78) - 1.))
+    elif subtype == 'crossflow':
+        def to_int(v, NTU1, R1):
+            return (1. + NTU1 - v*v/(4.*R1*NTU1))*exp(-v*v/(4.*R1*NTU1))*v*iv(0, v)
+        int_term = quad(to_int, 0, 2.*NTU1*R1**0.5, args=(NTU1, R1))[0]
+        P1 = 1./R1 - exp(-R1*NTU1)/(2.*(R1*NTU1)**2)*int_term
     elif subtype == 'crossflow, mixed 1':
         # Not symmetric
         K = 1 - exp(-R1*NTU1)
