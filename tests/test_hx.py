@@ -791,8 +791,58 @@ def test_NTU_from_P_basic():
     NTU1_calc = NTU_from_P_basic(P1, R1=R1, subtype='crossflow')
     assert_allclose(NTU1, NTU1_calc)
 
+
+def test_NTU_from_P_G():
+    # 1 tube pass, random point
+    R1 = 1.1
+    NTU1 = 2
+    P1_calc_orig = temperature_effectiveness_TEMA_G(R1=R1, NTU1=NTU1, Ntp=1)
+    P1_expect = 0.5868787117241955
+    assert_allclose(P1_calc_orig, P1_expect)
+    NTU1_backwards = NTU_from_P_G(P1=P1_expect, R1=R1, Ntp=1)
+    assert_allclose(NTU1, NTU1_backwards)
+    
+
+    # 2 tube pass, randompoint
+    R1 = 1.1
+    NTU1 = 2
+    P1_calc_orig = temperature_effectiveness_TEMA_G(R1=R1, NTU1=NTU1, Ntp=2)
+    P1_calc_orig
+    P1_expect = 0.6110347802764724
+    assert_allclose(P1_calc_orig, P1_expect)
+    NTU1_backwards = NTU_from_P_G(P1=P1_expect, R1=R1, Ntp=2)
+    assert_allclose(NTU1, NTU1_backwards)    
+    
+
+    # 2 tube pass, not optimal
+    R1 = .1
+    NTU1 = 2
+    P1_calc_orig = temperature_effectiveness_TEMA_G(R1=R1, NTU1=NTU1, Ntp=2, optimal=False)
+    P1_calc_orig
+    P1_expect = 0.8121969945075509
+    assert_allclose(P1_calc_orig, P1_expect)
+    NTU1_backwards = NTU_from_P_G(P1=P1_expect, R1=R1, Ntp=2, optimal=False)
+    assert_allclose(NTU1, NTU1_backwards)
+
+
+    # Run the gamut testing all the solvers
+    R1s = np.logspace(np.log10(2E-5), np.log10(1E2), 10000)
+    NTU1s = np.logspace(np.log10(1E-4), np.log10(1E2), 10000)
+    for Ntp, optimal in zip([1, 2, 2], [True, True, False]):
+        for i in range(100):
+            R1 = float(choice(R1s))
+            NTU1 = float(choice(NTU1s))
+            try:
+                P1 = temperature_effectiveness_TEMA_G(R1=R1, NTU1=NTU1, Ntp=Ntp, optimal=optimal)
+                NTU1_calc = NTU_from_P_G(P1, R1, Ntp=Ntp, optimal=optimal)        
+                P1_calc = temperature_effectiveness_TEMA_G(R1=R1, NTU1=NTU1_calc, Ntp=Ntp, optimal=optimal)
+            except (ValueError, OverflowError, ZeroDivisionError, RuntimeError) as e:
+                continue
+            assert_allclose(P1, P1_calc)
+
+    
 def test_NTU_from_P_J():
-    # Run the gammut testing all the solvers
+    # Run the gamut testing all the solvers
     R1s = np.logspace(np.log10(2E-5), np.log10(1E2), 10000)
     NTU1s = np.logspace(np.log10(1E-4), np.log10(1E2), 10000)
     for Ntp in [1, 2, 4]:
