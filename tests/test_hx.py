@@ -466,8 +466,11 @@ def test_temperature_effectiveness_TEMA_J():
     
     with pytest.raises(Exception):
         temperature_effectiveness_TEMA_J(R1=1/3., NTU1=1., Ntp=3)
+    
+    
+
         
-        
+      
 def test_temperature_effectiveness_TEMA_H():
     P1 = temperature_effectiveness_TEMA_H(R1=1/3., NTU1=1., Ntp=1)
     assert_allclose(P1, 0.5730728284905833)
@@ -789,19 +792,56 @@ def test_NTU_from_P_basic():
     assert_allclose(NTU1, NTU1_calc)
 
 def test_NTU_from_P_J():
+    # Run the gammut testing all the solvers
     R1s = np.logspace(np.log10(2E-5), np.log10(1E2), 10000)
     NTU1s = np.logspace(np.log10(1E-4), np.log10(1E2), 10000)
-    
-    for i in range(100):
-        R1 = float(choice(R1s))
-        NTU1 = float(choice(NTU1s))
-        try:
-            P1 = temperature_effectiveness_TEMA_J(R1=R1, NTU1=NTU1, Ntp=1)
-            NTU1_calc = NTU_from_P_J(P1, R1, Ntp=1)        
-            P1_calc = temperature_effectiveness_TEMA_J(R1=R1, NTU1=NTU1_calc, Ntp=1)
-        except (ValueError, OverflowError, ZeroDivisionError, RuntimeError) as e:
-            continue
-        assert_allclose(P1, P1_calc)
+    for Ntp in [1, 2, 4]:
+        for i in range(100):
+            R1 = float(choice(R1s))
+            NTU1 = float(choice(NTU1s))
+            try:
+                P1 = temperature_effectiveness_TEMA_J(R1=R1, NTU1=NTU1, Ntp=Ntp)
+                NTU1_calc = NTU_from_P_J(P1, R1, Ntp=Ntp)        
+                P1_calc = temperature_effectiveness_TEMA_J(R1=R1, NTU1=NTU1_calc, Ntp=Ntp)
+            except (ValueError, OverflowError, ZeroDivisionError, RuntimeError) as e:
+                continue
+            assert_allclose(P1, P1_calc)
+    # Actual individual understandable working test cases
+
+    # 1 tube pass
+    R1 = 1.1
+    NTU1 = 3
+    P1_calc_orig = temperature_effectiveness_TEMA_J(R1=R1, NTU1=NTU1, Ntp=1)
+    P1_expect = 0.5996529947927913
+    assert_allclose(P1_calc_orig, P1_expect)
+    NTU1_backwards = NTU_from_P_J(P1=P1_expect, R1=R1, Ntp=1)
+    assert_allclose(NTU1, NTU1_backwards)
+
+
+    # 2 tube passes
+    R1 = 1.1
+    NTU1 = 2.7363888898379249
+    P1_calc_orig = temperature_effectiveness_TEMA_J(R1=R1, NTU1=NTU1, Ntp=2)
+    P1_expect = 0.53635261090479802
+    assert_allclose(P1_calc_orig, P1_expect)
+    # The exact P1 is slightly higher than that calculated as the upper limit 
+    # of the pade approximation, so we multiply it by a small fraction
+    NTU1_backwards = NTU_from_P_J(P1=P1_expect*(1-2E-9), R1=R1, Ntp=2)
+    assert_allclose(NTU1, NTU1_backwards, rtol=1E-3)
+    # Unfortunately the derivative is so large we can't compare it exactly
+
+
+    # 4 tube passes
+    R1 = 1.1
+    NTU1 = 2.8702676768833268
+    P1_calc_orig = temperature_effectiveness_TEMA_J(R1=R1, NTU1=NTU1, Ntp=4)
+    P1_expect = 0.53812561986477236
+    assert_allclose(P1_calc_orig, P1_expect)
+    # The exact P1 is slightly higher than that calculated as the upper limit 
+    # of the pade approximation, so we multiply it by a small fraction
+    NTU1_backwards = NTU_from_P_J(P1=P1_expect*(1-1E-15), R1=R1, Ntp=4)
+    assert_allclose(NTU1, NTU1_backwards)
+    # The derivative is very large but the pade approximation is really good, ant it works
 
 
 
