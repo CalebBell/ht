@@ -35,7 +35,8 @@ __all__ = ['laminar_T_const', 'laminar_Q_const',
 'turbulent_Nunner', 'turbulent_Dipprey_Sabersky', 'turbulent_Gowen_Smith',
 'turbulent_Kawase_Ulbrecht', 'turbulent_Kawase_De', 'turbulent_Bhatti_Shah',
 'Nu_conv_internal', 'Morimoto_Hotta', 'helical_turbulent_Nu_Mori_Nakayama',
-'helical_turbulent_Nu_Schmidt', 'helical_turbulent_Nu_Xin_Ebadian']
+'helical_turbulent_Nu_Schmidt', 'helical_turbulent_Nu_Xin_Ebadian', 
+'Nu_laminar_rectangular_Shan_London']
 
 ### Laminar
 
@@ -1693,3 +1694,54 @@ def helical_turbulent_Nu_Xin_Ebadian(Re, Pr, Di, Dc):
        522-38. doi:10.1016/j.ijheatmasstransfer.2015.05.069.
     '''
     return 0.00619*Re**0.92*Pr**0.4*(1. + 3.455*Di/Dc)
+
+
+### Rectangular Channels
+
+def Nu_laminar_rectangular_Shan_London(a_r):
+    r'''Calculates internal convection Nusselt number for laminar flows
+    in a rectangular pipe of varying aspect ratio, as developed in [1]_.
+    
+    This model is derived assuming a constant wall heat flux from all sides.
+    This is entirely theoretically derived and reproduced experimentally.
+
+    .. math::
+        Nu_{lam} = 8.235\left(1 - 2.0421\alpha + 3.0853\alpha^2
+        - 2.4765\alpha^3 + 1.0578\alpha^4 - 0.1861\alpha^5\right)
+    
+    Parameters
+    ----------
+    a_r : float
+        The aspect ratio of the channel, from 0 to 1 [-]
+        
+    Returns
+    -------
+    Nu : float
+        Nusselt number of flow in a rectangular channel, [-]
+
+    Notes
+    -----
+    At an aspect ratio of 1 (square channel), the Nusselt number converges to
+    3.610224. The authors of [1]_ also published [2]_, which tabulates in 
+    their table 42 some less precise results that are used to check this 
+    function.
+    
+    Examples
+    --------
+    >>> Nu_laminar_rectangular_Shan_London(.7)
+    3.751762675455
+    
+    References
+    ----------
+    .. [1] Shah, R. K, and Alexander Louis London. Supplement 1: Laminar Flow 
+       Forced Convection in Ducts: A Source Book for Compact Heat Exchanger 
+       Analytical Data. New York: Academic Press, 1978.
+    .. [2] Shah, Ramesh K., and A. L. London. "Laminar Flow Forced Convection 
+       Heat Transfer and Flow Friction in Straight and Curved Ducts - A Summary
+       of Analytical Solutions." STANFORD UNIV CA DEPT OF MECHANICAL 
+       ENGINEERING, STANFORD UNIV CA DEPT OF MECHANICAL ENGINEERING, November 
+       1971. http://www.dtic.mil/docs/citations/AD0736260.
+    '''
+    return 8.235*(1 - 2.0421*a_r + 3.0853*a_r**2 - 2.4765*a_r**3 
+                  + 1.0578*a_r**4 - 0.1861*a_r**5)
+

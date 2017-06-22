@@ -757,6 +757,8 @@ def test_NTU_from_P_basic():
     R1s = np.logspace(np.log10(2E-5), np.log10(1E2), 10000)
     NTU1s = np.logspace(np.log10(1E-4), np.log10(1E2), 10000)
 
+    seed(0)
+    tot = 0
     for i in range(100):
         R1 = choice(R1s)
         NTU1 = choice(NTU1s)
@@ -771,6 +773,8 @@ def test_NTU_from_P_basic():
         # May not get the original NTU1, but the found NTU1 needs to produce the same P1.
         P1_calc = temperature_effectiveness_basic(R1=R1, NTU1=NTU1_calc, subtype='crossflow, mixed 1&2')
         assert_allclose(P1, P1_calc)
+        tot +=1
+    assert tot == 100
 
 
     # crossflow approximate - easy as 1 is always a possibility for any R
@@ -784,12 +788,58 @@ def test_NTU_from_P_basic():
         P1_calc = temperature_effectiveness_basic(R1=R1, NTU1=NTU1_calc, subtype='crossflow approximate')
         assert_allclose(P1, P1_calc)
         
+    # Crossflow approximate test case
+    R1 = .1
+    NTU1 = 2
+    P1_calc_orig = temperature_effectiveness_basic(R1=R1, NTU1=NTU1, subtype='crossflow approximate')
+    P1_expect = 0.8408180737140558
+    assert_allclose(P1_calc_orig, P1_expect)
+    NTU1_backwards = NTU_from_P_basic(P1=P1_expect, R1=R1, subtype='crossflow approximate')
+    assert_allclose(NTU1, NTU1_backwards)
+        
+        
     # Test cross flow - failes VERY OFTEN, should rely on crossflow approximate
     NTU1 = 10
     R1 = 0.5
     P1 = temperature_effectiveness_basic(R1=R1, NTU1=NTU1, subtype='crossflow')
     NTU1_calc = NTU_from_P_basic(P1, R1=R1, subtype='crossflow')
     assert_allclose(NTU1, NTU1_calc)
+
+
+def test_NTU_from_P_E():
+    # 1 tube pass AKA counterflow
+    R1s = np.logspace(np.log10(2E-5), np.log10(1E2), 10000)
+    NTU1s = np.logspace(np.log10(1E-4), np.log10(1E2), 10000)
+    
+    # Exact same asa as the counterflow basic case
+    tot = 0
+    seed(0)
+    for i in range(100):
+        R1 = float(choice(R1s))
+        NTU1 = float(choice(NTU1s))
+        try:
+            # Not all of the guesses work forward; some overflow, some divide by 0
+            P1 = temperature_effectiveness_TEMA_E(R1=R1, NTU1=NTU1, Ntp=1)
+            # Backwards, it's the same divide by zero or log(negative number)
+            NTU1_calc = NTU_from_P_E(P1, R1, Ntp=1)
+        except (ValueError, OverflowError, ZeroDivisionError):
+            continue
+        # Again, multiple values of NTU1 can produce the same P1
+        P1_calc = temperature_effectiveness_TEMA_E(R1=R1, NTU1=NTU1_calc, Ntp=1)
+        assert_allclose(P1, P1_calc)
+        tot +=1
+    assert tot >= 85
+    
+    # 2 tube passes (optimal arangement)
+    R1 = 1.1
+    NTU1 = 10
+    P1 = temperature_effectiveness_TEMA_E(R1=R1, NTU1=NTU1, Ntp=2, optimal=True)
+    P1_expect = 0.5576299522073297
+    assert_allclose(P1, P1_expect)
+    NTU1_calc = NTU_from_P_E(P1, R1, Ntp=2, optimal=True)
+    assert_allclose(NTU1_calc, NTU1)
+
+
 
 
 def test_NTU_from_P_G():
@@ -828,6 +878,8 @@ def test_NTU_from_P_G():
     # Run the gamut testing all the solvers
     R1s = np.logspace(np.log10(2E-5), np.log10(1E2), 10000)
     NTU1s = np.logspace(np.log10(1E-4), np.log10(1E2), 10000)
+    seed(0)
+    tot = 0
     for Ntp, optimal in zip([1, 2, 2], [True, True, False]):
         for i in range(100):
             R1 = float(choice(R1s))
@@ -839,12 +891,16 @@ def test_NTU_from_P_G():
             except (ValueError, OverflowError, ZeroDivisionError, RuntimeError) as e:
                 continue
             assert_allclose(P1, P1_calc)
-
+            tot +=1
+    assert tot > 270
+    
     
 def test_NTU_from_P_J():
     # Run the gamut testing all the solvers
     R1s = np.logspace(np.log10(2E-5), np.log10(1E2), 10000)
     NTU1s = np.logspace(np.log10(1E-4), np.log10(1E2), 10000)
+    seed(0)
+    tot = 0
     for Ntp in [1, 2, 4]:
         for i in range(100):
             R1 = float(choice(R1s))
@@ -856,6 +912,8 @@ def test_NTU_from_P_J():
             except (ValueError, OverflowError, ZeroDivisionError, RuntimeError) as e:
                 continue
             assert_allclose(P1, P1_calc)
+            tot +=1
+    assert tot > 270
     # Actual individual understandable working test cases
 
     # 1 tube pass
@@ -893,7 +951,7 @@ def test_NTU_from_P_J():
     assert_allclose(NTU1, NTU1_backwards)
     # The derivative is very large but the pade approximation is really good, ant it works
 
-
+test_NTU_from_P_J()
 
 def test_DBundle_min():
     assert_allclose(DBundle_min(0.0254), 1)

@@ -156,3 +156,7 @@ def test_helical_turbulent_Nu_Xin_Ebadian():
     
     # No bad behavior
     # Checked with the original
+    
+def test_Nu_laminar_rectangular_Shan_London():
+    Nu = Nu_laminar_rectangular_Shan_London(.7)
+    assert_allclose(Nu, 3.751762675455)

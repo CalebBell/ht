@@ -40,7 +40,7 @@ __all__ = ['effectiveness_from_NTU', 'NTU_from_effectiveness', 'calc_Cmin',
 'temperature_effectiveness_basic', 'temperature_effectiveness_TEMA_J',
 'temperature_effectiveness_TEMA_H', 'temperature_effectiveness_TEMA_G',
 'temperature_effectiveness_TEMA_E', 'P_NTU_method',  'NTU_from_P_basic',
-'NTU_from_P_J', 'NTU_from_P_G',
+'NTU_from_P_J', 'NTU_from_P_G', 'NTU_from_P_E',
 'check_tubing_TEMA', 'get_tube_TEMA',
 'DBundle_min', 'shell_clearance', 'baffle_thickness', 'D_baffle_holes',
 'L_unsupported_max', 'Ntubes_Perrys', 'Ntubes_VDI', 'Ntubes_Phadkeb', 
@@ -1056,6 +1056,7 @@ def temperature_effectiveness_basic(R1, NTU1, subtype='crossflow'):
        doi:10.1016/j.icheatmasstransfer.2008.10.012.
     '''
     if subtype == 'counterflow':
+        # Same as TEMA 1 pass
         P1 = (1 - exp(-NTU1*(1 - R1)))/(1 - R1*exp(-NTU1*(1-R1)))
     elif subtype == 'parallel':
         P1 = (1 - exp(-NTU1*(1 + R1)))/(1 + R1)
@@ -1967,114 +1968,110 @@ NTU_from_P_basic_crossflow_mixed_12 = {
     ],
 }
 
+
 def _horner(coeffs, x):
     # TODO put this in a module or something
     tot = 0
     for c in coeffs:
         tot = tot * x + c
     return tot
+
+
+def _NTU_from_P_objective(NTU1, R1, P1, function, **kwargs):
+    '''Private function to hold the common objective function used by 
+    all backwards solvers for the P-NTU method.
+    These methods are really hard on on floating points (overflows and divide
+    by zeroes due to numbers really close to 1), so if the function fails,
+    mpmath is imported and tried.
+    '''
+    try:
+        P1_calc = function(R1, NTU1, **kwargs)
+    except :
+        import mpmath
+        globals()['exp'] = mpmath.exp
+        P1_calc = float(function(R1, NTU1, **kwargs))
+        globals()['exp'] = math.exp
+    return P1_calc - P1
+
+
+def _NTU_from_P_solver(P1, R1, NTU_min, NTU_max, function, **kwargs):
+    '''Private function to solve the P-NTU method backwards, given the
+    function to use, the upper and lower NTU bounds for consideration,
+    and the desired P1 and R1 values.
+    '''
+    P1_max = _NTU_from_P_objective(NTU_max, R1, 0, function, **kwargs)
+    P1_min = _NTU_from_P_objective(NTU_min, R1, 0, function, **kwargs)
+    if P1 > P1_max:
+        raise ValueError('No solution possible gives such a high P1; maximum P1=%f at NTU1=%f' %(P1_max, NTU_max))
+    if P1 < P1_min:
+        raise ValueError('No solution possible gives such a low P1; minimum P1=%f at NTU1=%f' %(P1_min, NTU_min))
+    # Construct the function as a lambda expression as solvers don't support kwargs
+    to_solve = lambda NTU1: _NTU_from_P_objective(NTU1, R1, P1, function, **kwargs)
+    return ridder(to_solve, NTU_min, NTU_max)
+
+
+def _NTU_max_for_P_solver(data, R1):
+    '''Private function to calculate the upper bound on the NTU1 value in the
+    P-NTU method. This value is calculated via a pade approximation obtained
+    on the result of a global minimizer which calculated the maximum P1
+    at a given R1 from ~1E-7 to approximately 100. This should suffice for 
+    engineering applications. This value is needed to bound the solver.
+    '''
+    offset_max = data['offset'][-1]
+    for offset, p, q in zip(data['offset'], data['p'], data['q']):
+        if R1 < offset or offset == offset_max:
+            x = R1 - offset
+            return _horner(p, x)/_horner(q, x)
+
+
 def NTU_from_P_G(P1, R1, Ntp, optimal=True):
     NTU_min = 1E-11
-    def to_solve(NTU1):
-        try:
-            P1_calc = temperature_effectiveness_TEMA_G(R1, NTU1, Ntp, optimal)
-        except:
-            import mpmath
-            globals()['exp'] = mpmath.exp
-            P1_calc = float(temperature_effectiveness_TEMA_G(R1, NTU1, Ntp, optimal))
-            globals()['exp'] = math.exp
-        return P1_calc - P1
-    def solver(P1, R1):
-        P1_max = temperature_effectiveness_TEMA_G(R1, NTU_max, Ntp, optimal)
-        P1_min = temperature_effectiveness_TEMA_G(R1, NTU_min, Ntp, optimal)
-        if P1 > P1_max:
-            raise Exception('No solution possible gives such a high P1; maximum P1=%f at NTU1=%f' %(P1_max, NTU_max))
-        if P1 < P1_min:
-            raise Exception('No solution possible gives such a low P1; minimum P1=%f at NTU1=%f' %(P1_min, NTU_min))
-        return ridder(to_solve, NTU_min, NTU_max)
-
+    function = temperature_effectiveness_TEMA_G
     if Ntp == 1 or (Ntp == 2 and optimal):
-        return ridder(to_solve, 1E-11, 1E4)
+        NTU_max = 1E4
         # We could fit a curve to determine the NTU where the floating point
         # does not allow NTU to increase though, but that would be another
         # binary bisection process, different from the current pipeline
     elif Ntp == 2 and not optimal:
-        data = NTU_from_G_2_unoptimal
-    offset_max = data['offset'][-1]
-    for offset, p, q in zip(data['offset'], data['p'], data['q']):
-        if R1 < offset or offset == offset_max:
-            x = R1 - offset
-            NTU_max = _horner(p, x)/_horner(q, x)
-            
-            return solver(P1, R1)
+        NTU_max = _NTU_max_for_P_solver(NTU_from_G_2_unoptimal, R1)
+    return _NTU_from_P_solver(P1, R1, NTU_min, NTU_max, function, Ntp=Ntp, optimal=optimal)
 
 
 def NTU_from_P_J(P1, R1, Ntp):
     NTU_min = 1E-11
-    def to_solve(NTU1):
-        try:
-            P1_calc = temperature_effectiveness_TEMA_J(R1, NTU1, Ntp)
-        except:
-            import mpmath
-            globals()['exp'] = mpmath.exp
-            P1_calc = float(temperature_effectiveness_TEMA_J(R1, NTU1, Ntp))
-            globals()['exp'] = math.exp
-        return P1_calc - P1
-    def solver(P1, R1):
-        P1_max = temperature_effectiveness_TEMA_J(R1, NTU_max, Ntp)
-        P1_min = temperature_effectiveness_TEMA_J(R1, NTU_min, Ntp)
-        if P1 > P1_max:
-            raise Exception('No solution possible gives such a high P1; maximum P1=%f at NTU1=%f' %(P1_max, NTU_max))
-        if P1 < P1_min:
-            raise Exception('No solution possible gives such a low P1; minimum P1=%f at NTU1=%f' %(P1_min, NTU_min))
-        return ridder(to_solve, NTU_min, NTU_max)
-
+    function = temperature_effectiveness_TEMA_J
     if Ntp == 1:
         # Very often failes because at NTU=1000, there is no variation in P1
         # for instance at NTU=40, P1 already peaked and does not decline with
         # higher NTU
-        return ridder(to_solve, 1E-11, 1E3)
+        NTU_max = 1E3
         # We could fit a curve to determine the NTU where the floating point
         # does not allow NTU to increase though, but that would be another
         # binary bisection process, different from the current pipeline
     elif Ntp == 2:
-        data = NTU_from_P_J_2
+        NTU_max = _NTU_max_for_P_solver(NTU_from_P_J_2, R1)
     elif Ntp == 4:
-        data = NTU_from_P_J_4
-    offset_max = data['offset'][-1]
-    for offset, p, q in zip(data['offset'], data['p'], data['q']):
-        if R1 < offset or offset == offset_max:
-            x = R1 - offset
-            NTU_max = _horner(p, x)/_horner(q, x)
-            
-            return solver(P1, R1)
+        NTU_max = _NTU_max_for_P_solver(NTU_from_P_J_4, R1)
+    return _NTU_from_P_solver(P1, R1, NTU_min, NTU_max, function, Ntp=Ntp)
 
 
-#NTU_from_P_J(P1=0.999110, R1=0.0017698863118002846, Ntp=2)
+def NTU_from_P_E(P1, R1, Ntp, optimal=True):
+    NTU_min = 1E-11
+    function = temperature_effectiveness_TEMA_E
+    if Ntp == 1:
+        return NTU_from_P_basic(P1, R1, subtype='counterflow')
+    elif Ntp == 2 and optimal:
+        # Nice analytical solution is available
+        # There are actualy two roots but one of them is complex
+        x1 = R1*R1 + 1.
+        return 2.*log(((P1*R1 - P1*x1**0.5 + P1 - 2.)/(P1*R1 + P1*x1**0.5 + P1 - 2.))**0.5)*(x1)**-.5
+
+
 
 
 def NTU_from_P_basic(P1, R1, subtype='crossflow'):
     NTU_min = 1E-11
-    
-    def to_solve(NTU1, R1, P1):
-        try:
-            P1_calc = temperature_effectiveness_basic(R1, NTU1, subtype=subtype)
-        except:
-            import mpmath
-            globals()['exp'] = mpmath.exp
-            P1_calc = float(temperature_effectiveness_basic(R1, NTU1, subtype=subtype))
-            globals()['exp'] = math.exp
-        return P1_calc - P1
-    
-    def solver(P1, R1):
-        P1_max = temperature_effectiveness_basic(R1, NTU_max, subtype=subtype)
-        P1_min = temperature_effectiveness_basic(R1, NTU_min, subtype=subtype)
-        if P1 > P1_max:
-            raise Exception('No solution possible gives such a high P1; maximum P1=%f at NTU1=%f' %(P1_max, NTU_max))
-        if P1 < P1_min:
-            raise Exception('No solution possible gives such a low P1; minimum P1=%f at NTU1=%f' %(P1_min, NTU_min))
-        return ridder(to_solve, NTU_min, NTU_max, args=(R1, P1))
-
+    function = temperature_effectiveness_basic
     if subtype == 'counterflow':
         return -log((P1*R1 - 1.)/(P1 - 1))/(R1 - 1)
     elif subtype == 'parallel':
@@ -2084,22 +2081,15 @@ def NTU_from_P_basic(P1, R1, subtype='crossflow'):
     elif subtype == 'crossflow, mixed 2':
         return -log(log(-(P1*R1 - 1.)*exp(R1))/R1)
     elif subtype == 'crossflow, mixed 1&2':
-        data = NTU_from_P_basic_crossflow_mixed_12
+        NTU_max = _NTU_max_for_P_solver(NTU_from_P_basic_crossflow_mixed_12, R1)        
     elif subtype == 'crossflow approximate':
         # These are tricky but also easy because P1 can always be 1
         NTU_max = 1E5
-        return solver(P1, R1)
     elif subtype == 'crossflow':
-        # Works really poorly
         guess = NTU_from_P_basic(P1, R1, subtype='crossflow approximate')
-        return newton(to_solve, guess, args=(R1, P1))
-    offset_max = data['offset'][-1]
-    for offset, p, q in zip(data['offset'], data['p'], data['q']):
-        if R1 < offset or offset == offset_max:
-            x = R1 - offset
-            NTU_max = _horner(p, x)/_horner(q, x)
-            
-            return solver(P1, R1)
+        to_solve = lambda NTU1 : _NTU_from_P_objective(NTU1, R1, P1, function, subtype='crossflow')
+        return newton(to_solve, guess)
+    return _NTU_from_P_solver(P1, R1, NTU_min, NTU_max, function, subtype=subtype)
 
 
 
