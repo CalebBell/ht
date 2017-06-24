@@ -262,8 +262,6 @@ def effectiveness_from_NTU(NTU, Cr, subtype='counterflow'):
     >>> Q, Tci, Thi
     (131675.32715043964, 14.999999999999858, 130.00000000000003)
 
-
-
     References
     ----------
     .. [1] Bergman, Theodore L., Adrienne S. Lavine, Frank P. Incropera, and
@@ -1528,7 +1526,7 @@ def temperature_effectiveness_TEMA_G(R1, NTU1, Ntp, optimal=True):
     optimal : bool, optional
         Whether or not the arrangement is configured to give more of a
         countercurrent and efficient (True) case or an inefficient parallel
-        case, [-]
+        case (only applies for two passes), [-]
 
     Returns
     -------
@@ -2469,7 +2467,177 @@ def _NTU_max_for_P_solver(data, R1):
             return _horner(p, x)/_horner(q, x)
 
 
+def NTU_from_P_basic(P1, R1, subtype='crossflow'):
+    r'''Returns the number of transfer units of a basic heat exchanger type
+    with a specified (for side 1) thermal effectiveness `P1`, and heat capacity 
+    ratio `R1`. The supported cases are as follows:
+        
+    * Counterflow (ex. double-pipe) [analytical]
+    * Parallel (ex. double pipe inefficient configuration) [analytical]
+    * Crossflow, single pass, fluids unmixed [numerical]
+    * Crossflow, single pass, fluid 1 mixed, fluid 2 unmixed [analytical]
+    * Crossflow, single pass, fluid 2 mixed, fluid 1 unmixed [analytical]
+    * Crossflow, single pass, both fluids mixed [numerical]
+    
+    The analytical solutions, for those cases they are available, are as 
+    follows:
+        
+    Counterflow:
+        
+    .. math::
+        NTU_1 = - \frac{1}{R_{1} - 1} \log{\left (\frac{P_{1} R_{1} - 1}{P_{1} 
+        - 1} \right )}
+    
+    Parallel:
+    
+    .. math::
+        NTU_1 = \frac{1}{R_{1} + 1} \log{\left (- \frac{1}{P_{1} \left(R_{1} 
+        + 1\right) - 1} \right )}
+    
+    Crossflow, single pass, fluid 1 mixed, fluid 2 unmixed:
+        
+    .. math::
+        NTU_1 = - \frac{1}{R_{1}} \log{\left (R_{1} \log{\left (- \left(P_{1}
+        - 1\right) e^{\frac{1}{R_{1}}} \right )} \right )}
+    
+    Crossflow, single pass, fluid 2 mixed, fluid 1 unmixed
+    
+    .. math::
+        NTU_1 = - \log{\left (\frac{1}{R_{1}} \log{\left (- \left(P_{1} R_{1}
+        - 1\right) e^{R_{1}} \right )} \right )}
+    
+    Parameters
+    ----------
+    P1 : float
+        Thermal effectiveness of the heat exchanger in the P-NTU method,
+        calculated with respect to stream 1 [-]
+    R1 : float
+        Heat capacity ratio of the heat exchanger in the P-NTU method,
+        calculated with respect to stream 1 [-]
+    subtype : float
+        The type of heat exchanger; one of 'counterflow', 'parallel', 
+        'crossflow', 'crossflow approximate', 'crossflow, mixed 1', 
+        'crossflow, mixed 2', 'crossflow, mixed 1&2'.
+        
+    Returns
+    -------
+    NTU1 : float
+        Thermal number of transfer units of the heat exchanger in the P-NTU 
+        method, calculated with respect to stream 1 [-]
+
+    Notes
+    -----
+    Although this function allows the thermal effectiveness desired to be
+    specified, it does not mean such a high value can be obtained. An exception
+    is raised when this occurs, although not always a helpful one.
+    
+    >>> NTU_from_P_basic(P1=.99, R1=.1, subtype='parallel')
+    Traceback (most recent call last):
+    ValueError: math domain error
+            
+    For the 'crossflow approximate' solution the function is monotonic, and a
+    bounded solver is used within the range of NTU1 from 1E-11 to 1E5. 
+    
+    For the full correct 'crossflow' solution, the initial guess for newton's
+    method is obtained by the 'crossflow approximate' solution; the function
+    may not converge because of inaccuracy performing the numerical integral 
+    involved.
+
+    For the 'crossflow, mixed 1&2' solution, a bounded solver is first use, but
+    the upper bound on P1 and the upper NTU1 limit is calculated from a pade
+    approximation performed with mpmath. 
+
+    Examples
+    --------
+    >>> NTU_from_P_basic(P1=.975, R1=.1, subtype='counterflow')
+    3.984769850376482
+
+    '''
+    NTU_min = 1E-11
+    function = temperature_effectiveness_basic
+    if subtype == 'counterflow':
+        return -log((P1*R1 - 1.)/(P1 - 1))/(R1 - 1)
+    elif subtype == 'parallel':
+        return log(-1./(P1*(R1 + 1.) - 1.))/(R1 + 1.)
+    elif subtype == 'crossflow, mixed 1':
+        return -log(R1*log(-(P1 - 1.)*exp(1./R1)))/R1
+    elif subtype == 'crossflow, mixed 2':
+        return -log(log(-(P1*R1 - 1.)*exp(R1))/R1)
+    elif subtype == 'crossflow, mixed 1&2':
+        NTU_max = _NTU_max_for_P_solver(NTU_from_P_basic_crossflow_mixed_12, R1)        
+    elif subtype == 'crossflow approximate':
+        # These are tricky but also easy because P1 can always be 1
+        NTU_max = 1E5
+    elif subtype == 'crossflow':
+        guess = NTU_from_P_basic(P1, R1, subtype='crossflow approximate')
+        to_solve = lambda NTU1 : _NTU_from_P_objective(NTU1, R1, P1, function, subtype='crossflow')
+        return newton(to_solve, guess)
+    return _NTU_from_P_solver(P1, R1, NTU_min, NTU_max, function, subtype=subtype)
+
+
+
 def NTU_from_P_G(P1, R1, Ntp, optimal=True):
+    r'''Returns the number of transfer units of a TEMA G type heat exchanger
+    with a specified (for side 1) thermal effectiveness `P1`, heat capacity 
+    ratio `R1`, the number of tube passes `Ntp`, and for the two-pass case
+    whether or not the inlets are arranged optimally. The supported cases are 
+    as follows:
+        
+    * One tube pass (tube fluid split into two streams individually mixed,  
+      shell fluid mixed)
+    * Two tube passes (shell and tube exchanger with shell and tube fluids  
+      mixed in each pass at the cross section), counterflow arrangement
+    * Two tube passes (shell and tube exchanger with shell and tube fluids  
+      mixed in each pass at the cross section), parallelflow arrangement
+                
+    Parameters
+    ----------
+    P1 : float
+        Thermal effectiveness of the heat exchanger in the P-NTU method,
+        calculated with respect to stream 1 [-]
+    R1 : float
+        Heat capacity ratio of the heat exchanger in the P-NTU method,
+        calculated with respect to stream 1 (shell side = 1, tube side = 2) [-]
+    Ntp : int
+        Number of tube passes, 1 or 2 [-]
+    optimal : bool, optional
+        Whether or not the arrangement is configured to give more of a
+        countercurrent and efficient (True) case or an inefficient parallel
+        case (only applies for two passes), [-]
+
+    Returns
+    -------
+    NTU1 : float
+        Thermal number of transfer units of the heat exchanger in the P-NTU 
+        method, calculated with respect to stream 1 (shell side = 1, tube side
+        = 2) [-]
+
+    Notes
+    -----
+    For numbers of tube passes greater than 1 or 2, an exception is raised.
+    
+    Although this function allows the thermal effectiveness desired to be
+    specified, it does not mean such a high value can be obtained. An exception
+    is raised which shows the maximum possible effectiveness obtainable at the
+    specified `R1` and configuration.
+    
+    >>> NTU_from_P_G(P1=1, R1=1/3., Ntp=2)
+    Traceback (most recent call last):
+    ValueError: No solution possible gives such a high P1; maximum P1=0.954545 at NTU1=10000.000000
+    
+    Of the three configurations, 1 pass and the optimal 2 pass have monotonic 
+    functions which allow for a bounded solver to work smoothly. In both cases
+    a solution is searched for between NTU1 values of 1E-11 and 1E-4.
+    
+    For the 2 pass unoptimal solution, a bounded solver is first use, but
+    the upper bound on P1 and the upper NTU1 limit is calculated from a pade
+    approximation performed with mpmath. 
+
+    Examples
+    --------
+    >>> NTU_from_P_G(P1=.573, R1=1/3., Ntp=1)
+    0.9999513707769526
+    '''
     NTU_min = 1E-11
     function = temperature_effectiveness_TEMA_G
     if Ntp == 1 or (Ntp == 2 and optimal):
@@ -2513,28 +2681,6 @@ def NTU_from_P_E(P1, R1, Ntp, optimal=True):
 
 
 
-
-def NTU_from_P_basic(P1, R1, subtype='crossflow'):
-    NTU_min = 1E-11
-    function = temperature_effectiveness_basic
-    if subtype == 'counterflow':
-        return -log((P1*R1 - 1.)/(P1 - 1))/(R1 - 1)
-    elif subtype == 'parallel':
-        return log(-1./(P1*(R1 + 1.) - 1.))/(R1 + 1.)
-    elif subtype == 'crossflow, mixed 1':
-        return -log(R1*log(-(P1 - 1.)*exp(1./R1)))/R1
-    elif subtype == 'crossflow, mixed 2':
-        return -log(log(-(P1*R1 - 1.)*exp(R1))/R1)
-    elif subtype == 'crossflow, mixed 1&2':
-        NTU_max = _NTU_max_for_P_solver(NTU_from_P_basic_crossflow_mixed_12, R1)        
-    elif subtype == 'crossflow approximate':
-        # These are tricky but also easy because P1 can always be 1
-        NTU_max = 1E5
-    elif subtype == 'crossflow':
-        guess = NTU_from_P_basic(P1, R1, subtype='crossflow approximate')
-        to_solve = lambda NTU1 : _NTU_from_P_objective(NTU1, R1, P1, function, subtype='crossflow')
-        return newton(to_solve, guess)
-    return _NTU_from_P_solver(P1, R1, NTU_min, NTU_max, function, subtype=subtype)
 
 
 
