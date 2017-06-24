@@ -39,7 +39,8 @@ __all__ = ['effectiveness_from_NTU', 'NTU_from_effectiveness', 'calc_Cmin',
 'NTU_from_UA', 'UA_from_NTU', 'effectiveness_NTU_method', 'F_LMTD_Fakheri', 
 'temperature_effectiveness_basic', 'temperature_effectiveness_TEMA_J',
 'temperature_effectiveness_TEMA_H', 'temperature_effectiveness_TEMA_G',
-'temperature_effectiveness_TEMA_E', 'P_NTU_method',  'NTU_from_P_basic',
+'temperature_effectiveness_TEMA_E', 'temperature_effectiveness_plate', 
+'P_NTU_method',  'NTU_from_P_basic',
 'NTU_from_P_J', 'NTU_from_P_G', 'NTU_from_P_E',
 'check_tubing_TEMA', 'get_tube_TEMA',
 'DBundle_min', 'shell_clearance', 'baffle_thickness', 'D_baffle_holes',
@@ -777,6 +778,101 @@ def UA_from_NTU(NTU, Cmin):
        Wiley, 2011.
     '''
     return NTU*Cmin
+
+
+def Pp(x, y):
+    r'''Basic helper calculator which accepts a transformed R1 and NTU1 as 
+    inputs for a common term used in the calculation of the P-NTU method for 
+    plate exchangers.
+    
+    Returns a value which is normally used in other calculations before the 
+    actual P1 is calculated.
+
+    .. math::
+        P_p(x, y) = \frac{1 - \exp[-x(1 + y)]}{1 + y}
+        
+    Parameters
+    ----------
+    x : float
+        A modification of NTU1, the Thermal Number of Transfer Units [-]
+    y : float
+        A modification of R1, the thermal effectiveness [-]
+
+    Returns
+    -------
+    z : float
+        Just another term in the calculation, [-]
+
+    Notes
+    -----
+    Used with the P-NTU plate method for heat exchanger design. At y = -1,
+    this function has a ZeroDivisionError but can be evaluated at the limit
+    to be z = x
+
+    Examples
+    --------
+    >>> Pp(5, .4)
+    0.713634370024604
+
+    References
+    ----------
+    .. [1] Shah, Ramesh K., and Dusan P. Sekulic. Fundamentals of Heat 
+       Exchanger Design. 1st edition. Hoboken, NJ: Wiley, 2002.
+    .. [2] Rohsenow, Warren and James Hartnett and Young Cho. Handbook of Heat
+       Transfer, 3E. New York: McGraw-Hill, 1998.
+    '''
+    try:
+        return (1. - exp(-x*(1. + y)))/(1. + y)
+    except ZeroDivisionError:
+        return x
+
+
+def Pc(x, y):
+    r'''Basic helper calculator which accepts a transformed R1 and NTU1 as 
+    inputs for a common term used in the calculation of the P-NTU method for 
+    plate exchangers.
+    
+    Returns a value which is normally used in other calculations before the 
+    actual P1 is calculated. Nominally used in counterflow calculations 
+
+    .. math::
+        P_c(x, y) = \frac{1 - \exp[-x(1 - y)]}{1 - y\exp[-x(1 - y)]}
+        
+    Parameters
+    ----------
+    x : float
+        A modification of NTU1, the Thermal Number of Transfer Units [-]
+    y : float
+        A modification of R1, the thermal effectiveness [-]
+
+    Returns
+    -------
+    z : float
+        Just another term in the calculation, [-]
+
+    Notes
+    -----
+    Used with the P-NTU plate method for heat exchanger design. At y =-1,
+    this function has a ZeroDivisionError but can be evaluated at the limit
+    to be :math:`z = \frac{x}{1+x}`.
+
+    Examples
+    --------
+    >>> Pc(5, .7)
+    0.9206703686051108
+
+    References
+    ----------
+    .. [1] Shah, Ramesh K., and Dusan P. Sekulic. Fundamentals of Heat 
+       Exchanger Design. 1st edition. Hoboken, NJ: Wiley, 2002.
+    .. [2] Rohsenow, Warren and James Hartnett and Young Cho. Handbook of Heat
+       Transfer, 3E. New York: McGraw-Hill, 1998.
+    '''
+    try:
+        term = exp(-x*(1. - y))
+        return (1. - term)/(1. - y*term)
+    except ZeroDivisionError:
+        return x/(1. + x)
 
 
 def effectiveness_NTU_method(mh, mc, Cph, Cpc, subtype='counterflow', Thi=None, 
@@ -1732,6 +1828,294 @@ def temperature_effectiveness_TEMA_E(R1, NTU1, Ntp=1, optimal=True):
         raise Exception('For TEMA E shells with an odd number of tube passes more than 3, no solution is implemented.')
     return P1
 
+
+def temperature_effectiveness_plate(R1, NTU1, Np1, Np2, counterflow=True, 
+                                    passes_counterflow=True, reverse=False):
+    r'''
+    For all plate heat exchangers, there are two common formulas used by most
+    of the expressions.
+    
+    .. math::
+        P_p(x, y) = \frac{1 - \exp[-x(1 + y)]}{1 + y}
+        
+        P_c(x, y) = \frac{1 - \exp[-x(1 - y)]}{1 - y\exp[-x(1 - y)]}
+        
+    For 1 pass/1 pass paralleflow (streams symmetric):
+        
+    .. math::
+        P_1 = P_p(NTU_1, R_1)
+        
+    For 1 pass/1 pass counterflow (streams symmetric):
+    
+    .. math::
+        P_1 = P_c(NTU_1, R_1)
+    
+    For 1 pass/2 pass (any of the four possible configurations):
+        
+    .. math::
+        P_1 = 0.5(A + B - 0.5ABR_1)
+        
+        A = P_p(NTU_1, 0.5R_1)
+        
+        B = P_c(NTU_1, 0.5R_1)
+        
+    For 1 pass/3 pass (two end passes in parallel):
+        
+    .. math::
+        P_1 = \frac{1}{3}\left[B + A\left(1 - \frac{R_1 B}{3}\right)\left(2 
+        - \frac{R_1 A}{3}\right)\right]
+        
+        A = P_p\left(NTU_1, \frac{R_1}{3}\right)
+        
+        B = P_c\left(NTU_1, \frac{R_1}{3}\right)
+        
+    For 1 pass/3 pass (two end passes in counterflow):
+        
+    .. math::
+        P_1 = \frac{1}{3}\left[A + B\left(1 - \frac{R_1 A}{3}\right)\left(2
+        - \frac{R_1 B}{3}\right)\right]
+            
+        A = P_p\left(NTU_1, \frac{R_1}{3}\right)
+        
+        B = P_c\left(NTU_1, \frac{R_1}{3}\right)
+        
+    For 1 pass/4 pass (any of the four possible configurations):
+    
+    .. math::
+        P_1 = \frac{1-Q}{R_1}
+        
+        Q = \left(1 - \frac{AR_1}{4}\right)^2\left(1 - \frac{BR_1}{4}\right)^2
+        
+        A = P_p\left(NTU_1, \frac{R_1}{4}\right)
+        
+        B = P_c\left(NTU_1, \frac{R_1}{4}\right)
+        
+    For 2 pass/2 pass, overall parallelflow, individual passes in parallel 
+    (stream symmetric):
+        
+    .. math::
+        P_1 = P_p(NTU_1, R_1)
+        
+    For 2 pass/2 pass, overall parallelflow, individual passes counterflow
+    (stream symmetric):
+        
+    .. math::
+        P_1 = B[2 - B(1 + R_1)]
+        
+        B = P_c\left(\frac{NTU_1}{2}, R_1\right)
+        
+    For 2 pass/2 pass, overall counterflow, individual passes parallelflow 
+    (stream symmetric):
+        
+    .. math::
+        P_1 = \frac{2A - A^2(1 + R_1)}{1 - R_1 A^2}
+        
+        A = P_p\left(\frac{NTU_1}{2}, R_1\right)
+        
+    For 2 pass/2 pass, overall counterflow and individual passes counterflow 
+    (stream symmetric):
+        
+    .. math::
+        P_1 = P_c(NTU_1, R_1)
+        
+    For 2 pass/3 pass, overall parallelflow:
+        
+    .. math::
+        P_1 = A + B - \left(\frac{2}{9} + \frac{D}{3}\right)
+        (A^2 + B^2) - \left(\frac{5}{9} + \frac{4D}{3}\right)AB
+        + \frac{D(1+D)AB(A+B)}{3} - \frac{D^2A^2B^2}{9}
+        
+        A = P_p\left(\frac{NTU_1}{2}, D\right)
+        
+        B = P_c\left(\frac{NTU_1}{2}, D\right)
+        
+        D = \frac{2R_1}{3}
+        
+    For 2 pass/3 pass, overall counterflow:
+        
+    .. math::
+        P_1 = \frac{A + 0.5B + 0.5C + D}{R_1}
+        
+        A = \frac{2R_1 EF^2 - 2EF + F - F^2}
+        {2R_1 E^2 F^2 - E^2 - F^2 - 2EF + E + F}
+        
+        B = \frac{A(E-1)}{F}
+        
+        C = \frac{1 - A}{E}
+        
+        D = R_1 E^2 C - R_1 E + R_1 - \frac{C}{2}
+        
+        E = \frac{3}{2R_1 G}
+        
+        F = \frac{3}{2R_1 H}
+        
+        G = P_c\left(\frac{NTU_1}{2}, \frac{2R_1}{3}\right)
+        
+        H = P_p\left(\frac{NTU_1}{2}, \frac{2R_1}{3}\right)
+        
+    For 2 pass/4 pass, overall parallel flow:
+        
+    .. math::
+        P_1 = 2D - (1 + R_1)D^2
+        
+        D = \frac{A + B - 0.5ABR_1}{2}
+        
+        A = P_p\left(\frac{NTU_1}{2}, \frac{R_1}{2}\right)
+        
+        B = P_c\left(\frac{NTU_1}{2}, \frac{R_1}{2}\right)
+        
+    For 2 pass/4 pass, overall counterflow flow:
+        
+    .. math::
+        P_1 = \frac{2D - (1+R_1)D^2}{1 - D^2 R_1}
+        
+        D = \frac{A + B - 0.5ABR_1}{2}
+        
+        A = P_p\left(\frac{NTU_1}{2}, \frac{R_1}{2}\right)
+        
+        B = P_c\left(\frac{NTU_1}{2}, \frac{R_1}{2}\right)
+                
+    Parameters
+    ----------
+    R1 : float
+        Heat capacity ratio of the heat exchanger in the P-NTU method,
+        calculated with respect to stream 1 [-]
+    NTU1 : float
+        Thermal number of transfer units of the heat exchanger in the P-NTU 
+        method, calculated with respect to stream 1 [-]
+    Np1 : int
+        Number of passes on side 1 [-]
+    Np2 : int
+        Number of passes on side 2 [-]
+    counterflow : bool
+        Whether or not the overall flow through the heat exchanger is in
+        counterflow or parallel flow, [-]
+    passes_counterflow : bool
+        In addition to the overall flow direction, in some cases individual 
+        passes may be in counter or parallel flow; this controlls that [-]
+    reverse : bool
+        Used internally to allow the 1-4 formula to work for the 4-1 flow case,
+        without having to duplicate the code [-]
+
+    Returns
+    -------
+    P1 : float
+        Thermal effectiveness of the heat exchanger in the P-NTU method,
+        calculated with respect to stream 1 [-]
+
+    Notes
+    -----
+
+    Examples
+    --------
+
+    References
+    ----------
+    .. [1] Shah, Ramesh K., and Dusan P. Sekulic. Fundamentals of Heat 
+       Exchanger Design. 1st edition. Hoboken, NJ: Wiley, 2002.
+    .. [2] Rohsenow, Warren and James Hartnett and Young Cho. Handbook of Heat
+       Transfer, 3E. New York: McGraw-Hill, 1998.
+    .. [3] Kandlikar, S. G., and R. K. Shah. "Asymptotic Effectiveness-NTU 
+       Formulas for Multipass Plate Heat Exchangers." Journal of Heat Transfer 
+       111, no. 2 (May 1, 1989): 314-21. doi:10.1115/1.3250679.
+    .. [4] Kandlikar, S. G., and R. K. Shah. "Multipass Plate Heat Exchangers
+       Effectiveness-NTU Results and Guidelines for Selecting Pass 
+       Arrangements." Journal of Heat Transfer 111, no. 2 (May 1, 1989): 
+       300-313. doi:10.1115/1.3250678.   
+    '''
+    if Np1 == 1 and Np2 == 1 and counterflow:
+        return Pc(NTU1, R1)
+    elif Np1 == 1 and Np2 == 1 and not counterflow:
+        return Pp(NTU1, R1)
+    elif Np1 == 1 and Np2 == 2:
+        # There are four configurations but all have the same formula
+        # They do behave different depending on the number of available plates
+        # but this model assues infinity
+        # There are four more arrangements that are equivalent as well
+        A = Pp(NTU1, 0.5*R1)
+        B = Pc(NTU1, 0.5*R1)
+        return 0.5*(A + B - 0.5*A*B*R1)
+    elif Np1 == 1 and Np2 == 3 and counterflow:
+        # There are six configurations, two formulas
+        # Each behaves differently though as a function of number of plates
+        A = Pp(NTU1, R1/3.)
+        B = Pc(NTU1, R1/3.)
+        return 1/3.*(A + B*(1. - R1*A/3.)*(2. - R1*B/3.))
+    elif Np1 == 1 and Np2 == 3 and not counterflow:
+        A = Pp(NTU1, R1/3.)
+        B = Pc(NTU1, R1/3.)
+        return 1/3.*(B + A*(1. - R1*B/3.)*(2. - R1*A/3.))
+    elif Np1 == 1 and Np2 == 4:
+        # four configurations
+        # Again a function of number of plates, but because expressions assume
+        # infinity it gets ignored and they're the same
+        A = Pp(NTU1, 0.25*R1)
+        B = Pc(NTU1, 0.25*R1)
+        t1 = (1. - 0.25*A*R1)
+        t2 = (1. - 0.25*B*R1)
+        t3 = t1*t2 # minor optimization
+        return (1. - t3*t3)/R1
+    elif Np1 == 2 and Np2 == 2:
+        if counterflow and passes_counterflow:
+            return Pc(NTU1, R1)
+        elif counterflow and not passes_counterflow:
+            A = Pp(0.5*NTU1, R1)
+            return (2.*A - A*A*(1. + R1))/(1. - R1*A*A)
+        elif not counterflow and passes_counterflow:
+            B = Pc(0.5*NTU1, R1)
+            return B*(2. - B*(1. + R1))
+        elif not counterflow and not passes_counterflow:
+            return temperature_effectiveness_plate(R1, NTU1, Np1=1, Np2=1, 
+                                                   counterflow=False)
+    elif Np1 == 2 and Np2 == 3:
+        # One place says there are four configurations; no other discussion is
+        # presented
+        if counterflow:
+            H = Pp(0.5*NTU1, 2./3.*R1)
+            G = Pc(0.5*NTU1, 2./3.*R1)
+            E = 1./(2./3.*R1*G)
+            F = 1./(2./3.*R1*H)
+            E2 = E*E
+            F2 = F*F
+            A = (2.*R1*E*F2 - 2.*E*F + F - F2)/(2.*R1*E2*F2 - E2 - F2 - 2.*E*F + E + F)
+            C = (1. - A)/E
+            D = R1*E*E*C - R1*E + R1 - 0.5*C
+            B = A*(E - 1.)/F
+            return (A + 0.5*B + 0.5*C + D)/R1
+        elif not counterflow:
+            D = 2*R1/3.
+            A = Pp(NTU1/2, D)
+            B = Pc(NTU1/2, D)
+            return (A + B - (2/9. + D/3.)*(A*A + B*B)
+                    -(5./9. + 4./3.*D)*A*B
+                    + D*(1. + D)*A*B*(A + B)/3.
+                    - D*D*A*A*B*B/9.)
+    elif Np1 == 2 and Np2 == 4:
+        # Both cases are correct for passes_counterflow=True or False
+        if counterflow:
+            A = Pp(0.5*NTU1, 0.5*R1)
+            B = Pc(0.5*NTU1, 0.5*R1)
+            D = 0.5*(A + B - 0.5*A*B*R1)
+            return (2.*D - (1. + R1)*D*D)/(1. - D*D*R1)
+        elif not counterflow:
+            A = Pp(0.5*NTU1, 0.5*R1)
+            B = Pc(0.5*NTU1, 0.5*R1)
+            D = 0.5*(A + B - 0.5*A*B*R1)
+            return 2.*D - ((1. + R1)*D*D)
+    if not reverse:
+        R2 = 1./R1
+        NTU2 = NTU1/R2
+        P2 = temperature_effectiveness_plate(R1=R2, NTU1=NTU2, Np1=Np2, Np2=Np1,
+                                             counterflow=counterflow, 
+                                             passes_counterflow=passes_counterflow, 
+                                             reverse=True)
+        P1 = P2*R2
+        return P1
+    raise Exception('Supported number of passes does not have a formula available')
+
+    
+    
+    
 
 NTU_from_G_2_unoptimal = {'offset': [7.5e-08, 1.5e-07, 3e-07, 6e-07, 1.2e-06, 2.4e-06, 4.8e-06, 9.6e-06, 1.92e-05, 3.84e-05, 7.68e-05, 0.0001536, 0.0003072, 0.0006144, 0.0012288, 0.0024576, 0.0049152, 0.0098304, 0.0196608, 0.0393216, 0.0786432, 0.1572864, 0.3145728, 0.6291456, 1.2582912, 2.5165824, 5.0331648, 10.0663296, 20.1326592, 40.2653184],
                           'p': [[9.3109303298284e+30, 4.5398767600969564e+24, 3.170118237710197e+17, -3255582028.524916, 34.197848452021496], [-8.46153002817336e+28, -1.0511619908571051e+23, -2.3976144993098692e+16, -1034582403.5113205, 32.811553084100204], [-3.692290021887378e+26, -5.30074247026417e+20, 234950665825511.66, 234036525.3056526, 31.425256801589224], [1.4101005965316078e+28, 1.0930781123070384e+22, -9490843606104960.0, -687356679.2161583, 30.038958306458262], [1.1198607183619476e+26, 9.001227755812281e+20, 1017933807262523.2, -168239785.08146304, 28.652656224909716], [1.8733467374857413e+24, 2.16994206245589e+19, -23441677453694.316, -213471555.46532023, 27.26634769739391], [1.594512099343422e+23, 2.569743318791424e+18, 5271709548496.723, -5147454.137281263, 25.88002614751128], [-1.2818229253935495e+24, -2.5019202614319935e+19, 71832292062919.38, 50148771.068874955, 24.4936812282376], [4.526495011307341e+20, 6.168512896379921e+16, 1007792749560.6382, -6081385.246719949, 23.107292341412784], [1.4451218664677962e+19, 4087331357766796.5, 180399075525.08047, 953934.9722401868, 21.720822001301844], [-1.3869417526718001e+19, -9157013351748946.0, -1029788858691.2903, -22579365.615234394, 20.33420262961592], [1.6729941515616177e+18, 324820952603289.25, -94618051655.88188, -1432919.5602435556, 18.947312380207574], [881377079365588.4, 3273908659562.771, 2305553502.530553, 477247.7586482068, 17.5599347216217], [-2294712887420.415, 24687543307.214867, 107469238.04231983, 88609.84525340016, 16.171694155750217], [122305930099635.03, 705130609607.45, 635856450.1020223, 115721.47051671412, 14.78195757555553], [4611767764.284328, -109441848.88329092, -1372356.3121382846, 1370.2740105504195, 13.389707907074477], [10777953775.11337, 1102063066.2696054, 16002550.06022829, 59325.3942992436, 11.993442742792807], [177557128.393412, 49828237.759808525, 1637511.0220782922, 13518.269190691442, 10.591302235163992], [-11319417.192115635, -4781582.158127945, -231145.86260741882, -2382.4032164871915, 9.181987939464335], [4453125.420063021, 3506923.02340456, 273936.10624431854, 4847.528594239127, 7.7676966035380675], [13382.567476165745, 21430.76649959107, 2674.227284505346, 103.35356016929184, 6.3607932986774065], [543.272216259408, 4094.6104229588664, 2371.7677593267967, 332.1165814161398, 4.994049687616688], [1019.6252971158917, 7258.186980145784, 2649.616182665721, -234.08989484797726, 3.726702452635227], [-0.16061952890054718, 26.475103623327957, 43.95078747890926, 10.898179144782612, 2.631460758603036], [0.09149784249886796, 4.507115402896758, 15.671800736565093, 13.267529540880941, 1.761750359230347], [-0.00015770925539570476, -0.022822040552860745, -0.16411319759532497, 0.0669124755747916, 1.126534416642668], [0.00017204089843551025, 0.016550563961219227, -0.11929008580672096, -1.7458596555122052, 0.6944621419501356], [-7.685285829457997e-05, 0.0018127599213621482, 0.2174778970361136, -0.33456541736023027, 0.41625508736123845], [9.408372464685374e-05, 0.02102006446772354, 0.00912807079932442, -0.1551911187056057, 0.24418730333772493], [5.544070897390911e-08, 9.56760771830238e-05, 0.006378971832410667, -0.003131142559408388, 0.1408475496320552]],
