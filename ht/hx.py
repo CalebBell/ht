@@ -2572,8 +2572,9 @@ def P_NTU_method(m1, m2, Cp1, Cp2, UA, T1i=None, T1o=None, T2i=None, T2o=None,
         Outlet temperature of stream 2 (tube-side), [K]
     subtype : str, optional
         The subtype of exchanger; one of 'E', 'G', 'H', 'J', 'counterflow',
-        'parallel', 'crossflow', 'crossflow, mixed 1', 'crossflow, mixed 2', or
-        'crossflow, mixed 1&2'.
+        'parallel', 'crossflow', 'crossflow, mixed 1', 'crossflow, mixed 2',
+        or 'crossflow, mixed 1&2'. For plate exchangers 'Np1/Np2' where `Np1`
+        is the number of side 1 passes and `Np2` is the number of side 2 passes
     Ntp : int, optional
         For real heat exchangers (types 'E', 'G', 'H', and 'J'), the number of 
         tube passes needss to be specified as well. Not all types support
@@ -2695,6 +2696,7 @@ def P_NTU_method(m1, m2, Cp1, Cp2, UA, T1i=None, T1o=None, T2i=None, T2o=None,
     See also
     --------
     temperature_effectiveness_basic
+    temperature_effectiveness_plate
     temperature_effectiveness_TEMA_E
     temperature_effectiveness_TEMA_G
     temperature_effectiveness_TEMA_H
@@ -2719,6 +2721,29 @@ def P_NTU_method(m1, m2, Cp1, Cp2, UA, T1i=None, T1o=None, T2i=None, T2o=None,
      'T1o': 110.09566643485729,
      'T2i': 15,
      'T2o': 84.87829918042112}
+    
+    Solve a 2 pass/2 pass plate heat exchanger with overall parallel flow and
+    its individual passes operating in parallel and known outlet temperatures.
+    Note the overall parallel part is trigered with `optimal=False`, and the
+    individual pass parallel is triggered by appending 'p' to the subtype. The 
+    subpass counterflow can be specified by appending 'c' instead to the 
+    subtype, but this is never necessary as it is the default.
+        
+    >>> pprint(P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., UA=300, 
+    ... T1o=126.7, T2o=26.7, subtype='2/2p', optimal=False))
+    {'C1': 9672.0,
+     'C2': 2755.0,
+     'NTU1': 0.031017369727047148,
+     'NTU2': 0.1088929219600726,
+     'P1': 0.028945295974795074,
+     'P2': 0.10161847646759273,
+     'Q': 32200.050307849266,
+     'R1': 3.5107078039927404,
+     'R2': 0.2848428453267163,
+     'T1i': 130.02920288542694,
+     'T1o': 126.7,
+     'T2i': 15.012141449056527,
+     'T2o': 26.7}
 
     References
     ----------
@@ -2749,8 +2774,18 @@ def P_NTU_method(m1, m2, Cp1, Cp2, UA, T1i=None, T1o=None, T2i=None, T2o=None,
         P1 = temperature_effectiveness_TEMA_H(R1=R1, NTU1=NTU1, Ntp=Ntp, optimal=optimal)
     elif subtype == 'J':
         P1 = temperature_effectiveness_TEMA_J(R1=R1, NTU1=NTU1, Ntp=Ntp)
+    elif '/' in subtype:
+        passes_counterflow = True
+        Np1, end = subtype.split('/')
+        if end[-1] in ['c','p']:
+            passes_counterflow = True if end[-1] == 'c' else False
+            end = end[0:-1]
+        Np1, Np2 = int(Np1), int(end)
+        P1 = temperature_effectiveness_plate(R1=R1, NTU1=NTU1, Np1=Np1, Np2=Np2, counterflow=optimal, passes_counterflow=passes_counterflow)
     else:
-        raise Exception("Supported types are 'E', 'G', 'H', 'J', 'counterflow', 'parallel', 'crossflow', 'crossflow, mixed 1', 'crossflow, mixed 2', and 'crossflow, mixed 1&2'")
+        raise Exception("Supported types are 'E', 'G', 'H', 'J', 'counterflow',\
+'parallel', 'crossflow', 'crossflow, mixed 1', 'crossflow, mixed 2', \
+'crossflow, mixed 1&2', or 'Np1/Np2' for plate exchangers")
     
     possible_inputs = [(T1i, T2i), (T1o, T2o), (T1i, T2o), (T1o, T2i), (T1i, T1o), (T2i, T2o)]
     if not any([i for i in possible_inputs if None not in i]):

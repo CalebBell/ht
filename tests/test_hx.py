@@ -689,6 +689,25 @@ def test_P_NTU_method():
     
     ans = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., UA=300, T1i=130, T2i=15, subtype='J', Ntp=2)
     assert_allclose(ans['Q'], 32212.185699719837)
+    
+    # Plate tests
+    ans = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., UA=300, T1i=130, T2i=15, subtype='3/1')
+    assert_allclose(ans['Q'], 32214.179745602625)
+
+    ans = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., UA=300, T1i=130, T2i=15, subtype='3/1', optimal=False)
+    assert_allclose(ans['Q'], 32210.4190840378)
+
+    ans = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., UA=300, T1i=130, T2i=15, subtype='2/2')
+    assert_allclose(ans['Q'], 32229.120739501937)
+    
+    ans = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., UA=300, T1i=130, T2i=15, subtype='2/2', optimal=False)
+    assert_allclose(ans['Q'], 32203.721238671216)
+
+    ans = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., UA=300, T1i=130, T2i=15, subtype='2/2c', optimal=False)
+    assert_allclose(ans['Q'], 32203.721238671216)
+
+    ans = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., UA=300, T1i=130, T2i=15, subtype='2/2p', optimal=False)
+    assert_allclose(ans['Q'], 32195.273806845064)
 
 
 def test_Pp():
