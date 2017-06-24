@@ -720,22 +720,45 @@ def test_temperature_effectiveness_plate():
         for b2 in [True, False]:
             P1 = temperature_effectiveness_plate(R1, NTU1, Np1=1, Np2=2, counterflow=b1, passes_counterflow=b2)
             assert_allclose(P1, 0.6439306988115887)
+            # We can check we did the conversion right as follows:
+            NTU2 = NTU1*R1 #
+            R2 = 1./R1 # switch 2
+            P2 = P1*R1
+            P2_reversed = temperature_effectiveness_plate(R2, NTU2, Np1=2, Np2=1) 
+            assert_allclose(P2, P2_reversed)
+
+            # in reverse
+            P1 = temperature_effectiveness_plate(R1, NTU1, Np1=2, Np2=1, counterflow=b1, passes_counterflow=b2) 
+            assert_allclose(P1, 0.6505342399575915)
+            
+
+
     
     # 1 pass/3 pass, counterflow
     for b1 in [True, False]:
         P1 = temperature_effectiveness_plate(R1, NTU1, Np1=1, Np2=3, counterflow=True, passes_counterflow=b1)
         assert_allclose(P1, 0.6491132138517642)
+        # In reverse
+        P1 = temperature_effectiveness_plate(R1, NTU1, Np1=3, Np2=1, counterflow=True, passes_counterflow=b1)
+        assert_allclose(P1, 0.6565261377239298)
     
     # 1 pass/3 pass, parallel
     for b1 in [True, False]:
         P1 = temperature_effectiveness_plate(R1, NTU1, Np1=1, Np2=3, counterflow=False, passes_counterflow=b1)
         assert_allclose(P1, 0.6385443460862099)
+        # in reverse
+        P1 = temperature_effectiveness_plate(R1, NTU1, Np1=3, Np2=1, counterflow=False, passes_counterflow=b1)
+        assert_allclose(P1, 0.6459675147406085)
     
     # 1 pass/4 pass
     for b1 in [True, False]:
         for b2 in [True, False]:
             P1 = temperature_effectiveness_plate(R1, NTU1, Np1=1, Np2=4, counterflow=b1, passes_counterflow=b2)
             assert_allclose(P1, 0.6438068496552443)
+            # In reverse
+            P1 = temperature_effectiveness_plate(R1, NTU1, Np1=4, Np2=1, counterflow=b1, passes_counterflow=b2)
+            assert_allclose(P1, 0.6515539888566283)
+            
             
             
     # Four different results for 4 passes
@@ -754,6 +777,12 @@ def test_temperature_effectiveness_plate():
         assert_allclose(P1, 0.67478876724034)
         P1 = temperature_effectiveness_plate(R1, NTU1, Np1=2, Np2=3, counterflow=False, passes_counterflow=b1)
         assert_allclose(P1, 0.6102922060616937)
+        # In reverse
+        P1 = temperature_effectiveness_plate(R1, NTU1, Np1=3, Np2=2, counterflow=True, passes_counterflow=b1)
+        assert_allclose(P1, 0.675522913050678)
+        P1 = temperature_effectiveness_plate(R1, NTU1, Np1=3, Np2=2, counterflow=False, passes_counterflow=b1)
+        assert_allclose(P1, 0.6105764872072659)
+    
     
     # 2-4 counterflow
     for b1 in [True, False]:
@@ -761,6 +790,11 @@ def test_temperature_effectiveness_plate():
         assert_allclose(P1, 0.6777107269336475)
         P1 = temperature_effectiveness_plate(R1, NTU1, Np1=2, Np2=4, counterflow=False, passes_counterflow=b1)
         assert_allclose(P1, 0.6048585344522575)
+        # In reverse
+        P1 = temperature_effectiveness_plate(R1, NTU1, Np1=4, Np2=2, counterflow=True, passes_counterflow=b1)
+        assert_allclose(P1, 0.6786601861219819)
+        P1 = temperature_effectiveness_plate(R1, NTU1, Np1=4, Np2=2, counterflow=False, passes_counterflow=b1)
+        assert_allclose(P1, 0.6054166111196166)
 
 
 def test_NTU_from_P_basic():

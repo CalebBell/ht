@@ -2103,14 +2103,21 @@ def temperature_effectiveness_plate(R1, NTU1, Np1, Np2, counterflow=True,
             D = 0.5*(A + B - 0.5*A*B*R1)
             return 2.*D - ((1. + R1)*D*D)
     if not reverse:
+        # only the assymetric cases will be able to solve by flipping things
+        # Note that asymmetric performs differently depending on the arguments
+        # The user still needs to input R1, NTU1 for side 1
+        # so if they want to do a 3-1 instead of a 1-3 as is implemented here
+        # They give R1 and NTU1 for "3 pass" side instead of the "1 pass" side 
+        # and will get back P1 for the "3 pass" side.
         R2 = 1./R1
-        NTU2 = NTU1/R2
+        NTU2 = NTU1*R1
         P2 = temperature_effectiveness_plate(R1=R2, NTU1=NTU2, Np1=Np2, Np2=Np1,
                                              counterflow=counterflow, 
                                              passes_counterflow=passes_counterflow, 
                                              reverse=True)
         P1 = P2*R2
         return P1
+    
     raise Exception('Supported number of passes does not have a formula available')
 
     
