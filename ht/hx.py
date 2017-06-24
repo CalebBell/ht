@@ -1831,7 +1831,34 @@ def temperature_effectiveness_TEMA_E(R1, NTU1, Ntp=1, optimal=True):
 
 def temperature_effectiveness_plate(R1, NTU1, Np1, Np2, counterflow=True, 
                                     passes_counterflow=True, reverse=False):
-    r'''
+    r'''Returns the temperature effectiveness `P1` of side 1 of a plate heat 
+    exchanger with a specified side 1 heat capacity ratio `R1`, side 1 number
+    of transfer units `NTU1`, number of passes on sides 1 and 2 (respectively
+    `Np1` and `Np2`). 
+        
+    For all cases, the function also takes as arguments whether the exchanger 
+    is setup in an overall counter or parallel orientation `counterflow`, and 
+    whether or not individual stream passes are themselves counterflow or
+    parallel. 
+    
+    The 20 supported cases are as follows. (the first number of sides listed
+    refers to side 1, and the second number refers to side 2):
+        
+    * 1 pass/1 pass parallelflow
+    * 1 pass/1 pass counterflow
+    * 1 pass/2 pass
+    * 1 pass/3 pass or 3 pass/1 pass (with the two end passes in parallel)
+    * 1 pass/3 pass or 3 pass/1 pass (with the two end passes in counterflow)
+    * 1 pass/4 pass 
+    * 2 pass/2 pass, overall parallelflow, individual passes in parallel 
+    * 2 pass/2 pass, overall parallelflow, individual passes counterflow
+    * 2 pass/2 pass, overall counterflow, individual passes parallelflow 
+    * 2 pass/2 pass, overall counterflow, individual passes counterflow 
+    * 2 pass/3 pass or 3 pass/2 pass, overall parallelflow 
+    * 2 pass/3 pass or 3 pass/2 pass, overall counterflow
+    * 2 pass/4 pass or 4 pass/2 pass, overall parallel flow
+    * 2 pass/4 pass or 4 pass/2 pass, overall counterflow flow
+    
     For all plate heat exchangers, there are two common formulas used by most
     of the expressions.
     
@@ -1839,6 +1866,10 @@ def temperature_effectiveness_plate(R1, NTU1, Np1, Np2, counterflow=True,
         P_p(x, y) = \frac{1 - \exp[-x(1 + y)]}{1 + y}
         
         P_c(x, y) = \frac{1 - \exp[-x(1 - y)]}{1 - y\exp[-x(1 - y)]}
+        
+    The main formulas used are as follows. Note that for some cases such as
+    4 pass/2 pass, the formula is not shown because it is that of 2 pass/4 
+    pass, but with R1, NTU1, and P1 conversions.
         
     For 1 pass/1 pass paralleflow (streams symmetric):
         
@@ -1849,7 +1880,7 @@ def temperature_effectiveness_plate(R1, NTU1, Np1, Np2, counterflow=True,
     
     .. math::
         P_1 = P_c(NTU_1, R_1)
-    
+            
     For 1 pass/2 pass (any of the four possible configurations):
         
     .. math::
@@ -1859,7 +1890,7 @@ def temperature_effectiveness_plate(R1, NTU1, Np1, Np2, counterflow=True,
         
         B = P_c(NTU_1, 0.5R_1)
         
-    For 1 pass/3 pass (two end passes in parallel):
+    For 1 pass/3 pass (with the two end passes in parallel):
         
     .. math::
         P_1 = \frac{1}{3}\left[B + A\left(1 - \frac{R_1 B}{3}\right)\left(2 
@@ -1869,7 +1900,7 @@ def temperature_effectiveness_plate(R1, NTU1, Np1, Np2, counterflow=True,
         
         B = P_c\left(NTU_1, \frac{R_1}{3}\right)
         
-    For 1 pass/3 pass (two end passes in counterflow):
+    For 1 pass/3 pass (with the two end passes in counterflow):
         
     .. math::
         P_1 = \frac{1}{3}\left[A + B\left(1 - \frac{R_1 A}{3}\right)\left(2
@@ -1994,8 +2025,8 @@ def temperature_effectiveness_plate(R1, NTU1, Np1, Np2, counterflow=True,
         In addition to the overall flow direction, in some cases individual 
         passes may be in counter or parallel flow; this controlls that [-]
     reverse : bool
-        Used internally to allow the 1-4 formula to work for the 4-1 flow case,
-        without having to duplicate the code [-]
+        Used **internally only** to allow cases like the 1-4 formula to work  
+        for the 4-1 flow case, without having to duplicate the code [-]
 
     Returns
     -------
@@ -2005,10 +2036,33 @@ def temperature_effectiveness_plate(R1, NTU1, Np1, Np2, counterflow=True,
 
     Notes
     -----
+    For diagrams of these heat exchangers, see [3]_.
+    In all cases, each pass is assumed to be made up of an infinite number
+    of plates. The fluid velocities must be uniform across the plate channels,
+    and the flow must be uniformly distributed between the channels. The heat
+    transfer coefficient is also assumed constant.
+    
+    The defaults of counterflow=True and passes_counterflow=True will always
+    result in the most efficient heat exchanger option, normally what is
+    desired.
+    
+    If a number of passes which is nor supported is provided, an exception is
+    raised.
 
     Examples
     --------
-
+    Three passes on side 1; one pass on side 2; two end passes in counterflow
+    orientation.
+    
+    >>> temperature_effectiveness_plate(R1=1/3., NTU1=1., Np1=3, Np2=1)
+    0.5743514352720835
+    
+    If the same heat exchanger (in terms of NTU1 and R1) were operating with
+    sides 1 and 2 switched, a slightly less efficient design results.
+    
+    >>> temperature_effectiveness_plate(R1=1/3., NTU1=1., Np1=1, Np2=3)
+    0.5718726757657066
+    
     References
     ----------
     .. [1] Shah, Ramesh K., and Dusan P. Sekulic. Fundamentals of Heat 

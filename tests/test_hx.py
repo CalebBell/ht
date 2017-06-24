@@ -797,6 +797,10 @@ def test_temperature_effectiveness_plate():
         assert_allclose(P1, 0.6054166111196166)
 
 
+    with pytest.raises(Exception):
+        temperature_effectiveness_plate(R1=1/3., NTU1=1., Np1=3, Np2=3)
+        
+        
 def test_NTU_from_P_basic():
     # Analytical result for counterflow
     R1s = np.logspace(np.log10(2E-5), np.log10(1E2), 10000)
