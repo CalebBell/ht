@@ -41,7 +41,7 @@ __all__ = ['effectiveness_from_NTU', 'NTU_from_effectiveness', 'calc_Cmin',
 'temperature_effectiveness_TEMA_H', 'temperature_effectiveness_TEMA_G',
 'temperature_effectiveness_TEMA_E', 'temperature_effectiveness_plate', 
 'P_NTU_method',  'NTU_from_P_basic',
-'NTU_from_P_J', 'NTU_from_P_G', 'NTU_from_P_E',
+'NTU_from_P_J', 'NTU_from_P_G',
 'check_tubing_TEMA', 'get_tube_TEMA',
 'DBundle_min', 'shell_clearance', 'baffle_thickness', 'D_baffle_holes',
 'L_unsupported_max', 'Ntubes_Perrys', 'Ntubes_VDI', 'Ntubes_Phadkeb', 
@@ -49,11 +49,6 @@ __all__ = ['effectiveness_from_NTU', 'NTU_from_effectiveness', 'calc_Cmin',
 'Ntubes_HEDH', 'Ntubes', 'D_for_Ntubes_VDI', 'TEMA_heads', 'TEMA_shells', 
 'TEMA_rears', 'TEMA_services', 'baffle_types', 'triangular_Ns', 
 'triangular_C1s', 'square_Ns', 'square_C1s']
-
-
-# TODO: Implement selection algorithms for heat exchangers from
-# Systematic Procedure for Selection of Heat Exchangers
-# 10.1243/PIME_PROC_1983_197_006_02
 
 
 def effectiveness_from_NTU(NTU, Cr, subtype='counterflow'):
@@ -2739,10 +2734,6 @@ def NTU_from_P_E(P1, R1, Ntp, optimal=True):
         # There are actualy two roots but one of them is complex
         x1 = R1*R1 + 1.
         return 2.*log(((P1*R1 - P1*x1**0.5 + P1 - 2.)/(P1*R1 + P1*x1**0.5 + P1 - 2.))**0.5)*(x1)**-.5
-
-
-
-
 
 
 def P_NTU_method(m1, m2, Cp1, Cp2, UA, T1i=None, T1o=None, T2i=None, T2o=None, 

@@ -941,6 +941,9 @@ def test_NTU_from_P_basic():
 
 
 def test_NTU_from_P_E():
+    from ht.hx import NTU_from_P_E
+    # not yet documented
+    
     # 1 tube pass AKA counterflow
     R1s = np.logspace(np.log10(2E-5), np.log10(1E2), 10000)
     NTU1s = np.logspace(np.log10(1E-4), np.log10(1E2), 10000)
