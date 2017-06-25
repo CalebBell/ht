@@ -1228,6 +1228,71 @@ def test_NTU_from_P_plate():
     with pytest.raises(Exception):
         NTU_from_P_plate(P1=.091, R1=10, Np1=1, Np2=1, counterflow=False)
 
+    # 1-2 True True
+    R1s = np.logspace(np.log10(2E-5), np.log10(10), 10000) # too high R1 causes overflows
+    NTU1s = np.logspace(np.log10(1E-4), np.log10(99), 10000)
+    
+    tot = 0
+    seed(0)
+    for i in range(100):
+        R1 = float(choice(R1s))
+        NTU1 = float(choice(NTU1s))
+        try:
+            P1 = temperature_effectiveness_plate(R1=R1, NTU1=NTU1, Np1=1, Np2=2)
+            NTU1_calc = NTU_from_P_plate(P1, R1, Np1=1, Np2=2)
+            P1_calc = temperature_effectiveness_plate(R1=R1, NTU1=NTU1_calc, Np1=1, Np2=2)
+        except (OverflowError, ValueError):
+            continue
+        assert_allclose(P1, P1_calc)
+        tot +=1
+    assert tot > 97
+    
+    tot = 0
+    for i in range(100):
+        R1 = float(choice(R1s))
+        NTU1 = float(choice(NTU1s))
+        try:
+            P1 = temperature_effectiveness_plate(R1=R1, NTU1=NTU1, Np1=1, Np2=3)
+            NTU1_calc = NTU_from_P_plate(P1, R1, Np1=1, Np2=3)
+            P1_calc = temperature_effectiveness_plate(R1=R1, NTU1=NTU1_calc, Np1=1, Np2=3)
+        except (OverflowError, ValueError):
+            continue
+        assert_allclose(P1, P1_calc)
+        tot +=1
+    assert tot >= 99
+
+    tot = 0
+    for i in range(100):
+        R1 = float(choice(R1s))
+        NTU1 = float(choice(NTU1s))
+        try:
+            P1 = temperature_effectiveness_plate(R1=R1, NTU1=NTU1, Np1=1, Np2=3, counterflow=False)
+            NTU1_calc = NTU_from_P_plate(P1, R1, Np1=1, Np2=3, counterflow=False)
+            P1_calc = temperature_effectiveness_plate(R1=R1, NTU1=NTU1_calc, Np1=1, Np2=3, counterflow=False)
+        except (OverflowError, ValueError):
+            continue
+        assert_allclose(P1, P1_calc)
+        tot +=1
+    assert tot >= 99
+
+    tot = 0
+    for i in range(100):
+        R1 = float(choice(R1s))
+        NTU1 = float(choice(NTU1s))
+        try:
+            P1 = temperature_effectiveness_plate(R1=R1, NTU1=NTU1, Np1=1, Np2=4)
+            NTU1_calc = NTU_from_P_plate(P1, R1, Np1=1, Np2=4)
+            P1_calc = temperature_effectiveness_plate(R1=R1, NTU1=NTU1_calc, Np1=1, Np2=4)
+        except (OverflowError, ValueError):
+            continue
+        
+        assert_allclose(P1, P1_calc)
+        tot +=1
+    assert tot >= 99
+    
+    # 2-2 pass cases
+
+
 def test_DBundle_min():
     assert_allclose(DBundle_min(0.0254), 1)
     assert_allclose(DBundle_min(0.005), .1)

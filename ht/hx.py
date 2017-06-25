@@ -2914,7 +2914,7 @@ def NTU_from_P_H(P1, R1, Ntp, optimal=True):
 def NTU_from_P_plate(P1, R1, Np1, Np2, counterflow=True, 
                      passes_counterflow=True):
     NTU_min = 1E-11
-    NTU_max = 1000
+    NTU_max = 100
     function = temperature_effectiveness_plate
     if Np1 == 1 and Np2 == 1 and counterflow:
         try:
@@ -2928,13 +2928,13 @@ def NTU_from_P_plate(P1, R1, Np1, Np2, counterflow=True,
         except ValueError:
             raise Exception('The maximum P1 obtainable at the specified R1 is %f at the limit of NTU1=inf.' %Pp(1E10, R1))
     elif Np1 == 1 and Np2 == 2:
-        pass
+        NTU_max = 100.
     elif Np1 == 1 and Np2 == 3 and counterflow:
-        pass
+        NTU_max = 100.
     elif Np1 == 1 and Np2 == 3 and not counterflow:
-        pass
+        NTU_max = 100.
     elif Np1 == 1 and Np2 == 4:
-        pass
+        NTU_max = 100
     elif Np1 == 2 and Np2 == 2:
         if counterflow and passes_counterflow:
             pass # analytical soln
