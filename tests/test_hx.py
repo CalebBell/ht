@@ -946,7 +946,6 @@ def test_NTU_from_P_basic():
 
 @pytest.mark.mpmath
 def test_NTU_from_P_E():
-    from ht.hx import NTU_from_P_E
     # not yet documented
     
     # 1 tube pass AKA counterflow
@@ -972,7 +971,7 @@ def test_NTU_from_P_E():
         tot +=1
     assert tot >= 85
     
-    # 2 tube passes (optimal arangement)
+    # 2 tube passes (optimal arangement) (analytical)
     R1 = 1.1
     NTU1 = 10
     P1 = temperature_effectiveness_TEMA_E(R1=R1, NTU1=NTU1, Ntp=2, optimal=True)
@@ -980,6 +979,108 @@ def test_NTU_from_P_E():
     assert_allclose(P1, P1_expect)
     NTU1_calc = NTU_from_P_E(P1, R1, Ntp=2, optimal=True)
     assert_allclose(NTU1_calc, NTU1)
+
+    # 2 tube pass (unoptimal)
+    tot = 0
+    for i in range(100):
+        R1 = float(choice(R1s))
+        NTU1 = float(choice(NTU1s))
+        try:
+            # Not all of the guesses work forward; some overflow, some divide by 0
+            P1 = temperature_effectiveness_TEMA_E(R1=R1, NTU1=NTU1, Ntp=2, optimal=False)
+            # Backwards, it's the same divide by zero or log(negative number)
+            NTU1_calc = NTU_from_P_E(P1, R1, Ntp=2, optimal=False)
+        except (ValueError, OverflowError, ZeroDivisionError):
+            continue
+        # Again, multiple values of NTU1 can produce the same P1
+        try:
+            P1_calc = temperature_effectiveness_TEMA_E(R1=R1, NTU1=NTU1_calc, Ntp=2, optimal=False)
+        except (ZeroDivisionError):
+            continue
+        assert_allclose(P1, P1_calc)
+        tot +=1
+    assert tot >= 90
+    
+    # At the default mpmath precision, the following will predict a value larger
+    # than one
+    bad_P1 = temperature_effectiveness_TEMA_E(R1=1E-8 , NTU1=19.60414246043446, Ntp=2, optimal=False)
+    assert_allclose(bad_P1, 1.0000000050247593)
+
+    # 4 pass
+    for Ntp in [4, 6, 8, 10, 12]:
+        tot = 0
+        for i in range(100):
+            R1 = float(choice(R1s))
+            NTU1 = float(choice(NTU1s))
+            try:
+                P1 = temperature_effectiveness_TEMA_E(R1=R1, NTU1=NTU1, Ntp=Ntp)
+                NTU1_calc = NTU_from_P_E(P1, R1, Ntp=Ntp)
+            except ValueError:
+                # The case where with mpmath being used, the result is too high for
+                # the bounded solver to be able to solve it
+                continue
+            P1_calc = temperature_effectiveness_TEMA_E(R1=R1, NTU1=NTU1_calc, Ntp=Ntp)
+            assert_allclose(P1, P1_calc)
+            tot +=1
+        assert tot >= 70
+
+    # 3 pass optimal and not optimal
+    R1s = np.logspace(np.log10(2E-5), np.log10(1E1), 10000)
+    NTU1s = np.logspace(np.log10(1E-4), np.log10(1E1), 10000)
+    
+    seed(0)
+    for optimal in [True, False]:
+        tot = 0
+        for i in range(100):
+            R1 = float(choice(R1s))
+            NTU1 = float(choice(NTU1s))
+            try:
+                P1 = temperature_effectiveness_TEMA_E(R1=R1, NTU1=NTU1, Ntp=3, optimal=optimal)
+                NTU1_calc = NTU_from_P_E(P1, R1, Ntp=3, optimal=optimal)
+            except (ValueError):
+                # The case where with mpmath being used, the result is too high for
+                # the bounded solver to be able to solve it
+                continue
+            # Again, multiple values of NTU1 can produce the same P1
+            P1_calc = temperature_effectiveness_TEMA_E(R1=R1, NTU1=NTU1_calc, Ntp=3, optimal=optimal)
+            assert_allclose(P1, P1_calc)
+            tot +=1
+        assert tot >= 97
+
+    with pytest.raises(Exception):
+        NTU_from_P_E(P1=1, R1=1, Ntp=17)
+
+
+@pytest.mark.mpmath
+def test_NTU_from_P_H():
+    # Within these limits everything is fund
+    R1s = np.logspace(np.log10(2E-5), np.log10(1E1), 10000)
+    NTU1s = np.logspace(np.log10(1E-4), np.log10(10), 10000)
+    
+    seed(0)
+    for i in range(100):
+        R1 = float(choice(R1s))
+        NTU1 = float(choice(NTU1s))
+        P1 = temperature_effectiveness_TEMA_H(R1=R1, NTU1=NTU1, Ntp=1)
+        NTU1_calc = NTU_from_P_H(P1, R1, Ntp=1)
+        P1_calc = temperature_effectiveness_TEMA_H(R1=R1, NTU1=NTU1_calc, Ntp=1)
+        assert_allclose(P1, P1_calc)
+        
+    for i in range(100):
+        R1 = float(choice(R1s))
+        NTU1 = float(choice(NTU1s))
+        P1 = temperature_effectiveness_TEMA_H(R1=R1, NTU1=NTU1, Ntp=2)
+        NTU1_calc = NTU_from_P_H(P1, R1, Ntp=2)
+        P1_calc = temperature_effectiveness_TEMA_H(R1=R1, NTU1=NTU1_calc, Ntp=2)
+        assert_allclose(P1, P1_calc)
+
+    for i in range(100):
+        R1 = float(choice(R1s))
+        NTU1 = float(choice(NTU1s))
+        P1 = temperature_effectiveness_TEMA_H(R1=R1, NTU1=NTU1, Ntp=2, optimal=False)
+        NTU1_calc = NTU_from_P_H(P1, R1, Ntp=2, optimal=False)
+        P1_calc = temperature_effectiveness_TEMA_H(R1=R1, NTU1=NTU1_calc, Ntp=2, optimal=False)
+        assert_allclose(P1, P1_calc, rtol=1E-6)
 
 
 
