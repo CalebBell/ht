@@ -2582,7 +2582,6 @@ def NTU_from_P_basic(P1, R1, subtype='crossflow'):
     return _NTU_from_P_solver(P1, R1, NTU_min, NTU_max, function, subtype=subtype)
 
 
-
 def NTU_from_P_G(P1, R1, Ntp, optimal=True):
     r'''Returns the number of transfer units of a TEMA G type heat exchanger
     with a specified (for side 1) thermal effectiveness `P1`, heat capacity 
@@ -2735,6 +2734,88 @@ def NTU_from_P_J(P1, R1, Ntp):
 
 
 def NTU_from_P_E(P1, R1, Ntp, optimal=True):
+    r'''Returns the number of transfer units of a TEMA E type heat exchanger
+    with a specified (for side 1) thermal effectiveness `P1`, heat capacity 
+    ratio `R1`, the number of tube passes `Ntp`, and for the two-pass case
+    whether or not the inlets are arranged optimally. The supported cases are 
+    as follows:
+        
+    * 1-1 TEMA E, shell fluid mixed
+    * 1-2 TEMA E, shell fluid mixed (this configuration is symmetric)
+    * 1-2 TEMA E, shell fluid split into two steams individually mixed
+    * 1-3 TEMA E, shell and tube fluids mixed, one parallel pass and two 
+      counterflow passes (efficient)
+    * 1-3 TEMA E, shell and tube fluids mixed, two parallel passes and one 
+      counteflow pass (inefficient)
+    * 1-N TEMA E, shall and tube fluids mixed, efficient counterflow 
+      orientation, N an even number
+      
+    Two of these cases have analytical solutions; the rest use numerical 
+    solvers of varying quality.
+    
+    The analytical solution to 1-1 TEMA E, shell fluid mixed (the same as pure
+    counterflow):
+        
+    .. math::
+        NTU_1 = - \frac{1}{R_{1} - 1} \log{\left (\frac{P_{1} R_{1} - 1}{P_{1} 
+        - 1} \right )}
+    
+    1-2 TEMA E, shell fluid mixed:
+        
+    .. math::
+        NTU_1 = \frac{2}{\sqrt{R_{1}^{2} + 1}} \log{\left (\sqrt{\frac{P_{1} 
+        R_{1} - P_{1} \sqrt{R_{1}^{2} + 1} + P_{1} - 2}{P_{1} R_{1} + P_{1} 
+        \sqrt{R_{1}^{2} + 1} + P_{1} - 2}} \right )}
+        
+    Parameters
+    ----------
+    P1 : float
+        Thermal effectiveness of the heat exchanger in the P-NTU method,
+        calculated with respect to stream 1 [-]
+    R1 : float
+        Heat capacity ratio of the heat exchanger in the P-NTU method,
+        calculated with respect to stream 1 (shell side = 1, tube side = 2) [-]
+    Ntp : int
+        Number of tube passes, 1, 2, 3, 4, or an even number [-]
+    optimal : bool, optional
+        Whether or not the arrangement is configured to give more of a
+        countercurrent and efficient (True) case or an inefficient parallel
+        case, [-]
+
+    Returns
+    -------
+    NTU1 : float
+        Thermal number of transfer units of the heat exchanger in the P-NTU 
+        method, calculated with respect to stream 1 (shell side = 1, tube side
+        = 2) [-]
+
+    Notes
+    -----
+    For odd numbers of tube passes greater than 3, an exception is raised. 
+    
+    For the 2 pass, unoptimal case, a bounded solver is used with NTU1 between
+    1E-11 and 100; the solution to any feasible P1 was found to lie in there.
+    For the 4 or a higher even number of pass case, the upper limit on NTU1
+    is 1000; this solver works pretty well, but as NTU1 reaches its limit the
+    change in P1 is so small a smaller but also correct solution is often 
+    returned.
+    
+    For both the optimal and unoptimal 3 tube pass case, a solution is only
+    returned if NTU1 is between 1E-11 and 10. These functions are extremely
+    mathematically frustrating, and as NTU1 rises above 10 catastrophic 
+    cancellation quickly results in this expression finding a ZeroDivisionError.
+    The use of arbitrary prevision helps little - quickly 1000 digits are needed,
+    and then 1000000 digits, and so one. Using SymPy's rational number support
+    works better but is extremely slow for these complicated solutions.
+    Nevertheless, so long as a solution is between 1E-11 and 10, the solver is
+    quite robust.
+
+    Examples
+    --------
+    >>> NTU_from_P_E(P1=.58, R1=1/3., Ntp=2)
+    1.0381979240816719
+
+    '''
     NTU_min = 1E-11
     function = temperature_effectiveness_TEMA_E
     if Ntp == 1:
@@ -2764,6 +2845,59 @@ def NTU_from_P_E(P1, R1, Ntp, optimal=True):
 
 
 def NTU_from_P_H(P1, R1, Ntp, optimal=True):
+    r'''Returns the number of transfer units of a TEMA H type heat exchanger
+    with a specified (for side 1) thermal effectiveness `P1`, heat capacity 
+    ratio `R1`, the number of tube passes `Ntp`, and for the two-pass case
+    whether or not the inlets are arranged optimally. The supported cases are 
+    as follows:
+        
+    * One tube pass (tube fluid split into two streams individually mixed,  
+      shell fluid mixed)
+    * Two tube passes (shell fluid mixed, tube pass mixed between passes)
+    * Two tube passes (shell fluid mixed, tube pass mixed between passes, inlet
+      tube side next to inlet shell-side)
+                    
+    Parameters
+    ----------
+    P1 : float
+        Thermal effectiveness of the heat exchanger in the P-NTU method,
+        calculated with respect to stream 1 [-]
+    R1 : float
+        Heat capacity ratio of the heat exchanger in the P-NTU method,
+        calculated with respect to stream 1 (shell side = 1, tube side = 2) [-]
+    Ntp : int
+        Number of tube passes, 1, or 2, [-]
+    optimal : bool, optional
+        Whether or not the arrangement is configured to give more of a
+        countercurrent and efficient (True) case or an inefficient parallel
+        case, [-]
+        
+    Returns
+    -------
+    NTU1 : float
+        Thermal number of transfer units of the heat exchanger in the P-NTU 
+        method, calculated with respect to stream 1 (shell side = 1, tube side
+        = 2) [-]
+
+    Notes
+    -----
+    For numbers of tube passes greater than 1 or 2, an exception is raised.
+    
+    Only numerical solutions are available for this function. For the case of
+    1 tube pass or the optimal 2 tube pass, the function is monotonic and a 
+    bounded solver is used with NTU1 between 1E-11 and 100; it will find the
+    solution anywhere in that range. 
+    
+    For the non-optimal 2 pass case, the function is not monotonic and a pade
+    approximation was used to obtain a curve of NTU1s which give the maximum
+    P1s which is used as the upper bound in the bounded solver. The lower 
+    bound is still 1E-11. These solvers are all robust. 
+
+    Examples
+    --------
+    >>> NTU_from_P_H(P1=0.573, R1=1/3., Ntp=1)
+    0.9997628696881165
+    '''
     NTU_min = 1E-11
     function = temperature_effectiveness_TEMA_H
     if Ntp == 1:
