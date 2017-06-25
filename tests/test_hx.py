@@ -638,7 +638,8 @@ def test_temperature_effectiveness_TEMA_E():
     P1 = 4*(2*(1 + R1) + D*A + R1*B)**-1
     assert_allclose(P1, 0.56888933865756)
     
-    
+
+@pytest.mark.mpmath
 def test_P_NTU_method():
     # Counterflow case
     ans = effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, subtype='counterflow', Tci=15, Tco=85, Tho=110.06100082712986)
@@ -819,7 +820,8 @@ def test_temperature_effectiveness_plate():
     with pytest.raises(Exception):
         temperature_effectiveness_plate(R1=1/3., NTU1=1., Np1=3, Np2=3)
         
-        
+    
+@pytest.mark.mpmath
 def test_NTU_from_P_basic():
     # Analytical result for counterflow
     R1s = np.logspace(np.log10(2E-5), np.log10(1E2), 10000)
@@ -940,6 +942,7 @@ def test_NTU_from_P_basic():
         NTU_from_P_basic(P1=.975, R1=.1, subtype='BADTYPE')
 
 
+@pytest.mark.mpmath
 def test_NTU_from_P_E():
     from ht.hx import NTU_from_P_E
     # not yet documented
@@ -978,7 +981,7 @@ def test_NTU_from_P_E():
 
 
 
-
+@pytest.mark.mpmath
 def test_NTU_from_P_G():
     # 1 tube pass, random point
     R1 = 1.1
@@ -1034,7 +1037,8 @@ def test_NTU_from_P_G():
     with pytest.raises(Exception):
         NTU_from_P_G(P1=.573, R1=1/3., Ntp=10)
     
-    
+
+@pytest.mark.mpmath
 def test_NTU_from_P_J():
     # Run the gamut testing all the solvers
     R1s = np.logspace(np.log10(2E-5), np.log10(1E2), 10000)

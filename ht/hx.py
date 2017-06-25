@@ -2425,7 +2425,12 @@ def _NTU_from_P_objective(NTU1, R1, P1, function, **kwargs):
     try:
         P1_calc = function(R1, NTU1, **kwargs)
     except :
-        import mpmath
+        try:
+            import mpmath
+        except ImportError:
+            raise Exception('For some reverse P-NTU numerical solutions, the \
+intermediary results are ill-conditioned and do not fit in a float; mpmath must \
+be installed for tihs calculation to proceed.')
         globals()['exp'] = mpmath.exp
         P1_calc = float(function(R1, NTU1, **kwargs))
         globals()['exp'] = math.exp
