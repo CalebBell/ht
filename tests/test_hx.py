@@ -934,6 +934,10 @@ def test_NTU_from_P_basic():
     P1 = temperature_effectiveness_basic(R1=R1, NTU1=NTU1, subtype='crossflow')
     NTU1_calc = NTU_from_P_basic(P1, R1=R1, subtype='crossflow')
     assert_allclose(NTU1, NTU1_calc)
+    
+    # bad type of exchanger
+    with pytest.raises(Exception):
+        NTU_from_P_basic(P1=.975, R1=.1, subtype='BADTYPE')
 
 
 def test_NTU_from_P_E():
@@ -1024,6 +1028,9 @@ def test_NTU_from_P_G():
             tot +=1
     assert tot > 270
     
+    with pytest.raises(Exception):
+        NTU_from_P_G(P1=.573, R1=1/3., Ntp=10)
+    
     
 def test_NTU_from_P_J():
     # Run the gamut testing all the solvers
@@ -1081,7 +1088,10 @@ def test_NTU_from_P_J():
     assert_allclose(NTU1, NTU1_backwards)
     # The derivative is very large but the pade approximation is really good, ant it works
 
-test_NTU_from_P_J()
+
+    with pytest.raises(Exception):
+        # unsupported number of tube passes case
+        NTU_from_P_J(P1=.57, R1=1/3., Ntp=10)
 
 def test_DBundle_min():
     assert_allclose(DBundle_min(0.0254), 1)

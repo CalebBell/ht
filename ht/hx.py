@@ -2572,6 +2572,8 @@ def NTU_from_P_basic(P1, R1, subtype='crossflow'):
         guess = NTU_from_P_basic(P1, R1, subtype='crossflow approximate')
         to_solve = lambda NTU1 : _NTU_from_P_objective(NTU1, R1, P1, function, subtype='crossflow')
         return newton(to_solve, guess)
+    else:
+        raise Exception('Subtype not recognized.')
     return _NTU_from_P_solver(P1, R1, NTU_min, NTU_max, function, subtype=subtype)
 
 
@@ -2647,10 +2649,67 @@ def NTU_from_P_G(P1, R1, Ntp, optimal=True):
         # binary bisection process, different from the current pipeline
     elif Ntp == 2 and not optimal:
         NTU_max = _NTU_max_for_P_solver(NTU_from_G_2_unoptimal, R1)
+    else:
+        raise Exception('Supported numbers of tube passes are 1 or 2.')
     return _NTU_from_P_solver(P1, R1, NTU_min, NTU_max, function, Ntp=Ntp, optimal=optimal)
 
 
 def NTU_from_P_J(P1, R1, Ntp):
+    r'''Returns the number of transfer units of a TEMA J type heat exchanger
+    with a specified (for side 1) thermal effectiveness `P1`, heat capacity 
+    ratio `R1`, and the number of tube passes `Ntp`. The supported cases are 
+    as follows:
+        
+    * One tube pass (shell fluid mixed)
+    * Two tube passes (shell fluid mixed, tube pass mixed between passes)
+    * Four tube passes (shell fluid mixed, tube pass mixed between passes)
+    
+    Parameters
+    ----------
+    P1 : float
+        Thermal effectiveness of the heat exchanger in the P-NTU method,
+        calculated with respect to stream 1 [-]
+    R1 : float
+        Heat capacity ratio of the heat exchanger in the P-NTU method,
+        calculated with respect to stream 1 (shell side = 1, tube side = 2) [-]
+    Ntp : int
+        Number of tube passes, 1, 2, or 4, [-]
+        
+    Returns
+    -------
+    NTU1 : float
+        Thermal number of transfer units of the heat exchanger in the P-NTU 
+        method, calculated with respect to stream 1 (shell side = 1, tube side
+        = 2) [-]
+
+    Notes
+    -----
+    For numbers of tube passes that are not 1, 2, or 4, an exception is raised.
+    
+    For the 1 tube pass case, a bounded solver is used to solve the equation
+    numerically, with NTU1 ranging from 1E-11 to 1E3. NTU1 grows extremely
+    quickly near its upper limit (NTU1 diverges to infinity at this maximum, 
+    but because the solver is bounded it will only increase up to 1000 before
+    an exception is raised).
+        
+    >>> NTU_from_P_J(P1=.995024, R1=.01, Ntp=1)
+    13.940758760696617
+    >>> NTU_from_P_J(P1=.99502487562188, R1=.01, Ntp=1)
+    536.4817955951684
+    >>> NTU_from_P_J(P1=.99502487562189, R1=.01, Ntp=1)
+    Traceback (most recent call last):
+    ValueError: No solution possible gives such a high P1; maximum P1=0.995025 at NTU1=1000.000000
+    
+    For the 2 pass and 4 pass solution, a bounded solver is first use, but
+    the upper bound on P1 and the upper NTU1 limit is calculated from a pade
+    approximation performed with mpmath. These normally do not allow NTU1 to 
+    rise above 100.
+
+    Examples
+    --------
+    >>> NTU_from_P_J(P1=.57, R1=1/3., Ntp=1)
+    1.0003070138879648
+    '''
     NTU_min = 1E-11
     function = temperature_effectiveness_TEMA_J
     if Ntp == 1:
@@ -2665,6 +2724,8 @@ def NTU_from_P_J(P1, R1, Ntp):
         NTU_max = _NTU_max_for_P_solver(NTU_from_P_J_2, R1)
     elif Ntp == 4:
         NTU_max = _NTU_max_for_P_solver(NTU_from_P_J_4, R1)
+    else:
+        raise Exception('Supported numbers of tube passes are 1, 2, and 4.')
     return _NTU_from_P_solver(P1, R1, NTU_min, NTU_max, function, Ntp=Ntp)
 
 
