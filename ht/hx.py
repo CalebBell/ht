@@ -42,7 +42,7 @@ __all__ = ['effectiveness_from_NTU', 'NTU_from_effectiveness', 'calc_Cmin',
 'temperature_effectiveness_TEMA_E', 'temperature_effectiveness_plate', 
 'P_NTU_method',  'NTU_from_P_basic',
 'NTU_from_P_J', 'NTU_from_P_G', 'NTU_from_P_E', 'NTU_from_P_H',
-'check_tubing_TEMA', 'get_tube_TEMA',
+'NTU_from_P_plate', 'check_tubing_TEMA', 'get_tube_TEMA',
 'DBundle_min', 'shell_clearance', 'baffle_thickness', 'D_baffle_holes',
 'L_unsupported_max', 'Ntubes_Perrys', 'Ntubes_VDI', 'Ntubes_Phadkeb', 
 'DBundle_for_Ntubes_Phadkeb',
@@ -2909,6 +2909,56 @@ def NTU_from_P_H(P1, R1, Ntp, optimal=True):
     else:
         raise Exception('Supported numbers of tube passes are 1 and 2.')
     return _NTU_from_P_solver(P1, R1, NTU_min, NTU_max, function, Ntp=Ntp, optimal=optimal)
+
+
+def NTU_from_P_plate(P1, R1, Np1, Np2, counterflow=True, 
+                     passes_counterflow=True):
+    NTU_min = 1E-11
+    NTU_max = 1000
+    function = temperature_effectiveness_plate
+    if Np1 == 1 and Np2 == 1 and counterflow:
+        try:
+            return -log((P1*R1 - 1.)/(P1 - 1.))/(R1 - 1.)
+        except ValueError:
+            raise Exception('The maximum P1 obtainable at the specified R1 is %f at the limit of NTU1=inf.' %(1./R1))
+        
+    elif Np1 == 1 and Np2 == 1 and not counterflow:
+        try:
+            return log(-1./(P1*(R1 + 1.) - 1.))/(R1 + 1.)
+        except ValueError:
+            raise Exception('The maximum P1 obtainable at the specified R1 is %f at the limit of NTU1=inf.' %Pp(1E10, R1))
+    elif Np1 == 1 and Np2 == 2:
+        pass
+    elif Np1 == 1 and Np2 == 3 and counterflow:
+        pass
+    elif Np1 == 1 and Np2 == 3 and not counterflow:
+        pass
+    elif Np1 == 1 and Np2 == 4:
+        pass
+    elif Np1 == 2 and Np2 == 2:
+        if counterflow and passes_counterflow:
+            pass # analytical soln
+        elif counterflow and not passes_counterflow:
+            pass
+        elif not counterflow and passes_counterflow:
+            pass
+        elif not counterflow and not passes_counterflow:
+            pass
+    elif Np1 == 2 and Np2 == 3:
+        if counterflow:
+            pass
+        elif not counterflow:
+            pass
+    elif Np1 == 2 and Np2 == 4:
+        if counterflow:
+            pass
+        elif not counterflow:
+            pass
+    else:
+        raise Exception('Supported number of passes does not have a formula available')
+    return _NTU_from_P_solver(P1, R1, NTU_min, NTU_max, function, Np1=Np1, 
+                              Np2=Np2, counterflow=counterflow, 
+                              passes_counterflow=passes_counterflow)
 
 
 def P_NTU_method(m1, m2, Cp1, Cp2, UA, T1i=None, T1o=None, T2i=None, T2o=None, 

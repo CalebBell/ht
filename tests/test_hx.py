@@ -1203,6 +1203,31 @@ def test_NTU_from_P_J():
         # unsupported number of tube passes case
         NTU_from_P_J(P1=.57, R1=1/3., Ntp=10)
 
+def test_NTU_from_P_plate():
+    # 1 pass-1 pass counterflow
+    NTU1 = 3.5
+    R1 = 0.25
+    P1_calc = temperature_effectiveness_plate(R1=R1, NTU1=NTU1, Np1=1, Np2=1)
+    assert_allclose(P1_calc, 0.944668125335067)
+
+    NTU1_calc = NTU_from_P_plate(P1=P1_calc, R1=R1, Np1=1, Np2=1)
+    assert_allclose(NTU1, NTU1_calc)
+    
+    with pytest.raises(Exception):
+        NTU_from_P_plate(P1=.10001, R1=10, Np1=1, Np2=1, counterflow=True)
+
+    # 1 pass-1 pass parallelflow
+    NTU1 = 3.5
+    R1 = 0.25
+    P1_calc = temperature_effectiveness_plate(R1=R1, NTU1=NTU1, Np1=1, Np2=1, counterflow=False)
+    assert_allclose(P1_calc, 0.7899294862060529)
+    
+    NTU1_calc = NTU_from_P_plate(P1=P1_calc, R1=R1, Np1=1, Np2=1, counterflow=False)
+    assert_allclose(NTU1, NTU1_calc)
+    
+    with pytest.raises(Exception):
+        NTU_from_P_plate(P1=.091, R1=10, Np1=1, Np2=1, counterflow=False)
+
 def test_DBundle_min():
     assert_allclose(DBundle_min(0.0254), 1)
     assert_allclose(DBundle_min(0.005), .1)
