@@ -918,7 +918,9 @@ def test_NTU_from_P_basic():
         # We have to compare the re calculated P1 values, because for many values of NTU1,
         # at the initial far guess of 10000 P1 = 1 and at the random NTU1 P1 is also 1
         P1_calc = temperature_effectiveness_basic(R1=R1, NTU1=NTU1_calc, subtype='crossflow approximate')
-        assert_allclose(P1, P1_calc)
+        # In python 2.6 and 3.3 the solver doesn't converge as well, so we need
+        # to add a little tolerance
+        assert_allclose(P1, P1_calc, rtol=5E-6)
         
     # Crossflow approximate test case
     R1 = .1
