@@ -2920,13 +2920,13 @@ def NTU_from_P_plate(P1, R1, Np1, Np2, counterflow=True,
         try:
             return -log((P1*R1 - 1.)/(P1 - 1.))/(R1 - 1.)
         except ValueError:
-            raise Exception('The maximum P1 obtainable at the specified R1 is %f at the limit of NTU1=inf.' %(1./R1))
+            raise ValueError('The maximum P1 obtainable at the specified R1 is %f at the limit of NTU1=inf.' %(1./R1))
         
     elif Np1 == 1 and Np2 == 1 and not counterflow:
         try:
             return log(-1./(P1*(R1 + 1.) - 1.))/(R1 + 1.)
         except ValueError:
-            raise Exception('The maximum P1 obtainable at the specified R1 is %f at the limit of NTU1=inf.' %Pp(1E10, R1))
+            raise ValueError('The maximum P1 obtainable at the specified R1 is %f at the limit of NTU1=inf.' %Pp(1E10, R1))
     elif Np1 == 1 and Np2 == 2:
         NTU_max = 100.
     elif Np1 == 1 and Np2 == 3 and counterflow:
@@ -2937,21 +2937,28 @@ def NTU_from_P_plate(P1, R1, Np1, Np2, counterflow=True,
         NTU_max = 100
     elif Np1 == 2 and Np2 == 2:
         if counterflow and passes_counterflow:
-            pass # analytical soln
+            return NTU_from_P_plate(P1, R1, Np1=1, Np2=1, counterflow=True, 
+                                    passes_counterflow=True)
         elif counterflow and not passes_counterflow:
-            pass
+            NTU_max = 100
         elif not counterflow and passes_counterflow:
-            pass
+            pass # this one needs to be refit
         elif not counterflow and not passes_counterflow:
-            pass
+            NTU_max = 100
+#            return NTU_from_P_plate(P1, R1, Np1=1, Np2=1, counterflow=False, 
+#                                    passes_counterflow=False)
     elif Np1 == 2 and Np2 == 3:
+        # plate_2_2_overall_parallel_individual_passes_counterflow, 
+        # plate_2_3_overall_parallel
+        # plate_2_4_overall_parallel
+        # all need fits
         if counterflow:
-            pass
+            NTU_max = 100
         elif not counterflow:
             pass
     elif Np1 == 2 and Np2 == 4:
         if counterflow:
-            pass
+            NTU_max = 100
         elif not counterflow:
             pass
     else:

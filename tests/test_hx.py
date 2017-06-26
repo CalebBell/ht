@@ -1203,6 +1203,7 @@ def test_NTU_from_P_J():
         # unsupported number of tube passes case
         NTU_from_P_J(P1=.57, R1=1/3., Ntp=10)
 
+
 def test_NTU_from_P_plate():
     # 1 pass-1 pass counterflow
     NTU1 = 3.5
@@ -1292,6 +1293,100 @@ def test_NTU_from_P_plate():
     
     # 2-2 pass cases
 
+    # counterflow and not passes_counterflow
+    tot = 0
+    for i in range(100):
+        R1 = float(choice(R1s))
+        NTU1 = float(choice(NTU1s))
+        try:
+            P1 = temperature_effectiveness_plate(R1=R1, NTU1=NTU1, Np1=2, Np2=2, counterflow=True, passes_counterflow=False)
+            NTU1_calc = NTU_from_P_plate(P1, R1, Np1=2, Np2=2, counterflow=True, passes_counterflow=False)
+            P1_calc = temperature_effectiveness_plate(R1=R1, NTU1=NTU1_calc, Np1=2, Np2=2, counterflow=True, passes_counterflow=False)
+        except (OverflowError, ValueError):
+            continue
+        
+        assert_allclose(P1, P1_calc)
+        tot +=1
+    assert tot >= 99
+    
+    # not counterflow and not passes_counterflow
+    tot = 0
+    for i in range(100):
+        R1 = float(choice(R1s))
+        NTU1 = float(choice(NTU1s))
+        try:
+            P1 = temperature_effectiveness_plate(R1=R1, NTU1=NTU1, Np1=2, Np2=2, counterflow=False, passes_counterflow=False)
+            NTU1_calc = NTU_from_P_plate(P1, R1, Np1=2, Np2=2, counterflow=False, passes_counterflow=False)
+            P1_calc = temperature_effectiveness_plate(R1=R1, NTU1=NTU1_calc, Np1=2, Np2=2, counterflow=False, passes_counterflow=False)
+        except ZeroDivisionError:
+            continue
+        assert_allclose(P1, P1_calc)
+        tot +=1
+    assert tot > 95
+
+    # counterflow and passes_counterflow
+    tot = 0
+    for i in range(100):
+        R1 = float(choice(R1s))
+        NTU1 = float(choice(NTU1s))
+        try:
+            P1 = temperature_effectiveness_plate(R1=R1, NTU1=NTU1, Np1=2, Np2=2, counterflow=True, passes_counterflow=True)
+            NTU1_calc = NTU_from_P_plate(P1, R1, Np1=2, Np2=2, counterflow=True, passes_counterflow=True)
+            P1_calc = temperature_effectiveness_plate(R1=R1, NTU1=NTU1_calc, Np1=2, Np2=2, counterflow=True, passes_counterflow=True)
+        except (ValueError, ZeroDivisionError):
+            continue
+        tot +=1
+        assert_allclose(P1, P1_calc)
+    assert tot > 90
+    
+    # TODO not counterflow and passes+counterflow
+    
+    # 2-3 counterflow - random example
+    NTU1 = 1.1
+    R1 = .6
+    P1_calc = temperature_effectiveness_plate(R1=R1, NTU1=NTU1, Np1=2, Np2=3, counterflow=True)
+    assert_allclose(P1_calc, 0.5696402802155714)
+    NTU1_calc = NTU_from_P_plate(P1=P1_calc, R1=R1, Np1=2, Np2=3, counterflow=True)
+    assert_allclose(NTU1, NTU1_calc)
+    # 2-3 counterflow - methodical
+    tot = 0
+    for i in range(100):
+        R1 = float(choice(R1s))
+        NTU1 = float(choice(NTU1s))
+        try:
+            P1 = temperature_effectiveness_plate(R1=R1, NTU1=NTU1, Np1=2, Np2=3, counterflow=True)
+            NTU1_calc = NTU_from_P_plate(P1, R1, Np1=2, Np2=3, counterflow=True)
+            P1_calc = temperature_effectiveness_plate(R1=R1, NTU1=NTU1_calc, Np1=2, Np2=3, counterflow=True)
+        except (ValueError, ZeroDivisionError):
+            continue
+        tot +=1
+        assert_allclose(P1, P1_calc, rtol=5E-4)
+    assert tot > 85
+    
+    
+    # 2-4 counterflow - random example
+    NTU1 = 1.1
+    R1 = .6
+    P1_calc = temperature_effectiveness_plate(R1=R1, NTU1=NTU1, Np1=2, Np2=4, counterflow=True)
+    assert_allclose(P1_calc, 0.5717083161054717)
+    NTU1_calc = NTU_from_P_plate(P1=P1_calc, R1=R1, Np1=2, Np2=4, counterflow=True)
+    assert_allclose(NTU1, NTU1_calc)
+    # 2-4 counterflow - methodical
+    tot = 0
+    for i in range(100):
+        R1 = float(choice(R1s))
+        NTU1 = float(choice(NTU1s))
+        try:
+            P1 = temperature_effectiveness_plate(R1=R1, NTU1=NTU1, Np1=2, Np2=4, counterflow=True)
+            NTU1_calc = NTU_from_P_plate(P1, R1, Np1=2, Np2=4, counterflow=True)
+            P1_calc = temperature_effectiveness_plate(R1=R1, NTU1=NTU1_calc, Np1=2, Np2=4, counterflow=True)
+        except (ValueError, ZeroDivisionError):
+            continue
+        tot +=1
+        assert_allclose(P1, P1_calc)
+    assert tot > 95
+
+#test_NTU_from_P_plate()
 
 def test_DBundle_min():
     assert_allclose(DBundle_min(0.0254), 1)
