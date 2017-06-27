@@ -1324,7 +1324,25 @@ def test_NTU_from_P_plate():
         tot +=1
     assert tot > 95
 
-    # counterflow and passes_counterflow
+    # not counterflow and passes_counterflow
+    # random example
+    NTU1 = 1.1
+    R1 = .6
+    P1_calc = temperature_effectiveness_plate(R1=R1, NTU1=NTU1, Np1=2, Np2=2, counterflow=False, passes_counterflow=True)
+    assert_allclose(P1_calc, 0.529647502598342)
+    NTU1_calc = NTU_from_P_plate(P1=P1_calc, R1=R1, Np1=2, Np2=2, counterflow=False, passes_counterflow=True)
+    assert_allclose(NTU1, NTU1_calc)
+    # methodical
+    for i in range(100):
+        R1 = float(choice(R1s))
+        NTU1 = float(choice(NTU1s))
+        P1 = temperature_effectiveness_plate(R1=R1, NTU1=NTU1, Np1=2, Np2=2, counterflow=False, passes_counterflow=True)
+        NTU1_calc = NTU_from_P_plate(P1, R1, Np1=2, Np2=2, counterflow=False, passes_counterflow=True)
+        P1_calc = temperature_effectiveness_plate(R1=R1, NTU1=NTU1_calc, Np1=2, Np2=2, counterflow=False, passes_counterflow=True)
+        assert_allclose(P1, P1_calc)
+
+
+    # 2-2 counterflow and passes_counterflow
     tot = 0
     for i in range(100):
         R1 = float(choice(R1s))
@@ -1339,7 +1357,6 @@ def test_NTU_from_P_plate():
         assert_allclose(P1, P1_calc)
     assert tot > 90
     
-    # TODO not counterflow and passes+counterflow
     
     # 2-3 counterflow - random example
     NTU1 = 1.1
@@ -1363,6 +1380,22 @@ def test_NTU_from_P_plate():
         assert_allclose(P1, P1_calc, rtol=5E-4)
     assert tot > 85
     
+    # 2-3 parallelflow - random example
+    NTU1 = 1.1
+    R1 = .6
+    P1_calc = temperature_effectiveness_plate(R1=R1, NTU1=NTU1, Np1=2, Np2=3, counterflow=False)
+    assert_allclose(P1_calc, 0.5272339114328507)
+    NTU1_calc = NTU_from_P_plate(P1=P1_calc, R1=R1, Np1=2, Np2=3, counterflow=False)
+    assert_allclose(NTU1, NTU1_calc)
+    # 2-3 parallelflow - methodical (all work for given range)
+    for i in range(100):
+        R1 = float(choice(R1s))
+        NTU1 = float(choice(NTU1s))
+        P1 = temperature_effectiveness_plate(R1=R1, NTU1=NTU1, Np1=2, Np2=3, counterflow=False)
+        NTU1_calc = NTU_from_P_plate(P1, R1, Np1=2, Np2=3, counterflow=False)
+        P1_calc = temperature_effectiveness_plate(R1=R1, NTU1=NTU1_calc, Np1=2, Np2=3, counterflow=False)
+        assert_allclose(P1, P1_calc)
+
     
     # 2-4 counterflow - random example
     NTU1 = 1.1
@@ -1385,8 +1418,29 @@ def test_NTU_from_P_plate():
         tot +=1
         assert_allclose(P1, P1_calc)
     assert tot > 95
+    
+    # 2-4 parallelflow - random example
+    NTU1 = 1.1
+    R1 = .6
+    P1_calc = temperature_effectiveness_plate(R1=R1, NTU1=NTU1, Np1=2, Np2=4, counterflow=False)
+    assert_allclose(P1_calc, 0.5238412695944656)
+    NTU1_calc = NTU_from_P_plate(P1=P1_calc, R1=R1, Np1=2, Np2=4, counterflow=False)
+    assert_allclose(NTU1, NTU1_calc)
+    # 2-4 counterflow - methodical
+    tot = 0
+    for i in range(100):
+        R1 = float(choice(R1s))
+        NTU1 = float(choice(NTU1s))
+        try:
+            P1 = temperature_effectiveness_plate(R1=R1, NTU1=NTU1, Np1=2, Np2=4, counterflow=False)
+            NTU1_calc = NTU_from_P_plate(P1, R1, Np1=2, Np2=4, counterflow=False)
+            P1_calc = temperature_effectiveness_plate(R1=R1, NTU1=NTU1_calc, Np1=2, Np2=4, counterflow=False)
+        except (ValueError, ZeroDivisionError):
+            continue
+        tot +=1
+        assert_allclose(P1, P1_calc)
+    assert tot > 95
 
-#test_NTU_from_P_plate()
 
 def test_DBundle_min():
     assert_allclose(DBundle_min(0.0254), 1)
