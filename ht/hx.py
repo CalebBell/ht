@@ -876,10 +876,10 @@ def effectiveness_NTU_method(mh, mc, Cph, Cpc, subtype='counterflow', Thi=None,
     As additional inputs, one combination of the following inputs is required:
         
     * Three of the four inlet and outlet stream temperatures.
+    * Temperatures for the cold outlet and hot inlet and UA
     * Temperatures for the cold outlet and hot outlet and UA
     * Temperatures for the cold inlet and hot inlet and UA
     * Temperatures for the cold inlet and hot outlet and UA
-    * Temperatures for the cold outlet and hot inlet and UA
       
     Parameters
     ----------
@@ -1026,6 +1026,9 @@ def effectiveness_NTU_method(mh, mc, Cph, Cpc, subtype='counterflow', Thi=None,
                 Thi = Tho + Q/(mh*Cph)
             else:
                 raise Exception('At least one temperature is required to be specified on the cold side.')
+        else:
+            raise Exception('Three temperatures are required to be specified '
+                            'when solving for UA')
 
         effectiveness = Q/Cmin/(Thi-Tci)
         NTU = NTU_from_effectiveness(effectiveness, Cr, subtype=subtype)
@@ -2039,7 +2042,7 @@ def temperature_effectiveness_plate(R1, NTU1, Np1, Np2, counterflow=True,
     result in the most efficient heat exchanger option, normally what is
     desired.
     
-    If a number of passes which is nor supported is provided, an exception is
+    If a number of passes which is not supported is provided, an exception is
     raised.
 
     Examples
@@ -2759,7 +2762,7 @@ NTU_from_P_basic_crossflow_mixed_12 = {
 
 def _horner(coeffs, x):
     # TODO put this in a module or something
-    tot = 0
+    tot = 0.
     for c in coeffs:
         tot = tot * x + c
     return tot
@@ -3256,9 +3259,97 @@ def NTU_from_P_H(P1, R1, Ntp, optimal=True):
 
 
 def NTU_from_P_plate(P1, R1, Np1, Np2, counterflow=True, 
-                     passes_counterflow=True):
+                     passes_counterflow=True, reverse=False):
+    r'''Returns the number of transfer units of a plate heat exchanger
+    with a specified side 1 heat capacity ratio `R1`, side 1 number
+    of transfer units `NTU1`, number of passes on sides 1 and 2 (respectively
+    `Np1` and `Np2`). 
+            
+    For all cases, the function also takes as arguments whether the exchanger 
+    is setup in an overall counter or parallel orientation `counterflow`, and 
+    whether or not individual stream passes are themselves counterflow or
+    parallel. 
+    
+    The 20 supported cases are as follows. (the first number of sides listed
+    refers to side 1, and the second number refers to side 2):
+        
+    * 1 pass/1 pass parallelflow
+    * 1 pass/1 pass counterflow
+    * 1 pass/2 pass
+    * 1 pass/3 pass or 3 pass/1 pass (with the two end passes in parallel)
+    * 1 pass/3 pass or 3 pass/1 pass (with the two end passes in counterflow)
+    * 1 pass/4 pass 
+    * 2 pass/2 pass, overall parallelflow, individual passes in parallel 
+    * 2 pass/2 pass, overall parallelflow, individual passes counterflow
+    * 2 pass/2 pass, overall counterflow, individual passes parallelflow 
+    * 2 pass/2 pass, overall counterflow, individual passes counterflow 
+    * 2 pass/3 pass or 3 pass/2 pass, overall parallelflow 
+    * 2 pass/3 pass or 3 pass/2 pass, overall counterflow
+    * 2 pass/4 pass or 4 pass/2 pass, overall parallel flow
+    * 2 pass/4 pass or 4 pass/2 pass, overall counterflow flow
+    
+    For all except the simplest cases numerical solutions are used.
+    
+    1 pass/1 pass counterflow (also 2/2 fully counterflow):
+    
+    .. math::
+        NTU_1 = - \frac{1}{R_{1} - 1} \log{\left (\frac{P_{1} R_{1} - 1}{P_{1} 
+        - 1} \right )}
+    
+    1 pass/1 pass parallel flow (also 2/2 fully parallelflow):
+    
+    .. math::
+        NTU_1 = \frac{1}{R_{1} + 1} \log{\left (- \frac{1}{P_{1} \left(R_{1} 
+        + 1\right) - 1} \right )}
+                
+    Parameters
+    ----------
+    P1 : float
+        Thermal effectiveness of the heat exchanger in the P-NTU method,
+        calculated with respect to stream 1 [-]
+    R1 : float
+        Heat capacity ratio of the heat exchanger in the P-NTU method,
+        calculated with respect to stream 1 [-]
+    Np1 : int
+        Number of passes on side 1 [-]
+    Np2 : int
+        Number of passes on side 2 [-]
+    counterflow : bool
+        Whether or not the overall flow through the heat exchanger is in
+        counterflow or parallel flow, [-]
+    passes_counterflow : bool
+        In addition to the overall flow direction, in some cases individual 
+        passes may be in counter or parallel flow; this controlls that [-]
+    reverse : bool
+        Used **internally only** to allow cases like the 1-4 formula to work  
+        for the 4-1 flow case, without having to duplicate the code [-]
+
+    Returns
+    -------
+    NTU1 : float
+        Thermal number of transfer units of the heat exchanger in the P-NTU 
+        method, calculated with respect to stream 1 [-]
+
+    Notes
+    -----
+    The defaults of counterflow=True and passes_counterflow=True will always
+    result in the most efficient heat exchanger option, normally what is
+    desired.
+    
+    If a number of passes which is not supported is provided, an exception is
+    raised.
+    
+    For more details, see :obj:`temperature_effectiveness_plate`.
+
+    Examples
+    --------
+    Three passes on side 1; one pass on side 2; two end passes in counterflow
+    orientation.
+    
+    >>> NTU_from_P_plate(P1=0.5743, R1=1/3., Np1=3, Np2=1)
+    0.9998336056060733
+    '''
     NTU_min = 1E-11
-    NTU_max = 100
     function = temperature_effectiveness_plate
     if Np1 == 1 and Np2 == 1 and counterflow:
         try:
@@ -3278,7 +3369,7 @@ def NTU_from_P_plate(P1, R1, Np1, Np2, counterflow=True,
     elif Np1 == 1 and Np2 == 3 and not counterflow:
         NTU_max = 100.
     elif Np1 == 1 and Np2 == 4:
-        NTU_max = 100
+        NTU_max = 100.
     elif Np1 == 2 and Np2 == 2:
         if counterflow and passes_counterflow:
             return NTU_from_P_plate(P1, R1, Np1=1, Np2=1, counterflow=True, 
@@ -3287,16 +3378,10 @@ def NTU_from_P_plate(P1, R1, Np1, Np2, counterflow=True,
             NTU_max = 100
         elif not counterflow and passes_counterflow:
             NTU_max = _NTU_max_for_P_solver(NTU_from_plate_2_2_parallel_counterflow, R1)
-            pass # this one needs to be refit
         elif not counterflow and not passes_counterflow:
-            NTU_max = 100
-#            return NTU_from_P_plate(P1, R1, Np1=1, Np2=1, counterflow=False, 
-#                                    passes_counterflow=False)
+            return NTU_from_P_plate(P1, R1, Np1=1, Np2=1, counterflow=False, 
+                                    passes_counterflow=False)
     elif Np1 == 2 and Np2 == 3:
-        # plate_2_2_overall_parallel_individual_passes_counterflow, 
-        # plate_2_3_overall_parallel
-        # plate_2_4_overall_parallel
-        # all need fits
         if counterflow:
             NTU_max = 100
         elif not counterflow:
@@ -3306,6 +3391,16 @@ def NTU_from_P_plate(P1, R1, Np1, Np2, counterflow=True,
             NTU_max = 100
         elif not counterflow:
             NTU_max = _NTU_max_for_P_solver(NTU_from_plate_2_4_parallel, R1)
+    elif not reverse:
+        # Proved to work by example
+        P2 = P1*R1
+        R2 = 1./R1
+        NTU2 = NTU_from_P_plate(R1=R2, P1=P2, Np1=Np2, Np2=Np1,
+                                counterflow=counterflow, 
+                                passes_counterflow=passes_counterflow, 
+                                reverse=True)
+        NTU1 = NTU2/R1
+        return NTU1
     else:
         raise Exception('Supported number of passes does not have a formula available')
     return _NTU_from_P_solver(P1, R1, NTU_min, NTU_max, function, Np1=Np1, 
@@ -3313,15 +3408,19 @@ def NTU_from_P_plate(P1, R1, Np1, Np2, counterflow=True,
                               passes_counterflow=passes_counterflow)
 
 
-def P_NTU_method(m1, m2, Cp1, Cp2, UA, T1i=None, T1o=None, T2i=None, T2o=None, 
-                 subtype='crossflow', Ntp=1, optimal=True):
+def P_NTU_method(m1, m2, Cp1, Cp2, UA=None, T1i=None, T1o=None, 
+                 T2i=None, T2o=None, subtype='crossflow', Ntp=1, optimal=True):
     r'''Wrapper for the various P-NTU method function calls,
     which can solve a heat exchanger. The heat capacities and mass flows
     of each stream and the type of the heat exchanger are always required.
-    Currently, `UA` is required as well.
-    As additional inputs, any two of the stream temperatures need to be 
-    specified. 
+    As additional inputs, one combination of the following inputs is required:
     
+    * Three of the four inlet and outlet stream temperatures.
+    * Temperatures for the side 1 outlet and side 2 inlet and UA
+    * Temperatures for the side 1 outlet side 2 outlet and UA
+    * Temperatures for the side 1 inlet and side 2 inlet and UA
+    * Temperatures for the side 1 inlet and side 2 outlet and UA
+
     Computes the total heat exchanged as well as both temperatures of both
     streams.
       
@@ -3335,7 +3434,7 @@ def P_NTU_method(m1, m2, Cp1, Cp2, UA, T1i=None, T1o=None, T2i=None, T2o=None,
         Averaged heat capacity of stream 1 (shell side), [J/kg/K]
     Cp2 : float
         Averaged heat capacity of stream 2 (tube side), [J/kg/K]
-    UA : float
+    UA : float, optional
         Combined Area-heat transfer coefficient term, [W/K]
     T1i : float, optional
         Inlet temperature of stream 1 (shell side), [K]
@@ -3422,7 +3521,7 @@ def P_NTU_method(m1, m2, Cp1, Cp2, UA, T1i=None, T1o=None, T2i=None, T2o=None,
     .. math::
         T_{1,o} = - P_{1} T_{1,i} + P_{1} T_{2,i} + T_{1,i}
         
-        P_{2,o} = P_{1} R_{1} T_{1,i} - P_{1} R_{1} T_{2,i} + T_{2,i}
+        T_{2,o} = P_{1} R_{1} T_{1,i} - P_{1} R_{1} T_{2,i} + T_{2,i}
         
     Two known outlet temperatures:
         
@@ -3476,6 +3575,12 @@ def P_NTU_method(m1, m2, Cp1, Cp2, UA, T1i=None, T1o=None, T2i=None, T2o=None,
     temperature_effectiveness_TEMA_G
     temperature_effectiveness_TEMA_H
     temperature_effectiveness_TEMA_J
+    NTU_from_P_basic
+    NTU_from_P_plate
+    NTU_from_P_E
+    NTU_from_P_G
+    NTU_from_P_H
+    NTU_from_P_J
 
     Examples
     --------
@@ -3497,6 +3602,25 @@ def P_NTU_method(m1, m2, Cp1, Cp2, UA, T1i=None, T1o=None, T2i=None, T2o=None,
      'T2i': 15,
      'T2o': 84.87829918042112}
     
+    Solve the same heat exchanger as if T1i, T2i, and T2o were known but UA was
+    not:
+        
+    >>> pprint(P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900, subtype='E', 
+    ... Ntp=4, T1i=130, T2i=15, T2o=84.87829918042112))
+    {'C1': 9672.0,
+     'C2': 2755.0,
+     'NTU1': 0.31449028122515194,
+     'NTU2': 1.1040834845770124,
+     'P1': 0.17308116143602348,
+     'P2': 0.607637384177575,
+     'Q': 192514.7142420602,
+     'R1': 3.5107078039927404,
+     'R2': 0.2848428453267163,
+     'T1i': 130,
+     'T1o': 110.09566643485729,
+     'T2i': 15,
+     'T2o': 84.87829918042112}
+
     Solve a 2 pass/2 pass plate heat exchanger with overall parallel flow and
     its individual passes operating in parallel and known outlet temperatures.
     Note the overall parallel part is trigered with `optimal=False`, and the
@@ -3534,58 +3658,116 @@ def P_NTU_method(m1, m2, Cp1, Cp2, UA, T1i=None, T1o=None, T2i=None, T2o=None,
     C1 = m1*Cp1
     C2 = m2*Cp2
     R1 = C1/C2
-    NTU1 = UA/C1
-    # Extras
     R2 = C2/C1
-    NTU2 = UA/C2
     
-    if subtype in ['counterflow', 'parallel', 'crossflow', 'crossflow, mixed 1', 'crossflow, mixed 2', 'crossflow, mixed 1&2']:
-        P1 = temperature_effectiveness_basic(R1, NTU1, subtype=subtype)
-    elif subtype == 'E':
-        P1 = temperature_effectiveness_TEMA_E(R1=R1, NTU1=NTU1, Ntp=Ntp, optimal=optimal)
-    elif subtype == 'G':
-        P1 = temperature_effectiveness_TEMA_G(R1=R1, NTU1=NTU1, Ntp=Ntp, optimal=optimal)
-    elif subtype == 'H':
-        P1 = temperature_effectiveness_TEMA_H(R1=R1, NTU1=NTU1, Ntp=Ntp, optimal=optimal)
-    elif subtype == 'J':
-        P1 = temperature_effectiveness_TEMA_J(R1=R1, NTU1=NTU1, Ntp=Ntp)
-    elif '/' in subtype:
-        passes_counterflow = True
-        Np1, end = subtype.split('/')
-        if end[-1] in ['c','p']:
-            passes_counterflow = True if end[-1] == 'c' else False
-            end = end[0:-1]
-        Np1, Np2 = int(Np1), int(end)
-        P1 = temperature_effectiveness_plate(R1=R1, NTU1=NTU1, Np1=Np1, Np2=Np2, counterflow=optimal, passes_counterflow=passes_counterflow)
+    if UA is not None:
+        NTU1 = UA/C1
+        NTU2 = UA/C2
+        
+        if subtype in ['counterflow', 'parallel', 'crossflow', 'crossflow, mixed 1', 'crossflow, mixed 2', 'crossflow, mixed 1&2']:
+            P1 = temperature_effectiveness_basic(R1, NTU1, subtype=subtype)
+        elif subtype == 'E':
+            P1 = temperature_effectiveness_TEMA_E(R1=R1, NTU1=NTU1, Ntp=Ntp, optimal=optimal)
+        elif subtype == 'G':
+            P1 = temperature_effectiveness_TEMA_G(R1=R1, NTU1=NTU1, Ntp=Ntp, optimal=optimal)
+        elif subtype == 'H':
+            P1 = temperature_effectiveness_TEMA_H(R1=R1, NTU1=NTU1, Ntp=Ntp, optimal=optimal)
+        elif subtype == 'J':
+            P1 = temperature_effectiveness_TEMA_J(R1=R1, NTU1=NTU1, Ntp=Ntp)
+        elif '/' in subtype:
+            passes_counterflow = True
+            Np1, end = subtype.split('/')
+            if end[-1] in ['c','p']:
+                passes_counterflow = True if end[-1] == 'c' else False
+                end = end[0:-1]
+            Np1, Np2 = int(Np1), int(end)
+            P1 = temperature_effectiveness_plate(R1=R1, NTU1=NTU1, Np1=Np1, Np2=Np2, counterflow=optimal, passes_counterflow=passes_counterflow)
+        else:
+            raise Exception("Supported types are 'E', 'G', 'H', 'J', 'counterflow',\
+    'parallel', 'crossflow', 'crossflow, mixed 1', 'crossflow, mixed 2', \
+    'crossflow, mixed 1&2', or 'Np1/Np2' for plate exchangers")
+        
+        possible_inputs = [(T1i, T2i), (T1o, T2o), (T1i, T2o), (T1o, T2i), (T1i, T1o), (T2i, T2o)]
+        if not any([i for i in possible_inputs if None not in i]):
+            raise Exception('One set of (T1i, T2i), (T1o, T2o), (T1i, T2o), (T1o, T2i), (T1i, T1o), or (T2i, T2o) is required along with UA.')
+        
+        # Deal with different temperature inputs, generated with SymPy
+        if T1i and T2i:
+            T2o = P1*R1*T1i - P1*R1*T2i + T2i
+            T1o = -P1*T1i + P1*T2i + T1i
+        elif T1o and T2o:
+            T2i = (P1*R1*T1o + P1*T2o - T2o)/(P1*R1 + P1 - 1.)
+            T1i = (P1*R1*T1o + P1*T2o - T1o)/(P1*R1 + P1 - 1.)
+        elif T1o and T2i:
+            T2o = (R1*(P1*T2i - T1o) - (P1 - 1.)*(R1*T1o - T2i))/(P1 - 1.)
+            T1i = (P1*T2i - T1o)/(P1 - 1.)
+        elif T1i and T2o:
+            T1o = (P1*R1*T1i + P1*T1i - P1*T2o - T1i)/(P1*R1 - 1.)
+            T2i = (P1*R1*T1i - T2o)/(P1*R1 - 1.)
+        elif T2i and T2o:
+            T1o = (P1*R1*T2i + (P1 - 1.)*(T2i - T2o))/(P1*R1)
+            T1i = (P1*R1*T2i - T2i + T2o)/(P1*R1)
+        elif T1i and T1o:
+            T2o = (P1*R1*(T1i - T1o) + P1*T1i - T1i + T1o)/P1
+            T2i = (P1*T1i - T1i + T1o)/P1 
     else:
-        raise Exception("Supported types are 'E', 'G', 'H', 'J', 'counterflow',\
-'parallel', 'crossflow', 'crossflow, mixed 1', 'crossflow, mixed 2', \
-'crossflow, mixed 1&2', or 'Np1/Np2' for plate exchangers")
-    
-    possible_inputs = [(T1i, T2i), (T1o, T2o), (T1i, T2o), (T1o, T2i), (T1i, T1o), (T2i, T2o)]
-    if not any([i for i in possible_inputs if None not in i]):
-        raise Exception('One set of (T1i, T2i), (T1o, T2o), (T1i, T2o), (T1o, T2i), (T1i, T1o), or (T2i, T2o) is required along with UA.')
-    
-    # Deal with different temperature inputs, generated with SymPy
-    if T1i and T2i:
-        T2o = P1*R1*T1i - P1*R1*T2i + T2i
-        T1o = -P1*T1i + P1*T2i + T1i
-    elif T1o and T2o:
-        T2i = (P1*R1*T1o + P1*T2o - T2o)/(P1*R1 + P1 - 1.)
-        T1i = (P1*R1*T1o + P1*T2o - T1o)/(P1*R1 + P1 - 1.)
-    elif T1o and T2i:
-        T2o = (R1*(P1*T2i - T1o) - (P1 - 1.)*(R1*T1o - T2i))/(P1 - 1.)
-        T1i = (P1*T2i - T1o)/(P1 - 1.)
-    elif T1i and T2o:
-        T1o = (P1*R1*T1i + P1*T1i - P1*T2o - T1i)/(P1*R1 - 1.)
-        T2i = (P1*R1*T1i - T2o)/(P1*R1 - 1.)
-    elif T2i and T2o:
-        T1o = (P1*R1*T2i + (P1 - 1.)*(T2i - T2o))/(P1*R1)
-        T1i = (P1*R1*T2i - T2i + T2o)/(P1*R1)
-    elif T1i and T1o:
-        T2o = (P1*R1*(T1i - T1o) + P1*T1i - T1i + T1o)/P1
-        T2i = (P1*T1i - T1i + T1o)/P1
-
+        # Case where we're solving for UA
+        # Three temperatures are required
+        # Ensures all four temperatures are set and Q is calculated
+        if T1i is not None and T1o is not None:
+            Q = m1*Cp1*(T1i-T1o)
+            if T2i is not None and T2o is None:
+                T2o = T2i + Q/(m2*Cp2)
+            elif T2o is not None and T2i is None:
+                T2i = T2o - Q/(m2*Cp2)
+            elif T2o is not None and T2i is not None:
+                Q2 = m2*Cp2*(T2o-T2i)
+                if abs((Q-Q2)/Q) > 0.01:
+                    raise Exception('The specified heat capacities, mass flows,'
+                                    ' and temperatures are inconsistent')
+            else:
+                raise Exception('At least one temperature is required to be '
+                                'specified on side 2.')
+                
+        elif T2i is not None and T2o is not None:
+            Q = m2*Cp2*(T2o-T2i)
+            if T1i is not None and T1o is None:
+                T1o = T1i - Q/(m1*Cp1)
+            elif T1o is not None and T1i is None:
+                T1i = T1o + Q/(m1*Cp1)
+            else:
+                raise Exception('At least one temperature is required to be '
+                                'specified on side 2.')
+        else:
+            raise Exception('Three temperatures are required to be specified '
+                            'when solving for UA')
+                
+        P1 = Q/(C1*abs(T2i-T1i))
+        if subtype in ['counterflow', 'parallel', 'crossflow', 'crossflow, mixed 1', 'crossflow, mixed 2', 'crossflow, mixed 1&2']:
+            NTU1 = NTU_from_P_basic(P1=P1, R1=R1, subtype=subtype)
+        elif subtype == 'E':
+            NTU1 = NTU_from_P_E(P1=P1, R1=R1, Ntp=Ntp, optimal=optimal)
+        elif subtype == 'G':
+            NTU1 = NTU_from_P_G(P1=P1, R1=R1, Ntp=Ntp, optimal=optimal)
+        elif subtype == 'H':
+            NTU1 = NTU_from_P_H(P1=P1, R1=R1, Ntp=Ntp, optimal=optimal)
+        elif subtype == 'J':
+            NTU1 = NTU_from_P_J(P1=P1, R1=R1, Ntp=Ntp)
+        elif '/' in subtype:
+            passes_counterflow = True
+            Np1, end = subtype.split('/')
+            if end[-1] in ['c','p']:
+                passes_counterflow = True if end[-1] == 'c' else False
+                end = end[0:-1]
+            Np1, Np2 = int(Np1), int(end)
+            NTU1 = NTU_from_P_plate(P1=P1, R1=R1, Np1=Np1, Np2=Np2, counterflow=optimal, passes_counterflow=passes_counterflow)
+        else:
+            raise Exception("Supported types are 'E', 'G', 'H', 'J', 'counterflow',\
+    'parallel', 'crossflow', 'crossflow, mixed 1', 'crossflow, mixed 2', \
+    'crossflow, mixed 1&2', or 'Np1/Np2' for plate exchangers")
+        UA = NTU1*C1
+        NTU2 = UA/C2
+        
     Q = abs(T1i-T2i)*P1*C1
     # extra:
     P2 = P1*R1

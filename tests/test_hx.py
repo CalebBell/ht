@@ -25,7 +25,6 @@ from random import uniform, randint, seed, choice
 seed(0)
 
 
-### TODO hx requires testing, but perhaps first improvement
 def test_Ntubes_Perrys():
     Nt_perry = [[Ntubes_Perrys(DBundle=1.184, Ntp=i, Do=.028, angle=j) for i in [1,2,4,6]] for j in [30, 45, 60, 90]]
     Nt_values = [[1001, 973, 914, 886], [819, 803, 784, 769], [1001, 973, 914, 886], [819, 803, 784, 769]]
@@ -396,6 +395,9 @@ def test_effectiveness_NTU_method():
         # Calculate UA, but no hot side temperature information given
         effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, subtype='crossflow, mixed Cmax', Tci=15, Tco=85)
         
+    with pytest.raises(Exception):
+        # Calculate UA, but only two temperatures given
+        effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, subtype='crossflow, mixed Cmax', Tci=15, Thi=130)
         
 def test_F_LMTD_Fakheri():
     '''Number of tube passes must be a multiple of 2N for correlation to work.
@@ -709,6 +711,100 @@ def test_P_NTU_method():
 
     ans = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., UA=300, T1i=130, T2i=15, subtype='2/2p', optimal=False)
     assert_allclose(ans['Q'], 32195.273806845064)
+
+
+def test_P_NTU_method_backwards():
+    ans = effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, subtype='counterflow', Tci=15, Tco=85, Tho=110.06100082712986)
+    ans2 = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., T2i=15, T2o=85, T1o=110.06100082712986, subtype='counterflow')
+    assert_allclose(ans2['Q'], ans['Q'])
+#    # Parallel flow case
+    ans = effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, subtype='parallel', Tci=15, Tco=85, Tho=110.06100082712986)
+    ans2 = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., T1i=130, T2i=15, T1o=110.06100082712986, subtype='parallel')
+    assert_allclose(ans2['Q'], ans['Q'])
+#    # Mixed Cmax/ 1
+    ans = effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, subtype='crossflow, mixed Cmax', Tci=15, Tco=85, Tho=110.06100082712986)
+    ans2 = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., T1o=110.06100082712986, T1i=130, T2i=15, subtype='crossflow, mixed 1')
+    assert_allclose(ans2['Q'], ans['Q'])
+#    # Mixed Cmin/2
+    ans = effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, subtype='crossflow, mixed Cmin', Tci=15, Tco=85, Tho=110.06100082712986)
+    ans2 = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., T1o=110.06100082712986, T1i=130, T2i=15, subtype='crossflow, mixed 2')
+    assert_allclose(ans2['Q'], ans['Q'])
+    
+#    # Counterflow case but with all five different temperature input cases (both inlets known already done)
+    ans = effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, subtype='counterflow', Tci=15, Tco=85, Tho=110.06100082712986)
+    ans2 = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., T1i=130, T1o=110.06100082712986, T2o=85, subtype='counterflow')
+    assert_allclose(ans2['Q'], ans['Q'])
+    ans2 = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., T1o=110.06100082712986, T1i=130, T2o=85, subtype='counterflow')
+    assert_allclose(ans2['Q'], ans['Q'])
+    ans2 = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., T1i=130, T1o=110.06100082712986, T2i=15, subtype='counterflow')
+    assert_allclose(ans2['Q'], ans['Q'])
+    ans2 = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., T2o=85, T2i=15, T1o=110.06100082712986, subtype='counterflow')
+    assert_allclose(ans2['Q'], ans['Q'])
+    ans2 = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., T1o=110.06100082712986, T1i=130, T2i=15, subtype='counterflow')
+    assert_allclose(ans2['Q'], ans['Q'])
+
+
+    ans2 = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., T1o=110.06100082712986, T2o=85, T1i=130, T2i=15, subtype='counterflow')
+    assert_allclose(ans2['Q'], ans['Q'])
+    
+    # TEMA types
+    ans = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., T1i=130, T1o=126.66954243557834, T2i=15, subtype='E', Ntp=10)
+    assert_allclose(ans['Q'], 32212.185563086336,)
+
+    ans = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., T1o=126.66822912678866, T1i=130, T2i=15, subtype='G', Ntp=2)
+    assert_allclose(ans['Q'], 32224.88788570008)
+    
+    ans = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., T1o=126.66822905579335, T1i=130, T2i=15, subtype='H', Ntp=2)
+    assert_allclose(ans['Q'], 32224.888572366734)
+    
+    ans = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., T1o=126.66954242145162, T1i=130, T2i=15, subtype='J', Ntp=2)
+    assert_allclose(ans['Q'], 32212.185699719837)
+    
+    # Plate tests
+    ans = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., T1o=126.6693362545903, T1i=130, T2i=15, subtype='3/1')
+    assert_allclose(ans['Q'], 32214.179745602625)
+
+    ans = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., T1o=126.66972507402421, T1i=130, T2i=15, subtype='3/1', optimal=False)
+    assert_allclose(ans['Q'], 32210.4190840378)
+
+    ans = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., T1o=126.66779148681742, T1i=130, T2i=15, subtype='2/2')
+    assert_allclose(ans['Q'], 32229.120739501937)
+  
+    ans = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., T1o=126.67041757251124, T1i=130, T2i=15, subtype='2/2', optimal=False)
+    assert_allclose(ans['Q'], 32203.721238671216)
+
+    ans = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., T1o=126.67041757251124, T1i=130, T2i=15, subtype='2/2c', optimal=False)
+    assert_allclose(ans['Q'], 32203.721238671216)
+
+    ans = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., T1o=126.67129096289857, T1i=130, T2i=15, subtype='2/2p', optimal=False)
+    assert_allclose(ans['Q'], 32195.273806845064)
+
+    
+    
+    
+    
+    
+    
+    # Q for both streams don't match case
+    with pytest.raises(Exception):
+        P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., T1o=110.06100082712986, T2o=85, T1i=170, T2i=15, subtype='counterflow')
+    # No T speced on side 2
+    with pytest.raises(Exception):
+        P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., T1o=110.06100082712986, T1i=130, subtype='counterflow')
+    # No T specified on side 1
+    with pytest.raises(Exception):
+        P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., T2o=85, T2i=15, subtype='counterflow')
+    # No T information at all
+    with pytest.raises(Exception):
+        ans2 = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., subtype='counterflow')
+    # subtype not recognized
+    with pytest.raises(Exception):
+        P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., T1o=110.06100082712986, T1i=130, T2i=15, subtype='NOTAREALTYPEOFHEATEXCHANGER')
+
+
+
+
+        
 
 
 def test_Pp():
@@ -1081,6 +1177,9 @@ def test_NTU_from_P_H():
         NTU1_calc = NTU_from_P_H(P1, R1, Ntp=2, optimal=False)
         P1_calc = temperature_effectiveness_TEMA_H(R1=R1, NTU1=NTU1_calc, Ntp=2, optimal=False)
         assert_allclose(P1, P1_calc, rtol=1E-6)
+        
+    with pytest.raises(Exception):
+        NTU_from_P_H(P1=0.573, R1=1/3., Ntp=101) 
 
 
 
@@ -1310,6 +1409,14 @@ def test_NTU_from_P_plate():
     assert tot >= 99
     
     # not counterflow and not passes_counterflow
+    # random example
+    NTU1 = 1.1
+    R1 = .6
+    P1_calc = temperature_effectiveness_plate(R1=R1, NTU1=NTU1, Np1=2, Np2=2, counterflow=False, passes_counterflow=False)
+    assert_allclose(P1_calc, 0.5174719601105934)
+    NTU1_calc = NTU_from_P_plate(P1=P1_calc, R1=R1, Np1=2, Np2=2, counterflow=False, passes_counterflow=False)
+    assert_allclose(NTU1, NTU1_calc)   
+    # methodical test
     tot = 0
     for i in range(100):
         R1 = float(choice(R1s))
@@ -1322,7 +1429,7 @@ def test_NTU_from_P_plate():
             continue
         assert_allclose(P1, P1_calc)
         tot +=1
-    assert tot > 95
+    assert tot > 85
 
     # not counterflow and passes_counterflow
     # random example
@@ -1441,6 +1548,15 @@ def test_NTU_from_P_plate():
         assert_allclose(P1, P1_calc)
     assert tot > 95
 
+
+    # Backwards, only one example in the tests
+    # No real point in being exhaustive
+    NTU1 = NTU_from_P_plate(P1=0.5743514352720835, R1=1/3., Np1=3, Np2=1)
+    assert_allclose(NTU1, 1)
+    
+    # Bad number of plates
+    with pytest.raises(Exception):
+        NTU_from_P_plate(P1=0.5743, R1=1/3., Np1=3, Np2=13415151213) 
 
 def test_DBundle_min():
     assert_allclose(DBundle_min(0.0254), 1)
