@@ -143,11 +143,6 @@ def Ft_aircooler(Thi, Tho, Tci, Tco, Ntp=1, rows=1):
 
     Examples
     --------
-    Example 1 as in HTFS manual.
-    Example 2 as in [1]_; author rounds to obtain a slightly different result.
-
-    >>> Ft_aircooler(Thi=93., Tho=52., Tci=35, Tco=54.59, Ntp=2, rows=4)
-    0.9570456123827129
     >>> Ft_aircooler(Thi=125., Tho=45., Tci=25., Tco=95., Ntp=1, rows=4)
     0.5505093604092708
 

@@ -23,9 +23,11 @@ import pytest
 
 ### Air Cooler
 
-def test_air_cooler_Ft():
+def test_air_cooler_Ft():    
     Ft_1 = Ft_aircooler(Thi=93, Tho=52, Tci=35, Tco=54.59, Ntp=2, rows=4)
     assert_allclose(Ft_1, 0.9570456123827129)
+    
+    # Example 2 as in [1]_; author rounds to obtain a slightly different result.
     Ft_2 = Ft_aircooler(Thi=125., Tho=45., Tci=25., Tco=95., Ntp=1, rows=4)
     assert_allclose(Ft_2, 0.5505093604092708)
     Ft_many = [[Ft_aircooler(Thi=125., Tho=80., Tci=25., Tco=95., Ntp=i, rows=j) for i in range(1,6)] for j in range(1, 6)]

@@ -21,7 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.'''
 
 from __future__ import division
-from math import exp, log, floor, sqrt, tanh  # tanh= 1/coth
+from math import exp, log, floor, sqrt, factorial, tanh  # tanh= 1/coth
 import math
 from bisect import bisect, bisect_left, bisect_right
 import numpy as np
@@ -40,6 +40,7 @@ __all__ = ['effectiveness_from_NTU', 'NTU_from_effectiveness', 'calc_Cmin',
 'temperature_effectiveness_basic', 'temperature_effectiveness_TEMA_J',
 'temperature_effectiveness_TEMA_H', 'temperature_effectiveness_TEMA_G',
 'temperature_effectiveness_TEMA_E', 'temperature_effectiveness_plate', 
+'temperature_effectiveness_air_cooler',
 'P_NTU_method',  'NTU_from_P_basic',
 'NTU_from_P_J', 'NTU_from_P_G', 'NTU_from_P_E', 'NTU_from_P_H',
 'NTU_from_P_plate', 'check_tubing_TEMA', 'get_tube_TEMA',
@@ -1037,6 +1038,163 @@ def effectiveness_NTU_method(mh, mc, Cph, Cpc, subtype='counterflow', Thi=None,
             'effectiveness': effectiveness, 'NTU': NTU, 'Thi': Thi, 'Tho': Tho,
             'Tci': Tci, 'Tco': Tco} 
         
+
+def temperature_effectiveness_air_cooler(R1, NTU1, rows, passes):
+    r'''Returns temperature effectiveness `P1` of an air cooler with 
+    a specified heat capacity ratio, number of transfer units `NTU1`,
+    number of rows `rows`, and number of passes `passes`. The supported cases
+    are as follows:
+        
+    * N rows 1 pass
+    * N row N pass (up to N = 5)
+    * 4 rows 2 passes
+    
+    For N rows 1 passes ([2]_, shown in [1]_ and [3]_):
+        
+    .. math::
+        P = \frac{1}{R} \left\{1 - \left[\frac{N\exp(NKR)}
+        {1 + \sum_{i=1}^{N-1}\sum_{j=0}^i  {{i}\choose{j}}K^j \exp(-(i-j)NTU/N)
+        \sum_{k=0}^j \frac{(NKR)^k}{k!}}\right]^{-1}\right\}
+        
+    For 2 rows 2 passes (cited as from [4]_ in [1]_):
+        
+    .. math::
+        P_1 = \frac{1}{R}\left(1 -\frac{1}{\xi}\right)
+        
+        \xi = \frac{K}{2} + \left(1 - \frac{K}{2}\right)\exp(2KR)
+        
+        K = 1 - \exp\left(\frac{-NTU}{2}\right)
+        
+    For 3 rows / 3 passes (cited as from [4]_ in [1]_):
+        
+    .. math::
+        \xi = K\left[1 - \frac{K}{4} - RK\left(1 - \frac{K}{2}\right)\right]
+        \exp(KR) + \exp(3KR)\left(1 - \frac{K}{2}\right)^2
+        
+        K = 1 - \exp\left(\frac{-NTU}{3}\right)
+        
+    For 4 rows / 4 passes (cited as from [4]_ in [1]_):
+        
+    .. math::
+        \xi = \frac{K}{2}\left(1 - \frac{K}{2} + \frac{K^2}{4}\right)
+        + K\left(1 - \frac{K}{2}\right)
+        \left[1 - \frac{R}{8}K\left(1 - \frac{K}{2}\right)\exp(2KR)\right]
+        + \exp(4KR)\left(1 - \frac{K}{2}\right)^3
+        
+        K = 1 - \exp\left(\frac{-NTU}{4}\right)
+        
+    For 5 rows / 5 passes (cited as from [4]_ in [1]_):
+        
+    .. math::
+        \xi = \left\{K \left(1 - \frac{3}{4}K + \frac{K^2}{2}- \frac{K^3}{8}
+        \right) - RK^2\left[1 -K + \frac{3}{4}K^2 - \frac{1}{4}K^3
+        - \frac{R}{2}K^2\left(1 - \frac{K}{2}\right)^2\right]\right\}\exp(KR)
+        + \left[K\left(1 - \frac{3}{4}K + \frac{1}{16}K^3\right) - 3RK^2\left(1
+        - \frac{K}{2}\right)^3\right]\exp(3KR)+ \left(1 - \frac{K}{2}\right)^4
+        \exp(5KR)
+
+    For 4 rows / 2 passes (cited as from [4]_ in [1]_):
+        
+    .. math::
+        P_1 = \frac{1}{R}\left(1 -\frac{1}{\xi}\right)
+        
+        \xi = \left\{\frac{R}{2}K^3[4 - K + 2RK^2] + \exp(4KR)
+        + K\left[1 - \frac{K}{2} + \frac{K^2}{8}\right]
+        \left[1 - \exp(4KR)\right]
+        \right\}\frac{1}{(1+RK^2)^2}
+        
+        K = 1 - \exp\left(\frac{-NTU}{4}\right)
+        
+    Parameters
+    ----------
+    R1 : float
+        Heat capacity ratio of the heat exchanger in the P-NTU method,
+        calculated with respect to stream 1 (process fluid side) [-]
+    NTU1 : float
+        Thermal number of transfer units of the heat exchanger in the P-NTU 
+        method, calculated with respect to stream 1 (process fluid side) [-]
+    rows : int
+        Number of rows of tubes in the air cooler [-]
+    passes : int
+        Number of passes the process fluid undergoes [-]
+        
+    Returns
+    -------
+    P1 : float
+        Thermal effectiveness of the heat exchanger in the P-NTU method,
+        calculated with respect to stream 1 (process fluid side) [-]
+
+    Notes
+    -----
+
+    Examples
+    --------
+
+    References
+    ----------
+    .. [1] Thulukkanam, Kuppan. Heat Exchanger Design Handbook, Second Edition. 
+       CRC Press, 2013.
+    .. [2] Schedwill, H., "Thermische Auslegung von Kreuzstromwarmeaustauschern, 
+       Fortschr-Ber." VDI Reihe 6 19, VDI, Germany, 1968.
+    .. [3] Schlunder, Ernst U, and International Center for Heat and Mass
+       Transfer. Heat Exchanger Design Handbook. Washington:
+       Hemisphere Pub. Corp., 1983.
+    .. [4]  Nicole, F. J. L.. "Mean temperature difference for heat exchanger
+       design." Council for Scientific and Industrial Research, Special Report
+       Chem. 223, Pretoria, South Africa (1972).
+    '''
+    if passes == 1:
+        N = rows
+        K = 1. - exp(-NTU1/N)
+        NKR1 = N*K*R1
+        NTU1_N = NTU1/N
+        top = N*exp(N*K*R1)
+        # Only integer factorials are required, and they can be pre-calculated up to N
+        factorials = [factorial(i) for i in range(N)]
+        K_powers = [K**j for j in range(0, N+1)]
+        NKR1_powers = [NKR1**k for k in range(0, N+1)]
+        exp_terms = [exp(i*NTU1_N) for i in range(-N+1, 1)]
+        NKR1_powers_over_factorials = [NKR1_powers[k]/factorials[k] for k in range(N)]
+        
+        # Precompute even more...
+        NKR1_powers_over_factorials_sums = [0]
+        for k in NKR1_powers_over_factorials:
+            NKR1_powers_over_factorials_sums.append(NKR1_powers_over_factorials_sums[-1]+k)
+        NKR1_powers_over_factorials_sums.pop(0)
+        
+        final_speed = [i*j for i, j in zip(K_powers, NKR1_powers_over_factorials_sums)]
+        
+        tot = 0.
+        for i in range(1, N):
+            for j in range(0, i+1):
+                # can't optimize the factorial
+                prod = factorials[i]/(factorials[i-j]*factorials[j])
+                tot1 = prod*exp_terms[j-i-1]
+                tot += tot1*final_speed[j]
+    
+        return 1./R1*(1. - 1./(top/(1.+tot)))
+    elif rows == passes == 2:
+        K = 1. - exp(-0.5*NTU1)
+        xi = 0.5*K + (1. - 0.5*K)*exp(2.*K*R1)
+        return 1./R1*(1. - 1./xi)
+    elif rows == passes == 3:
+        K = 1. - exp(-NTU1/3.)
+        xi = K*(1. - 0.25*K - R1*K*(1. - 0.5*K))*exp(K*R1) + exp(3.*K*R1)*(1. - 0.5*K)**2
+        return 1./R1*(1. - 1./xi)
+    elif rows == passes == 4:
+        K = 1. - exp(-0.25*NTU1)
+        xi = 0.5*K*(1. - 0.5*K + 0.25*K**2) + K*(1 - 0.5*K)*(1 - 0.125*R1*K*(1. - 0.5*K)*exp(2.*K*R1)) + exp(4*K*R1)*(1 - 0.5*K)**3
+        return 1./R1*(1. - 1./xi)
+    elif rows == passes == 5:
+        K = 1. - exp(-0.2*NTU1)
+        xi = (K*(1. - .75*K + .5*K**2 - .125*K**3) - R1*K**2*(1. - K + .75*K**2 - .25*K**3 - .5*R1*K**2*(1. - .5*K)**2))*exp(K*R1)
+        xi += (K*(1. - .75*K + 1/16.*K**3) - 3*R1*K**2*(1. - .5*K)**3)*exp(3*K*R1) + (1. - .5*K)**4*exp(5*K*R1)
+        return 1./R1*(1. - 1./xi)
+    elif rows == 4 and passes ==2:
+        K = 1. - exp(-0.25*NTU1)
+        xi = (0.5*R1*K**3*(4. - K + 2.*R1*K**2) + exp(4.*K*R1) + K*(1. - 0.5*K + 0.125*K**2)*(1 - exp(4.*K*R1)))*(1. + R1*K**2)**-2
+        return 1./R1*(1. - 1./xi)
+
 
 def temperature_effectiveness_basic(R1, NTU1, subtype='crossflow'):
     r'''Returns temperature effectiveness `P1` of a heat exchanger with 

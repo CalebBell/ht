@@ -640,6 +640,52 @@ def test_temperature_effectiveness_TEMA_E():
     P1 = 4*(2*(1 + R1) + D*A + R1*B)**-1
     assert_allclose(P1, 0.56888933865756)
     
+    
+def test_temperature_effectiveness_air_cooler():
+    # 1 pass-N rows case
+    R1 = 0.9090909090909091
+    NTU1 = 14.958251192851375
+    
+    expected_P1s = [0.6568205178185993, 0.7589599992302802, 0.8064227529035781, 0.8330202134563712, 0.8491213831157698, 0.8594126317585193, 0.8662974164766494, 0.871087594489211, 0.8745345926002213, 0.8770877118478316, 0.8790262425246239, 0.8805299599498708, 0.8817182454510963, 0.8826726050451953, 0.8834500769975893, 0.8840914654885264, 0.8846265414931143, 0.88507741320138, 0.8854607616314836, 0.8857893552314147, 0.886073095973165, 0.8863197546874396, 0.8865354963468465, 0.8867252608860744, 0.8868930430686396]
+    P1s_calc = [temperature_effectiveness_air_cooler(R1=R1, NTU1=NTU1, rows=N, passes=1) for N in  range(1, 26)]
+    assert_allclose(expected_P1s, P1s_calc)
+    
+    # Compare the results of 1-N against the function without the annoying optimizations;
+    # may be helpful for debugging
+    def calc_N_1_orig(NTU1, R1, N):
+        NTU, R = NTU1, R1
+        K = 1 - exp(-NTU/N)
+        top = N*exp(N*K*R)
+    
+        tot = 0
+        for i in range(1, N):
+            for j in range(0, i+1):
+                prod = factorial(i)/factorial(i-j)/factorial(j)
+                tot1 = prod*K**j*exp(-(i-j)*NTU/N)
+                tot2 = 0
+                for k in range(0, j+1):
+                    tot2 += (N*K*R)**k/factorial(k)
+    
+                tot += tot1*tot2
+    
+        P = 1/R*(1 - (top/(1+tot))**-1)
+        return P
+    P1s_calc = [calc_N_1_orig(R1=R1, NTU1=NTU1, N=N) for N in  range(1, 26)]
+    assert_allclose(expected_P1s, P1s_calc)
+    
+    
+    # N rows / N passes (N from 2 to 5) cases
+    R1, NTU1 = 1.1, .5
+    expected_P1s = [0.3254086785640332, 0.3267486216405819, 0.3272282999575143, 0.3274325680785421]
+    P1s_calc = [temperature_effectiveness_air_cooler(R1, NTU1, rows=N, passes=N) for N in  range(2, 6)]
+    assert_allclose(expected_P1s, P1s_calc)
+    
+    # 4 row / 2 pass special case
+    P1_calc = temperature_effectiveness_air_cooler(R1, NTU1, rows=4, passes=2)
+    assert_allclose(P1_calc, 0.32552127419957044)
+    
+    # Tentative checking of the above has been done with hete.c for isolated cases
+    
 
 @pytest.mark.mpmath
 def test_P_NTU_method():
