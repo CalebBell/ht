@@ -1149,20 +1149,21 @@ def temperature_effectiveness_air_cooler(R1, NTU1, rows, passes):
         NKR1 = N*K*R1
         NTU1_N = NTU1/N
         top = N*exp(N*K*R1)
-        # Only integer factorials are required, and they can be pre-calculated up to N
+        # Precalculate integer factorials up to N
         factorials = [factorial(i) for i in range(N)]
         K_powers = [K**j for j in range(0, N+1)]
         NKR1_powers = [NKR1**k for k in range(0, N+1)]
         exp_terms = [exp(i*NTU1_N) for i in range(-N+1, 1)]
-        NKR1_powers_over_factorials = [NKR1_powers[k]/factorials[k] for k in range(N)]
+        NKR1_powers_over_factorials = [NKR1_powers[k]/factorials[k] 
+                                       for k in range(N)]
         
         # Precompute even more...
-        NKR1_powers_over_factorials_sums = [0]
+        NKR1_pows_div_factorials = [0]
         for k in NKR1_powers_over_factorials:
-            NKR1_powers_over_factorials_sums.append(NKR1_powers_over_factorials_sums[-1]+k)
-        NKR1_powers_over_factorials_sums.pop(0)
+            NKR1_pows_div_factorials.append(NKR1_pows_div_factorials[-1]+k)
+        NKR1_pows_div_factorials.pop(0)
         
-        final_speed = [i*j for i, j in zip(K_powers, NKR1_powers_over_factorials_sums)]
+        final_speed = [i*j for i, j in zip(K_powers, NKR1_pows_div_factorials)]
         
         tot = 0.
         for i in range(1, N):
@@ -1179,21 +1180,30 @@ def temperature_effectiveness_air_cooler(R1, NTU1, rows, passes):
         return 1./R1*(1. - 1./xi)
     elif rows == passes == 3:
         K = 1. - exp(-NTU1/3.)
-        xi = K*(1. - 0.25*K - R1*K*(1. - 0.5*K))*exp(K*R1) + exp(3.*K*R1)*(1. - 0.5*K)**2
+        xi = (K*(1. - 0.25*K - R1*K*(1. - 0.5*K))*exp(K*R1)
+              + exp(3.*K*R1)*(1. - 0.5*K)**2)
         return 1./R1*(1. - 1./xi)
     elif rows == passes == 4:
         K = 1. - exp(-0.25*NTU1)
-        xi = 0.5*K*(1. - 0.5*K + 0.25*K**2) + K*(1 - 0.5*K)*(1 - 0.125*R1*K*(1. - 0.5*K)*exp(2.*K*R1)) + exp(4*K*R1)*(1 - 0.5*K)**3
+        xi = (0.5*K*(1. - 0.5*K + 0.25*K**2)
+              + K*(1. - 0.5*K)*(1. - 0.125*R1*K*(1. - 0.5*K)*exp(2.*K*R1))
+              + exp(4.*K*R1)*(1. - 0.5*K)**3)
         return 1./R1*(1. - 1./xi)
     elif rows == passes == 5:
         K = 1. - exp(-0.2*NTU1)
-        xi = (K*(1. - .75*K + .5*K**2 - .125*K**3) - R1*K**2*(1. - K + .75*K**2 - .25*K**3 - .5*R1*K**2*(1. - .5*K)**2))*exp(K*R1)
-        xi += (K*(1. - .75*K + 1/16.*K**3) - 3*R1*K**2*(1. - .5*K)**3)*exp(3*K*R1) + (1. - .5*K)**4*exp(5*K*R1)
+        xi = (K*(1. - .75*K + .5*K**2 - .125*K**3) 
+              - R1*K**2*(1. - K + .75*K**2 - .25*K**3 
+              - .5*R1*K**2*(1. - .5*K)**2))*exp(K*R1)
+        xi += ((K*(1. - .75*K + 1/16.*K**3) - 3*R1*K**2*(1. - .5*K)**3)
+              *exp(3*K*R1) + (1. - .5*K)**4*exp(5*K*R1))
         return 1./R1*(1. - 1./xi)
-    elif rows == 4 and passes ==2:
+    elif rows == 4 and passes == 2:
         K = 1. - exp(-0.25*NTU1)
-        xi = (0.5*R1*K**3*(4. - K + 2.*R1*K**2) + exp(4.*K*R1) + K*(1. - 0.5*K + 0.125*K**2)*(1 - exp(4.*K*R1)))*(1. + R1*K**2)**-2
+        xi = (0.5*R1*K**3*(4. - K + 2.*R1*K**2) + exp(4.*K*R1) + K*(1. - 0.5*K 
+              + 0.125*K**2)*(1 - exp(4.*K*R1)))*(1. + R1*K**2)**-2
         return 1./R1*(1. - 1./xi)
+    else:
+        raise Exception('Number of passes and rows not supported.')
 
 
 def temperature_effectiveness_basic(R1, NTU1, subtype='crossflow'):
