@@ -771,8 +771,8 @@ vertical_cylinder_correlations = {
 }
 
 
-def Nu_vertical_cylinder(Pr, Gr, L=None, D=None,
-                         AvailableMethods=False, Method=None):
+def Nu_vertical_cylinder(Pr, Gr, L=None, D=None, Method=None,
+                         AvailableMethods=False):
     r'''This function handles choosing which vertical cylinder free convection
     correlation is used. Generally this is used by a helper class, but can be
     used directly. Will automatically select the correlation to use if none is
@@ -1031,7 +1031,7 @@ horizontal_cylinder_correlations = {
 'Morgan': (Nu_horizontal_cylinder_Morgan)
 }
 
-def Nu_horizontal_cylinder(Pr, Gr, AvailableMethods=False, Method=None):
+def Nu_horizontal_cylinder(Pr, Gr,  Method=None, AvailableMethods=False):
     r'''This function handles choosing which horizontal cylinder free convection
     correlation is used. Generally this is used by a helper class, but can be
     used directly. Will automatically select the correlation to use if none is
@@ -1039,11 +1039,6 @@ def Nu_horizontal_cylinder(Pr, Gr, AvailableMethods=False, Method=None):
 
     Prefered functions are 'Morgan' when discontinuous results are acceptable
     and 'Churchill-Chu' otherwise.
-
-    Examples
-    --------
-    >>> Nu_horizontal_cylinder(0.72, 1E7)
-    24.864192615468973
 
     Parameters
     ----------
@@ -1067,6 +1062,11 @@ def Nu_horizontal_cylinder(Pr, Gr, AvailableMethods=False, Method=None):
     AvailableMethods : bool, optional
         If True, function will consider which methods which can be used to
         calculate Nu with the given inputs
+
+    Examples
+    --------
+    >>> Nu_horizontal_cylinder(0.72, 1E7)
+    24.864192615468973
     '''
     def list_methods():
         methods = []

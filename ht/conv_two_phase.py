@@ -581,7 +581,7 @@ def Ravipudi_Godbold(m, x, D, rhol, rhog, Cpl, kl, mug, mu_b, mu_w=None):
     kl : float
         Thermal conductivity of liquid [W/m/K]
     mug : float
-        Viscosity of gas [Pa*S]
+        Viscosity of gas [Pa*s]
     mu_b : float
         Viscosity of liquid at bulk conditions (average of inlet/outlet 
         temperature) [Pa*s]
@@ -659,6 +659,8 @@ def Aggour(m, x, alpha, D, rhol, Cpl, kl, mu_b, mu_w=None, L=None,
         Void fraction in the tube, []
     D : float
         Diameter of the tube [m]
+    rhol : float
+        Density of the liquid [kg/m^3]
     Cpl : float
         Constant-pressure heat capacity of liquid [J/kg/K]
     kl : float
@@ -721,5 +723,3 @@ def Aggour(m, x, alpha, D, rhol, Cpl, kl, mu_b, mu_w=None, L=None,
             hl *= (mu_b/mu_w)**0.14
         return hl*(1-alpha)**(-1/3.)
 
-#print([Aggour(m=1, x=.9, D=.3, alpha=.9, rhol=1000, Cpl=2300, kl=.6, mu_b=1E-3)])
-#print([Aggour(m=.1, x=.9, D=.3, alpha=.9, rhol=1000, Cpl=2300, kl=.6, mu_b=1E-3, mu_w=1.2E-3, L=4)])

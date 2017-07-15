@@ -343,9 +343,9 @@ def Nu_Gupta(Re, Pr, rho_w=None, rho_b=None, mu_w=None, mu_b=None):
     rho_b : float, optional
         Density at the bulk temperature, [kg/m^3]
     mu_w : float, optional
-        Viscosity at the wall temperature, [Pa*S]
+        Viscosity at the wall temperature, [Pa*s]
     mu_b : float, optional
-        Viscosity at the bulk temperature, [Pa*S]
+        Viscosity at the bulk temperature, [Pa*s]
 
     Returns
     -------
@@ -490,9 +490,9 @@ def Nu_Xu(Re, Pr, rho_w=None, rho_b=None, mu_w=None, mu_b=None):
     rho_b : float, optional
         Density at the bulk temperature, [kg/m^3]
     mu_w : float, optional
-        Viscosity at the wall temperature, [Pa*S]
+        Viscosity at the wall temperature, [Pa*s]
     mu_b : float, optional
-        Viscosity at the bulk temperature, [Pa*S]
+        Viscosity at the bulk temperature, [Pa*s]
 
     Returns
     -------
@@ -797,7 +797,7 @@ def Nu_Zhu(Re, Pr, rho_w=None, rho_b=None, k_w=None, k_b=None):
         Density at the bulk temperature, [kg/m^3]
     k_w : float, optional
         Thermal conductivity at the wall temperature, [W/m/K]
-    mu_b : float, optional
+    k_b : float, optional
         Thermal conductivity at the bulk temperature, [W/m/K]
 
     Returns
@@ -1160,9 +1160,9 @@ def Nu_Krasnoshchekov_Protopopov(Re, Pr, Cp_avg=None, Cp_b=None, k_w=None,
     k_b : float, optional
         Thermal conductivity at the bulk temperature, [W/m/K]
     mu_w : float, optional
-        Viscosity at the wall temperature, [Pa*S]
+        Viscosity at the wall temperature, [Pa*s]
     mu_b : float, optional
-        Viscosity at the bulk temperature, [Pa*S]
+        Viscosity at the bulk temperature, [Pa*s]
 
     Returns
     -------
@@ -1243,9 +1243,9 @@ def Nu_Petukhov(Re, Pr, rho_w=None, rho_b=None, mu_w=None, mu_b=None):
     rho_b : float, optional
         Density at the bulk temperature, [kg/m^3]
     mu_w : float, optional
-        Viscosity at the wall temperature, [Pa*S]
+        Viscosity at the wall temperature, [Pa*s]
     mu_b : float, optional
-        Viscosity at the bulk temperature, [Pa*S]
+        Viscosity at the bulk temperature, [Pa*s]
 
     Returns
     -------

@@ -278,8 +278,6 @@ def h_boiling_Han_Lee_Kim(m, x, Dh, rhol, rhog, mul, kl, Hvap, Cpl, q,
         Density of the gas [kg/m^3]
     mul : float
         Viscosity of the liquid [Pa*s]
-    mug : float
-        Viscosity of the gas [Pa*s]
     kl : float
         Thermal conductivity of liquid [W/m/K]
     Hvap : float
@@ -385,8 +383,6 @@ def h_boiling_Huang_Sheer(rhol, rhog, mul, kl, Hvap, sigma, Cpl, q, Tsat,
         Density of the gas [kg/m^3]
     mul : float
         Viscosity of the liquid [Pa*s]
-    mug : float
-        Viscosity of the gas [Pa*s]
     kl : float
         Thermal conductivity of liquid [W/m/K]
     Hvap : float

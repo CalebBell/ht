@@ -173,9 +173,9 @@ def laminar_entry_Seider_Tate(Re, Pr, L, Di, mu=None, mu_w=None):
     Di : float
         Diameter of pipe [m]
     mu : float
-        Viscosity of fluid, [Pa*S or consistent with mu_w]
+        Viscosity of fluid, [Pa*s]
     mu_w : float
-        Viscosity of fluid at wall temperature, [Pa*S or consistent with mu]
+        Viscosity of fluid at wall temperature, [Pa*s]
 
     Returns
     -------
@@ -345,9 +345,9 @@ def turbulent_Sieder_Tate(Re, Pr, mu=None, mu_w=None):
     Pr : float
         Prandtl number, [-]
     mu : float
-        Viscosity of fluid, [Pa*S or consistent with mu_w]
+        Viscosity of fluid, [Pa*s]
     mu_w : float
-        Viscosity of fluid at wall temperature, [Pa*S or consistent with mu]
+        Viscosity of fluid at wall temperature, [Pa*s]
 
     Returns
     -------

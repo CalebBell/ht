@@ -53,7 +53,7 @@ def test_insulation():
     rho_tot = sum([i[0] for i in building_materials.values()])
     k_tot = sum([i[1] for i in building_materials.values()])
     Cp_tot = sum([i[2] for i in building_materials.values()])
-    ans = [213240.48, 1201.7044, 164486]
+    ans = [213240.48, 1132.7733999999994, 164486]
     assert_allclose([rho_tot, k_tot, Cp_tot], ans)
 
     assert_allclose(0.036, ASHRAE_k(ID='Mineral fiber'))
@@ -78,7 +78,7 @@ def test_insulation():
     assert_allclose(k, 17.0)
 
     k_tot = sum([k_material(ID) for ID in materials_dict])
-    assert_allclose(k_tot, 1505.18253465)
+    assert_allclose(k_tot, 1436.251534647845)
 
     rho = rho_material('Mineral fiber')
     assert_allclose(rho, 30.0)

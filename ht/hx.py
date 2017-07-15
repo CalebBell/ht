@@ -4134,8 +4134,8 @@ def DBundle_min(Do):
     r'''Very roughly, determines a good choice of shell diameter for a given
     tube outer diameter, according to figure 1, section 3.3.5 in [1]_.
 
-    Inputs
-    ------
+    Parameters
+    ----------
     Do : float
         Tube outer diameter, [m]
 
@@ -4174,12 +4174,12 @@ def shell_clearance(DBundle=None, DShell=None):
     a TEMA HX [1]. Either the bundle diameter or the shell diameter are needed 
     provided.
 
-    Inputs
-    ------
-    DShell : float, optional
-        Shell inner diameter, [m]
+    Parameters
+    ----------
     DBundle : float, optional
         Outer diameter of tube bundle, [m]
+    DShell : float, optional
+        Shell inner diameter, [m]
 
     Returns
     -------
@@ -4241,9 +4241,9 @@ def baffle_thickness(Dshell, L_unsupported, service='C'):
     ----------
     Dshell : float
         Shell inner diameter, [m]
-    L_unsupported: float
+    L_unsupported : float
         Distance between tube supports, [m]
-    service: str
+    service : str
         Service type, C, R or B, [-]
 
     Returns
@@ -4318,7 +4318,7 @@ def D_baffle_holes(do=None, L_unsupported=None):
     ----------
     do : float
         Tube outer diameter, [m]
-    L_unsupported: float
+    L_unsupported : float
         Distance between tube supports, [m]
 
     Returns
@@ -4365,11 +4365,11 @@ def L_unsupported_max(Do, material='CS'):
     a support, acording to TEMA [1]_. The limits provided apply for the 
     worst-case temperature allowed for the material to be used at.
 
-    Inputs
-    ------
+    Parameters
+    ----------
     Do : float
         Outer tube diameter, [m]
-    material: str
+    material : str
         Material type, either 'CS' or 'aluminium', [-]
 
     Returns
@@ -5794,12 +5794,12 @@ def Ntubes_Phadkeb(DBundle, Do, pitch, Ntp, angle=30):
     ----------
     DBundle : float
         Outer diameter of tube bundle, [m]
-    Ntp : int
-        Number of tube passes, [-]
     Do : float
         Tube outer diameter, [m]
     pitch : float
         Pitch; distance between two orthogonal tube centers, [m]
+    Ntp : int
+        Number of tube passes, [-]
     angle : float, optional
         The angle the tubes are positioned; 30, 45, 60 or 90, [degrees]
 
@@ -6016,12 +6016,12 @@ def DBundle_for_Ntubes_Phadkeb(Ntubes, Do, pitch, Ntp, angle=30):
     ----------
     Ntubes : int
         Total number of tubes that fit in the heat exchanger, [-]
-    Ntp : int
-        Number of tube passes, [-]
     Do : float
         Tube outer diameter, [m]
     pitch : float
         Pitch; distance between two orthogonal tube centers, [m]
+    Ntp : int
+        Number of tube passes, [-]
     angle : float, optional
         The angle the tubes are positioned; 30, 45, 60 or 90, [degrees]
 

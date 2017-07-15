@@ -115,6 +115,10 @@ def Ft_aircooler(Thi, Tho, Tci, Tco, Ntp=1, rows=1):
         Temperature of cold fluid in [K]
     Tco : float
         Temperature of cold fluid out [K]
+    Ntp : int
+        Number of passes the tubeside fluid will flow through [-]
+    rows : int
+        Number of rows of tubes [-]
 
     Returns
     -------

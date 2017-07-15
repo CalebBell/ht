@@ -53,7 +53,7 @@ def Nu_packed_bed_Gnielinski(dp, voidage, vs, rho, mu, Pr, fa=None):
     rho : float
         Density of the fluid [kg/m^3]
     mu : float
-        Viscosity of the fluid, [Pa*S]
+        Viscosity of the fluid, [Pa*s]
     Pr : float
         Prandtl number of the fluid []
     fa : float, optional

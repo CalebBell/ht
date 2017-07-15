@@ -53,10 +53,10 @@ building_materials = {'Asphalt': (2100, 0.7, 1000),
 'Floor covering, tiles, cork': (400, 65, 1500),
 'Floor covering, carpet / textile flooring': (200, 0.06, 1300),
 'Floor covering, Linoleum': (1200, 0.17, 1400),
-'Gases, air': (1.23, 25, 1008),
-'Gases, carbon dioxide': (1.95, 14, 820),
-'Gases, argon': (1.7, 17, 519),
-'Gases, sulphur hexafluoride': (6.36, 13, 614),
+'Gases, air': (1.23, 0.025, 1008),
+'Gases, carbon dioxide': (1.95, .014, 820),
+'Gases, argon': (1.7, .017, 519),
+'Gases, sulphur hexafluoride': (6.36, .013, 614),
 'Gases, krypton': (3.56, 0.009, 245),
 'Gases, xenon': (5.68, 0.0054, 160),
 'Glass, soda lime': (2500, 1, 750),
@@ -589,6 +589,8 @@ def nearest_material(name, complete=False):
     ----------
     name : str
         Search keywords to be used by difflib function
+    complete : bool, optional
+        If True, returns only hits with all parameters available
 
     Returns
     -------

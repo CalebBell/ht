@@ -169,6 +169,8 @@ def dP_Zukauskas(Re, n, ST, SL, D, rho, Vmax):
         Transverse pitch, used only by some conditions, [m]
     SL : float
         Longitudal pitch, used only by some conditions, [m]
+    D : float
+        Tube outer diameter, [m]
     rho : float
         Fluid density, [kg/m^3]
     Vmax : float
