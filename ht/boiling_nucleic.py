@@ -1039,7 +1039,6 @@ def Serth_HEDH(D, sigma, Hvap, rhol, rhog):
         K = 0.118
     return K*Hvap*rhog**0.5*(g*sigma*(rhol-rhog))**0.25
 
-#print [Serth_HEDH(D=0.00127, sigma=8.2E-3, Hvap=272E3, rhol=567, rhog=18.09)]
 
 def HEDH_Montinsky(P, Pc):
     r'''Calculates critical heat flux
@@ -1058,7 +1057,7 @@ def HEDH_Montinsky(P, Pc):
 
     Returns
     -------
-    q: float
+    q : float
         Critical heat flux [W/m^2]
 
     Notes
@@ -1089,8 +1088,8 @@ def HEDH_Montinsky(P, Pc):
     return 367*(Pc/1000.)*Pr**0.35*(1-Pr)**0.9
 
 
-def qmax_boiling(rhol=None, rhog=None, sigma=None, Hvap=None, D=None, P=None, Pc=None,
-         AvailableMethods=False, Method=None):
+def qmax_boiling(rhol=None, rhog=None, sigma=None, Hvap=None, D=None, P=None, 
+                 Pc=None, AvailableMethods=False, Method=None):
     r'''This function handles choosing which nucleate boiling critical
     heat flux correlation to use, depending on the provided information.
     Generally this is used by a helper class, but can be used directly. Will

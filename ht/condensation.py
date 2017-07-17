@@ -29,6 +29,7 @@ from ht.conv_internal import turbulent_Dittus_Boelter
 __all__ = ['Boyko_Kruzhilin', 'Nusselt_laminar', 'h_kinetic', 
            'Akers_Deans_Crosser', 'Cavallini_Smith_Zecchin', 'Shah']
 
+
 def Nusselt_laminar(Tsat, Tw, rhog, rhol, kl, mul, Hvap, L, angle=90):
     r'''Calculates heat transfer coefficient for laminar film condensation
     of a pure chemical on a flat plate, as presented in [1]_ according to an
@@ -115,7 +116,7 @@ def Boyko_Kruzhilin(m, rhog, rhol, kl, mul, Cpl, D, x):
     D : float
         Diameter of the tubing [m]
     x : float
-        Quality at the specific interval []
+        Quality at the specific interval [-]
 
     Returns
     -------
@@ -184,7 +185,7 @@ def Akers_Deans_Crosser(m, rhog, rhol, kl, mul, Cpl, D, x):
     D : float
         Diameter of the tubing [m]
     x : float
-        Quality at the specific interval []
+        Quality at the specific interval [-]
 
     Returns
     -------
@@ -297,7 +298,7 @@ def Cavallini_Smith_Zecchin(m, x, D, rhol, rhog, mul, mug, kl, Cpl):
     m : float
         Mass flow rate [kg/s]
     x : float
-        Quality at the specific interval []
+        Quality at the specific interval [-]
     D : float
         Diameter of the channel [m]
     rhol : float
@@ -373,7 +374,7 @@ def Shah(m, x, D, rhol, mul, kl, Cpl, P, Pc):
     m : float
         Mass flow rate [kg/s]
     x : float
-        Quality at the specific interval []
+        Quality at the specific interval [-]
     D : float
         Diameter of the channel [m]
     rhol : float

@@ -65,7 +65,6 @@ def R_to_k(R, t, A=1.):
     an area other than 1 m^2. Values in tables reported as properties of
     materials are often divided by area already; the conversion holds if A is 1.
 
-
     References
     ----------
     .. [1] Bergman, Theodore L., Adrienne S. Lavine, Frank P. Incropera, and

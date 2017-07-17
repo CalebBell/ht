@@ -157,8 +157,6 @@ def Nu_cylinder_Churchill_Bernstein(Re, Pr):
     return 0.3 + (0.62*Re**0.5*Pr**(1/3.))/(1 + (0.4/Pr)**(2/3.))**0.25*(
     1 +(Re/282000.)**(0.625))**0.8
 
-#print [Nu_cylinder_Churchill_Bernstein(6071, 0.7)]
-
 
 def Nu_cylinder_Sanitjai_Goldstein(Re, Pr):
     r'''Calculates Nusselt number for crossflow across a single tube
@@ -344,7 +342,6 @@ def Nu_cylinder_Whitaker(Re, Pr, mu=None, muw=None):
         Nu *= (mu/muw)**0.25
     return Nu
 
-#print [Nu_cylinder_Whitaker(6071, 0.7, 1E-3, 1.2E-3)]
 
 def Nu_cylinder_Perkins_Leppert_1962(Re, Pr, mu=None, muw=None):
     r'''Calculates Nusselt number for crossflow across a single tube as shown
@@ -451,4 +448,3 @@ def Nu_cylinder_Perkins_Leppert_1964(Re, Pr, mu=None, muw=None):
         Nu *= (mu/muw)**0.25
     return Nu
 
-#print [Nu_cylinder_Perkins_Leppert_1964(6071, 0.7, 1E-3, 1.2E-3)]
