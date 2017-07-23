@@ -160,3 +160,58 @@ def test_helical_turbulent_Nu_Xin_Ebadian():
 def test_Nu_laminar_rectangular_Shan_London():
     Nu = Nu_laminar_rectangular_Shan_London(.7)
     assert_allclose(Nu, 3.751762675455)
+    
+
+def test_Nu_conv_internal():
+    Nu = Nu_conv_internal(1E2, .7)
+    assert_allclose(Nu, laminar_T_const())
+    
+    Nu = Nu_conv_internal(1E2, .7, Method='Laminar - constant Q')
+    assert_allclose(Nu, laminar_Q_const())
+
+    Nu = Nu_conv_internal(1E2, .7, x=.01, Di=.1)
+    assert_allclose(Nu, 14.91799128769779)
+    
+    # test the other laminar entrylength methods
+    Nu = Nu_conv_internal(1E2, .7, x=.01, Di=.1, Method='Hausen laminar thermal entry')
+    assert_allclose(Nu, 16.51501443241237)
+    Nu = Nu_conv_internal(1E2, .7, x=.01, Di=.1, Method='Seider-Tate laminar thermal entry')
+    assert_allclose(Nu, 21.054212255270848)
+    
+    # martinili
+    Nu = Nu_conv_internal(1E5, .02, eD=0)
+    assert_allclose(Nu, 8.246171632616187)
+    
+    Nu = Nu_conv_internal(1E5, .7, x=.01, Di=.1)
+    assert_allclose(Nu, 978.1729258857774)
+
+    Nu = Nu_conv_internal(1E5, .7)
+    assert_allclose(Nu, 183.71057902604906)
+    
+    other_methods = ['Churchill-Zajic', 'Petukhov-Kirillov-Popov', 'Gnielinski',
+                     'Bhatti-Shah', 'Dipprey-Sabersky', 'Sandall', 'Webb',
+                     'Friend-Metzner', 'Prandtl', 'von-Karman', 'Gowen-Smith', 
+                     'Kawase-Ulbrecht', 'Kawase-De', 'Nunner', 'Dittus-Boelter', 
+                     'Sieder-Tate', 'Drexel-McAdams', 'Colburn', 'ESDU', 
+                     'Gnielinski smooth low Pr','Gnielinski smooth high Pr']
+    
+    expected = [103.65851760127596, 96.66083769419261, 95.7206648591076, 
+                124.96666518189072, 124.96666518189072, 126.8559349821517,
+                89.04183860378171, 82.62190521404274, 96.39509181385534,
+                97.64409839390211, 63.69345925482798, 218.78659693866075,
+                169.9758751276217, 113.72592148878971, 199.41923780765848, 
+                239.73408047050233, 182.078434520036, 204.21792040079825, 
+                177.52639370276017, 183.6911292257849, 230.01408232621412]
+    
+    
+    for method, expect in zip(other_methods, expected):
+        Nu = Nu_conv_internal(1E5, .7, fd=.01, Method=method)
+        assert_allclose(Nu, expect)
+        
+    with pytest.raises(Exception):
+        Nu_conv_internal(1E5, .7, Method='NOTAMETHOD')
+
+    l = Nu_conv_internal(1E5, .7, AvailableMethods=True)
+    assert len(l) == 21
+        
+test_Nu_conv_internal()

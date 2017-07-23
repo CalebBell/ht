@@ -201,7 +201,7 @@ def Nu_KTA(Re, Pr, voidage):
     Re : float
         Reynolds number with pebble diameter as characteristic dimension, [-]
     Pr : float
-        Prandtl number of the fluid []
+        Prandtl number of the fluid [-]
     voidage : float
         Void fraction of bed packing [-]
 

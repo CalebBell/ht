@@ -41,8 +41,7 @@ from fluids.units import wraps_numpydoc
 
 '''
 Functions which will need custom wrappers:
-    
-
+ht.get_tube_TEMA, ht.check_tubing_TEMA
 '''
 
 __funcs = {}
@@ -50,7 +49,7 @@ __funcs = {}
 
 for name in dir(ht):
     obj = getattr(ht, name)
-    if isinstance(obj, types.FunctionType) and obj not in [ht.qmax_boiling, ht.h_nucleic, ht.get_tube_TEMA, ht.Ntubes, ht.Nu_conv_internal, ht.R_to_k, ht.check_tubing_TEMA]:
+    if isinstance(obj, types.FunctionType) and obj not in [ht.get_tube_TEMA, ht.check_tubing_TEMA]:
         obj = wraps_numpydoc(u)(obj)
     elif isinstance(obj, str):
         continue
@@ -60,3 +59,32 @@ for name in dir(ht):
     __funcs.update({name: obj})
     
 globals().update(__funcs)
+
+
+wrapped_R_to_k = R_to_k
+wrapped_k_to_R = k_to_R
+
+
+def R_to_k(R, t, A=1*u.m**2):
+    if R.dimensionality == (u.K/u.W).dimensionality:
+        if A.to_base_units().magnitude != 1:
+            raise Exception('The conversion with R in units of K/W is only permissible if A = 1 length**2')
+        R = R*u.m**2
+    elif R.dimensionality != (u.K*u.m**2/u.W).dimensionality:
+        raise Exception('Units of R must be either K/W  if A = 1 length**2 or m^2*K/W otherwise')
+    return wrapped_R_to_k(R, t, A)
+
+# k_to_R(k=0.5*u.W/u.m/u.K, t=0.025*u.m)
+# TODO define hbehavior
+
+def R_value_to_k(R_value, SI=True):
+    r = R_value.to('m*K/W')
+    return thermal_resistivity_to_k(r)
+
+
+def k_to_R_value(k, SI=True):
+    r = k_to_thermal_resistivity(k)
+    if SI:
+        return r.to('m^2*K/(W*inch)')
+    else:
+        return r.to('ft^2*delta_degF*hour/(BTU*inch)')

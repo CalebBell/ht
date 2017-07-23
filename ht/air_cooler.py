@@ -123,7 +123,7 @@ def Ft_aircooler(Thi, Tho, Tci, Tco, Ntp=1, rows=1):
     Returns
     -------
     Ft : float
-        Log-mean temperature difference correction factor []
+        Log-mean temperature difference correction factor [-]
 
     Notes
     -----

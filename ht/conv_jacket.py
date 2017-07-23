@@ -80,7 +80,7 @@ def Lehrer(m, Dtank, Djacket, H, Dinlet, rho, Cp, k, mu, muw=None,
     isobaric_expansion : float, optional
         Constant pressure expansivity of a fluid, [m^3/mol/K]
     dT : float, optional
-        Temperature difference of fluid in jacket, K
+        Temperature difference of fluid in jacket, [K]
     inlettype : str, optional
         Either 'tangential' or 'radial'
     inletlocation : str, optional
@@ -88,7 +88,7 @@ def Lehrer(m, Dtank, Djacket, H, Dinlet, rho, Cp, k, mu, muw=None,
 
     Returns
     -------
-    h: float
+    h : float
         Average heat transfer coefficient inside the jacket [W/m^2/K]
 
     Notes
@@ -251,7 +251,7 @@ def Stein_Schmidt(m, Dtank, Djacket, H, Dinlet,
 
     Returns
     -------
-    h: float
+    h : float
         Average  transfer coefficient inside the jacket [W/m^2/K]
 
     Notes

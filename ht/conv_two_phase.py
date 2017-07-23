@@ -45,7 +45,7 @@ def Davis_David(m, x, D, rhol, rhog, Cpl, kl, mul):
     m : float
         Mass flow rate [kg/s]
     x : float
-        Quality at the specific tube interval []
+        Quality at the specific tube interval [-]
     D : float
         Diameter of the tube [m]
     rhol : float
@@ -110,7 +110,7 @@ def Elamvaluthi_Srinivas(m, x, D, rhol, rhog, Cpl, kl, mug, mu_b, mu_w=None):
     m : float
         Mass flow rate [kg/s]
     x : float
-        Quality at the specific tube interval []
+        Quality at the specific tube interval [-]
     D : float
         Diameter of the tube [m]
     rhol : float
@@ -197,7 +197,7 @@ def Groothuis_Hendal(m, x, D, rhol, rhog, Cpl, kl, mug, mu_b, mu_w=None,
     m : float
         Mass flow rate [kg/s]
     x : float
-        Quality at the specific tube interval []
+        Quality at the specific tube interval [-]
     D : float
         Diameter of the tube [m]
     rhol : float
@@ -354,7 +354,7 @@ def Knott(m, x, D, rhol, rhog, Cpl=None, kl=None, mu_b=None, mu_w=None, L=None,
     m : float
         Mass flow rate [kg/s]
     x : float
-        Quality at the specific tube interval []
+        Quality at the specific tube interval [-]
     D : float
         Diameter of the tube [m]
     rhol : float
@@ -437,7 +437,7 @@ def Kudirka_Grosh_McFadden(m, x, D, rhol, rhog, Cpl, kl, mug, mu_b, mu_w=None):
     m : float
         Mass flow rate [kg/s]
     x : float
-        Quality at the specific tube interval []
+        Quality at the specific tube interval [-]
     D : float
         Diameter of the tube [m]
     rhol : float
@@ -569,7 +569,7 @@ def Ravipudi_Godbold(m, x, D, rhol, rhog, Cpl, kl, mug, mu_b, mu_w=None):
     m : float
         Mass flow rate [kg/s]
     x : float
-        Quality at the specific tube interval []
+        Quality at the specific tube interval [-]
     D : float
         Diameter of the tube [m]
     rhol : float
@@ -654,9 +654,9 @@ def Aggour(m, x, alpha, D, rhol, Cpl, kl, mu_b, mu_w=None, L=None,
     m : float
         Mass flow rate [kg/s]
     x : float
-        Quality at the specific tube interval []
+        Quality at the specific tube interval [-]
     alpha : float
-        Void fraction in the tube, []
+        Void fraction in the tube, [-]
     D : float
         Diameter of the tube [m]
     rhol : float

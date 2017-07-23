@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 '''Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
-Copyright (C) 2016, Caleb Bell <Caleb.Andrew.Bell@gmail.com>
+Copyright (C) 2016, 2017, Caleb Bell <Caleb.Andrew.Bell@gmail.com>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -23,8 +23,6 @@ import pytest
 
 ### Nucleic boiling
 
-# consider reordering every parameter. Also all of these need to be reqritten.
-
 
 def test_boiling_nucleic_Rohsenow():
     # Checked with 10.30 Problem set 8.
@@ -40,7 +38,6 @@ def test_boiling_nucleic_Rohsenow():
     
     with pytest.raises(Exception):
         Rohsenow(Cpl=4180, kl=0.688, mul=2.75E-4, sigma=0.0588, Hvap=2.25E6, rhol=958, rhog=0.597)
-
 
 
 def test_boiling_nucleic_McNelly():
@@ -188,23 +185,75 @@ def test_Gorenflo():
 
 
 def test_h_nucleic():
-  # TODO
-    pass
+    h = h_nucleic(rhol=957.854, rhog=0.595593, mul=2.79E-4, kl=0.680, Cpl=4217, Hvap=2.257E6, sigma=0.0589, Te=4.9, Method='Rohsenow')
+    assert_allclose(h, 1094.0242011089285)
+        
+    h = h_nucleic(Te=4.3, P=101325, Cpl=4180., kl=0.688, sigma=0.0588, Hvap=2.25E6, rhol=958., rhog=0.597, Method='McNelly')
+    assert_allclose(h, 533.8056972951352)
+    
+    h = h_nucleic(Te=4.3, dPsat=3906*4.3, Cpl=4180., kl=0.688, mul=0.275E-3, sigma=0.0588, Hvap=2.25E6, rhol=958., rhog=0.597, Method='Forster-Zuber')
+    assert_allclose(h, 3519.9239897462644)
+    
+    h = h_nucleic(P=101325, Pc=22048321, Te=4.3, Method='Montinsky')
+    assert_allclose(h, 1185.0509770292663)
+    
+    h = h_nucleic(Te=16.2, Tsat=437.5, Cpl=2730., kl=0.086, mul=156E-6, sigma=0.0082, Hvap=272E3, rhol=567, rhog=18.09, Method='Stephan-Abdelsalam')
+    assert_allclose(h, 26722.441071108373)
+    
+    h = h_nucleic(Te=16.2, Tsat=437.5, Cpl=2730., kl=0.086, mul=156E-6, sigma=0.0082, Hvap=272E3, rhol=567, rhog=18.09, Method='Stephan-Abdelsalam water', CAS='7732-18-5')
+    assert_allclose(h, 30571.788078886435)
+    
+    h = h_nucleic(Te=16.2, Tsat=437.5, Cpl=2730., kl=0.086, mul=156E-6, sigma=0.0082, Hvap=272E3, rhol=567, rhog=18.09, Method='Stephan-Abdelsalam cryogenic', CAS='1333-74-0')
+    assert_allclose(h, 3548.8050360907037)
+    
+    h = h_nucleic(Te=16.2, P=310.3E3, Pc=2550E3, Method='HEDH-Taborek')
+    assert_allclose(h, 1397.272486525486)
+    
+    h = h_nucleic(P=101325., Pc=22048321.0, Te=4.3, Method='Bier')
+    assert_allclose(h, 1290.5349471503353)
+    
+    h = h_nucleic(P=101325., Pc=22048321.0, MW=18.02, Te=4.3, Method='Cooper')
+    assert_allclose(h, 1558.1435442153575)
+    
+    h = h_nucleic(P=3E5, Pc=22048320., q=2E4, CAS='7732-18-5', Method='Gorenflo (1993)')
+    assert_allclose(h, 3043.344595525422)
+   
+    # Test the kwargs
+    h = h_nucleic(rhol=957.854, rhog=0.595593, mul=2.79E-4, kl=0.680, Cpl=4217, Hvap=2.257E6, sigma=0.0589, Te=4.9, Method='Rohsenow', Csf=0.011, n=1.26)
+    assert_allclose(h, 3723.655267067467)
 
 
+    # methods
+    methods = h_nucleic(P=101325., Pc=22048321.0, MW=18.02, dPsat=3906*4.3, Tsat=437.5, CAS='7732-18-5', rhol=957.854, rhog=0.595593, mul=2.79E-4, kl=0.680, Cpl=4217, Hvap=2.257E6, sigma=0.0589, Te=4.9, AvailableMethods=True)
+    assert len(methods) == 10
+    
+    methods = h_nucleic(Te=16.2, Tsat=437.5, Cpl=2730., kl=0.086, mul=156E-6, sigma=0.0082, Hvap=272E3, rhol=567, rhog=18.09, CAS='1333-74-0', AvailableMethods=True)
+    assert len(methods) == 3
+    
+    with pytest.raises(Exception):
+        h_nucleic(P=101325., Pc=22048321.0, Te=4.3, Method='BADMETHOD')
+        
+    with pytest.raises(Exception):
+        h_nucleic()
+    
+    # test the default method
+    h = h_nucleic(rhol=957.854, rhog=0.595593, mul=2.79E-4, kl=0.680, Cpl=4217, Hvap=2.257E6, sigma=0.0589, Te=4.9)
+    assert_allclose(h, 1094.0242011089285)
+    
+    
 def test_qmax_Zuber():
     q_calc_ex = Zuber(sigma=8.2E-3, Hvap=272E3, rhol=567, rhog=18.09, K=0.149)
     assert_allclose(q_calc_ex, 444307.22304342285)
-#    q_max = Zuber(8.2E-3, 272E3, 567, 18.09, 0.18)
-#    assert_allclose(q_max, 536746.9808578263)
+    q_max = Zuber(8.2E-3, 272E3, 567, 18.09, 0.18)
+    assert_allclose(q_max, 536746.9808578263)
 
 
 def test_qmax_Serth_HEDH():
     qmax = Serth_HEDH(D=0.0127, sigma=8.2E-3, Hvap=272E3, rhol=567, rhog=18.09)
     assert_allclose(qmax, 351867.46522901946)
     # Test K calculated as a function of R
-#    qmax = Serth_HEDH(0.00127, 8.2E-3, 272E3, 567, 18.09)
-#    assert_allclose(qmax, 440111.4740326096)
+    qmax = Serth_HEDH(0.00127, 8.2E-3, 272E3, 567, 18.09)
+    assert_allclose(qmax, 440111.4740326096)
 
 
 def test_HEDH_Montinsky():
@@ -212,5 +261,20 @@ def test_HEDH_Montinsky():
 
 
 def test_qmax_nucleic():
-  # TODO
-    pass
+    q = qmax_boiling(D=0.0127, sigma=8.2E-3, Hvap=272E3, rhol=567, rhog=18.09)
+    assert_allclose(q, 351867.46522901946)
+    
+    q = qmax_boiling(sigma=8.2E-3, Hvap=272E3, rhol=567, rhog=18.09, Method='Zuber')
+    assert_allclose(q, 536746.9808578263)
+    
+    q = qmax_boiling(P=310.3E3, Pc=2550E3)
+    assert_allclose(q, 398405.66545181436)
+    
+    with pytest.raises(Exception):
+        qmax_boiling(D=0.0127)
+    with pytest.raises(Exception):
+        qmax_boiling(D=0.0127, sigma=8.2E-3, Hvap=272E3, rhol=567, rhog=18.09, Method='BADMETHOD')
+
+
+    methods = qmax_boiling(P=310.3E3, Pc=2550E3, D=0.0127, sigma=8.2E-3, Hvap=272E3, rhol=567, rhog=18.09, AvailableMethods=True)
+    assert len(methods) == 3

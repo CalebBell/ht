@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 '''Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
-Copyright (C) 2016, Caleb Bell <Caleb.Andrew.Bell@gmail.com>
+Copyright (C) 2016, 2017 Caleb Bell <Caleb.Andrew.Bell@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -21,7 +21,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.'''
 
 from __future__ import division
-from math import log, log10, exp, tanh
 
 __all__ = ['laminar_T_const', 'laminar_Q_const',
 'laminar_entry_thermal_Hausen', 'laminar_entry_Seider_Tate',
@@ -37,6 +36,9 @@ __all__ = ['laminar_T_const', 'laminar_Q_const',
 'Nu_conv_internal', 'Morimoto_Hotta', 'helical_turbulent_Nu_Mori_Nakayama',
 'helical_turbulent_Nu_Schmidt', 'helical_turbulent_Nu_Xin_Ebadian', 
 'Nu_laminar_rectangular_Shan_London']
+
+from math import log, log10, exp, tanh
+from fluids.friction import friction_factor, LAMINAR_TRANSITION_PIPE
 
 ### Laminar
 
@@ -933,9 +935,9 @@ def turbulent_Churchill_Zajic(Re, Pr, fd):
        CRC Press, 2014.
     '''
     Pr_T = 0.85 + 0.015/Pr
-    Nu_di = Re*(fd/8.)/(1 + 145*(8./fd)**(-1.25))
-    Nu_dinf = 0.07343*Re*(Pr/Pr_T)**(1/3.0)*(fd/8.)**0.5
-    return 1./(Pr_T/Pr/Nu_di + (1 - (Pr_T/Pr)**(2/3.))/Nu_dinf)
+    Nu_di = Re*(fd/8.)/(1. + 145*(8./fd)**(-1.25))
+    Nu_dinf = 0.07343*Re*(Pr/Pr_T)**(1./3.0)*(fd/8.)**0.5
+    return 1./(Pr_T/Pr/Nu_di + (1. - (Pr_T/Pr)**(2/3.))/Nu_dinf)
 
 
 def turbulent_ESDU(Re, Pr):
@@ -1283,15 +1285,73 @@ def turbulent_Bhatti_Shah(Re, Pr, fd, eD):
     return Re*Pr*fd/8./(1 + (fd/8.)**0.5*(4.5*Re_e**0.2*Pr**0.5 - 8.48))
 
 
-def Nu_conv_internal(Re, Pr, fd=None, eD=None, Di=None, x=None,
-                     fd_smooth=None, AvailableMethods=False, Method=None):
-    r'''This function handles choosing which internal flow heat transfer
-    correlation to use, depending on the provided information.
-    Generally this is used by a helper class, but can be used directly. Will
-    automatically select the correlation to use if none is provided'''
+def Nu_conv_internal(Re, Pr, eD=0, Di=None, x=None, fd=None, Method=None, 
+                     AvailableMethods=False):
+    r'''This function calculates the heat transfer coefficient for internal
+    convection inside a circular pipe. 
+    
+    Requires at a minimum a flow's Reynolds and Prandtl numbers `Re` and `Pr`. 
+    Relative roughness `eD` can be specified to include the enhancement of heat 
+    transfer from the added turbulence. 
+    
+    For laminar flow, thermally and hydraulically developing flow is supported
+    with the pipe diameter `Di` and distance `x` is provided.
+    
+    If no correlation's name is provided as `Method`, the most accurate 
+    applicable correlation is selected.
+    
+    * If laminar, `x` and `Di` provided:  'Baehr-Stephan laminar thermal/velocity entry'
+    * Otherwise if laminar, no entry information provided: 'Laminar - constant T' (Nu = 3.66)
+    * If turbulent and `Pr` < 0.03: 'Martinelli'
+    * If turbulent, `x` and `Di` provided: 'Hausen'
+    * Otherwise if turbulent: 'Churchill-Zajic'
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    eD : float, optional
+        Relative roughness, [-]
+    Di : float, optional
+        Inside diameter of pipe, [m]
+    x : float, optional
+        Length inside of pipe for calculation, [m]
+    fd : float, optoinal
+        Darcy friction factor [-]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    methods : list, only returned if AvailableMethods == True
+        List of methods which can be used to calculate `Nu` with the given inputs
+
+    Other Parameters
+    ----------------
+    Method : string, optional
+        A string of the function name to use, as in the dictionary
+        vertical_cylinder_correlations
+    AvailableMethods : bool, optional
+        If True, function will consider which methods which can be used to
+        calculate Nu with the given inputs
+        
+    Examples
+    --------
+    Turbulent example
+    
+    >>> Nu_conv_internal(Re=1E5, Pr=.7)
+    183.71057902604906
+
+    Entry length - laminar example
+    
+    >>> Nu_conv_internal(Re=1E2, Pr=.7, x=.01, Di=.1)
+    14.91799128769779
+    '''
     def list_methods():
         methods = []
-        if Re < 2100:
+        if Re < LAMINAR_TRANSITION_PIPE:
             # Laminar!
             if all((Re, Pr, x, Di)):
                 methods.append('Baehr-Stephan laminar thermal/velocity entry')
@@ -1301,13 +1361,18 @@ def Nu_conv_internal(Re, Pr, fd=None, eD=None, Di=None, x=None,
             methods.append('Laminar - constant T')
             methods.append('Laminar - constant Q')
         else:
-            if all((Re, Pr, fd)) and Pr < 0.03:
+            if all((Re, Pr)) and Pr < 0.03:
                 # Liquid metals
                 methods.append('Martinelli')
-            if all((Re, Pr, fd)):
+            if all((Re, Pr, Di, x)):
+                methods.append('Hausen')
+            if Re and Pr and (eD is not None or fd is not None):
+                # handle correlations with roughness
                 methods.append('Churchill-Zajic')
                 methods.append('Petukhov-Kirillov-Popov')
                 methods.append('Gnielinski')
+                methods.append('Bhatti-Shah')
+                methods.append('Dipprey-Sabersky')
                 methods.append('Sandall')
                 methods.append('Webb')
                 methods.append('Friend-Metzner')
@@ -1316,8 +1381,8 @@ def Nu_conv_internal(Re, Pr, fd=None, eD=None, Di=None, x=None,
                 methods.append('Gowen-Smith')
                 methods.append('Kawase-Ulbrecht')
                 methods.append('Kawase-De')
-
-            if all((Re, Pr)):
+                methods.append('Nunner')
+            if Re and Pr:
                 methods.append('Dittus-Boelter')
                 methods.append('Sieder-Tate')
                 methods.append('Drexel-McAdams')
@@ -1325,21 +1390,15 @@ def Nu_conv_internal(Re, Pr, fd=None, eD=None, Di=None, x=None,
                 methods.append('ESDU')
                 methods.append('Gnielinski smooth low Pr') # 1
                 methods.append('Gnielinski smooth high Pr') # 2
-
-            if all((Re, Pr, Di, x)):
-                methods.append('Hausen')
-            if all((Re, Pr, fd, eD)):
-                methods.append('Bhatti-Shah')
-                methods.append('Dipprey-Sabersky')
-            if all((Re, Pr, fd, fd_smooth)):
-                methods.append('Nunner')
-        methods.append('None')
         return methods
 
     if AvailableMethods:
         return list_methods()
     if not Method:
         Method = list_methods()[0]
+        
+    if eD is not None and fd is None:
+        fd = friction_factor(Re=Re, eD=eD)
 
     if Method == 'Laminar - constant T':
         Nu = laminar_T_const()
@@ -1351,7 +1410,6 @@ def Nu_conv_internal(Re, Pr, fd=None, eD=None, Di=None, x=None,
         Nu = laminar_entry_Seider_Tate(Re=Re, Pr=Pr, L=x, Di=Di)
     elif Method == 'Seider-Tate laminar thermal entry':
         Nu = laminar_entry_Baehr_Stephan(Re=Re, Pr=Pr, L=x, Di=Di)
-
     elif Method == 'Churchill-Zajic':
         Nu = turbulent_Churchill_Zajic(Re=Re, Pr=Pr, fd=fd)
     elif Method == 'Petukhov-Kirillov-Popov':
@@ -1376,7 +1434,6 @@ def Nu_conv_internal(Re, Pr, fd=None, eD=None, Di=None, x=None,
         Nu = turbulent_Kawase_Ulbrecht(Re=Re, Pr=Pr, fd=fd)
     elif Method == 'Kawase-De':
         Nu = turbulent_Kawase_De(Re=Re, Pr=Pr, fd=fd)
-
     elif Method == 'Dittus-Boelter':
         Nu = turbulent_Dittus_Boelter(Re=Re, Pr=Pr)
     elif Method == 'Sieder-Tate':
@@ -1391,7 +1448,6 @@ def Nu_conv_internal(Re, Pr, fd=None, eD=None, Di=None, x=None,
         Nu = turbulent_Gnielinski_smooth_1(Re=Re, Pr=Pr)
     elif Method == 'Gnielinski smooth high Pr':
         Nu = turbulent_Gnielinski_smooth_2(Re=Re, Pr=Pr)
-
     elif Method == 'Hausen':
         Nu = turbulent_entry_Hausen(Re=Re, Pr=Pr, Di=Di, x=x)
     elif Method == 'Bhatti-Shah':
@@ -1399,12 +1455,11 @@ def Nu_conv_internal(Re, Pr, fd=None, eD=None, Di=None, x=None,
     elif Method == 'Dipprey-Sabersky':
         Nu = turbulent_Dipprey_Sabersky(Re=Re, Pr=Pr, fd=fd, eD=eD)
     elif Method == 'Nunner':
+        fd_smooth = friction_factor(Re, eD=0)
         Nu = turbulent_Nunner(Re=Re, Pr=Pr, fd=fd, fd_smooth=fd_smooth)
-
-    elif Method == 'None':
-        Nu = None
     else:
-        raise Exception('Failure in in function')
+        raise Exception("Correlation name not recognized; see the "
+                        "documentation for the available options.")
     return Nu
 
 

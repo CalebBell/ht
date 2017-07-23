@@ -79,7 +79,7 @@ def q_rad(emissivity, T, T2=0):
     Parameters
     ----------
     emissivity : float
-        Fraction of black-body radiation which is emitted, []
+        Fraction of black-body radiation which is emitted, [-]
     T : float
         Temperature of the surface, [K]
     T2 : float, optional

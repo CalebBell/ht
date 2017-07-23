@@ -37,14 +37,6 @@ def test_Ntubes_Perrys():
         Ntubes_Perrys(DBundle=1.184, Ntp=5, Do=.028, angle=45)
 
 
-def test_Ntubes_VDI():
-    VDI_t = [[Ntubes_VDI(DBundle=1.184, Ntp=i, Do=.028, pitch=.036, angle=j) for i in [1,2,4,6,8]] for j in [30, 45, 60, 90]]
-    VDI_values = [[983, 966, 929, 914, 903], [832, 818, 790, 778, 769], [983, 966, 929, 914, 903], [832, 818, 790, 778, 769]]
-    assert_allclose(VDI_t, VDI_values)
-    with pytest.raises(Exception):
-        Ntubes_VDI(DBundle=1.184, Ntp=5, Do=.028, pitch=.036, angle=30)
-    with pytest.raises(Exception):
-        Ntubes_VDI(DBundle=1.184, Ntp=2, Do=.028, pitch=.036, angle=40)
 
 
 def test_Ntubes_Phadkeb():
@@ -88,6 +80,12 @@ def test_Ntubes_Phadkeb():
     # reverse case
     # DBundle_for_Ntubes_Phadkeb(Ntubes=17546, Do=.001, pitch=.00125, Ntp=6, angle=45) 0.19052937784048926
 
+    with pytest.raises(Exception):
+        Ntubes_Phadkeb(DBundle=1.008, Do=.028, pitch=.036, Ntp=11, angle=45.) 
+        
+    # Test the case of too small for anything
+    assert 0 == Ntubes_Phadkeb(DBundle=.01, Do=.028, pitch=.036, Ntp=2, angle=45.) 
+
 def test_Ntubes_Phadkeb_fuzz():
     seed(100)
     D_main = 1E-3
@@ -111,7 +109,6 @@ def test_Ntubes_Phadkeb_fuzz():
                     DBundle2 = DBundle_for_Ntubes_Phadkeb(Ntubes=N, Do=D_main, pitch=pitch, Ntp=Ntp, angle=angle)
                     N2 = Ntubes_Phadkeb(DBundle=DBundle2, Do=D_main, pitch=pitch, Ntp=Ntp, angle=angle)
                     assert N2 == N
-
 
 
 @pytest.mark.slow
@@ -191,30 +188,71 @@ def test_Phadkeb_numbers():
 def test_Ntubes_HEDH():
     Ntubes_HEDH_c = [Ntubes_HEDH(DBundle=1.200-.008*2, Do=.028, pitch=.036, angle=i) for i in [30, 45, 60, 90]]
     assert_allclose(Ntubes_HEDH_c, [928, 804, 928, 804])
+    
     with pytest.raises(Exception):
+        # unsuported angle
         Ntubes_HEDH(DBundle=1.200-.008*2, Do=.028, pitch=.036, angle=20)
-
-def test_Ntubes():
-    methods = Ntubes(DBundle=1.2, Do=0.025, AvailableMethods=True)
-    Ntubes_calc = [Ntubes(DBundle=1.2, Do=0.025, Method=i) for i in methods]
-    assert Ntubes_calc == [1285, 1272, 1340, 1297, None]
-
-    assert_allclose(Ntubes(DBundle=1.2, Do=0.025), 1285)
-
+        
     with pytest.raises(Exception):
-        Ntubes(DBundle=1.2, Do=0.025, Method='failure')
+        # unsuported angle
+        DBundle_for_Ntubes_HEDH(N=100, Do=.028, pitch=.036, angle=20)
 
+    # Fuzzing test
+    Do = 0.028
+    for angle in [30, 45, 60, 90]:
+        for pitch_ratio in [1.01, 1.1, 1.175, 1.25, 1.5, 1.75, 2]:
+            pitch = Do*pitch_ratio
+            for i in range(100):
+                N = int(uniform(10, 10000))
+                DBundle = DBundle_for_Ntubes_HEDH(N=N, Do=Do, pitch=pitch, angle=angle)
+                # If we don't increase the bundle by a hair, int() will round the wrong way
+                N_recalculated = Ntubes_HEDH(DBundle=DBundle*(1+1E-12), Do=Do, pitch=pitch, angle=angle)
+                assert N == N_recalculated
 
-def test_D_for_Ntubes_VDI():
-    D_VDI =  [[D_for_Ntubes_VDI(Nt=970, Ntp=i, Do=0.00735, pitch=0.015, angle=j) for i in [1, 2, 4, 6, 8]] for j in [30, 60, 45, 90]]
+def test_Ntubes_VDI():
+    VDI_t = [[Ntubes_VDI(DBundle=1.184, Ntp=i, Do=.028, pitch=.036, angle=j) for i in [1,2,4,6,8]] for j in [30, 45, 60, 90]]
+    VDI_values = [[983, 966, 929, 914, 903], [832, 818, 790, 778, 769], [983, 966, 929, 914, 903], [832, 818, 790, 778, 769]]
+    assert_allclose(VDI_t, VDI_values)
+    with pytest.raises(Exception):
+        Ntubes_VDI(DBundle=1.184, Ntp=5, Do=.028, pitch=.036, angle=30)
+    with pytest.raises(Exception):
+        Ntubes_VDI(DBundle=1.184, Ntp=2, Do=.028, pitch=.036, angle=40)
+
+    D_VDI =  [[D_for_Ntubes_VDI(N=970, Ntp=i, Do=0.00735, pitch=0.015, angle=j) for i in [1, 2, 4, 6, 8]] for j in [30, 60, 45, 90]]
     D_VDI_values = [[0.489981989464919, 0.5003600119829544, 0.522287673753684, 0.5311570964003711, 0.5377131635291736], [0.489981989464919, 0.5003600119829544, 0.522287673753684, 0.5311570964003711, 0.5377131635291736], [0.5326653264480428, 0.5422270203444146, 0.5625250342473964, 0.5707695340997739, 0.5768755899087357], [0.5326653264480428, 0.5422270203444146, 0.5625250342473964, 0.5707695340997739, 0.5768755899087357]]
     assert_allclose(D_VDI, D_VDI_values)
 
     with pytest.raises(Exception):
-        D_for_Ntubes_VDI(Nt=970, Ntp=5., Do=0.00735, pitch=0.015, angle=30.)
+        D_for_Ntubes_VDI(N=970, Ntp=5., Do=0.00735, pitch=0.015, angle=30.)
     with pytest.raises(Exception):
-        D_for_Ntubes_VDI(Nt=970, Ntp=2., Do=0.00735, pitch=0.015, angle=40.)
+        D_for_Ntubes_VDI(N=970, Ntp=2., Do=0.00735, pitch=0.015, angle=40.)
 
+
+def test_Ntubes():
+    methods = Ntubes(DBundle=1.2, Do=0.025, pitch=.025*1.25, AvailableMethods=True)
+    Ntubes_calc = [Ntubes(DBundle=1.2, Do=0.025, pitch=.025*1.25, Method=i) for i in methods]
+    assert Ntubes_calc == [1285, 1272, 1340, 1297]
+
+    assert_allclose(Ntubes(DBundle=1.2, Do=0.025, pitch=.025*1.25), 1285)
+
+    with pytest.raises(Exception):
+        Ntubes(DBundle=1.2, Do=0.025, pitch=.025*1.25, Method='failure')
+
+    D = size_bundle_from_tubecount(N=1285, Do=0.025, pitch=0.03125)
+    assert_allclose(D, 1.1985676402390355)
+    D = size_bundle_from_tubecount(N=1285, Do=0.025, pitch=0.03125, Method='HEDH')
+    assert_allclose(D, 1.205810838411941)
+    D = size_bundle_from_tubecount(N=1285, Do=0.025, pitch=0.03125, Method='VDI')
+    assert_allclose(D, 1.1749025890472795)
+    
+    D = size_bundle_from_tubecount(N=13252, Do=.028, Ntp=2, angle=45, pitch=.028*1.25, Method='Perry')
+    assert_allclose(D, 3.598336054740235)
+    
+    with pytest.raises(Exception):
+        size_bundle_from_tubecount(N=1285, Do=0.025, pitch=0.03125, Method='BADMETHOD')
+
+    l = size_bundle_from_tubecount(N=1285, Do=0.025, pitch=0.03125, AvailableMethods=True)
+    assert len(l) == 4
 
 def test_effectiveness_NTU():
     # Counterflow

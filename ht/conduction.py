@@ -43,7 +43,8 @@ def R_to_k(R, t, A=1.):
     Parameters
     ----------
     R : float
-        Thermal resistance of a substance [K/W or m^2*K/W]
+        Thermal resistance of a substance, (K/W) if A is 1 m^2, otherwise must
+        be [m^2*K/W]
     t : float
         Thickness of the substance used in the measurement of R, [m]
     A : float, optional

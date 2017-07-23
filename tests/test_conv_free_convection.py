@@ -111,11 +111,25 @@ def test_Nu_horizontal_cylinder_Morgan():
     
     
 def test_Nu_horizontal_cylinder():
-    Nu = Nu_horizontal_cylinder(0.72, 1E7)
+    Nu = Nu_horizontal_cylinder(Pr=0.72, Gr=1E7)
     assert_allclose(Nu, 24.864192615468973)
     
+    l = Nu_horizontal_cylinder(0.72, 1E7, AvailableMethods=True)
+    assert len(l) == 3
+    
+    with pytest.raises(Exception):
+        Nu_horizontal_cylinder(Pr=0.72, Gr=1E7, Method='BADMETHOD')
+
     
 def test_Nu_vertical_cylinder():
     Nu = Nu_vertical_cylinder(0.72, 1E7)
     assert_allclose(Nu, 30.562236756513943)
     
+    Nu = Nu_vertical_cylinder(0.72, 1E7, L=1, D=.1)
+    assert_allclose(Nu, 36.82833881084525)
+    
+    with pytest.raises(Exception):
+        Nu_vertical_cylinder(0.72, 1E7, Method='BADMETHOD')
+    
+    l = Nu_vertical_cylinder(0.72, 1E7, L=1, D=.1, AvailableMethods=True)
+    assert len(l) == 11

@@ -785,7 +785,7 @@ def Nu_vertical_cylinder(Pr, Gr, L=None, D=None, Method=None,
     --------
     >>> Nu_vertical_cylinder(0.72, 1E7)
     30.562236756513943
-
+    
     Parameters
     ----------
     Pr : float
@@ -837,7 +837,8 @@ def Nu_vertical_cylinder(Pr, Gr, L=None, D=None, Method=None,
         else:
             return vertical_cylinder_correlations[Method][0](Pr=Pr, Gr=Gr, L=L, D=D)
     else:
-        raise Exception('Failure in in function')
+        raise Exception("Correlation name not recognized; see the "
+                        "documentation for the available options.")
 
 #import matplotlib.pyplot as plt
 #import numpy as np
@@ -1031,7 +1032,7 @@ horizontal_cylinder_correlations = {
 'Morgan': (Nu_horizontal_cylinder_Morgan)
 }
 
-def Nu_horizontal_cylinder(Pr, Gr,  Method=None, AvailableMethods=False):
+def Nu_horizontal_cylinder(Pr, Gr, Method=None, AvailableMethods=False):
     r'''This function handles choosing which horizontal cylinder free convection
     correlation is used. Generally this is used by a helper class, but can be
     used directly. Will automatically select the correlation to use if none is
@@ -1085,7 +1086,8 @@ def Nu_horizontal_cylinder(Pr, Gr,  Method=None, AvailableMethods=False):
     if Method in horizontal_cylinder_correlations:
         return horizontal_cylinder_correlations[Method](Pr=Pr, Gr=Gr)
     else:
-        raise Exception('Failure in in function')
+        raise Exception("Correlation name not recognized; see the "
+                        "documentation for the available options.")
 
 
 #import matplotlib.pyplot as plt

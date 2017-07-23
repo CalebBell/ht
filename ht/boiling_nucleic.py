@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 '''Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
-Copyright (C) 2016, Caleb Bell <Caleb.Andrew.Bell@gmail.com>
+Copyright (C) 2016, 2017, Caleb Bell <Caleb.Andrew.Bell@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -30,7 +30,8 @@ __all__ = ['Rohsenow', 'McNelly', 'Forster_Zuber', 'Montinsky',
 'h0_VDI_2e', 'h0_Gorenflow_1993']
 
 
-def Rohsenow(rhol, rhog, mul, kl, Cpl, Hvap, sigma, Te=None, q=None, Csf=0.013, n=1.7):
+def Rohsenow(rhol, rhog, mul, kl, Cpl, Hvap, sigma, Te=None, q=None, Csf=0.013,
+             n=1.7):
     r'''Calculates heat transfer coefficient for a evaporator operating
     in the nucleate boiling regime according to [2]_ as presented in [1]_.
     
@@ -71,9 +72,9 @@ def Rohsenow(rhol, rhog, mul, kl, Cpl, Hvap, sigma, Te=None, q=None, Csf=0.013, 
     q : float, optional
         Heat flux, [W/m^2]
     Csf : float
-        Rohsenow coefficient specific to fluid and metal []
+        Rohsenow coefficient specific to fluid and metal [-]
     n : float
-        Constant, 1 for water, 1.7 (default) for other fluids usually []
+        Constant, 1 for water, 1.7 (default) for other fluids usually [-]
 
     Returns
     -------
@@ -220,7 +221,7 @@ def Forster_Zuber(rhol, rhog, mul, kl, Cpl, Hvap, sigma, dPsat, Te=None, q=None)
     sigma : float
         Surface tension of liquid [N/m]
     dPsat : float
-        Difference in saturation pressure of fluid at Te and T, [Pa]
+        Difference in saturation pressure of the fluid at Te and T, [Pa]
     Te : float, optional
         Excess wall temperature, [K]
     q : float, optional
@@ -308,7 +309,7 @@ def Montinsky(P, Pc, Te=None, q=None):
     --------
     Water boiling at 1 atm, with excess temperature of 4.3K from [1]_.
 
-    >>> Montinsky(P=101325, Pc=22048321, Te=4.3, )
+    >>> Montinsky(P=101325, Pc=22048321, Te=4.3)
     1185.0509770292663
 
     References
@@ -492,11 +493,6 @@ def Stephan_Abdelsalam(rhol, rhog, mul, kl, Cpl, Hvap, sigma, Tsat, Te=None,
             h = (207*X1**0.745*X5**0.581*X6**0.533*kl/db)
     return h
 
-#print [Stephan_Abdelsalam(Te=16.2, Tsat=437.5, Cpl=2730., kl=0.086, mul=156E-6,
-#                          sigma=0.0082, Hvap=272E3, rhol=567, rhog=18.09, correlation=i) for i in _angles_Stephan_Abdelsalam.keys()]
-
-#print [Stephan_Abdelsalam(Te=16.2, Tsat=437.5, Cpl=2730., kl=0.086, mul=156E-6,
-#                  sigma=0.0082, Hvap=272E3, rhol=567, rhog=18.09, angle=35)]
 
 def HEDH_Taborek(P, Pc, Te=None, q=None):
     r'''Calculates heat transfer coefficient for a evaporator operating
@@ -618,9 +614,9 @@ def Bier(P, Pc, Te=None, q=None):
     '''
     Pr = P/Pc
     if Te:
-        return (0.00417*(Pc/1000.)**0.69*Te**0.7*(0.7 + 2*Pr*(4 + 1/(1.-Pr))))**(1/0.3)
+        return (0.00417*(Pc/1000.)**0.69*Te**0.7*(0.7 + 2.*Pr*(4. + 1./(1.-Pr))))**(1./0.3)
     elif q:
-        return 0.00417*(Pc/1000.)**0.69*q**0.7*(0.7 + 2*Pr*(4 + 1/(1. - Pr)))
+        return 0.00417*(Pc/1000.)**0.69*q**0.7*(0.7 + 2.*Pr*(4. + 1./(1. - Pr)))
     else:
         raise Exception('Either q or Te is needed for this correlation')
 
@@ -842,17 +838,94 @@ cryogenics = {'132259-10-0': 'Air', '7440-37-1': 'Argon', '630-08-0':
 
 
 
-def h_nucleic(Te=None, Tsat=None, P=None, dPSat=None, dPdT=None,
-      Cpl=None, kl=None, mul=None, rhol=None, sigma=None, Hvap=None,
-      rhog=None, MW=None, Pc=None, kw=None, rhow=None, Cpw=None, Rp=None,
-      CAS=None, AvailableMethods=False, Method=None):
-    r'''This function handles choosing which nucleate boiling correlation
-    to use, depending on the provided information. Generally this
-    is used by a helper class, but can be used directly. Will automatically
-    select the correlation to use if none is provided'''
+def h_nucleic(Te=None, q=None, Tsat=None, P=None, dPsat=None, Cpl=None, 
+              kl=None, mul=None, rhol=None, sigma=None, Hvap=None, rhog=None, 
+              MW=None, Pc=None, CAS=None, Method=None, AvailableMethods=False, 
+              **kwargs):
+    r'''This function handles the calculation of nucleate boiling
+    heat flux and chooses the best method for performing the calculation
+    based on the provided information.
+
+    One of `Te` and `q` are always required.
+
+    Parameters
+    ----------
+    Te : float, optional
+        Excess wall temperature, [K]
+    q : float, optional
+        Heat flux, [W/m^2]
+    Tsat : float, optional
+        Saturation temperature at operating pressure [Pa]
+    P : float, optional
+        Saturation pressure of fluid, [Pa]
+    dPsat : float, optional
+        Difference in saturation pressure of the fluid at Te and T, [Pa]
+    Cpl : float, optional
+        Heat capacity of liquid [J/kg/K]
+    kl : float, optional
+        Thermal conductivity of liquid [W/m/K]
+    mul : float, optional
+        Viscosity of liquid [Pa*s]
+    rhol : float, optional
+        Density of the liquid [kg/m^3]
+    sigma : float, optional
+        Surface tension of liquid [N/m]
+    Hvap : float, optional
+        Heat of vaporization of the fluid at P, [J/kg]
+    rhog : float, optional
+        Density of the produced gas [kg/m^3]
+    MW : float, optional
+        Molecular weight of fluid, [g/mol]
+    Pc : float, optional
+        Critical pressure of fluid, [Pa]
+    CAS : str, optional
+        CAS of fluid
+
+    Returns
+    -------
+    h : float
+        Nucleate boiling heat flux [W/m^2]
+    methods : list, only returned if AvailableMethods == True
+        List of methods which can be used to calculate `h` with the given inputs
+
+    Other Parameters
+    ----------------
+    Method : string, optional
+        The name of the method to use; one of ['Gorenflo (1993)', 
+        'Stephan-Abdelsalam water', 'Stephan-Abdelsalam cryogenic', 
+        'Stephan-Abdelsalam', 'HEDH-Taborek', 'Forster-Zuber', 'Rohsenow', 
+        'Cooper', 'Bier', 'Montinsky', 'McNelly']
+    AvailableMethods : bool, optional
+        If True, function will consider which methods which can be used to
+        calculate `h` with the given inputs
+        
+    Notes
+    -----
+    The methods Stephan-Abdelsalam, Cooper, and Gorenflo all take other 
+    arguments as well such as surface roughness or the thermal properties of
+    the wall material. See them for their documentation. These parameters
+    can also be passed as keyword arguments.
+    
+    >>> h_nucleic(P=3E5, Pc=22048320., q=2E4, CAS='7732-18-5', Ra=1E-6)
+    3437.7726419934147
+    
+    Examples
+    --------
+    Water boiling at 3 bar and a heat flux of 2E4 W/m^2/K.
+
+    >>> h_nucleic(P=3E5, Pc=22048320., q=2E4, CAS='7732-18-5')
+    3043.344595525422
+    
+    Water, known excess temperature of 4.9 K, Rohsenow method
+
+    >>> h_nucleic(rhol=957.854, rhog=0.595593, mul=2.79E-4, kl=0.680, Cpl=4217,
+    ... Hvap=2.257E6, sigma=0.0589, Te=4.9, Csf=0.011, n=1.26, 
+    ... Method='Rohsenow')
+    3723.655267067467
+    '''
     def list_methods():
         methods = []
-        if all([P, Pc]):
+        if all((P, Pc)):
             if CAS and CAS in h0_Gorenflow_1993:
                 methods.append('Gorenflo (1993)')
         if all((Te, Tsat, Cpl, kl, mul, sigma, Hvap, rhol, rhog)):
@@ -863,7 +936,7 @@ def h_nucleic(Te=None, Tsat=None, P=None, dPSat=None, dPdT=None,
             methods.append('Stephan-Abdelsalam')
         if all((Te, P, Pc)):
             methods.append('HEDH-Taborek')
-        if all((Te, dPSat, Cpl, kl, mul, sigma, Hvap, rhol, rhog)):
+        if all((Te, dPsat, Cpl, kl, mul, sigma, Hvap, rhol, rhog)):
             methods.append('Forster-Zuber')
         if all((Te, Cpl, kl, mul, sigma, Hvap, rhol, rhog)):
             methods.append('Rohsenow')
@@ -875,53 +948,55 @@ def h_nucleic(Te=None, Tsat=None, P=None, dPSat=None, dPdT=None,
             methods.append('Montinsky')
         if all((Te, P, Cpl, kl, sigma, Hvap, rhol, rhog)):
             methods.append('McNelly')
-        methods.append('None')
         return methods
 
     if AvailableMethods:
         return list_methods()
     if not Method:
-        Method = list_methods()[0]
+        methods = list_methods()
+        if methods == []:
+            raise Exception('Insufficient property data for any method.')
+        Method = methods[0]
 
     if Method == 'Stephan-Abdelsalam':
-        h = Stephan_Abdelsalam(Te=Te, Tsat=Tsat, Cpl=Cpl, kl=kl, mul=mul,
+        return Stephan_Abdelsalam(Te=Te, q=q, Tsat=Tsat, Cpl=Cpl, kl=kl, mul=mul,
                                sigma=sigma, Hvap=Hvap, rhol=rhol, rhog=rhog,
-                               kw=kw, rhow=rhow, Cpw=Cpw, correlation='general')
+                               correlation='general', **kwargs)
     elif Method == 'Stephan-Abdelsalam water':
-        h = Stephan_Abdelsalam(Te=Te, Tsat=Tsat, Cpl=Cpl, kl=kl, mul=mul,
+        return Stephan_Abdelsalam(Te=Te, q=q, Tsat=Tsat, Cpl=Cpl, kl=kl, mul=mul,
                                sigma=sigma, Hvap=Hvap, rhol=rhol, rhog=rhog,
-                               kw=kw, rhow=rhow, Cpw=Cpw, correlation='water')
+                               correlation='water', **kwargs)
     elif Method == 'Stephan-Abdelsalam cryogenic':
-        h = Stephan_Abdelsalam(Te=Te, Tsat=Tsat, Cpl=Cpl, kl=kl, mul=mul,
+        return Stephan_Abdelsalam(Te=Te, q=q, Tsat=Tsat, Cpl=Cpl, kl=kl, mul=mul,
                                sigma=sigma, Hvap=Hvap, rhol=rhol, rhog=rhog,
-                               kw=kw, rhow=rhow, Cpw=Cpw, correlation='cryogenic')
+                               correlation='cryogenic', **kwargs)
     elif Method == 'HEDH-Taborek':
-        h = HEDH_Taborek(Te=Te, P=P, Pc=Pc)
+        return HEDH_Taborek(Te=Te, q=q, P=P, Pc=Pc)
     elif Method == 'Forster-Zuber':
-        h = Forster_Zuber(Te=Te, dPsat=dPsat, Cpl=Cpl, kl=kl, mul=mul,
-                          sigma=sigma, Hvap=Hvap, rhol=rhol, rhog=rhog)
+        return Forster_Zuber(Te=Te, q=q, dPsat=dPsat, Cpl=Cpl, kl=kl, mul=mul,
+                          sigma=sigma, Hvap=Hvap, rhol=rhol, rhog=rhog, **kwargs)
     elif Method == 'Rohsenow':
-        h = Rohsenow(Te=Te, Cpl=Cpl, kl=kl, mul=mul, sigma=sigma, Hvap=Hvap,
-                     rhol=rhol, rhog=rhog)
+        return Rohsenow(Te=Te, q=q, Cpl=Cpl, kl=kl, mul=mul, sigma=sigma, Hvap=Hvap,
+                     rhol=rhol, rhog=rhog, **kwargs)
     elif Method == 'Cooper':
-        h = Cooper(Te=Te, P=P, Pc=Pc, MW=MW)
+        return Cooper(Te=Te, q=q, P=P, Pc=Pc, MW=MW, **kwargs)
     elif Method == 'Bier':
-        h = Bier(Te=Te, P=P, Pc=Pc)
+        return Bier(Te=Te, q=q, P=P, Pc=Pc, **kwargs)
     elif Method == 'Montinsky':
-        h = Montinsky(Te=Te, P=P, Pc=Pc)
+        return Montinsky(Te=Te, q=q, P=P, Pc=Pc, **kwargs)
     elif Method == 'McNelly':
-        h = McNelly(Te=Te, P=P, Cpl=Cpl, kl=kl, sigma=sigma, Hvap=Hvap,
-                    rhol=rhol, rhog=rhog)
+        return McNelly(Te=Te, q=q, P=P, Cpl=Cpl, kl=kl, sigma=sigma, Hvap=Hvap,
+                    rhol=rhol, rhog=rhog, **kwargs)
     elif Method == 'Gorenflo (1993)':
-        h = Gorenflo(P=P, Pc=Pc, Te=Te, CASRN=CAS)
-    elif Method == 'None':
-        h = None
+        return Gorenflo(P=P, q=q, Pc=Pc, Te=Te, CASRN=CAS, **kwargs)
     else:
-        raise Exception('Failure in in function')
-    return h
+        raise Exception("Correlation name not recognized; see the "
+                        "documentation for the available options.")
 
 
 ### Critical Heat Flux
+
+
 def Zuber(sigma, Hvap, rhol, rhog, K=0.18):
     r'''Calculates critical heat flux for nucleic boiling of a flat plate
     or other shape as presented in various sources.
@@ -980,7 +1055,6 @@ def Zuber(sigma, Hvap, rhol, rhog, K=0.18):
     '''
     return K*Hvap*rhog**0.5*(g*sigma*(rhol-rhog))**0.25
 
-#print [Zuber(sigma=8.2E-3, Hvap=272E3, rhol=567, rhog=18.09, K=0.18)]
 
 def Serth_HEDH(D, sigma, Hvap, rhol, rhog):
     r'''Calculates critical heat flux for nucleic boiling of a tube bundle
@@ -1089,11 +1163,51 @@ def HEDH_Montinsky(P, Pc):
 
 
 def qmax_boiling(rhol=None, rhog=None, sigma=None, Hvap=None, D=None, P=None, 
-                 Pc=None, AvailableMethods=False, Method=None):
-    r'''This function handles choosing which nucleate boiling critical
-    heat flux correlation to use, depending on the provided information.
-    Generally this is used by a helper class, but can be used directly. Will
-    automatically select the correlation to use if none is provided'''
+                 Pc=None, Method=None, AvailableMethods=False):
+    r'''This function handles the calculation of nucleate boiling critical
+    heat flux and chooses the best method for performing the calculation.
+    
+    Preferred methods are 'Serth-HEDH' when a tube diameter is specified,
+    and 'Zuber' otherwise.
+
+    Parameters
+    ----------
+    rhol : float, optional
+        Density of the liquid [kg/m^3]
+    rhog : float, optional
+        Density of the produced gas [kg/m^3]
+    sigma : float, optional
+        Surface tension of liquid [N/m]
+    Hvap : float, optional
+        Heat of vaporization of the fluid at T, [J/kg]
+    D : float, optional
+        Diameter of tubes [m]
+    P : float, optional
+        Saturation pressure of fluid, [Pa]
+    Pc : float, optional
+        Critical pressure of fluid, [Pa]
+
+    Returns
+    -------
+    q : float
+        Nucleate boiling critical heat flux [W/m^2]
+    methods : list, only returned if AvailableMethods == True
+        List of methods which can be used to calculate qmax with the given inputs
+
+    Other Parameters
+    ----------------
+    Method : string, optional
+        A string of the function name to use; one of ('Serth-HEDH', 'Zuber', 
+        or 'HEDH-Montinsky')
+    AvailableMethods : bool, optional
+        If True, function will consider which methods which can be used to
+        calculate `qmax` with the given inputs
+        
+    Examples
+    --------
+    >>> qmax_boiling(D=0.0127, sigma=8.2E-3, Hvap=272E3, rhol=567, rhog=18.09)
+    351867.46522901946
+    '''
     def list_methods():
         methods = []
         if all((sigma, Hvap, rhol, rhog, D)):
@@ -1102,22 +1216,23 @@ def qmax_boiling(rhol=None, rhog=None, sigma=None, Hvap=None, D=None, P=None,
             methods.append('Zuber')
         if all((P, Pc)):
             methods.append('HEDH-Montinsky')
-        methods.append('None')
         return methods
 
     if AvailableMethods:
         return list_methods()
     if not Method:
-        Method = list_methods()[0]
+        methods = list_methods()
+        if methods == []:
+            raise Exception('Insufficient property or geometry data for any '
+                            'method.')
+        Method = methods[0]
 
     if Method == 'Serth-HEDH':
-        q = Serth_HEDH(D=D, sigma=sigma, Hvap=Hvap, rhol=rhol, rhog=rhog)
+        return Serth_HEDH(D=D, sigma=sigma, Hvap=Hvap, rhol=rhol, rhog=rhog)
     elif Method == 'Zuber':
-        q = Zuber(sigma=sigma, Hvap=Hvap, rhol=rhol, rhog=rhog)
+        return Zuber(sigma=sigma, Hvap=Hvap, rhol=rhol, rhog=rhog)
     elif Method == 'HEDH-Montinsky':
-        q = HEDH_Montinsky(P=P, Pc=Pc)
-    elif Method == 'None':
-        q = None
+        return HEDH_Montinsky(P=P, Pc=Pc)
     else:
-        raise Exception('Failure in in function')
-    return q
+        raise Exception("Correlation name not recognized; options are "
+                        "'Serth-HEDH', 'Zuber' and 'HEDH-Montinsky'")

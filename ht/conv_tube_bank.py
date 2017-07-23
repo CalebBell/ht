@@ -77,8 +77,8 @@ def dP_Kern(m, rho, mu, DShell, LSpacing, pitch, Do, NBaffles, mu_w=None):
 
     Returns
     -------
-        dP : float
-            Pressure drop across bundle, [Pa]
+    dP : float
+        Pressure drop across bundle, [Pa]
 
     Notes
     -----
