@@ -1,3 +1,4 @@
 fluids>=0.1.64
 numpydoc
 scipy
+pint

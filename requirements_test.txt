@@ -4,3 +4,4 @@ pytest
 pytest-cov
 coveralls
 mpmath
+pint
