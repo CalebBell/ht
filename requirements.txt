@@ -1,2 +1,2 @@
-fluids>=0.1.49
+fluids>=0.1.64
 scipy
