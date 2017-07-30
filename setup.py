@@ -70,7 +70,7 @@ setup(
   download_url = 'https://github.com/CalebBell/ht/tarball/0.1.51',
   keywords = ['chemical engineering', 'heat transfer', 'mechanical engineering'],
   classifiers = classifiers,
-  install_requires=['fluids'],
+  install_requires=['fluids>=0.1.64', 'numpy>=1.5.0', 'scipy>=0.9.0'],
   extras_require = {
       'Coverage documentation':  ['wsgiref>=0.1.2', 'coverage>=4.0.3']
   },
