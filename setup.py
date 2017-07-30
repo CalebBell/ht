@@ -60,18 +60,18 @@ setup(
   name = 'ht',
   packages = ['ht'],
   license='MIT',
-  version = '0.1.51',
+  version = '0.1.52',
   description = 'Heat transfer component of Chemical Engineering Design Library (ChEDL)',
   author = 'Caleb Bell',
   long_description = open('README.rst').read(),
   platforms=["Windows", "Linux", "Mac OS", "Unix"],
   author_email = 'Caleb.Andrew.Bell@gmail.com',
   url = 'https://github.com/CalebBell/ht',
-  download_url = 'https://github.com/CalebBell/ht/tarball/0.1.51',
+  download_url = 'https://github.com/CalebBell/ht/tarball/0.1.52',
   keywords = ['chemical engineering', 'heat transfer', 'mechanical engineering'],
   classifiers = classifiers,
   install_requires=['fluids>=0.1.64', 'numpy>=1.5.0', 'scipy>=0.9.0'],
   extras_require = {
-      'Coverage documentation':  ['wsgiref>=0.1.2', 'coverage>=4.0.3']
+      'Coverage documentation':  ['wsgiref>=0.1.2', 'coverage>=4.0.3', 'pint']
   },
 )

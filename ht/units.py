@@ -75,7 +75,7 @@ def R_to_k(R, t, A=1*u.m**2):
     return wrapped_R_to_k(R, t, A)
 
 # k_to_R(k=0.5*u.W/u.m/u.K, t=0.025*u.m)
-# TODO define hbehavior
+# TODO define behavior
 
 def R_value_to_k(R_value, SI=True):
     r = R_value.to('m*K/W')
