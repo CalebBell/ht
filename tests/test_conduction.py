@@ -57,7 +57,6 @@ def test_insulation():
     assert_allclose([rho_tot, k_tot, Cp_tot], ans)
 
     assert_allclose(0.036, ASHRAE_k(ID='Mineral fiber'))
-    assert_allclose(sum([ASHRAE_k(ID) for ID in ASHRAE]), 102.33813464784427)
 
     k_VDIs = [refractory_VDI_k('Fused silica', i) for i in [None, 200, 1000, 1500]]
     assert_allclose(k_VDIs, [1.44, 1.44, 1.58074, 1.73])
@@ -65,20 +64,11 @@ def test_insulation():
     Cp_VDIs = [refractory_VDI_Cp('Fused silica', i) for i in [None, 200, 1000, 1500]]
     assert_allclose(Cp_VDIs, [917.0, 917.0, 956.78225, 982.0])
 
-    assert nearest_material('stainless steel') == 'Metals, stainless steel'
-    assert nearest_material('stainless wood') == 'Metals, stainless steel'
-    assert nearest_material('asdfasdfasdfasdfasdfasdfads ') == 'Expanded polystyrene, molded beads'
-
-    assert nearest_material('stainless steel', complete=True) == 'Metals, stainless steel'
-
 
     k = k_material('Mineral fiber')
     assert_allclose(k, 0.036)
     k = k_material('stainless steel')
     assert_allclose(k, 17.0)
-
-    k_tot = sum([k_material(ID) for ID in materials_dict])
-    assert_allclose(k_tot, 1436.251534647845)
 
     rho = rho_material('Mineral fiber')
     assert_allclose(rho, 30.0)
@@ -89,8 +79,6 @@ def test_insulation():
     rho = rho_material('Board, Asbestos/cement')
     assert_allclose(rho, 1900.0)
 
-    rho = sum([rho_material(mat) for mat in materials_dict if (materials_dict[mat] == 1 or materials_dict[mat]==3 or ASHRAE[mat][0])])
-    assert_allclose(rho, 473135.98)
 
     Cp = Cp_material('Mineral fiber')
     assert_allclose(Cp, 840.0)
@@ -98,11 +86,29 @@ def test_insulation():
     Cp = Cp_material('stainless steel')
     assert_allclose(Cp, 460.0)
 
-    Cp = sum([Cp_material(mat) for mat in materials_dict if ( materials_dict[mat] == 1 or materials_dict[mat]==3 or ASHRAE[mat][1])])
-    assert_allclose(Cp, 353115.0)
-
     with pytest.raises(Exception):
         rho_material('Clay tile, hollow, 1 cell deep')
     with pytest.raises(Exception):
         Cp_material('Siding, Aluminum, steel, or vinyl, over sheathing foil-backed')
+
+
+@pytest.mark.slow
+def test_insulation_fuzz():
+    assert_allclose(sum([ASHRAE_k(ID) for ID in ASHRAE]), 102.33813464784427)
+    
+    k_tot = sum([k_material(ID) for ID in materials_dict])
+    assert_allclose(k_tot, 1436.251534647845)
+
+    rho = sum([rho_material(mat) for mat in materials_dict if (materials_dict[mat] == 1 or materials_dict[mat]==3 or ASHRAE[mat][0])])
+    assert_allclose(rho, 473135.98)
+
+    Cp = sum([Cp_material(mat) for mat in materials_dict if ( materials_dict[mat] == 1 or materials_dict[mat]==3 or ASHRAE[mat][1])])
+    assert_allclose(Cp, 353115.0)
+
+    # fuzzy matching is slow
+    assert nearest_material('stainless steel') == 'Metals, stainless steel'
+    assert nearest_material('stainless wood') == 'Metals, stainless steel'
+    assert nearest_material('asdfasdfasdfasdfasdfasdfads ') == 'Expanded polystyrene, molded beads'
+
+    assert nearest_material('stainless steel', complete=True) == 'Metals, stainless steel'
 

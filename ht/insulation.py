@@ -21,6 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.'''
 
 import difflib
+import numpy as np
 from scipy.interpolate import interp1d
 from ht.conduction import R_to_k
 
@@ -527,12 +528,11 @@ def refractory_VDI_k(ID, T=None):
         return float(refractories[ID][1][0])
     else:
         ks = refractories[ID][1]
-        to_interp = interp1d(_refractory_Ts, ks)
         if T < _refractory_Ts[0]:
             T = _refractory_Ts[0]
         elif T > _refractory_Ts[-1]:
             T = _refractory_Ts[-1]
-        return float(to_interp(T))
+        return float(np.interp(T, _refractory_Ts, ks))
 
 
 def refractory_VDI_Cp(ID, T=None):
@@ -570,12 +570,11 @@ def refractory_VDI_Cp(ID, T=None):
         return float(refractories[ID][2][0])
     else:
         Cps = refractories[ID][2]
-        to_interp = interp1d(_refractory_Ts, Cps)
         if T < _refractory_Ts[0]:
             T = _refractory_Ts[0]
         elif T > _refractory_Ts[-1]:
             T = _refractory_Ts[-1]
-        return float(to_interp(T))
+        return float(np.interp(T, _refractory_Ts, Cps))
 
 
 def nearest_material(name, complete=False):

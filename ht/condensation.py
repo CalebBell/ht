@@ -30,7 +30,7 @@ __all__ = ['Boyko_Kruzhilin', 'Nusselt_laminar', 'h_kinetic',
            'Akers_Deans_Crosser', 'Cavallini_Smith_Zecchin', 'Shah']
 
 
-def Nusselt_laminar(Tsat, Tw, rhog, rhol, kl, mul, Hvap, L, angle=90):
+def Nusselt_laminar(Tsat, Tw, rhog, rhol, kl, mul, Hvap, L, angle=90.):
     r'''Calculates heat transfer coefficient for laminar film condensation
     of a pure chemical on a flat plate, as presented in [1]_ according to an
     analysis performed by Nusselt in 1916.
@@ -86,7 +86,8 @@ def Nusselt_laminar(Tsat, Tw, rhog, rhol, kl, mul, Hvap, L, angle=90):
     .. [1] Hewitt, G. L. Shires T. Reg Bott G. F., George L. Shires, and
        T. R. Bott. Process Heat Transfer. 1E. Boca Raton: CRC Press, 1994.
     '''
-    return 2*2**0.5/3.*(kl**3*rhol*(rhol-rhog)*g*sin(angle/180.*pi)*Hvap/(mul*(Tsat-Tw)*L))**0.25
+    return 2.*2.**0.5/3.*(kl**3*rhol*(rhol - rhog)*g*sin(angle/180.*pi)
+                          *Hvap/(mul*(Tsat - Tw)*L))**0.25
 
 
 def Boyko_Kruzhilin(m, rhog, rhol, kl, mul, Cpl, D, x):

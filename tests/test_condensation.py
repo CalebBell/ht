@@ -29,10 +29,10 @@ import pytest
 ### Condensation
 
 def test_h_Nusselt_laminar():
-    h = Nusselt_laminar(370, 350, 7.0, 585., 0.091, 158.9E-6, 776900, 0.1)
+    h = Nusselt_laminar(370., 350., 7.0, 585., 0.091, 158.9E-6, 776900., 0.1)
     assert_allclose(h, 1482.206403453679)
-    h_angle = [Nusselt_laminar(Tsat=370, Tw=350, rhog=7.0, rhol=585., kl=0.091, mul=158.9E-6, Hvap=776900, L=0.1, angle=i) for i in np.linspace(0, 90, 8)]
-    h_angle_values = [0.0, 1018.0084987903685, 1202.9623322809389, 1317.0917328126477, 1393.7567182107628, 1444.0629692910647, 1472.8272516024929, 1482.206403453679]
+    h_angle = [Nusselt_laminar(Tsat=370., Tw=350., rhog=7.0, rhol=585., kl=0.091, mul=158.9E-6, Hvap=776900., L=0.1, angle=float(i)) for i in np.linspace(0, 90, 8)]
+    h_angle_values = np.array([0.0, 1018.0084987903685, 1202.9623322809389, 1317.0917328126477, 1393.7567182107628, 1444.0629692910647, 1472.8272516024929, 1482.206403453679])
     assert_allclose(h_angle, h_angle_values)
 
 
