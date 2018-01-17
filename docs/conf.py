@@ -70,7 +70,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'Heat Transfer'
-copyright = u'2016, Caleb Bell'
+copyright = u'2016-2018, Caleb Bell <Caleb.Andrew.Bell@gmail.com>'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the

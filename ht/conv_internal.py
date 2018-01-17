@@ -1800,3 +1800,4 @@ def Nu_laminar_rectangular_Shan_London(a_r):
     return 8.235*(1 - 2.0421*a_r + 3.0853*a_r**2 - 2.4765*a_r**3 
                   + 1.0578*a_r**4 - 0.1861*a_r**5)
 
+### Plate
