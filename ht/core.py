@@ -22,7 +22,7 @@ SOFTWARE.'''
 
 from __future__ import division
 from math import log
-__all__ =['LMTD']
+__all__ =['LMTD', 'wall_factor']
 
 def LMTD(Thi, Tho, Tci, Tco, counterflow=True):
     r'''Returns the log-mean temperature difference of an ideal counterflow
@@ -83,4 +83,54 @@ def LMTD(Thi, Tho, Tci, Tco, counterflow=True):
         dTF1 = Thi-Tci
         dTF2 = Tho-Tco
     return (dTF2 - dTF1)/log(dTF2/dTF1)
+
+WALL_FACTOR_VISCOSITY = 'Viscosity'
+WALL_FACTOR_PRANDTL = 'Prandtl'
+WALL_FACTOR_TEMPERATURE = 'Temperature'
+WALL_FACTOR_DEFAULT = 'Default'
+
+def _is_heating(prop, prop_wall):
+    if prop_wall > prop:
+        return False
+    return True
+
+def wall_factor(mu=None, mu_wall=None, Pr=None, Pr_wall=None, T=None, 
+                T_wall=None, mu_heating_coeff=0.11, Pr_heating_coeff=0.11, 
+                T_heating_coeff=0.11, mu_cooling_coeff=0.25, 
+                Pr_cooling_coeff=0.25, T_cooling_coeff=0.25,
+                property_option=WALL_FACTOR_PRANDTL):
+    if property_option == WALL_FACTOR_DEFAULT:
+        property_option = WALL_FACTOR_PRANDTL
+    if property_option == WALL_FACTOR_VISCOSITY:
+        if mu is None or mu_wall is None:
+            raise Exception('Viscosity wall correction specified but both '
+                            'viscosity values are not available.')
+        heating = _is_heating(mu, mu_wall)
+        if heating:
+            return (mu/mu_wall)**mu_heating_coeff
+        else:
+            return (mu/mu_wall)**mu_cooling_coeff
+    elif property_option == WALL_FACTOR_TEMPERATURE: 
+        if T is None or T_wall is None:
+            raise Exception('Temperature wall correction specified but both '
+                            'temperature values are not available.')
+        heating = _is_heating(T, T_wall)
+        if heating:
+            return (T/T_wall)**T_heating_coeff
+        else:
+            return (T/T_wall)**T_cooling_coeff
+    elif property_option == WALL_FACTOR_PRANDTL: 
+        if Pr is None or Pr_wall is None:
+            raise Exception('Prandtl number wall correction specified but both'
+                            ' Prandtl number values are not available.') 
+        heating = _is_heating(Pr, Pr_wall)
+        if heating:
+            return (Pr/Pr_wall)**Pr_heating_coeff
+        else:
+            return (Pr/Pr_wall)**Pr_cooling_coeff
+    else:
+        raise Exception('Supported options are %s' %([WALL_FACTOR_VISCOSITY, 
+                                                      WALL_FACTOR_PRANDTL, 
+                                                      WALL_FACTOR_TEMPERATURE,
+                                                      WALL_FACTOR_DEFAULT]))
 
