@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 '''Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
-Copyright (C) 2016, Caleb Bell <Caleb.Andrew.Bell@gmail.com>
+Copyright (C) 2016, 2017, 2018 Caleb Bell <Caleb.Andrew.Bell@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,7 +22,9 @@ SOFTWARE.'''
 
 from __future__ import division
 from math import log
-__all__ =['LMTD', 'wall_factor']
+
+__all__ =['LMTD', 'wall_factor', 'is_heating_property', 
+          'is_heating_temperature']
 
 def LMTD(Thi, Tho, Tci, Tco, counterflow=True):
     r'''Returns the log-mean temperature difference of an ideal counterflow
@@ -89,10 +91,11 @@ WALL_FACTOR_PRANDTL = 'Prandtl'
 WALL_FACTOR_TEMPERATURE = 'Temperature'
 WALL_FACTOR_DEFAULT = 'Default'
 
-def _is_heating(prop, prop_wall):
-    if prop_wall > prop:
-        return False
-    return True
+def is_heating_temperature(T, T_wall):
+    return T_wall > T
+
+def is_heating_property(prop, prop_wall):
+    return prop_wall < prop
 
 def wall_factor(mu=None, mu_wall=None, Pr=None, Pr_wall=None, T=None, 
                 T_wall=None, mu_heating_coeff=0.11, Pr_heating_coeff=0.11, 
