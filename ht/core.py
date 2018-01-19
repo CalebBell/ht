@@ -106,27 +106,27 @@ def wall_factor(mu=None, mu_wall=None, Pr=None, Pr_wall=None, T=None,
         property_option = WALL_FACTOR_PRANDTL
     if property_option == WALL_FACTOR_VISCOSITY:
         if mu is None or mu_wall is None:
-            raise Exception('Viscosity wall correction specified but both '
+            raise TypeError('Viscosity wall correction specified but both '
                             'viscosity values are not available.')
-        heating = _is_heating(mu, mu_wall)
+        heating = is_heating_property(mu, mu_wall)
         if heating:
             return (mu/mu_wall)**mu_heating_coeff
         else:
             return (mu/mu_wall)**mu_cooling_coeff
     elif property_option == WALL_FACTOR_TEMPERATURE: 
         if T is None or T_wall is None:
-            raise Exception('Temperature wall correction specified but both '
+            raise TypeError('Temperature wall correction specified but both '
                             'temperature values are not available.')
-        heating = _is_heating(T, T_wall)
+        heating = is_heating_temperature(T, T_wall)
         if heating:
             return (T/T_wall)**T_heating_coeff
         else:
             return (T/T_wall)**T_cooling_coeff
     elif property_option == WALL_FACTOR_PRANDTL: 
         if Pr is None or Pr_wall is None:
-            raise Exception('Prandtl number wall correction specified but both'
+            raise TypeError('Prandtl number wall correction specified but both'
                             ' Prandtl number values are not available.') 
-        heating = _is_heating(Pr, Pr_wall)
+        heating = is_heating_property(Pr, Pr_wall)
         if heating:
             return (Pr/Pr_wall)**Pr_heating_coeff
         else:

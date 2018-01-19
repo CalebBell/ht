@@ -25,6 +25,9 @@ from ht import *
 import numpy as np
 from numpy.testing import assert_allclose
 from ht.core import is_heating_temperature, is_heating_property
+import pytest
+from ht.core import WALL_FACTOR_VISCOSITY, WALL_FACTOR_PRANDTL, WALL_FACTOR_TEMPERATURE, WALL_FACTOR_DEFAULT
+
 
 def test_core():
     dT = LMTD(100., 60., 30., 40.2)
@@ -66,3 +69,23 @@ def test_is_heating_property():
     Pr1, Pr2 = 6.2859707150337805, 7.27333944072039
     assert not is_heating_property(prop=mu1, prop_wall=mu2)
     assert not is_heating_property(prop=Pr1, prop_wall=Pr2)
+
+def test_wall_factor():
+    # Only one value provided
+    with pytest.raises(Exception):
+        wall_factor(mu=1, property_option=WALL_FACTOR_VISCOSITY)
+    
+    with pytest.raises(Exception):
+        wall_factor(mu_wall=1, property_option=WALL_FACTOR_VISCOSITY)
+    
+    with pytest.raises(Exception):
+        wall_factor(Pr=1, property_option=WALL_FACTOR_PRANDTL)
+    
+    with pytest.raises(Exception):
+        wall_factor(Pr_wall=1, property_option=WALL_FACTOR_PRANDTL)
+    
+    with pytest.raises(Exception):
+        wall_factor(T=1, property_option=WALL_FACTOR_TEMPERATURE)
+    
+    with pytest.raises(Exception):
+        wall_factor(T_wall=1, property_option=WALL_FACTOR_TEMPERATURE)
