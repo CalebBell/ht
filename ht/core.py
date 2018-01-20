@@ -24,7 +24,15 @@ from __future__ import division
 from math import log
 
 __all__ =['LMTD', 'wall_factor', 'is_heating_property', 
-          'is_heating_temperature']
+'is_heating_temperature', 'wall_factor_fd', 'wall_factor_Nu',
+'Kays_Crawford_turbulent_gas_Nu',
+'Kays_Crawford_turbulent_gas_fd',
+'Kays_Crawford_turbulent_liquid_Nu',
+'Kays_Crawford_turbulent_liquid_fd',
+'Kays_Crawford_laminar_gas_Nu',
+'Kays_Crawford_laminar_gas_fd',
+'Kays_Crawford_laminar_liquid_fd',
+'Kays_Crawford_laminar_liquid_Nu']
 
 def LMTD(Thi, Tho, Tci, Tco, counterflow=True):
     r'''Returns the log-mean temperature difference of an ideal counterflow
@@ -86,16 +94,122 @@ def LMTD(Thi, Tho, Tci, Tco, counterflow=True):
         dTF2 = Tho-Tco
     return (dTF2 - dTF1)/log(dTF2/dTF1)
 
+
+def is_heating_temperature(T, T_wall):
+    r'''Checks whether or not a fluid side is being heated or cooled, from
+    the temperature of the wall and the bulk temperature. Returns True for
+    heating the bulk fluid, and False for cooling the bulk fluid.
+
+    Parameters
+    ----------
+    T : float
+        Temperature of flowing fluid away from the heat transfer surface, [K]
+    T_wall : float
+        Temperature of the fluid at the wall, [K]
+
+    Returns
+    -------
+    is_heating : bool
+        Whether or not the flow is being heated up by the wall, [-]
+
+    Examples
+    --------
+    >>> is_heating_temperature(298.15, 350)
+    True
+    '''
+    return T_wall > T
+
+def is_heating_property(prop, prop_wall):
+    r'''Checks whether or not a fluid side is being heated or cooled, from
+    a property of the fluid at the wall and the bulk temperature. Returns True 
+    for heating the bulk fluid, and False for cooling the bulk fluid.
+    
+    Parameters
+    ----------
+    prop : float
+        Viscosity (or Prandtl number) of flowing fluid away from the heat
+        transfer surface, [Pa*s]
+    prop_wall : float
+        Viscosity (or Prandtl number) of the fluid at the wall, [Pa*s]
+
+    Returns
+    -------
+    is_heating : bool
+        Whether or not the flow is being heated up by the wall, [-]
+
+    Examples
+    --------
+    >>> is_heating_property(1E-3, 1.2E-3)
+    False
+    '''
+    return prop_wall < prop
+
+
 WALL_FACTOR_VISCOSITY = 'Viscosity'
 WALL_FACTOR_PRANDTL = 'Prandtl'
 WALL_FACTOR_TEMPERATURE = 'Temperature'
 WALL_FACTOR_DEFAULT = 'Default'
 
-def is_heating_temperature(T, T_wall):
-    return T_wall > T
 
-def is_heating_property(prop, prop_wall):
-    return prop_wall < prop
+# Results for Deissler
+# -0.11 is also an option from another presented correlation
+Kays_Crawford_laminar_liquid_Nu = {'mu_heating_coeff': -0.14, 
+                                   'mu_cooling_coeff': -0.14,
+                                   'property_option': WALL_FACTOR_VISCOSITY}
+
+Kays_Crawford_laminar_liquid_fd = {'mu_heating_coeff': 0.58, 
+                                   'mu_cooling_coeff': 0.5,
+                                   'property_option': WALL_FACTOR_VISCOSITY}
+
+# 1.35 as a result suggested by an experiment byt the analysis is "prefered"
+Kays_Crawford_laminar_gas_fd = {'mu_heating_coeff': 1, 
+                                'mu_cooling_coeff': 1,
+                                'property_option': WALL_FACTOR_VISCOSITY}
+# This is uncertain
+Kays_Crawford_laminar_gas_Nu = {'mu_heating_coeff': 0.0, 
+                                'mu_cooling_coeff': 0.0,
+                                'property_option': WALL_FACTOR_VISCOSITY}
+
+# These seem fairly well measured
+Kays_Crawford_turbulent_liquid_fd = {'mu_heating_coeff': 0.25, 
+                                     'mu_cooling_coeff': 0.25,
+                                     'property_option': WALL_FACTOR_VISCOSITY}
+# This is uncertain
+Kays_Crawford_turbulent_liquid_Nu = {'mu_heating_coeff': -0.11, 
+                                     'mu_cooling_coeff': -0.25,
+                                     'property_option': WALL_FACTOR_VISCOSITY}
+
+# These see pretty accurate
+Kays_Crawford_turbulent_gas_fd = {'mu_heating_coeff': -0.1, 
+                                  'mu_cooling_coeff': -0.1,
+                                  'property_option': WALL_FACTOR_VISCOSITY}
+
+Kays_Crawford_turbulent_gas_Nu = {'mu_heating_coeff': -0.5, 
+                                  'mu_cooling_coeff': 0.0,
+                                  'property_option': WALL_FACTOR_VISCOSITY}
+
+
+# is_turbulent, is_liquid
+wall_factor_fd_defaults = {(True, True): Kays_Crawford_turbulent_liquid_fd,
+                           (True, False): Kays_Crawford_turbulent_gas_fd,
+                           (False, True): Kays_Crawford_laminar_liquid_fd,
+                           (False, False): Kays_Crawford_laminar_gas_fd}
+    
+wall_factor_Nu_defaults = {(True, True): Kays_Crawford_turbulent_liquid_Nu,
+                           (True, False): Kays_Crawford_turbulent_gas_Nu,
+                           (False, True): Kays_Crawford_laminar_liquid_Nu,
+                           (False, False): Kays_Crawford_laminar_gas_Nu}
+
+
+def wall_factor_fd(prop, prop_wall, turbulent=True, liquid=False):
+    params = wall_factor_fd_defaults[(turbulent, liquid)]
+    return wall_factor(mu=prop, mu_wall=prop_wall, **params)
+
+
+def wall_factor_Nu(prop, prop_wall, turbulent=True, liquid=False):
+    params = wall_factor_Nu_defaults[(turbulent, liquid)]
+    return wall_factor(mu=prop, mu_wall=prop_wall, **params)
+
 
 def wall_factor(mu=None, mu_wall=None, Pr=None, Pr_wall=None, T=None, 
                 T_wall=None, mu_heating_coeff=0.11, Pr_heating_coeff=0.11, 
