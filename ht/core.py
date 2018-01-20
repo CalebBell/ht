@@ -333,10 +333,66 @@ def wall_factor_Nu(mu, mu_wall, turbulent=True, liquid=False):
 
 
 def wall_factor(mu=None, mu_wall=None, Pr=None, Pr_wall=None, T=None, 
-                T_wall=None, mu_heating_coeff=0.11, Pr_heating_coeff=0.11, 
-                T_heating_coeff=0.11, mu_cooling_coeff=0.25, 
-                Pr_cooling_coeff=0.25, T_cooling_coeff=0.25,
+                T_wall=None, mu_heating_coeff=0.11, mu_cooling_coeff=0.25, 
+                Pr_heating_coeff=0.11, Pr_cooling_coeff=0.25, 
+                T_heating_coeff=0.11, T_cooling_coeff=0.25,
                 property_option=WALL_FACTOR_PRANDTL):
+    r'''Computes the wall correction factor for heat transfer, mass transfer,
+    or momentum transfer between a fluid and a wall. Utility function; the
+    coefficients for the phenomenon must be provided to this method. The
+    default coefficients are for heat transfer of a turbulent liquid.
+    
+    The general formula is as follows; substitute the property desired and
+    the phenomenon desired into the equation for things other than heat
+    transfer.
+    
+    .. math::
+        \frac{Nu}{Nu_{\text{constant properties}}} 
+        = \left(\frac{\mu}{\mu_{wall}}\right)^n
+
+    Parameters
+    ----------
+    mu : float, optional
+        Viscosity of flowing fluid away from the surface, [Pa*s]
+    mu_wall : float, optional
+        Viscosity of the fluid at the wall, [Pa*s]
+    Pr : float, optional
+        Prandtl number of flowing fluid away from the surface, [-]
+    Pr_wall : float, optional
+        Prandtl number of the fluid at the wall, [-]
+    T : float, optional
+        Temperature of flowing fluid away from the surface, [K]
+    T_wall : float, optional
+        Temperature of the fluid at the wall, [K]
+    mu_heating_coeff : float, optional
+        Coefficient for viscosity - surface providing heating, [-]
+    mu_cooling_coeff : float, optional
+        Coefficient for viscosity - surface providing cooling, [-]
+    Pr_heating_coeff : float, optional
+        Coefficient for Prandtl number - surface providing heating, [-]
+    Pr_cooling_coeff : float, optional
+        Coefficient for Prandtl number - surface providing cooling, [-]
+    T_heating_coeff : float, optional
+        Coefficient for temperature - surface providing heating, [-]
+    T_cooling_coeff : float, optional
+        Coefficient for temperature - surface providing cooling, [-]
+    property_option : str, optional
+        Which property to use for computing the correction factor; one of
+        'Viscosity', 'Prandtl', or 'Temperature'.
+        
+    Returns
+    -------
+    factor : float
+        Correction factor for heat transfer; to be multiplied by the Nusselt
+        number or heat transfer coefficient or friction factor or pressure drop
+        to obtain the actual result, [-]
+    
+    Examples
+    --------
+    >>> wall_factor(mu=8E-4, mu_wall=3E-4, Pr=1.2, Pr_wall=1.1, T=300,
+    ... T_wall=350, property_option='Prandtl')
+    1.0096172023817749
+    '''
     if property_option == WALL_FACTOR_DEFAULT:
         property_option = WALL_FACTOR_PRANDTL
     if property_option == WALL_FACTOR_VISCOSITY:
