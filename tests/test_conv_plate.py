@@ -22,7 +22,7 @@ SOFTWARE.'''
 
 from __future__ import division
 from ht import *
-from ht.conv_plate import Nu_plate_Kumar
+from ht.conv_plate import *
 from numpy.testing import assert_allclose
 import numpy as np
 import pytest
@@ -35,6 +35,9 @@ def test_Nu_plate_Kumar():
     from ht.conv_plate import Kumar_Nu_Res
     Nu = Nu_plate_Kumar(2000, 0.7, 30)
     assert_allclose(Nu, 47.757818892853955)
+    
+    Nu = Nu_plate_Kumar(Re=2000, Pr=0.7, chevron_angle=30, mu=1E-3, mu_wall=8E-4)
+    assert_allclose(Nu, 49.604284135097544)
     
     all_ans_expected = [[[1.3741604132237337, 1.5167183720237427], [1.3741604132237337, 1.4917469901578877]],
      [[1.3741604132237337, 1.4917469901578877, 5.550501072445418, 5.686809480248301],
@@ -61,5 +64,10 @@ def test_Nu_plate_Kumar():
         for row1, row2 in zip(all_ans_expected, all_ans):
             assert_allclose(row1, row2)
     
-#assert_allclose(all_ans, all_ans_expected)
 
+def test_Nu_plate_Martin():
+    Nu = Nu_plate_Martin(2000, .7, 1.18)
+    assert_allclose(Nu, 43.5794551998615)
+    
+    Nu = Nu_plate_Martin(2000, .7, 1.18, variant='VDI')
+    assert_allclose(Nu, 46.42246468447807)

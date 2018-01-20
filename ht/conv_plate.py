@@ -21,10 +21,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.'''
 
 from __future__ import division
-from math import pi
-from fluids.friction import Kumar_beta_list
+from math import pi, sin
+from fluids.friction import (friction_plate_Martin_1999, 
+                             friction_plate_Martin_VDI, Kumar_beta_list)
 
-__all__ = ['Nu_plate_Kumar']
+__all__ = ['Nu_plate_Kumar', 'Nu_plate_Martin']
 
 
 Kumar_ms = [[0.349, 0.663],
@@ -143,3 +144,83 @@ def Nu_plate_Kumar(Re, Pr, chevron_angle, mu=None, mu_wall=None):
     if mu_wall is not None and mu is not None:
         Nu *= (mu/mu_wall)**0.17
     return Nu
+
+
+_Nu_plate_Martin_correlations = {'1999': friction_plate_Martin_1999,
+                                 'VDI': friction_plate_Martin_VDI}
+
+def Nu_plate_Martin(Re, Pr, plate_enlargement_factor, variant='1999'):
+    r'''Calculates Nusselt number for single-phase flow in a 
+    Chevron-style plate heat exchanger according to [1]_, also shown in [2]_
+    and [3]_. 
+    
+    .. math::
+        Nu = 0.122 Pr^{1/3} \left[f_d Re^2 \sin (2\phi)\right]^{0.374}
+        
+    The Darcy friction factor should be calculated with the Martin (1999) 
+    friction factor correlation, as that is what the power of 0.374 was 
+    regressed with. It can be altered to a later formulation by Martin in the
+    VDI Heat Atlas 2E, which increases the calculated heat transfer friction 
+    slightly.
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number with respect to the hydraulic diameter of the channels,
+        [-]
+    Pr : float
+        Prandtl number calculated with bulk fluid properties, [-]
+    plate_enlargement_factor : float
+        The extra surface area multiplier as compared to a flat plate
+        caused the corrugations, [-]
+    variant : str
+        One of '1999' or 'VDI'; chooses between the two Martin friction
+        factor correlations, [-]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number with respect to `Dh`, [-]
+
+    Notes
+    -----
+    Based on experimental data from Re from 200 - 10000 and enhancement 
+    factors calculated with chevron angles of 0 to 80 degrees. See 
+    `PlateExchanger` for further clarification on the definitions.
+        
+    Note there is a discontinuity at Re = 2000 for the transition from
+    laminar to turbulent flow, arising from the friction factor correlation's
+    transition ONLY, although the literature suggests the transition
+    is actually smooth.
+
+    Examples
+    --------
+    >>> Nu_plate_Martin(Re=2000, Pr=.7, plate_enlargement_factor=1.18)
+    43.5794551998615
+    
+    References
+    ----------
+    .. [1] Martin, Holger. "A Theoretical Approach to Predict the Performance 
+       of Chevron-Type Plate Heat Exchangers." Chemical Engineering and 
+       Processing: Process Intensification 35, no. 4 (January 1, 1996): 301-10. 
+       https://doi.org/10.1016/0255-2701(95)04129-X.
+    .. [2] Martin, Holger. "Economic optimization of compact heat exchangers."
+       EF-Conference on Compact Heat Exchangers and Enhancement Technology for 
+       the Process Industries, Banff, Canada, July 18-23, 1999, 1999. 
+       https://publikationen.bibliothek.kit.edu/1000034866.
+    .. [3] Gesellschaft, V. D. I., ed. VDI Heat Atlas. 2nd edition.
+       Berlin; New York:: Springer, 2010.
+    '''
+    try:
+        fd_correlation = _Nu_plate_Martin_correlations[variant]
+    except KeyError:
+        raise Exception("Supported friction factor correlations are Martin's"
+                        " '1999' correlation or his 'VDI' correlation only")
+    fd = fd_correlation(Re, plate_enlargement_factor)
+    # VDI, original, and Björn Palm and Joachim Claesson recommend 0.122 leading coeff
+    # The 0.205 in some publications is what happens when the friction factor
+    # is in a fanning basis; = 4^0.374*1.22 = 2.048944
+    Nu = 0.122*Pr**(1/3.)*(fd*Re*Re*sin(2.0*plate_enlargement_factor))**0.374
+    return Nu
+
+
