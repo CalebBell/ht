@@ -203,6 +203,61 @@ wall_factor_Nu_defaults = {(True, True): Kays_Crawford_turbulent_liquid_Nu,
 
 
 def wall_factor_fd(mu, mu_wall, turbulent=True, liquid=False):
+    r'''Computes the wall correction factor for pressure drop due to friction
+    between a fluid and a wall. These coefficients were derived for internal 
+    flow inside a pipe, but can be used elsewhere where appropriate data is 
+    missing. 
+    
+    .. math::
+        \frac{f_d}{f_{d,\text{constant properties}}} 
+        = \left(\frac{\mu}{\mu_{wall}}\right)^n
+
+    Parameters
+    ----------
+    mu : float
+        Viscosity (or Prandtl number) of flowing fluid away from the wall,
+        [Pa*s]
+    mu_wall : float
+        Viscosity (or Prandtl number) of the fluid at the wall, [Pa*s]
+    turbulent : bool
+        Whether or not to use the turbulent coefficient, [-]
+    liquid : bool
+        Whether or not to use the liquid phase coefficient; otherwise the gas
+        coefficient is used, [-]
+        
+    Returns
+    -------
+    factor : float
+        Correction factor for pressure loss; to be multiplied by the friction
+        factor, or pressure drop to obtain the actual result, [-]
+
+    Notes
+    -----
+    The exponents are determined as follows:
+        
+    +-----------+--------+---------+---------+
+    | Regime    | Phase  | Heating | Cooling |
+    +===========+========+=========+=========+
+    | Turbulent | Liquid | -0.25   | -0.25   |
+    +-----------+--------+---------+---------+
+    | Turbulent | Gas    | 0.1     | 0.1     |
+    +-----------+--------+---------+---------+
+    | Laminar   | Liquid | -0.58   | -0.5    |
+    +-----------+--------+---------+---------+
+    | Laminar   | Gas    | -1      | -1      |
+    +-----------+--------+---------+---------+
+    
+    Examples
+    --------
+    >>> wall_factor_fd(mu=8E-4, mu_wall=3E-4, turbulent=True, liquid=True)
+    0.7825422900366437
+
+    References
+    ----------
+    .. [1] Kays, William M., and Michael E. Crawford. Convective Heat and Mass 
+       Transfer. 3rd edition. New York: McGraw-Hill Science/Engineering/Math,
+       1993.
+    '''
     params = wall_factor_fd_defaults[(turbulent, liquid)]
     return wall_factor(mu=mu, mu_wall=mu_wall, **params)
 
@@ -216,7 +271,7 @@ def wall_factor_Nu(mu, mu_wall, turbulent=True, liquid=False):
     
     .. math::
         \frac{Nu}{Nu_{\text{constant properties}}} 
-        = \left(\frac{Pr}{Pr_{wall}}\right)^n
+        = \left(\frac{\mu}{\mu_{wall}}\right)^n
 
     Parameters
     ----------
@@ -237,6 +292,22 @@ def wall_factor_Nu(mu, mu_wall, turbulent=True, liquid=False):
         Correction factor for heat transfer; to be multiplied by the Nusselt
         number, or heat transfer coefficient to obtain the actual result, [-]
 
+    Notes
+    -----
+    The exponents are determined as follows:
+        
+    +-----------+--------+---------+---------+
+    | Regime    | Phase  | Heating | Cooling |
+    +===========+========+=========+=========+
+    | Turbulent | Liquid | 0.11    | 0.25    |
+    +-----------+--------+---------+---------+
+    | Turbulent | Gas    | 0.5     | 0       |
+    +-----------+--------+---------+---------+
+    | Laminar   | Liquid | 0.14    | 0.14    |
+    +-----------+--------+---------+---------+
+    | Laminar   | Gas    | 0       | 0       |
+    +-----------+--------+---------+---------+    
+    
     Examples
     --------
     >>> wall_factor_Nu(mu=8E-4, mu_wall=3E-4, turbulent=True, liquid=True)
