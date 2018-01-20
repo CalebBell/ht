@@ -174,9 +174,9 @@ def laminar_entry_Seider_Tate(Re, Pr, L, Di, mu=None, mu_w=None):
         Length of pipe [m]
     Di : float
         Diameter of pipe [m]
-    mu : float
+    mu : float, optional
         Viscosity of fluid, [Pa*s]
-    mu_w : float
+    mu_w : float, optional
         Viscosity of fluid at wall temperature, [Pa*s]
 
     Returns
