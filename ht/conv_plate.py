@@ -25,7 +25,8 @@ from math import pi, sin
 from fluids.friction import (friction_plate_Martin_1999, 
                              friction_plate_Martin_VDI, Kumar_beta_list)
 
-__all__ = ['Nu_plate_Kumar', 'Nu_plate_Martin', 'Nu_plate_Muley_Manglik']
+__all__ = ['Nu_plate_Kumar', 'Nu_plate_Martin', 'Nu_plate_Muley_Manglik',
+           'Nu_plate_Khan_Khan']
 
 
 Kumar_ms = [[0.349, 0.663],
@@ -267,12 +268,18 @@ def Nu_plate_Muley_Manglik(Re, Pr, chevron_angle, plate_enlargement_factor):
     
     The viscosity correction power is recommended to be the blanket
     Sieder and Tate (1936) value of 0.14.
+    
+    The correlation is recommended in the range of Reynolds numbers above
+    1000, chevron angles between 30 and 60 degrees, and enlargement factors
+    from 1 to 1.5. Due to its cubic nature it is not likely to give good 
+    results if the chevron angle or enlargement factors are out of those
+    ranges.
 
     Examples
     --------
     >>> Nu_plate_Muley_Manglik(Re=2000, Pr=.7, chevron_angle=45, 
     ... plate_enlargement_factor=1.18)
-    >>> 36.49087100602062    
+    36.49087100602062    
     
     References
     ----------
@@ -291,4 +298,59 @@ def Nu_plate_Muley_Manglik(Re, Pr, chevron_angle, plate_enlargement_factor):
     t2 = (20.7803 - 50.9372*phi + 41.1585*phi**2 - 10.1507*phi**3)
     t3 = (0.728 + 0.0543*sin((2*pi*beta/90) + 3.7))
     return t1*t2*Re**t3*Pr**(1/3.)
+
+
+def Nu_plate_Khan_Khan(Re, Pr, chevron_angle):
+    r'''Calculates Nusselt number for single-phase flow in a 
+    Chevron-style plate heat exchanger according to [1]_.
+    
+    .. math::
+        Nu = \left(0.0161\frac{\beta}{\beta_{max}} + 0.1298\right)
+        Re^{\left(0.198 \frac{\beta}{\beta_{max}} + 0.6398\right)} 
+        Pr^{0.35} 
+                
+    Parameters
+    ----------
+    Re : float
+        Reynolds number with respect to the hydraulic diameter of the channels,
+        [-]
+    Pr : float
+        Prandtl number calculated with bulk fluid properties, [-]
+    chevron_angle : float
+        Angle of the plate corrugations with respect to the vertical axis
+        (the direction of flow if the plates were straight), between 0 and
+        90. Many plate exchangers use two alternating patterns; use their
+        average angle for that situation [degrees]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number with respect to `Dh`, [-]
+
+    Notes
+    -----
+    The viscosity correction power is recommended to be the blanket
+    Sieder and Tate (1936) value of 0.14.
+    
+    The correlation is recommended in the range of Reynolds numbers from
+    500 to 2500, chevron angles between 30 and 60 degrees, and Prandtl
+    numbers between 3.5 and 6.
+
+    Examples
+    --------
+    >>> Nu_plate_Khan_Khan(Re=1000, Pr=4.5, chevron_angle=30)
+    38.40883639103741
+    
+    References
+    ----------
+    .. [1] Khan, T. S., M. S. Khan, Ming-C. Chyu, and Z. H. Ayub. "Experimental
+       Investigation of Single Phase Convective Heat Transfer Coefficient in a 
+       Corrugated Plate Heat Exchanger for Multiple Plate Configurations." 
+       Applied Thermal Engineering 30, no. 8 (June 1, 2010): 1058-65.
+       https://doi.org/10.1016/j.applthermaleng.2010.01.021. 
+    '''
+    beta_max = 60.
+    beta_ratio = chevron_angle/beta_max
+    Nu = (0.0161*beta_ratio + 0.1298)*Re**(0.198*beta_ratio + 0.6398)*Pr**0.35
+    return Nu
 
