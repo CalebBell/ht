@@ -25,7 +25,7 @@ from math import pi, sin
 from fluids.friction import (friction_plate_Martin_1999, 
                              friction_plate_Martin_VDI, Kumar_beta_list)
 
-__all__ = ['Nu_plate_Kumar', 'Nu_plate_Martin']
+__all__ = ['Nu_plate_Kumar', 'Nu_plate_Martin', 'Nu_plate_Muley_Manglik']
 
 
 Kumar_ms = [[0.349, 0.663],
@@ -192,6 +192,9 @@ def Nu_plate_Martin(Re, Pr, plate_enlargement_factor, variant='1999'):
     laminar to turbulent flow, arising from the friction factor correlation's
     transition ONLY, although the literature suggests the transition
     is actually smooth.
+    
+    A viscosity correction power for liquid flows of (1/6) is suggested, and
+    for gases, no correction factor.
 
     Examples
     --------
@@ -223,4 +226,69 @@ def Nu_plate_Martin(Re, Pr, plate_enlargement_factor, variant='1999'):
     Nu = 0.122*Pr**(1/3.)*(fd*Re*Re*sin(2.0*plate_enlargement_factor))**0.374
     return Nu
 
+
+def Nu_plate_Muley_Manglik(Re, Pr, chevron_angle, plate_enlargement_factor):
+    r'''Calculates Nusselt number for single-phase flow in a 
+    Chevron-style plate heat exchanger according to [1]_, also shown in [2]_
+    and [3]_. 
+    
+    .. math::
+        Nu = [0.2668 - 0.006967(\beta) + 7.244\times 10^{-5}(\beta)^2]
+        \times[20.7803 - 50.9372\phi + 41.1585\phi^2 - 10.1507\phi^3]
+        \times Re^{[0.728 + 0.0543\sin[(2\pi\beta/90) + 3.7]]} Pr^{1/3}
+        
+    Parameters
+    ----------
+    Re : float
+        Reynolds number with respect to the hydraulic diameter of the channels,
+        [-]
+    Pr : float
+        Prandtl number calculated with bulk fluid properties, [-]
+    chevron_angle : float
+        Angle of the plate corrugations with respect to the vertical axis
+        (the direction of flow if the plates were straight), between 0 and
+        90. Many plate exchangers use two alternating patterns; use their
+        average angle for that situation [degrees]
+    plate_enlargement_factor : float
+        The extra surface area multiplier as compared to a flat plate
+        caused the corrugations, [-]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number with respect to `Dh`, [-]
+
+    Notes
+    -----
+    The correlation as presented in [1]_ suffers from a typo, with a 
+    coefficient of 10.51 instead of 10.15. Several more decimal places were
+    published along with the corrected typo in [2]_. This has a *very large*
+    difference if not implemented.
+    
+    The viscosity correction power is recommended to be the blanket
+    Sieder and Tate (1936) value of 0.14.
+
+    Examples
+    --------
+    >>> Nu_plate_Muley_Manglik(Re=2000, Pr=.7, chevron_angle=45, 
+    ... plate_enlargement_factor=1.18)
+    >>> 36.49087100602062    
+    
+    References
+    ----------
+    .. [1] Muley, A., and R. M. Manglik. "Experimental Study of Turbulent Flow
+       Heat Transfer and Pressure Drop in a Plate Heat Exchanger With Chevron 
+       Plates." Journal of Heat Transfer 121, no. 1 (February 1, 1999): 110-17. 
+       doi:10.1115/1.2825923.
+    .. [2] Palm, Björn, and Joachim Claesson. "Plate Heat Exchangers: 
+       Calculation Methods for Single- and Two-Phase Flow (Keynote)," January 
+       1, 2005, 103-13. https://doi.org/10.1115/ICMM2005-75092.
+    '''
+    beta, phi = chevron_angle, plate_enlargement_factor
+    t1 = (0.2668 - 0.006967*beta + 7.244E-5*beta**2)
+    #t2 = (20.78 - 50.94*phi + 41.16*phi**2 - 10.51*phi**3)
+    # It was the extra decimals which were needed
+    t2 = (20.7803 - 50.9372*phi + 41.1585*phi**2 - 10.1507*phi**3)
+    t3 = (0.728 + 0.0543*sin((2*pi*beta/90) + 3.7))
+    return t1*t2*Re**t3*Pr**(1/3.)
 

@@ -71,3 +71,8 @@ def test_Nu_plate_Martin():
     
     Nu = Nu_plate_Martin(2000, .7, 1.18, variant='VDI')
     assert_allclose(Nu, 46.42246468447807)
+    
+    
+def test_Nu_plate_Muley_Manglik():
+    Nu = Nu_plate_Muley_Manglik(Re=2000, Pr=.7, chevron_angle=45, plate_enlargement_factor=1.18)
+    assert_allclose(Nu, 36.49087100602062)
