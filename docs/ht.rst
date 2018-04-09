@@ -11,6 +11,7 @@
    ht.conv_internal
    ht.conv_jacket
    ht.conv_packed_bed
+   ht.conv_plate
    ht.conv_supercritical
    ht.conv_tube_bank
    ht.conv_two_phase

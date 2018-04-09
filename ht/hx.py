@@ -3079,7 +3079,7 @@ def NTU_from_P_basic(P1, R1, subtype='crossflow'):
     NTU_min = 1E-11
     function = temperature_effectiveness_basic
     if subtype == 'counterflow':
-        return -log((P1*R1 - 1.)/(P1 - 1))/(R1 - 1)
+        return -log((P1*R1 - 1.)/(P1 - 1.))/(R1 - 1.)
     elif subtype == 'parallel':
         return log(-1./(P1*(R1 + 1.) - 1.))/(R1 + 1.)
     elif subtype == 'crossflow, mixed 1':
