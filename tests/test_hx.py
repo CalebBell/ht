@@ -133,7 +133,9 @@ def test_Phadkeb_numbers():
             nums.append(x*x + x*y + y*y)
     
     nums = sorted(list(set(nums)))
-    nums = [i for i in nums if i < nn**2]
+    
+    nn_square = nn*nn
+    nums = [i for i in nums if i < nn_square]
     
     nums = nums[0:len(triangular_Ns)]
     assert_allclose(nums, triangular_Ns)
@@ -145,16 +147,25 @@ def test_Phadkeb_numbers():
     # Translated from pari expression a(n)=1+6*sum(k=0, n\3, (n\(3*k+1))-(n\(3*k+2)))
     # Tested with the online interpreter http://pari.math.u-bordeaux.fr/gp.html
     # This one is very slow, 300 seconds+
+    # Used to be 300 + seconds, now 50+ seconds
     
     def a(n):
         tot = 0
         for k in range(0, int(ceil(n/3.))):
-            tot += floor(n/(3.*k + 1.)) - floor(n/(3.*k + 2.))
-        return 1 + 6*int(tot)
-    ans = [a(i) for i in range(50000)]
-    ans = sorted(list(set(ans)))
-    ans = ans[0:len(triangular_C1s)]
-    assert_allclose(ans, triangular_C1s)
+            k3 = k*3.
+            tot += floor(n/(k3 + 1.)) - floor(n/(k3 + 2.))
+        return 1 + int(6*tot)
+
+    s = set()
+    len_triangular_C1s = len(triangular_C1s)
+    i = 0
+    while len(s) < len_triangular_C1s:
+        val = a(i)
+        s.update([val])
+        i += 1
+
+    ans2 = sorted(list(s))
+    assert np.all(ans2[0:len(triangular_C1s)] == triangular_C1s)
     
     # square Ns
     # https://oeis.org/A001481
