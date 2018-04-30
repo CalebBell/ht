@@ -28,7 +28,7 @@ __all__ = ['blackbody_spectral_radiance', 'q_rad']
 
 
 def blackbody_spectral_radiance(T, wavelength):
-    r'''Returns the spectral radiance, in units of W/m^3/sr.
+    r'''Returns the spectral radiance, in units of W/m^2/sr/µm.
 
     .. math::
         I_{\lambda,blackbody,e}(\lambda,T)=\frac{2hc_o^2}
@@ -44,7 +44,7 @@ def blackbody_spectral_radiance(T, wavelength):
     Returns
     -------
     I : float
-        Spectral radiance [W/m^3/sr]
+        Spectral radiance [W/m^2/sr/µm]
 
     Notes
     -----
