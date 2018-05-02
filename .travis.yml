@@ -33,7 +33,6 @@ install:
   - pip install -r requirements_test.txt
   - python setup.py -q install
 script:
-  - python tests/test_doctests.py
   - py.test . -v --cov-report html --cov=ht --cov-report term-missing -m "not slow"
 after_success:
   - coveralls
