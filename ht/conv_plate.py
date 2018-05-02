@@ -277,10 +277,10 @@ def Nu_plate_Muley_Manglik(Re, Pr, chevron_angle, plate_enlargement_factor):
 
     Examples
     --------
-    >>> Nu_plate_Muley_Manglik(Re=2000, Pr=.7, chevron_angle=45, 
+    >>> Nu_plate_Muley_Manglik(Re=2000, Pr=.7, chevron_angle=45,
     ... plate_enlargement_factor=1.18)
-    36.49087100602062    
-    
+    36.49087100602062
+
     References
     ----------
     .. [1] Muley, A., and R. M. Manglik. "Experimental Study of Turbulent Flow

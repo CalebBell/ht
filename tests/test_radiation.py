@@ -33,6 +33,7 @@ def test_radiation():
     assert_allclose(blackbody_spectral_radiance(800., 4E-6), 1311692056.2430143, rtol=1e-05)
 
 
+@pytest.mark.slow
 def test_solar_spectrum():
     wavelengths, SSI, uncertainties = solar_spectrum()
     
