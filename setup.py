@@ -71,7 +71,7 @@ setup(
   keywords = ['chemical engineering', 'heat transfer', 'mechanical engineering'],
   classifiers = classifiers,
   install_requires=['fluids>=0.1.64', 'numpy>=1.5.0', 'scipy>=0.9.0'],
-  package_data={'fluids': ['data/*']},
+  package_data={'ht': ['data/*']},
   extras_require = {
       'Coverage documentation':  ['wsgiref>=0.1.2', 'coverage>=4.0.3', 'pint']
   },
