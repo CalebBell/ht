@@ -3,25 +3,19 @@ os:
   - osx
   - linux
 compiler:
-  - "2.6"
   - "2.7"
-  - "3.3"
   - "3.4"
   - "3.5"
   - "3.6"
 env:
   - SCIPY_VER="scipy>=0.12.0" 
+# safelist
 matrix:
   fast_finish: true
-  exclude:
-    - os: "osx"
-      compiler: "2.6"
-    - os: "linux"
-      compiler: "3.3"
-  include:
-    - os: "linux"
-      compiler: "2.7"
-      env: SCIPY_VER="scipy=0.12.0" 
+#  include:
+#    - os: "linux"
+#      compiler: "2.7"
+#      env: SCIPY_VER="scipy=0.18.0" 
 notifications:
   email: false
 install:
