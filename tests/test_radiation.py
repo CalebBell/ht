@@ -23,12 +23,16 @@ SOFTWARE.'''
 from __future__ import division
 from ht import *
 import numpy as np
+import pytest
 from numpy.testing import assert_allclose
 
 
 def test_radiation():
     assert_allclose(q_rad(1., 400), 1451.613952, rtol=1e-05)
     assert_allclose(q_rad(.85, 400, 305.), 816.7821722650002, rtol=1e-05)
+    
+    assert 0.0 == blackbody_spectral_radiance(5500., 5E-10)
+
 
     assert_allclose(blackbody_spectral_radiance(800., 4E-6), 1311692056.2430143, rtol=1e-05)
 

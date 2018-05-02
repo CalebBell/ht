@@ -48,19 +48,27 @@ def blackbody_spectral_radiance(T, wavelength):
     Returns
     -------
     I : float
-        Spectral radiance [W/m^2/sr/µm]
+        Spectral radiance [W/(m^2*sr*m)]
 
     Notes
     -----
     Can be used to derive the Stefan-Boltzman law, or determine the maximum
     radiant frequency for a given temperature.
-
+    
     Examples
     --------
     Checked with Spectral-calc.com, at [2]_.
 
     >>> blackbody_spectral_radiance(800., 4E-6)
     1311692056.2430143
+    
+    Calculation of power from the sun (earth occupies 6.8E-5 steradian of the
+    sun):
+        
+    >>> from scipy.integrate import quad
+    >>> rad = lambda l: blackbody_spectral_radiance(5778., l)*6.8E-5
+    >>> quad(rad, 1E-10, 1E-4)[0]
+    1367.9808043781559
 
     References
     ----------
@@ -70,7 +78,10 @@ def blackbody_spectral_radiance(T, wavelength):
     .. [2] Spectral-calc.com. Blackbody Calculator, 2015.
        http://www.spectralcalc.com/blackbody_calculator/blackbody.php
     '''
-    return 2.*h*c**2/wavelength**5/(exp(h*c/(wavelength*T*k)) - 1.)
+    try:
+        return 2.*h*c**2/wavelength**5/(exp(h*c/(wavelength*T*k)) - 1.)
+    except OverflowError:
+        return 0.0
 
 
 def q_rad(emissivity, T, T2=0):
