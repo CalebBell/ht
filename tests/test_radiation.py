@@ -22,6 +22,7 @@ SOFTWARE.'''
 
 from __future__ import division
 from ht import *
+import numpy as np
 from numpy.testing import assert_allclose
 
 
@@ -30,3 +31,13 @@ def test_radiation():
     assert_allclose(q_rad(.85, 400, 305.), 816.7821722650002, rtol=1e-05)
 
     assert_allclose(blackbody_spectral_radiance(800., 4E-6), 1311692056.2430143, rtol=1e-05)
+
+
+def test_solar_spectrum():
+    wavelengths, SSI, uncertainties = solar_spectrum()
+    
+    min_maxes = [min(wavelengths), max(wavelengths), min(SSI), max(SSI)]
+    min_maxes_expect = [5.0000000000000003e-10, 2.9999000000000003e-06, 1330.0, 2256817820.0]
+    assert_allclose(min_maxes, min_maxes_expect)
+    
+    assert_allclose(np.trapz(SSI, wavelengths), 1344.8029782379999)

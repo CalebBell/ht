@@ -22,10 +22,14 @@ SOFTWARE.'''
 
 from __future__ import division
 from math import exp
+import numpy as np
 from scipy.constants import sigma, h, c, k, pi
+import os
+from io import open
 
-__all__ = ['blackbody_spectral_radiance', 'q_rad']
+__all__ = ['blackbody_spectral_radiance', 'q_rad', 'solar_spectrum']
 
+folder = os.path.join(os.path.dirname(__file__), 'data')
 
 def blackbody_spectral_radiance(T, wavelength):
     r'''Returns the spectral radiance, in units of W/m^2/sr/µm.
@@ -109,3 +113,82 @@ def q_rad(emissivity, T, T2=0):
        Wiley, 2011.
     '''
     return sigma*emissivity*(T**4 - T2**4)
+
+
+def solar_spectrum(model='SOLAR-ISS'):
+    r'''Returns the solar spectrum of the sun according to the specified model.
+    Only the 'SOLAR-ISS' model is supported.
+
+    Parameters
+    ----------
+    model : str, optional
+        The model to use; 'SOLAR-ISS' is the only model available, [-]
+
+    Returns
+    -------
+    wavelengths : ndarray
+        The wavelengths of the solar spectra, [m]
+    SSI : ndarray
+        The solar spectral irradiance of the sun, [W/(m^2*m)]
+    uncertainties : ndarray
+        The estimated absolute uncertainty of the measured spectral irradiance  
+        of the sun, [W/(m^2*m)]
+
+    Notes
+    -----
+    The power of the sun changes as the earth gets closer or further away.
+    
+    In [1]_, the UV and VIS data come from observations in 2008; the IR comes
+    from measurements made from 2010-2016. There is a further 28 W/m^2 for the
+    3 micrometer to 160 micrometer range, not included in this model. All data
+    was corrected to a standard distance of one astronomical unit from the Sun,
+    as is the resultant spectrum. 
+    
+    The variation of the spectrum as a function of distance from the sun should
+    alter only the absolute magnitudes.
+    
+    [2]_ contains another dataset.
+    
+    Examples
+    --------
+    >>> wavelengths, SSI, uncertainties = solar_spectrum()
+    
+    Calculate the minimum and maximum values of the wavelengths (0.5 nm/3000nm)
+    and SSI:
+        
+    >>> min(wavelengths), max(wavelengths), min(SSI), max(SSI)
+    (5.0000000000000003e-10, 2.9999000000000003e-06, 1330.0, 2256817820.0)
+    
+    Integration - calculate the solar constant, in untis of W/m^2 hitting
+    earth's atmosphere.
+    
+    >>> np.trapz(SSI, wavelengths)
+    1344.8029782379999
+
+    References
+    ----------
+    .. [1] Meftah, M., L. Damé, D. Bolsée, A. Hauchecorne, N. Pereira, D. 
+       Sluse, G. Cessateur, et al. "SOLAR-ISS: A New Reference Spectrum Based 
+       on SOLAR/SOLSPEC Observations." Astronomy & Astrophysics 611 (March 1, 
+       2018): A1. https://doi.org/10.1051/0004-6361/201731316.
+    .. [2] Woods Thomas N., Chamberlin Phillip C., Harder Jerald W., Hock 
+       Rachel A., Snow Martin, Eparvier Francis G., Fontenla Juan, McClintock
+       William E., and Richard Erik C. "Solar Irradiance Reference Spectra 
+       (SIRS) for the 2008 Whole Heliosphere Interval (WHI)." Geophysical
+       Research Letters 36, no. 1 (January 1, 2009).
+       https://doi.org/10.1029/2008GL036373.
+    '''
+    if model == 'SOLAR-ISS':
+        pth = os.path.join(folder, 'solar_iss_2018_spectrum.dat')
+        data = np.loadtxt(pth)
+        wavelengths, SSI, uncertainties = data[:, 0], data[:, 1], data[:, 2]
+        
+        wavelengths = wavelengths*1E-9
+        SSI = SSI*1E9
+        
+        # Convert -1 uncertainties to nans
+        uncertainties[uncertainties == -1] = np.nan
+        
+        uncertainties = uncertainties*1E9
+    return wavelengths, SSI, uncertainties
+
