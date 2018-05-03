@@ -21,13 +21,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.'''
 
 from __future__ import division
-from math import exp
+from math import exp, e
 import numpy as np
 from scipy.constants import sigma, h, c, k, pi
 import os
 from io import open
 
-__all__ = ['blackbody_spectral_radiance', 'q_rad', 'solar_spectrum']
+__all__ = ['blackbody_spectral_radiance', 'q_rad', 'grey_transmittance',
+           'solar_spectrum']
 
 folder = os.path.join(os.path.dirname(__file__), 'data')
 
@@ -124,6 +125,59 @@ def q_rad(emissivity, T, T2=0):
        Wiley, 2011.
     '''
     return sigma*emissivity*(T**4 - T2**4)
+
+
+def grey_transmittance(extinction_coefficient, molar_density, length, base=e):
+    r'''Calculates the transmittance of a grey body, given the extinction
+    coefficient of the material, its molar density, and the path length of the 
+    radiation.
+    
+    .. math::
+        \tau = base^{(-\epsilon \cdot l\cdot \rho_m )}
+
+    Parameters
+    ----------
+    extinction_coefficient : float
+        The extinction coefficient of the material the radiation is passing at
+        the modeled frequency, [m^2/mol]
+    molar_density : float
+        The molar density of the material the radiation is passing through,
+        [mol/m^3]
+    length : float
+        The length of the body the radiation is transmitted through, [m]
+    base : float, optional
+        The exponent used in calculations; `e` is more theoretically sound but
+        10 is often used as a base by chemists, [-]
+
+    Returns
+    -------
+    transmittance : float
+        The fraction of spectral radiance which is transmitted through a grey 
+        body (can be liquid, gas, or even solid ex. in the case of glasses) [-]
+
+    Notes
+    -----
+    For extinction coefficients, see the HITRAN database. They are temperature
+    and pressure dependent for each chemical and phase.
+
+    Examples
+    --------
+    Overall transmission loss through 1 cm of precipitable water equivalent
+    atmospheric water vapor at a frequency of 1.3 um [2]_:
+    
+    >>> grey_transmittance(3.8e-4, molar_density=55300, length=1e-2)
+    0.8104707721191062
+
+    References
+    ----------
+    .. [1] Modest, Michael F. Radiative Heat Transfer, Third Edition. 3rd
+       edition. New York: Academic Press, 2013.
+    .. [2] Eldridge, Ralph G. "Water Vapor Absorption of Visible and Near 
+       Infrared Radiation." Applied Optics 6, no. 4 (April 1, 1967): 709-13.
+       https://doi.org/10.1364/AO.6.000709.
+    '''
+    transmittance = molar_density*extinction_coefficient*length
+    return base**(-transmittance)
 
 
 def solar_spectrum(model='SOLAR-ISS'):

@@ -46,3 +46,7 @@ def test_solar_spectrum():
     assert_allclose(min_maxes, min_maxes_expect)
     
     assert_allclose(np.trapz(SSI, wavelengths), 1344.8029782379999)
+    
+def test_grey_transmittance():
+    tau =  grey_transmittance(3.8e-4, molar_density=55300, length=1e-2)
+    assert_allclose(tau, 0.8104707721191062)
