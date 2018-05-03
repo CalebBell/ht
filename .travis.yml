@@ -10,6 +10,9 @@ compiler:
 env:
   - SCIPY_VER="scipy>=0.12.0" 
 # safelist
+branches:
+  only:
+  - release
 matrix:
   fast_finish: true
 #  include:
