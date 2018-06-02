@@ -222,13 +222,13 @@ def solar_spectrum(model='SOLAR-ISS'):
     and SSI:
         
     >>> min(wavelengths), max(wavelengths), min(SSI), max(SSI)
-    (5.0000000000000003e-10, 2.9999000000000003e-06, 1330.0, 2256817820.0)
+    (5e-10, 2.9999000000000003e-06, 1330.0, 2256817820.0)
     
     Integration - calculate the solar constant, in untis of W/m^2 hitting
     earth's atmosphere.
     
     >>> np.trapz(SSI, wavelengths)
-    1344.8029782379999
+    1344.802978238
 
     References
     ----------

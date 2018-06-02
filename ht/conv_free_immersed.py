@@ -39,7 +39,7 @@ __all__ = ['Nu_vertical_plate_Churchill',
            'Nu_horizontal_cylinder_Churchill_Chu',
            'Nu_horizontal_cylinder_Kuehn_Goldstein',
            'Nu_horizontal_cylinder_Morgan',
-           'Nu_horizontal_cylinder']
+           'Nu_horizontal_cylinder', 'Nu_vertical_helical_coil_Ali']
 
 
 def Nu_vertical_plate_Churchill(Pr, Gr):
@@ -1102,3 +1102,54 @@ def Nu_horizontal_cylinder(Pr, Gr, Method=None, AvailableMethods=False):
 #plt.legend()
 #plt.show()
 
+
+### Free convection vertical helical coil
+
+def Nu_vertical_helical_coil_Ali(Pr, Gr):
+    r'''Calculates Nusselt number for natural convection around a vertical
+    helical coil inside a tank or other vessel according to the Ali [1]_ 
+    correlation.
+
+    .. math::
+        Nu_L = 0.555Gr_L^{0.301} Pr^{0.314}
+    
+    Parameters
+    ----------
+    Pr : float
+        Prandtl number of the fluid surrounding the coil with properties 
+        evaluated at bulk conditions or as described in the notes [-]
+    Gr : float
+        Prandtl number of the fluid surrounding the coil with properties 
+        evaluated at bulk conditions or as described in the notes
+        (for the two temperatures, use the average coil fluid temperature and
+        the temperature of the fluid outside the coil) [-]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number with respect to the total length of the helical coil
+        (and bulk thermal conductivity), [-]
+
+    Notes
+    -----
+    In [1]_, the temperature at which the fluid surrounding the coil's
+    properties were evaluated at was calculated in an unusual fashion. The 
+    average temperature of the fluid inside the coil
+    :math:`(T_{in} + T_{out})/2` is averaged with the fluid outside the coil's
+    temperature.
+    
+    The correlation is valid for Prandtl numbers between 4.4 and 345, 
+    and tank diameter/coil outer diameter ratios between 10 and 30.
+
+    Examples
+    --------
+    >>> Nu_vertical_helical_coil_Ali(4.4, 1E11)
+    1808.5774997297106
+
+    References
+    ----------
+    .. [1] Ali, Mohamed E. "Natural Convection Heat Transfer from Vertical
+       Helical Coils in Oil." Heat Transfer Engineering 27, no. 3 (April 1,
+       2006): 79-85.
+    '''
+    return 0.555*Gr**0.301*Pr**0.314

@@ -133,3 +133,8 @@ def test_Nu_vertical_cylinder():
     
     l = Nu_vertical_cylinder(0.72, 1E7, L=1, D=.1, AvailableMethods=True)
     assert len(l) == 11
+    
+
+def test_Nu_vertical_helical_coil_Ali():
+    Nu = Nu_vertical_helical_coil_Ali(4.4, 1E11)
+    assert_allclose(Nu, 1808.5774997297106)
