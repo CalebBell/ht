@@ -1329,9 +1329,12 @@ def temperature_effectiveness_basic(R1, NTU1, subtype='crossflow'):
         # but is found not to be within the 1% claimed of this equation
         P1 = 1 - exp(NTU1**0.22/R1*(exp(-R1*NTU1**0.78) - 1.))
     elif subtype == 'crossflow':
-        def to_int(v, NTU1, R1):
-            return (1. + NTU1 - v*v/(4.*R1*NTU1))*exp(-v*v/(4.*R1*NTU1))*v*iv(0, v)
-        int_term = quad(to_int, 0, 2.*NTU1*R1**0.5, args=(NTU1, R1))[0]
+        # TODO attempt chebyshev approximation of P1 as a function of R1, NTU1 (for stability)
+        R1_NTU1_4_inv = 1.0/(4.*R1*NTU1)
+        def to_int(v):
+            v2 = v*v
+            return (1. + NTU1 - v2*R1_NTU1_4_inv)*exp(-v2*R1_NTU1_4_inv)*v*iv(0, v)
+        int_term = quad(to_int, 0.0, 2.*NTU1*R1**0.5)[0]# args=(NTU1, R1)
         P1 = 1./R1 - exp(-R1*NTU1)/(2.*(R1*NTU1)**2)*int_term
     elif subtype == 'crossflow, mixed 1':
         # Not symmetric

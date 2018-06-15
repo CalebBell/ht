@@ -33,7 +33,7 @@ fin_heights = [0.010, 0.012, 0.016] # m
 
 tube_orientations = ['vertical  (bottom inlet)', 'vertical (top inlet)', 'horizontal', 'inclined']
 
-_HTRI_fan_diameters = [0.71, 0.8, 0.9, 1.0, 1.2, 1.24, 1.385, 1.585, 1.78, 1.98, 2.22, 2.475, 2.775, 3.12, 3.515, 4.455, 4.95, 5.545, 6.24, 7.03, 7.92, 8.91, 9.9, 10.4, 11.1, 12.4, 13.85, 15.85]
+_fan_diameters = [0.71, 0.8, 0.9, 1.0, 1.2, 1.24, 1.385, 1.585, 1.78, 1.98, 2.22, 2.475, 2.775, 3.12, 3.515, 4.455, 4.95, 5.545, 6.24, 7.03, 7.92, 8.91, 9.9, 10.4, 11.1, 12.4, 13.85, 15.85]
 
 fan_ring_types = ['straight', 'flanged',  'bell','15 degree cone', '30 degree cone']
 
@@ -47,7 +47,6 @@ configurations = ['forced draft', 'induced-draft (top drive)', 'induced-draft (b
 
 # Coefs are from: Roetzel and Nicole - 1975 - Mean Temperature Difference for Heat Exchanger Design A General Approximate Explicit Equation
 # Checked twice.
-# NOTE: These are the same as the options in HYSYS for an Air Cooler
 
 _crossflow_1_row_1_pass = [[-4.62E-1, -3.13E-2, -1.74E-1, -4.2E-2],
                            [5.08E0, 5.29E-1, 1.32E0, 3.47E-1],
