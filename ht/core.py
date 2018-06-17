@@ -70,6 +70,13 @@ def LMTD(Thi, Tho, Tci, Tco, counterflow=True):
     Notes
     -----
     Any consistent set of units produces a consistent output.
+    
+    For the case where the temperature difference is the same in counterflow,
+    the arithmeric mean difference (either difference in that case) is the 
+    correct result following evaluation of the limit.
+    
+    For the same problem with the co-current case, the limit evaluates to a
+    temperature difference of zero.
 
     Examples
     --------
@@ -79,6 +86,10 @@ def LMTD(Thi, Tho, Tci, Tco, counterflow=True):
     43.200409294131525
     >>> LMTD(100., 60., 30., 40.2, counterflow=False)
     39.75251118049003
+    >>> LMTD(100., 60., 20., 60)
+    40.0
+    >>> LMTD(100., 60., 20., 60, counterflow=False)
+    0.0
 
     References
     ----------
@@ -92,7 +103,13 @@ def LMTD(Thi, Tho, Tci, Tco, counterflow=True):
     else:
         dTF1 = Thi-Tci
         dTF2 = Tho-Tco
-    return (dTF2 - dTF1)/log(dTF2/dTF1)
+    try:
+        return (dTF2 - dTF1)/log(dTF2/dTF1)
+    except (ZeroDivisionError, ValueError):
+        if counterflow:
+            return dTF1
+        else:
+            return 0.0
 
 
 def is_heating_temperature(T, T_wall):

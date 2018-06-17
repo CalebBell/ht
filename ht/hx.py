@@ -1129,9 +1129,29 @@ def temperature_effectiveness_air_cooler(R1, NTU1, rows, passes):
 
     Notes
     -----
+    For the 1-pass case, the exact formula used can take a while to compute for
+    large numbers of tube rows; 100 us for 20 rows, 1 ms for 50 rows.
+    Floating point rounding behavior can also be an issue for large numbers of
+    tube passes, leading to thermal effectivenesses larger than one being
+    returned:
+        
+    >>> temperature_effectiveness_air_cooler(1e-10, 100, rows=150, passes=1.0)
+    1.000026728092962
+    
+    Furthermore, as a factorial of the number of tube counts is used, there
+    comes a point where standard floats are not able to hold the intermediate
+    calculations values and an error will occur:
+        
+    >>> temperature_effectiveness_air_cooler(.5, 1.1, rows=200, passes=1.0)
+    Traceback (most recent call last):
+    ...
+    OverflowError: long int too large to convert to float
+    
 
     Examples
     --------
+    >>> temperature_effectiveness_air_cooler(.5, 2, rows=2, passes=2)
+    0.7523072855817072
 
     References
     ----------
