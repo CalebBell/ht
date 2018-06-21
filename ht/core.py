@@ -22,6 +22,7 @@ SOFTWARE.'''
 
 from __future__ import division
 from math import log
+from scipy.special import i1, i0, k1, k0
 
 __all__ =['LMTD', 'wall_factor', 'is_heating_property', 
 'is_heating_temperature', 'wall_factor_fd', 'wall_factor_Nu',
@@ -32,7 +33,7 @@ __all__ =['LMTD', 'wall_factor', 'is_heating_property',
 'Kays_Crawford_laminar_gas_Nu',
 'Kays_Crawford_laminar_gas_fd',
 'Kays_Crawford_laminar_liquid_fd',
-'Kays_Crawford_laminar_liquid_Nu']
+'Kays_Crawford_laminar_liquid_Nu', 'fin_efficiency_Kern_Kraus']
 
 def LMTD(Thi, Tho, Tci, Tco, counterflow=True):
     r'''Returns the log-mean temperature difference of an ideal counterflow
@@ -444,4 +445,71 @@ def wall_factor(mu=None, mu_wall=None, Pr=None, Pr_wall=None, T=None,
                                                       WALL_FACTOR_PRANDTL, 
                                                       WALL_FACTOR_TEMPERATURE,
                                                       WALL_FACTOR_DEFAULT]))
+
+    
+def fin_efficiency_Kern_Kraus(Do, D_fin, t_fin, k_fin, h):
+    r'''Returns the efficiency `eta_f` of a circular fin of constant thickness
+    attached to a circular tube, based on the tube diameter `Do`, fin
+    diameter `D_fin`, fin thickness `t_fin`, fin thermal conductivity `k_fin`,
+    and heat transfer coefficient `h`. 
+    
+    .. math::
+        \eta_f = \frac{2r_o}{m(r_e^2 - r_o^2)}
+        \left[\frac{I_1(mr_e)K_1(mr_o) - K_1(mr_e) I_1(mr_o)}
+        {I_0(mr_o) K_1(mr_e) + I_1(mr_e) K_0(mr_o)}\right]
+        
+        m = \sqrt{\frac{2h}{k_{fin} t_{fin}}}
+
+        r_e = 0.5 D_{fin}
+        
+        r_o = 0.5 D_{o}
+
+    Parameters
+    ----------
+    Do : float
+        Outer diameter of bare pipe (as if there were no fins), [m]
+    D_fin : float
+        Outer diameter of the fin, from the center of the tube to the edge of
+        the fin, [m]
+    t_fin : float
+        Thickness of the fin (for constant thickness fins only), [m]
+    k_fin : float
+        Thermal conductivity of the fin, [W/m/K]
+    h : float
+        Heat transfer coefficient of the finned pipe, [W/K]
+
+    Returns
+    -------
+    eta_fin : float
+        Fin efficiency [-]
+
+    Examples
+    --------
+    >>> fin_efficiency_Kern_Kraus(0.0254, 0.05715, 3.8E-4, 200, 58)
+    0.8412588620231153
+
+    Notes
+    -----
+    I0, I1, K0 and K1 are modified Bessel functions of order 0 and 1, 
+    modified Bessel function of the second kind of order 0 and 1 respectively.
+
+    References
+    ----------
+    .. [2] Thulukkanam, Kuppan. Heat Exchanger Design Handbook, Second Edition. 
+       CRC Press, 2013.
+    .. [3] Bergman, Theodore L., Adrienne S. Lavine, Frank P. Incropera, and
+       David P. DeWitt. Introduction to Heat Transfer. 6E. Hoboken, NJ:
+       Wiley, 2011.
+    '''
+    re = D_fin/2.
+    ro = Do/2.
+    m = (2.0*h/(k_fin*t_fin))**0.5
+
+    mre = m*re
+    mro = m*ro
+    x0 = i1(mre)
+    x1 = k1(mre)
+    num = x0*k1(mro) - x1*i1(mro)
+    den = i0(mro)*x1 + x0*k0(mro)
+    return 2.0*ro/(m*(re*re - ro*ro))*num/den
 

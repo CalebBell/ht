@@ -31,16 +31,17 @@ fin_densities = [round(i/0.0254, 1) for i in fin_densities_inch]
 ODs = [1, 1.25, 1.5, 2] # Actually though, just use TEMA. API 661 says 1 inch min.
 fin_heights = [0.010, 0.012, 0.016] # m
 
-tube_orientations = ['vertical  (bottom inlet)', 'vertical (top inlet)', 'horizontal', 'inclined']
+
+tube_orientations = ['vertical (inlet at bottom)', 'vertical (inlet at top)', 'horizontal', 'inclined']
 
 _fan_diameters = [0.71, 0.8, 0.9, 1.0, 1.2, 1.24, 1.385, 1.585, 1.78, 1.98, 2.22, 2.475, 2.775, 3.12, 3.515, 4.455, 4.95, 5.545, 6.24, 7.03, 7.92, 8.91, 9.9, 10.4, 11.1, 12.4, 13.85, 15.85]
 
-fan_ring_types = ['straight', 'flanged',  'bell','15 degree cone', '30 degree cone']
+fan_ring_types = ['straight', 'flanged',  'bell', '15 degree cone', '30 degree cone']
 
 fin_constructions = ['extruded', 'embedded', 'L-footed', 'overlapped L-footed', 'externally bonded', 'knurled footed']
 
 headers = ['plug', 'removable cover', 'removable bonnet', 'welded bonnet']
-configurations = ['forced draft', 'induced-draft (top drive)', 'induced-draft (bottom drive)']
+configurations = ['forced draft', 'natural draft', 'induced-draft (top drive)', 'induced-draft (bottom drive)']
 
 
 
