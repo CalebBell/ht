@@ -495,11 +495,15 @@ def fin_efficiency_Kern_Kraus(Do, D_fin, t_fin, k_fin, h):
 
     References
     ----------
+    .. [1] Kern, Donald Quentin, and Allan D. Kraus. Extended Surface Heat
+       Transfer. McGraw-Hill, 1972.
     .. [2] Thulukkanam, Kuppan. Heat Exchanger Design Handbook, Second Edition. 
        CRC Press, 2013.
     .. [3] Bergman, Theodore L., Adrienne S. Lavine, Frank P. Incropera, and
        David P. DeWitt. Introduction to Heat Transfer. 6E. Hoboken, NJ:
        Wiley, 2011.
+    .. [4] Kraus, Allan D., Abdul Aziz, and James Welty. Extended Surface Heat
+       Transfer. 1st edition. New York: Wiley-Interscience, 2001.
     '''
     re = D_fin/2.
     ro = Do/2.
