@@ -1214,10 +1214,12 @@ def temperature_effectiveness_air_cooler(R1, NTU1, rows, passes):
         return 1./R1*(1. - 1./xi)
     elif rows == passes == 5:
         K = 1. - exp(-0.2*NTU1)
-        xi = (K*(1. - .75*K + .5*K**2 - .125*K**3) 
-              - R1*K**2*(1. - K + .75*K**2 - .25*K**3 
-              - .5*R1*K**2*(1. - .5*K)**2))*exp(K*R1)
-        xi += ((K*(1. - .75*K + 1/16.*K**3) - 3*R1*K**2*(1. - .5*K)**3)
+        K2 = K*K
+        K3 = K2*K
+        xi = (K*(1. - .75*K + .5*K2 - .125*K3) 
+              - R1*K2*(1. - K + .75*K2 - .25*K3 
+              - .5*R1*K2*(1. - .5*K)**2))*exp(K*R1)
+        xi += ((K*(1. - .75*K + 1/16.*K3) - 3*R1*K2*(1. - .5*K)**3)
               *exp(3*K*R1) + (1. - .5*K)**4*exp(5*K*R1))
         return 1./R1*(1. - 1./xi)
     elif rows == 4 and passes == 2:
