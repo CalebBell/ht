@@ -17,6 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from __future__ import division
 from ht import *
+from scipy.constants import minute, hp
 from ht.boiling_nucleic import _angles_Stephan_Abdelsalam
 from numpy.testing import assert_allclose
 import pytest
@@ -33,3 +34,7 @@ def test_air_cooler_Ft():
     Ft_many = [[Ft_aircooler(Thi=125., Tho=80., Tci=25., Tco=95., Ntp=i, rows=j) for i in range(1,6)] for j in range(1, 6)]
     Ft_values = [[0.6349871996666123, 0.9392743008890244, 0.9392743008890244, 0.9392743008890244, 0.9392743008890244], [0.7993839562360742, 0.9184594715750571, 0.9392743008890244, 0.9392743008890244, 0.9392743008890244], [0.8201055328279105, 0.9392743008890244, 0.9784008071402877, 0.9392743008890244, 0.9392743008890244], [0.8276966706732202, 0.9392743008890244, 0.9392743008890244, 0.9828365967034366, 0.9392743008890244], [0.8276966706732202, 0.9392743008890244, 0.9392743008890244, 0.9392743008890244, 0.9828365967034366]]
     assert_allclose(Ft_many, Ft_values)
+    
+def test_air_cooler_noise_GPSA():
+    noise = air_cooler_noise_GPSA(tip_speed=3177/minute, power=25.1*hp)
+    assert_allclose(noise, 100.53680477959792)
