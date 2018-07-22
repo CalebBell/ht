@@ -6433,8 +6433,27 @@ def size_bundle_from_tubecount(N, Do, pitch, Ntp=1, angle=30, Method=None,
 
 
 
-TEMA_heads = {'A': 'Removable Channel and Cover', 'B': 'Bonnet (Integral Cover)', 'C': 'Integral With Tubesheet Removable Cover', 'N': 'Channel Integral With Tubesheet and Removable Cover', 'D': 'Special High-Pressure Closures'}
-TEMA_shells = {'E': 'One-Pass Shell', 'F': 'Two-Pass Shell with Longitudinal Baffle', 'G': 'Split Flow', 'H': 'Double Split Flow', 'J': 'Divided Flow', 'K': 'Kettle-Type Reboiler',  'X': 'Cross Flow'}
-TEMA_rears = {'L': 'Fixed Tube Sheet; Like "A" Stationary Head', 'M': 'Fixed Tube Sheet; Like "B" Stationary Head', 'N': 'Fixed Tube Sheet; Like "C" Stationary Head', 'P': 'Outside Packed Floating Head', 'S': 'Floating Head with Backing Device', 'T': 'Pull-Through Floating Head', 'U': 'U-Tube Bundle', 'W': 'Externally Sealed Floating Tubesheet'}
-TEMA_services = {'B': 'Chemical', 'R': 'Refinery', 'C': 'General'}
-baffle_types = ['segmental', 'double segmental', 'triple segmental', 'disk and doughnut', 'no tubes in window', 'orifice', 'rod']
+TEMA_heads = {'A': 'Removable Channel and Cover', 
+              'B': 'Bonnet (Integral Cover)', 
+              'C': 'Integral With Tubesheet Removable Cover',
+              'N': 'Channel Integral With Tubesheet and Removable Cover', 
+              'D': 'Special High-Pressure Closures'}
+TEMA_shells = {'E': 'One-Pass Shell',
+               'F': 'Two-Pass Shell with Longitudinal Baffle', 
+               'G': 'Split Flow', 'H': 'Double Split Flow', 
+               'J': 'Divided Flow',
+               'K': 'Kettle-Type Reboiler',  
+               'X': 'Cross Flow'}
+TEMA_rears = {'L': 'Fixed Tube Sheet; Like "A" Stationary Head',
+              'M': 'Fixed Tube Sheet; Like "B" Stationary Head', 
+              'N': 'Fixed Tube Sheet; Like "C" Stationary Head', 
+              'P': 'Outside Packed Floating Head', 
+              'S': 'Floating Head with Backing Device',
+              'T': 'Pull-Through Floating Head', 
+              'U': 'U-Tube Bundle',
+              'W': 'Externally Sealed Floating Tubesheet'}
+TEMA_services = {'B': 'Chemical',
+                 'R': 'Refinery', 
+                 'C': 'General'}
+baffle_types = ['segmental', 'double segmental', 'triple segmental', 
+                'disk and doughnut', 'no tubes in window', 'orifice', 'rod']
