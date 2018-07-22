@@ -456,7 +456,8 @@ def h_ESDU_highfin_staggered(m, A, A_min, A_increase, A_fin,
 
     Notes
     -----
-    Two factors `F1` and `F2` should be included as well.
+    Two factors `F1` and `F2` are shown in [3]_ and should be included;
+    correcting for fluid temperature variation and tube count number. 
     
     Examples
     --------
@@ -481,6 +482,10 @@ def h_ESDU_highfin_staggered(m, A, A_min, A_increase, A_fin,
        1994.
     .. [2] "High-Fin Staggered Tube Banks: Heat Transfer and Pressure Drop for
        Turbulent Single Phase Gas Flow." ESDU 86022 (October 1, 1986). 
+    .. [3] Rabas, T. J., and J. Taborek. "Survey of Turbulent Forced-Convection
+       Heat Transfer and Pressure Drop Characteristics of Low-Finned Tube Banks
+       in Cross Flow."  Heat Transfer Engineering 8, no. 2 (January 1987): 
+       49-62.
     '''
     fin_height = 0.5*(fin_diameter - tube_diameter)
 
@@ -573,6 +578,8 @@ def h_Ganguli_VDI(m, A, A_min, A_increase, A_fin,
     cases, the coefficient is 0.2, 0.33, 0.36 for 1, 2, or 3 tube rows 
     respectively.
     
+    The model is also showin in [4]_.
+    
     Examples
     --------
     Example 12.1 in [3]_:
@@ -598,6 +605,9 @@ def h_Ganguli_VDI(m, A, A_min, A_increase, A_fin,
        Berlin; New York:: Springer, 2010.
     .. [3] Serth, Robert W., and Thomas Lestina. Process Heat Transfer: 
        Principles, Applications and Rules of Thumb. Academic Press, 2014.
+    .. [4] Kroger, Detlev. Air-Cooled Heat Exchangers and Cooling Towers: 
+       Thermal-Flow Performance Evaluation and Design, Vol. 1. Tulsa, Okl:
+       PennWell Corp., 2004.
     '''
     V_max = m/(A_min*rho)
 
@@ -628,3 +638,17 @@ def h_Ganguli_VDI(m, A, A_min, A_increase, A_fin,
     h_total_area_basis = (efficiency*A_fin + A_tube_showing)/A*h
     h_bare_tube_basis = h_total_area_basis*A_increase
     return h_bare_tube_basis
+
+
+'''Three more correlations - 
+
+Heat Transfer and Pressure Drop Characteristics of Dry Tower Extended Surfaces: Data Analysis and Correlation. Pacific Northwest Laboratory, 1976.
+* said to be in common use in http://www.thermopedia.com/content/551/
+
+Cao, Eduardo. Heat Transfer in Process Engineering. McGraw Hill Professional, 2009.
+
+ESDU low fin in Hewitt
+
+Kroger - Mirković
+
+'''
