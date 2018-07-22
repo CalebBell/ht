@@ -71,3 +71,18 @@ def test_h_ESDU_highfin_staggered():
                          pitch_normal=AC.pitch_normal, pitch_parallel=AC.pitch_parallel, 
                          rho=1.161, Cp=1007., mu=1.85E-5, k=0.0263, k_fin=205)
     assert_allclose(h_bare_tube_basis, 1390.888918049757)
+
+
+def test_h_Briggs_Young():
+    AC = AirCooledExchanger(tube_rows=4, tube_passes=4, tubes_per_row=20, tube_length=3, 
+                        tube_diameter=1*inch, fin_thickness=0.000406, fin_density=1/0.002309,
+                        pitch_normal=.06033, pitch_parallel=.05207,
+                        fin_height=0.0159, tube_thickness=(.0254-.0186)/2,
+                        bundles_per_bay=1, parallel_bays=1, corbels=True)
+
+    h_bare_tube_basis = h_Briggs_Young(m=21.56, A=AC.A, A_min=AC.A_min, A_increase=AC.A_increase, A_fin=AC.A_fin,
+                             A_tube_showing=AC.A_tube_showing, tube_diameter=AC.tube_diameter,
+                             fin_diameter=AC.fin_diameter, bare_length=AC.bare_length,
+                             fin_thickness=AC.fin_thickness,
+                             rho=1.161, Cp=1007., mu=1.85E-5, k=0.0263, k_fin=205)
+    assert_allclose(h_bare_tube_basis, 1422.8722403237716)
