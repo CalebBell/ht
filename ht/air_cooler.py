@@ -22,14 +22,14 @@ SOFTWARE.'''
 
 from __future__ import division
 from math import atan, sin, log10
-from scipy.constants import hp, minute, inch
+from scipy.constants import hp, minute, inch, foot
 from fluids.geometry import AirCooledExchanger
 from fluids import Prandtl, Reynolds
 from ht.core import LMTD, fin_efficiency_Kern_Kraus
 
 __all__ = ['Ft_aircooler', 'air_cooler_noise_GPSA', 
            'air_cooler_noise_Mukherjee', 'h_Briggs_Young',
-           'h_ESDU_highfin_staggered']
+           'h_ESDU_highfin_staggered', 'h_Ganguli_VDI']
 
 fin_densities_inch = [7, 8, 9, 10, 11] # fins/inch
 fin_densities = [round(i/0.0254, 1) for i in fin_densities_inch]
@@ -496,3 +496,135 @@ def h_ESDU_highfin_staggered(m, A, A_min, A_increase, A_fin,
     return h_bare_tube_basis
 
 
+def h_Ganguli_VDI(m, A, A_min, A_increase, A_fin,
+                  A_tube_showing, tube_diameter,
+                  fin_diameter, fin_thickness, bare_length,
+                  pitch_parallel, pitch_normal, tube_rows,
+                  rho, Cp, mu, k, k_fin):
+    r'''Calculates the air side heat transfer coefficient for an air cooler
+    or other finned tube bundle with the formulas of [1]_ as modified in [2]_.
+    
+    Inline:
+        
+    .. math::
+        Nu_d = 0.22Re_d^{0.6}\left(\frac{A}{A_{tube,only}}\right)^{-0.15}Pr^{1/3}
+        
+    Staggered:
+        Nu_d = 0.38 Re_d^{0.6}\left(\frac{A}{A_{tube,only}}\right)^{-0.15}Pr^{1/3}
+            
+    Parameters
+    ----------
+    m : float
+        Mass flow rate of air across the tube bank, [kg/s]
+    A : float
+        Surface area of combined finned and non-finned area exposed for heat
+        transfer, [m^2]
+    A_min : float
+        Minimum air flow area, [m^2]
+    A_increase : float
+        Ratio of actual surface area to bare tube surface area
+        :math:`A_{increase} = \frac{A_{tube}}{A_{bare, total/tube}}`, [-]
+    A_fin : float
+        Surface area of all fins in the bundle, [m^2]
+    A_tube_showing : float
+        Area of the bare tube which is exposed in the bundle, [m^2]
+    tube_diameter : float
+        Diameter of the bare tube, [m]
+    fin_diameter : float
+        Outer diameter of each tube after including the fin on both sides,
+        [m]
+    fin_thickness : float
+        Thickness of the fins, [m]
+    bare_length : float
+        Length of bare tube between two fins 
+        :math:`\text{bare length} = \text{fin interval} - t_{fin}`, [m]
+    pitch_parallel : float
+        Distance between tube center along a line parallel to the flow;
+        has been called `longitudinal` pitch, `pp`, `s2`, `SL`, and `p2`, [m]
+    pitch_normal : float
+        Distance between tube centers in a line 90° to the line of flow;
+        has been called the `transverse` pitch, `pn`, `s1`, `ST`, and `p1`, [m]
+    tube_rows : int
+        Number of tube rows per bundle, [-]
+    rho : float
+        Average density of air across the tube bank, [kg/m^3]
+    Cp : float
+        Average heat capacity of air across the tube bank, [J/kg/K]
+    mu : float
+        Average viscosity of air across the tube bank, [Pa*s]
+    k : float
+        Average thermal conductivity of air across the tube bank, [W/m/K]
+    k_fin : float
+        Thermal conductivity of the fin, [W/m/K]
+        
+    Returns
+    -------
+    h_bare_tube_basis : float
+        Air side heat transfer coefficient on a bare-tube surface area as if 
+        there were no fins present basis, [W/K/m^2]
+
+    Notes
+    -----
+    The VDI modifications were developed in comparison with HTFS and HTRI data
+    according to [2]_.
+    
+    For cases where the tube row count is less than four, the coefficients are
+    modified in [2]_. For the inline case, 0.2 replaces 0.22. For the stagered
+    cases, the coefficient is 0.2, 0.33, 0.36 for 1, 2, or 3 tube rows 
+    respectively.
+    
+    Examples
+    --------
+    Example 12.1 in [3]_:
+    
+    >>> AC = AirCooledExchanger(tube_rows=4, tube_passes=4, tubes_per_row=56, tube_length=36*foot, 
+    ... tube_diameter=1*inch, fin_thickness=0.013*inch, fin_density=10/inch,
+    ... angle=30, pitch_normal=2.5*inch, fin_height=0.625*inch, corbels=True)
+
+    >>> h_Ganguli_VDI(m=130.70315, A=AC.A, A_min=AC.A_min, A_increase=AC.A_increase, A_fin=AC.A_fin,
+    ... A_tube_showing=AC.A_tube_showing, tube_diameter=AC.tube_diameter,
+    ... fin_diameter=AC.fin_diameter, bare_length=AC.bare_length,
+    ... fin_thickness=AC.fin_thickness, tube_rows=AC.tube_rows,
+    ... pitch_parallel=AC.pitch_parallel, pitch_normal=AC.pitch_normal,
+    ... rho=1.2013848, Cp=1009.0188, mu=1.9304793e-05, k=0.027864828, k_fin=238)
+    969.2850818578595
+    
+    References
+    ----------
+    .. [1] Ganguli, A., S. S. Tung, and J. Taborek. "Parametric Study of
+       Air-Cooled Heat Exchanger Finned Tube Geometry." In AIChE Symposium 
+       Series, 81:122-28, 1985.
+    .. [2] Gesellschaft, V. D. I., ed. VDI Heat Atlas. 2nd edition.
+       Berlin; New York:: Springer, 2010.
+    .. [3] Serth, Robert W., and Thomas Lestina. Process Heat Transfer: 
+       Principles, Applications and Rules of Thumb. Academic Press, 2014.
+    '''
+    V_max = m/(A_min*rho)
+
+    Re = Reynolds(V=V_max, D=tube_diameter, rho=rho, mu=mu)
+    Pr = Prandtl(Cp=Cp, mu=mu, k=k)
+
+    if pitch_parallel == pitch_normal: # in-line
+        if tube_rows < 4:
+            coeff = 0.2
+        else:
+            coeff = 0.22
+    else: # staggered
+        if tube_rows == 1:
+            coeff = 0.2
+        elif tube_rows == 2:
+            coeff = 0.33
+        elif tube_rows == 3:
+            coeff = 0.36
+        else:
+            coeff = 0.38
+
+    # VDI example shows the ratio is of the total area, to the original bare tube area
+    # Serth example would match Nu = 47.22 except for lazy rounding
+    Nu = coeff*Re**0.6*Pr**(1/3.)*(A_increase)**-0.15
+    h = k/tube_diameter*Nu
+    efficiency = fin_efficiency_Kern_Kraus(Do=tube_diameter, D_fin=fin_diameter,
+                                           t_fin=fin_thickness, k_fin=k_fin, h=h)
+    h_total_area_basis = (efficiency*A_fin + A_tube_showing)/A*h
+    h_bare_tube_basis = h_total_area_basis*A_increase
+    return h_bare_tube_basis

@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 from __future__ import division
 from ht import *
 from fluids.geometry import *
-from scipy.constants import minute, hp, inch
+from scipy.constants import minute, hp, inch, foot
 from ht.boiling_nucleic import _angles_Stephan_Abdelsalam
 from numpy.testing import assert_allclose
 import pytest
@@ -86,3 +86,36 @@ def test_h_Briggs_Young():
                              fin_thickness=AC.fin_thickness,
                              rho=1.161, Cp=1007., mu=1.85E-5, k=0.0263, k_fin=205)
     assert_allclose(h_bare_tube_basis, 1422.8722403237716)
+    
+    # Serth Process Heat Transfer Principles, Applications and Rules of Thumb 
+    # example with a different correlation entirely
+    AC = AirCooledExchanger(tube_rows=4, tube_passes=4, tubes_per_row=56, tube_length=36*foot, 
+                            tube_diameter=1*inch, fin_thickness=0.013*inch, fin_density=10/inch,
+                            angle=30, pitch_normal=2.5*inch, fin_height=0.625*inch, corbels=True)
+    
+    h = h_Briggs_Young(m=130.70315, A=AC.A, A_min=AC.A_min, A_increase=AC.A_increase, A_fin=AC.A_fin,
+                 A_tube_showing=AC.A_tube_showing, tube_diameter=AC.tube_diameter,
+                 fin_diameter=AC.fin_diameter, bare_length=AC.bare_length,
+                 fin_thickness=AC.fin_thickness,
+                 rho=1.2013848, Cp=1009.0188, mu=1.9304793e-05, k=0.027864828, k_fin=238)
+    
+    # Goal. 51.785762
+    # Back converting to their choice of basis - finned heat transfer coefficient
+    # Very close answer
+    assert_allclose(h/AC.A_increase/.853,  51.785762, atol=.3)
+    
+    
+    
+def test_h_Ganguli_VDI():
+    
+    AC = AirCooledExchanger(tube_rows=4, tube_passes=4, tubes_per_row=56, tube_length=36*foot, 
+                            tube_diameter=1*inch, fin_thickness=0.013*inch, fin_density=10/inch,
+                            angle=30, pitch_normal=2.5*inch, fin_height=0.625*inch, corbels=True)
+    
+    h = h_Ganguli_VDI(m=130.70315, A=AC.A, A_min=AC.A_min, A_increase=AC.A_increase, A_fin=AC.A_fin,
+                 A_tube_showing=AC.A_tube_showing, tube_diameter=AC.tube_diameter,
+                 fin_diameter=AC.fin_diameter, bare_length=AC.bare_length,
+                 fin_thickness=AC.fin_thickness, tube_rows=AC.tube_rows,
+                pitch_parallel=AC.pitch_parallel, pitch_normal=AC.pitch_normal,
+                 rho=1.2013848, Cp=1009.0188, mu=1.9304793e-05, k=0.027864828, k_fin=238)
+    assert_allclose(h, 969.2850818578595)
