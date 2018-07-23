@@ -119,3 +119,21 @@ def test_h_Ganguli_VDI():
                 pitch_parallel=AC.pitch_parallel, pitch_normal=AC.pitch_normal,
                  rho=1.2013848, Cp=1009.0188, mu=1.9304793e-05, k=0.027864828, k_fin=238)
     assert_allclose(h, 969.2850818578595)
+    
+    # Example in VDI
+    # assumed in-line = angle 45, rest specified
+    # VDI misses some parameters like fin tip area
+    AC = AirCooledExchanger(tube_rows=4, tube_passes=1, tubes_per_row=17, tube_length=0.98, 
+                            tube_diameter=1*inch, fin_thickness=0.4E-3, fin_density=9/inch,
+                            angle=45, pitch_normal=0.06, fin_diameter=0.056)
+    
+    # Pr forced to match
+    h = h_Ganguli_VDI(m=1.92, A=AC.A, A_min=AC.A_min, A_increase=AC.A_increase, A_fin=AC.A_fin,
+                 A_tube_showing=AC.A_tube_showing, tube_diameter=AC.tube_diameter,
+                 fin_diameter=AC.fin_diameter, bare_length=AC.bare_length,
+                 fin_thickness=AC.fin_thickness, tube_rows=AC.tube_rows,
+                pitch_parallel=AC.pitch_parallel, pitch_normal=AC.pitch_normal,
+                 rho=0.909, Cp=1009.0188, mu=2.237e-05, k=0.03197131806799132, k_fin=209)
+    # 22.49 goal, but there was a correction for velocity due to temperature increase
+    # in the vdi answer
+    assert_allclose(h/AC.A_increase, 22.49, rtol=2e-2)

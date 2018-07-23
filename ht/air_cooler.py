@@ -614,7 +614,7 @@ def h_Ganguli_VDI(m, A, A_min, A_increase, A_fin,
     Re = Reynolds(V=V_max, D=tube_diameter, rho=rho, mu=mu)
     Pr = Prandtl(Cp=Cp, mu=mu, k=k)
 
-    if pitch_parallel == pitch_normal: # in-line
+    if abs(1 - pitch_normal/pitch_parallel) < 0.05: # in-line, with a tolerance of 0.05 proximity
         if tube_rows < 4:
             coeff = 0.2
         else:
