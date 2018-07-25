@@ -4160,7 +4160,7 @@ HEDH_shells = [round(i*inch, 6) for i in HEDH_shells_imperial]
 HEDH_pitches = {0.25: (1.25, 1.5), 0.375: (1.330, 1.420),
 0.5: (1.250, 1.310, 1.380), 0.625: (1.250, 1.300, 1.400),
 0.75: (1.250, 1.330, 1.420, 1.500), 1.: (1.250, 1.312, 1.375),
-1.25: (1.250), 1.5: (1.250), 2.: (1.250)}
+1.25: (1.250,), 1.5: (1.250,), 2.: (1.250,)}
 
 def DBundle_min(Do):
     r'''Very roughly, determines a good choice of shell diameter for a given

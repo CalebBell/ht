@@ -17,6 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from __future__ import division
 from ht import *
+from random import choice
 from fluids.geometry import *
 from scipy.constants import minute, hp, inch, foot
 from ht.boiling_nucleic import _angles_Stephan_Abdelsalam
@@ -137,3 +138,49 @@ def test_h_Ganguli_VDI():
     # 22.49 goal, but there was a correction for velocity due to temperature increase
     # in the vdi answer
     assert_allclose(h/AC.A_increase, 22.49, rtol=2e-2)
+    
+    
+def test_AirCooledExchangerPermutations():
+    '''Demonstration of permutating all sorts of different options.
+    
+    need to try both nonlinear optimization (will work easier, need initial guesses) 
+    and some form of discrete problem solution space.
+    2 billion - that's just as many as there are floats! :)
+    
+    (len(tube_rows_options)*len(tube_passes_options)*len(tubes_per_row_options)
+     *len(HTRI_Ls)*len(pitches)*len(fin_densities)
+     *len(fin_heights)*len(ODs)*len(angles)
+     *len(fin_thicknesses))/2.**31#15E-6/3600
+
+    '''
+    tube_rows_options = range(1, 20)
+    tube_passes_options = range(1, 20)
+    tubes_per_row_options = range(1, 40)
+    
+    from ht.hx import HTRI_Ls, HEDH_pitches
+    from ht.air_cooler import fin_densities, fin_heights, ODs
+    angles = [30, 45, 60, 90]
+    pitches = sorted((set([j for k in HEDH_pitches.values() for j in k])))
+    pitches = [1.25, 1.312, 1.33, 1.375, 1.4, 1.5]
+    
+    fin_thicknesses = [3E-4, 4E-4, 5E-4, 6E-4, 7E-4] # made up
+    
+    for i in range(100):
+        angle = choice(angles)
+        pitch = choice(pitches)
+        tube_length = choice(HTRI_Ls)
+        fin_density = choice(fin_densities)
+        fin_height = choice(fin_heights)
+        fin_thickness = choice(fin_thicknesses)
+        tube_diameter = choice(ODs)
+        
+        tube_rows = choice(tube_rows_options)
+        tube_passes = choice(tube_passes_options)
+        tubes_per_row = choice(tubes_per_row_options)
+        
+        AC = AirCooledExchanger(tube_rows=tube_rows, tube_passes=tube_passes, 
+                                tubes_per_row=tubes_per_row, tube_length=tube_length, 
+                            tube_diameter=tube_diameter, fin_thickness=fin_thickness, fin_density=fin_density,
+                            angle=angle, pitch=pitch, fin_height=fin_height)
+    
+        
