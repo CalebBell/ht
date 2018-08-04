@@ -53,6 +53,12 @@ def test_baffle_correction_Bell():
     errs = np.array([(baffle_correction_Bell(Fc)-Jc)/Jc for Fc, Jc in zip(Bell_baffle_configuration_Fcs, Bell_baffle_configuration_Jcs)])
     assert np.abs(errs).sum()/len(errs) < 1e-3
     
+    Jc = baffle_correction_Bell(0.1, 'chebyshev')   
+    assert_allclose(Jc, 0.61868011359447)
+     
+    Jc = baffle_correction_Bell(0.82, 'HEDH')
+    assert_allclose(Jc, 1.1404)
+    
     
 def test_baffle_leakage_Bell():
     Jl = baffle_leakage_Bell(1, 1, 4)

@@ -31,6 +31,13 @@ __all__ = ['dP_Kern', 'Kern_f_Re', 'dP_Zukauskas', 'dP_staggered_f',
            'baffle_correction_Bell', 'baffle_leakage_Bell',
            'bundle_bypassing_Bell']
 
+def _horner(coeffs, x):
+    # TODO put this in a module or something
+    tot = 0.
+    for c in coeffs:
+        tot = tot * x + c
+    return tot
+
 _Kern_dP_Res = np.array([9.9524, 11.0349, 12.0786, 13.0504, 14.0121, 15.0431, 16.1511, 17.1176, 17.9105, 18.9822,
     19.9879, 21.0484, 22.0217, 23.1893, 24.8973, 26.0495, 27.7862, 29.835, 31.8252, 33.9506, 35.9822, 38.3852,
     41.481, 43.9664, 47.2083, 50.6891, 54.0782, 58.0635, 63.5667, 68.2537, 74.247, 78.6957, 83.9573, 90.1511,
@@ -447,6 +454,23 @@ function should fit the smoothed function, not the raw data.
 Bell_baffle_configuration_obj = UnivariateSpline(Bell_baffle_configuration_Fcs, 
                                                  Bell_baffle_configuration_Jcs, 
                                                  s=8e-5)
+
+'''Derived with:
+
+fit = Chebfun.from_function(lambda x: Bell_baffle_configuration_obj(0.5*(x+1)), domain=[-1,1], N=8)
+cheb2poly(fit.coefficients())[::-1].tolist()
+
+xs = np.linspace(0, 1, 3000)
+f = Bell_baffle_configuration_obj
+print(max([(f(i)-fit(i*2-1))/f(i) for i in xs]), 'MAX ERR')
+print(np.mean([abs(f(i)-fit(i*2-1))/f(i) for i in xs]), 'MEAN ERR')
+'''
+Bell_baffle_configuration_coeffs = [-17.267087530974095, -17.341072676377735, 
+    60.38380262590988, 60.78202803861199, -83.86556326987701, -84.74024411236306, 58.66461844872558,
+    59.56146082596216, -21.786957547130935, -22.229378707598116, 4.1167302227508, 4.226246012504343,
+    -0.3349723004600481, -0.3685826653263089, -0.0629839069257099, 0.35883309630976157, 
+    0.9345478582873352]
+
 #import matplotlib.pyplot as plt
 #plt.plot(Bell_baffle_configuration_Fcs, Bell_baffle_configuration_Jcs)
 #pts = np.linspace(0, 1, 5000)
@@ -454,7 +478,7 @@ Bell_baffle_configuration_obj = UnivariateSpline(Bell_baffle_configuration_Fcs,
 #plt.plot(pts, [0.55 + 0.72*i for i in pts]) # Serth and HEDH 3.3.6g misses the tip
 #plt.show()
 
-def baffle_correction_Bell(crossflow_tube_fraction):
+def baffle_correction_Bell(crossflow_tube_fraction, method='spline'):
     r'''Calculate the baffle correction factor `Jc` which accounts for
     the fact that all tubes are not in crossflow to the fluid - some
     have fluid flowing parallel to them because they are situated in 
@@ -466,12 +490,30 @@ def baffle_correction_Bell(crossflow_tube_fraction):
     for very large baffle cuts. Well designed exchangers should typically
     have a value near 1.0.
     
+    Cubic spline interpolation is the default method of retrieving a value
+    from the graph, which was digitized with Engauge-Digitizer.
+    
+    The interpolation can be slightly slow, so a Chebyshev polynomial was fit
+    to a maximum error of 0.142%, average error 0.04% - well within the margin
+    of error of the digitization of the graph; this is approximately 10 times
+    faster, accessible via the 'chebyshev' method.
+    
+    The Heat Exchanger Design Handbook [4]_, [5]_ provides the linear curve 
+    fit, which covers the "practical" range of baffle cuts 15-45% but not the 
+    last dip in the graph. This method is not recommended, but can be used via 
+    the method "HEDH".
+        
+    .. math::
+        J_c = 0.55 + 0.72Fc
+
     Parameters
     ----------
     crossflow_tube_fraction : float
         Fraction of tubes which are between baffle tips and not
         in the window, [-]
-
+    method : str, optional
+        One of 'chebyshev', 'spline', or 'HEDH'
+    
     Returns
     -------
     Jc : float
@@ -483,10 +525,9 @@ def baffle_correction_Bell(crossflow_tube_fraction):
     min: ~0.5328 at 0
     value at 1: ~1.0314
     
-    Takes ~13 us per call, and 40 us to construct the spline.
-    
-    This method returns NumPy arrays if given vector inputs.
-    
+    For the 'spline' method, this function takes ~13 us per call, and 40 us to 
+    construct the spline. The other two methods are approximately 10x faster.
+             
     Examples
     --------
     For a HX with four groups of tube bundles; the top and bottom being 9 
@@ -507,11 +548,19 @@ def baffle_correction_Bell(crossflow_tube_fraction):
        and R. A. Mashelkar. CRC Press, 1988.
     .. [3] Green, Don, and Robert Perry. Perry's Chemical Engineers' Handbook,
        Eighth Edition. McGraw-Hill Professional, 2007.
+    .. [4] Serth, R. W., Process Heat Transfer: Principles,
+       Applications and Rules of Thumb. 2E. Amsterdam: Academic Press, 2014.
+    .. [5] Schlünder, Ernst U, and International Center for Heat and Mass
+       Transfer. Heat Exchanger Design Handbook. Washington:
+       Hemisphere Pub. Corp., 1987.
     '''
-    Jc = Bell_baffle_configuration_obj(crossflow_tube_fraction)
-    if Jc.shape:
-        return Jc
-    return float(Jc)
+    if method == 'spline':
+        Jc = float(Bell_baffle_configuration_obj(crossflow_tube_fraction))
+    elif method == 'chebyshev':
+        return _horner(Bell_baffle_configuration_coeffs, 2.0*crossflow_tube_fraction - 1.0)
+    elif method == 'HEDH':
+        Jc = 0.55 + 0.72*crossflow_tube_fraction
+    return Jc
 
 
 Bell_baffle_leakage_x = np.array([0.0, 1e-5, 1e-4, 1e-3, 0.0037779, 0.00885994, 0.012644, 0.0189629, 0.0213694, 0.0241428, 0.0289313, 0.0339093, 0.0376628,
