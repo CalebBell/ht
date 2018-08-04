@@ -658,8 +658,7 @@ def baffle_leakage_Bell(Ssb, Stb, Sm, method='spline'):
     from the graph, which was digitized with Engauge-Digitizer.
     
     The Heat Exchanger Design Handbook [4]_, [5]_ provides a curve 
-    fit, which covers the "practical" range of baffle cuts 15-45% but not the 
-    last dip in the graph. This method is not recommended, but can be used via 
+    fit as well. This method is not recommended, but can be used via 
     the method "HEDH".
         
     .. math::
@@ -813,6 +812,10 @@ Bell_bundle_bypass_high_obj = RectBivariateSpline(Bell_bundle_bypass_x, Bell_bun
 #    xs = np.linspace(min(Bell_bundle_bypass_x), max(Bell_bundle_bypass_x), 1000)
 #    ys = np.exp(-1.25*xs*(1.0 - (2.0*z)**(1/3.) )) # This one is a good fit!
 #    plt.plot(xs, ys, '.')
+#for z in Bell_bundle_bypass_z_values:
+#    xs = np.linspace(min(Bell_bundle_bypass_x), max(Bell_bundle_bypass_x), 1000)
+#    ys = exp(1.25*z*(1.0 - (2*xs)**(1/3.)))
+#    plt.plot(xs, ys, '--')
 #plt.show()
 
 Bell_bundle_bypass_z_low_0_5 = Bell_bundle_bypass_z_high_0_5
@@ -885,9 +888,21 @@ Bell_bundle_bypass_low_obj = RectBivariateSpline(Bell_bundle_bypass_x, Bell_bund
 
 
 def bundle_bypassing_Bell(bypass_area_fraction, seal_strips, crossflow_rows,
-                          laminar=False):
+                          laminar=False, method='spline'):
     r'''Calculate the bundle bypassing effect `Jb` according to the 
     Bell-Delaware method for heat exchanger design.   
+
+    Cubic spline interpolation is the default method of retrieving a value
+    from the graph, which was digitized with Engauge-Digitizer.
+    
+    The Heat Exchanger Design Handbook [4]_, [5]_ provides a curve 
+    fit as well. This method is not recommended, but can be used via 
+    the method "HEDH":
+    
+    .. math::
+        J_b = \exp\left[-1.25 F_{sbp} (1 -  {2r_{ss}}^{1/3} )\right]
+    
+    For laminar flows, replace 1.25 with 1.35.
         
     Parameters
     ----------
@@ -902,6 +917,8 @@ def bundle_bypassing_Bell(bypass_area_fraction, seal_strips, crossflow_rows,
     laminar : bool
         Whether to use the turbulent correction values or the laminar ones;
         the Bell-Delaware method uses a Re criteria of 100 for this, [-]
+    method : str, optional
+        One of 'spline', or 'HEDH'
 
     Returns
     -------
@@ -920,8 +937,9 @@ def bundle_bypassing_Bell(bypass_area_fraction, seal_strips, crossflow_rows,
     --------
     >>> bundle_bypassing_Bell(0.5, 5, 25)
     0.8469611760884599
-    >>> bundle_bypassing_Bell(0.5, 5, 25, laminar=True)
-    0.8327442867825271
+    
+    >>> bundle_bypassing_Bell(0.5, 5, 25, method='HEDH')
+    0.8483210970579099
     
     References
     ----------
@@ -936,11 +954,13 @@ def bundle_bypassing_Bell(bypass_area_fraction, seal_strips, crossflow_rows,
     '''
     z = seal_strips/crossflow_rows
     x = bypass_area_fraction
-    
-    obj = Bell_bundle_bypass_low_obj if laminar else Bell_bundle_bypass_high_obj
-    
-    if x > Bell_bundle_bypass_x_max:
-        x = Bell_bundle_bypass_x_max
-        
-    Jb = obj(x, z)
-    return min(float(Jb), 1.0)
+    if method == 'spline':
+        obj = Bell_bundle_bypass_low_obj if laminar else Bell_bundle_bypass_high_obj
+        if x > Bell_bundle_bypass_x_max:
+            x = Bell_bundle_bypass_x_max
+        Jb = obj(x, z)
+        Jb = min(float(Jb), 1.0)
+    elif method == 'HEDH':
+        c = 1.35 if laminar else 1.25
+        Jb = exp(-c*x*(1.0 - (2.0*z)**(1/3.)))
+    return Jb

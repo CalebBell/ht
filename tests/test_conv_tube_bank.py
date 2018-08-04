@@ -74,7 +74,7 @@ def test_baffle_leakage_Bell():
     Jl = baffle_leakage_Bell(1, .0001, .00001)
     assert_allclose(Jl,  0.16072739052053492)
     
-    Jl = baffle_leakage_Bell(1, 3, 8, 'HEDH')
+    Jl = baffle_leakage_Bell(1, 3, 8, method='HEDH')
     assert_allclose(Jl, 0.5530236260777133)
 
 
@@ -82,7 +82,13 @@ def test_bundle_bypassing_Bell():
     Jb = bundle_bypassing_Bell(0.5, 5, 25)
     assert_allclose(Jb, 0.8469611760884599, rtol=1e-3)
     Jb = bundle_bypassing_Bell(0.5, 5, 25, laminar=True)
-    assert_allclose(Jb, 0.8327442867825271)
+    assert_allclose(Jb, 0.8327442867825271, rtol=1e-3)
     
     Jb = bundle_bypassing_Bell(0.99, 5, 25, laminar=True)
-    assert_allclose(Jb, 0.7786963825447165)
+    assert_allclose(Jb, 0.7786963825447165, rtol=1e-3)
+    
+    Jb = bundle_bypassing_Bell(0.5, 5, 25, method='HEDH')
+    assert_allclose(Jb, 0.8483210970579099)
+    
+    Jb = bundle_bypassing_Bell(0.5, 5, 25, method='HEDH', laminar=True)
+    assert_allclose(0.8372305924553625, Jb)
