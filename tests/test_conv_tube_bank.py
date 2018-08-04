@@ -42,3 +42,37 @@ def test_conv_tube_bank():
     dP1 = dP_Zukauskas(Re=13943., n=7, ST=0.0313, SL=0.0343, D=0.0164, rho=1.217, Vmax=12.6)
     dP2 = dP_Zukauskas(Re=13943., n=7, ST=0.0313, SL=0.0313, D=0.0164, rho=1.217, Vmax=12.6)
     assert_allclose([dP1, dP2], [235.22916169118335, 217.0750033117563])
+
+
+def test_baffle_correction_Bell():
+    Jc = baffle_correction_Bell(0.82)
+    assert_allclose(Jc, 1.1258554691854046, 5e-4)
+    
+    # Check the match is reasonably good
+    from ht.conv_tube_bank import Bell_baffle_configuration_Fcs, Bell_baffle_configuration_Jcs
+    errs = np.array([(baffle_correction_Bell(Fc)-Jc)/Jc for Fc, Jc in zip(Bell_baffle_configuration_Fcs, Bell_baffle_configuration_Jcs)])
+    assert np.abs(errs).sum()/len(errs) < 1e-3
+    
+    
+def test_baffle_leakage_Bell():
+    Jl = baffle_leakage_Bell(1, 1, 4)
+    assert_allclose(Jl, 0.5159239501898142, rtol=1e-3)
+    
+    Jl = baffle_leakage_Bell(1, 1, 8)
+    assert_allclose(Jl, 0.6820523047494141, rtol=1e-3)
+
+    Jl = baffle_leakage_Bell(1, 3, 8)
+    assert_allclose(Jl, 0.5906621282470395, rtol=1e-3)
+    
+    # Silent clipping
+    Jl = baffle_leakage_Bell(1, .0001, .00001)
+    assert_allclose(Jl,  0.16072739052053492)
+
+def test_bundle_bypassing_Bell():
+    Jb = bundle_bypassing_Bell(0.5, 5, 25)
+    assert_allclose(Jb, 0.8469611760884599, rtol=1e-3)
+    Jb = bundle_bypassing_Bell(0.5, 5, 25, laminar=True)
+    assert_allclose(Jb, 0.8327442867825271)
+    
+    Jb = bundle_bypassing_Bell(0.99, 5, 25, laminar=True)
+    assert_allclose(Jb, 0.7786963825447165)
