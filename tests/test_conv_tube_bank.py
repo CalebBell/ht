@@ -73,6 +73,10 @@ def test_baffle_leakage_Bell():
     # Silent clipping
     Jl = baffle_leakage_Bell(1, .0001, .00001)
     assert_allclose(Jl,  0.16072739052053492)
+    
+    Jl = baffle_leakage_Bell(1, 3, 8, 'HEDH')
+    assert_allclose(Jl, 0.5530236260777133)
+
 
 def test_bundle_bypassing_Bell():
     Jb = bundle_bypassing_Bell(0.5, 5, 25)

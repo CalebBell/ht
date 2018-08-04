@@ -21,7 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.'''
 
 from __future__ import division
-from math import pi, sin, acos
+from math import pi, sin, acos, exp
 from scipy.constants import g
 from scipy.interpolate import  UnivariateSpline, RectBivariateSpline
 import numpy as np
@@ -548,11 +548,11 @@ def baffle_correction_Bell(crossflow_tube_fraction, method='spline'):
        and R. A. Mashelkar. CRC Press, 1988.
     .. [3] Green, Don, and Robert Perry. Perry's Chemical Engineers' Handbook,
        Eighth Edition. McGraw-Hill Professional, 2007.
-    .. [4] Serth, R. W., Process Heat Transfer: Principles,
-       Applications and Rules of Thumb. 2E. Amsterdam: Academic Press, 2014.
-    .. [5] Schlünder, Ernst U, and International Center for Heat and Mass
+    .. [4] Schlünder, Ernst U, and International Center for Heat and Mass
        Transfer. Heat Exchanger Design Handbook. Washington:
        Hemisphere Pub. Corp., 1987.
+    .. [5] Serth, R. W., Process Heat Transfer: Principles,
+       Applications and Rules of Thumb. 2E. Amsterdam: Academic Press, 2014.
     '''
     if method == 'spline':
         Jc = float(Bell_baffle_configuration_obj(crossflow_tube_fraction))
@@ -650,10 +650,25 @@ Bell_baffle_leakage_x_max = Bell_baffle_leakage_x[-1]
 #    plt.plot(xs, ys, '--')
             
     
-def baffle_leakage_Bell(Ssb, Stb, Sm):
+def baffle_leakage_Bell(Ssb, Stb, Sm, method='spline'):
     r'''Calculate the baffle leakage factor `Jl` which accounts for
     leakage between each baffle.
+
+    Cubic spline interpolation is the default method of retrieving a value
+    from the graph, which was digitized with Engauge-Digitizer.
     
+    The Heat Exchanger Design Handbook [4]_, [5]_ provides a curve 
+    fit, which covers the "practical" range of baffle cuts 15-45% but not the 
+    last dip in the graph. This method is not recommended, but can be used via 
+    the method "HEDH".
+        
+    .. math::
+        J_L = 0.44(1-r_s) + [1 - 0.44(1-r_s)]\exp(-2.2r_{lm})
+        
+        r_s = \frac{S_{sb}}{S_{sb} + S_{tb}}
+        
+        r_{lm} = \frac{S_{sb} + S_{tb}}{S_m}
+        
     Parameters
     ----------
     Ssb : float
@@ -662,7 +677,9 @@ def baffle_leakage_Bell(Ssb, Stb, Sm):
         Total baffle leakage area, [m^2]
     Sm : float
         Crossflow area, [m^2]
-
+    method : str, optional
+        One of 'spline', or 'HEDH'
+    
     Returns
     -------
     Jl : float
@@ -672,12 +689,16 @@ def baffle_leakage_Bell(Ssb, Stb, Sm):
     -----
     Takes ~5 us per call, and 600 us to construct the spline.
     If the `x` parameter is larger than 0.743614, it is clipped to it.
+    
+    The HEDH curve fits are rather poor and only 6x faster to evaluate.
         
     Examples
     --------
     >>> baffle_leakage_Bell(1, 3, 8)
     0.5906621282470395
-    
+    >>> baffle_leakage_Bell(1, 3, 8, 'HEDH')
+    0.5530236260777133
+
     References
     ----------
     .. [1] Bell, Kenneth J. Final Report of the Cooperative Research Program on
@@ -688,15 +709,25 @@ def baffle_leakage_Bell(Ssb, Stb, Sm):
        and R. A. Mashelkar. CRC Press, 1988.
     .. [3] Green, Don, and Robert Perry. Perry's Chemical Engineers' Handbook,
        Eighth Edition. McGraw-Hill Professional, 2007.
+    .. [4] Schlünder, Ernst U, and International Center for Heat and Mass
+       Transfer. Heat Exchanger Design Handbook. Washington:
+       Hemisphere Pub. Corp., 1987.
+    .. [5] Serth, R. W., Process Heat Transfer: Principles,
+       Applications and Rules of Thumb. 2E. Amsterdam: Academic Press, 2014.
     '''
     x = (Ssb + Stb)/Sm
     if x > Bell_baffle_leakage_x_max:
         x = Bell_baffle_leakage_x_max
-    y = Ssb/(Ssb + Stb)
-    if y > 1 or y < 0:
+    z = Ssb/(Ssb + Stb)
+    if z > 1 or z < 0:
         raise ValueError('Ssb/(Ssb + Stb) must be between 0 and 1')
-    Jl = Bell_baffle_leakage_obj(x, y)
-    return min(float(Jl), 1.0)
+    if method == 'spline':
+        Jl = Bell_baffle_leakage_obj(x, z)
+        Jl = min(float(Jl), 1.0)
+    elif method == 'HEDH':
+        Jl = 0.44*(1.0 - z) + (1.0 - 0.44*(1.0 - z))*exp(-2.2*x)
+    return Jl
+
 
 Bell_bundle_bypass_x = np.array([0.0, 1e-5, 1e-4, 1e-3, 0.0388568, 0.0474941, 0.0572083, 0.0807999, 0.0915735, 0.0959337, 0.118724, 0.128469, 0.134716,
     0.142211, 0.146821, 0.156504, 0.162821, 0.169488, 0.178126, 0.185301, 0.194997, 0.200798, 0.210512, 0.212373, 0.221063, 0.222122, 0.228864,
