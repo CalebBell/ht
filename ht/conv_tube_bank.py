@@ -451,6 +451,7 @@ Bell_baffle_configuration_obj = UnivariateSpline(Bell_baffle_configuration_Fcs,
 #plt.plot(Bell_baffle_configuration_Fcs, Bell_baffle_configuration_Jcs)
 #pts = np.linspace(0, 1, 5000)
 #plt.plot(pts, [Bell_baffle_configuration_obj(i) for i in pts])
+#plt.plot(pts, [0.55 + 0.72*i for i in pts]) # Serth and HEDH 3.3.6g misses the tip
 #plt.show()
 
 def baffle_correction_Bell(crossflow_tube_fraction):
@@ -585,13 +586,21 @@ for some values; this must be checked!
 '''
 Bell_baffle_leakage_x_max = Bell_baffle_leakage_x[-1]
 
+#import matplotlib.pyplot as plt
 #for ys in Bell_baffle_leakage_zs.T:
 #    plt.plot(Bell_baffle_leakage_x, ys)
 #for z in Bell_baffle_leakage_z_values:
 #    xs = np.linspace(min(Bell_baffle_leakage_x), max(Bell_baffle_leakage_x), 1000)
 #    ys = np.clip(Bell_baffle_leakage_obj(xs, z), 0, 1)
 #    plt.plot(xs, ys, '--')
-
+#for z in Bell_baffle_leakage_z_values:
+#    xs = np.linspace(min(Bell_baffle_leakage_x), max(Bell_baffle_leakage_x), 1000)
+#    rs = z
+#    rl = xs
+#    ys = 0.44*(1.0 - rs) + (1.0 - 0.44*(1.0 - rs))*np.exp(-2.2*rl)
+#    plt.plot(xs, ys, '--')
+            
+    
 def baffle_leakage_Bell(Ssb, Stb, Sm):
     r'''Calculate the baffle leakage factor `Jl` which accounts for
     leakage between each baffle.
@@ -713,13 +722,17 @@ Bell_bundle_bypass_z_high_0 = np.array([1.0, 0.99999, 0.9999, 0.999, 0.952236, 0
 Bell_bundle_bypass_z_high = np.array([Bell_bundle_bypass_z_high_0, Bell_bundle_bypass_z_high_0_05, Bell_bundle_bypass_z_high_0_1, Bell_bundle_bypass_z_high_0_167, Bell_bundle_bypass_z_high_0_3, Bell_bundle_bypass_z_high_0_5]).T
 Bell_bundle_bypass_high_obj = RectBivariateSpline(Bell_bundle_bypass_x, Bell_bundle_bypass_z_values, Bell_bundle_bypass_z_high, kx = 3, ky = 3, s = 0.0007)
 
+#import matplotlib.pyplot as plt
 #for ys in Bell_bundle_bypass_z_high.T:
 #    plt.plot(Bell_bundle_bypass_x, ys)
-#    
 #for z in Bell_bundle_bypass_z_values:
 #    xs = np.linspace(min(Bell_bundle_bypass_x), max(Bell_bundle_bypass_x), 1000)
 #    ys = np.clip(Bell_bundle_bypass_high_obj(xs, z), 0, 1)
 #    plt.plot(xs, ys, '--')
+#for z in Bell_bundle_bypass_z_values:
+#    xs = np.linspace(min(Bell_bundle_bypass_x), max(Bell_bundle_bypass_x), 1000)
+#    ys = np.exp(-1.25*xs*(1.0 - (2.0*z)**(1/3.) )) # This one is a good fit!
+#    plt.plot(xs, ys, '.')
 #plt.show()
 
 Bell_bundle_bypass_z_low_0_5 = Bell_bundle_bypass_z_high_0_5
