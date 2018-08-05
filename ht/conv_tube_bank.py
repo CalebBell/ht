@@ -29,7 +29,7 @@ import numpy as np
 __all__ = ['dP_Kern', 'Kern_f_Re', 'dP_Zukauskas', 'dP_staggered_f',
            'dP_staggered_correction', 'dP_inline_f', 'dP_inline_correction',
            'baffle_correction_Bell', 'baffle_leakage_Bell',
-           'bundle_bypassing_Bell']
+           'bundle_bypassing_Bell', 'unequal_baffle_spacing_Bell']
 
 def _horner(coeffs, x):
     # TODO put this in a module or something
@@ -969,3 +969,72 @@ def bundle_bypassing_Bell(bypass_area_fraction, seal_strips, crossflow_rows,
         c = 1.35 if laminar else 1.25
         Jb = exp(-c*x*(1.0 - (2.0*z)**(1/3.)))
     return Jb
+
+
+def unequal_baffle_spacing_Bell(baffles, baffle_spacing, 
+                                baffle_spacing_in=None, 
+                                baffle_spacing_out=None, 
+                                laminar=False):
+    r'''Calculate the correction factor for unequal baffle spacing `Js`,
+    which accounts for higher velocity of fluid flow and greater heat transfer
+    coefficients when the in and/or out baffle spacing is less than the
+    standard spacing.
+            
+    .. math::
+        J_s = \frac{(n_b - 1) + (B_{in}/B)^{(1-n_b)} + (B_{out}/B)^{(1-n_b)}}
+        {(n_b - 1) + (B_{in}/B) + (B_{out}/B)}
+        
+    Parameters
+    ----------
+    baffles : int
+        Number of baffles, [-]
+    baffle_spacing : float
+        Average spacing between one end of one baffle to the start of
+        the next baffle for non-exit baffles, [m]
+    baffle_spacing_in : float, optional
+        Spacing between entrace to first baffle, [m]
+    baffle_spacing_out : float, optional
+        Spacing between last baffle and exit, [m]
+    laminar : bool, optional
+        Whether to use the turbulent exponent or the laminar one;
+        the Bell-Delaware method uses a Re criteria of 100 for this, [-]
+
+    Returns
+    -------
+    Js : float
+        Unequal baffle spacing correction factor, [-]
+
+    Notes
+    -----
+        
+    Examples
+    --------
+    >>> unequal_baffle_spacing_Bell(16, .1, .15, 0.15)
+    0.9640087802805195
+
+    References
+    ----------
+    .. [1] Bell, Kenneth J. Final Report of the Cooperative Research Program on
+       Shell and Tube Heat Exchangers. University of Delaware, Engineering
+       Experimental Station, 1963.
+    .. [2] Bell, Kenneth J. Delaware Method for Shell-Side Design. In Heat  
+       Transfer Equipment Design, by Shah, R.  K., Eleswarapu Chinna Subbarao,
+       and R. A. Mashelkar. CRC Press, 1988.
+    .. [3] Schlünder, Ernst U, and International Center for Heat and Mass
+       Transfer. Heat Exchanger Design Handbook. Washington:
+       Hemisphere Pub. Corp., 1987.
+    .. [4] Serth, R. W., Process Heat Transfer: Principles,
+       Applications and Rules of Thumb. 2E. Amsterdam: Academic Press, 2014.
+    .. [5] Hall, Stephen. Rules of Thumb for Chemical Engineers, Fifth Edition. 
+       5th edition. Oxford ; Waltham , MA: Butterworth-Heinemann, 2012.
+    '''
+    if baffle_spacing_in is None:
+        baffle_spacing_in = baffle_spacing
+    if baffle_spacing_out is None:
+        baffle_spacing_out = baffle_spacing
+    n = 1.0/3.0 if laminar else 0.6
+    Js = ((baffles - 1.0) + (baffle_spacing_in/baffle_spacing)**(1.0 - n) 
+          + (baffle_spacing_out/baffle_spacing)**(1.0 - n))/((baffles - 1.0) 
+          + (baffle_spacing_in/baffle_spacing) 
+          + (baffle_spacing_out/baffle_spacing))
+    return Js

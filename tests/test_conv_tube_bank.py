@@ -108,3 +108,8 @@ def test_bundle_bypassing_Bell():
     # Rules of Thumb for Chemical Engineers 5E
     Jb = bundle_bypassing_Bell(bypass_area_fraction=0.331946755407654, seal_strips=2, crossflow_rows=10.6516290726817, method='HEDH')
     assert_allclose(Jb, 0.8908547260332952)
+
+
+def test_unequal_baffle_spacing_Bell():
+    Js = unequal_baffle_spacing_Bell(16, .1, .15, 0.15)
+    assert_allclose(Js, 0.9640087802805195)
