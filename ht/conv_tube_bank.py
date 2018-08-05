@@ -689,7 +689,9 @@ def baffle_leakage_Bell(Ssb, Stb, Sm, method='spline'):
     Takes ~5 us per call, and 600 us to construct the spline.
     If the `x` parameter is larger than 0.743614, it is clipped to it.
     
-    The HEDH curve fits are rather poor and only 6x faster to evaluate.
+    The HEDH curve fits are rather poor and only 6x faster to evaluate. 
+    The HEDH example in [6]_'s spreadsheet has an error and uses 0.044 instead
+    of 0.44 in the equation.
         
     Examples
     --------
@@ -713,6 +715,8 @@ def baffle_leakage_Bell(Ssb, Stb, Sm, method='spline'):
        Hemisphere Pub. Corp., 1987.
     .. [5] Serth, R. W., Process Heat Transfer: Principles,
        Applications and Rules of Thumb. 2E. Amsterdam: Academic Press, 2014.
+    .. [6] Hall, Stephen. Rules of Thumb for Chemical Engineers, Fifth Edition. 
+       5th edition. Oxford ; Waltham , MA: Butterworth-Heinemann, 2012.
     '''
     x = (Ssb + Stb)/Sm
     if x > Bell_baffle_leakage_x_max:
@@ -724,6 +728,7 @@ def baffle_leakage_Bell(Ssb, Stb, Sm, method='spline'):
         Jl = Bell_baffle_leakage_obj(x, z)
         Jl = min(float(Jl), 1.0)
     elif method == 'HEDH':
+        # Hemisphere uses 0.44 as coefficient, rules of thumb uses 0.044 in spreadsheet
         Jl = 0.44*(1.0 - z) + (1.0 - 0.44*(1.0 - z))*exp(-2.2*x)
     return Jl
 

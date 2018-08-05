@@ -59,6 +59,11 @@ def test_baffle_correction_Bell():
     Jc = baffle_correction_Bell(0.82, 'HEDH')
     assert_allclose(Jc, 1.1404)
     
+    # Example in spreadsheet 02 - Heat Exchangers, tab Shell htc imperial, 
+    # Rules of Thumb for Chemical Engineers 5E
+    Jc = baffle_correction_Bell(0.67292816689362900, method='HEDH')
+    assert_allclose(1.034508280163413, Jc)
+    
     
 def test_baffle_leakage_Bell():
     Jl = baffle_leakage_Bell(1, 1, 4)
@@ -76,6 +81,12 @@ def test_baffle_leakage_Bell():
     
     Jl = baffle_leakage_Bell(1, 3, 8, method='HEDH')
     assert_allclose(Jl, 0.5530236260777133)
+    
+    # Example in spreadsheet 02 - Heat Exchangers, tab Shell htc imperial, 
+    # Rules of Thumb for Chemical Engineers 5E
+    # Has an error
+    Jl = baffle_leakage_Bell(Ssb=5.5632369907320000000, Stb=4.7424109055909500, Sm=42.7842616174504, method='HEDH')
+    assert_allclose(Jl, 0.6719386427830639)
 
 
 def test_bundle_bypassing_Bell():
@@ -92,3 +103,8 @@ def test_bundle_bypassing_Bell():
     
     Jb = bundle_bypassing_Bell(0.5, 5, 25, method='HEDH', laminar=True)
     assert_allclose(0.8372305924553625, Jb)
+    
+    # Example in spreadsheet 02 - Heat Exchangers, tab Shell htc imperial, 
+    # Rules of Thumb for Chemical Engineers 5E
+    Jb = bundle_bypassing_Bell(bypass_area_fraction=0.331946755407654, seal_strips=2, crossflow_rows=10.6516290726817, method='HEDH')
+    assert_allclose(Jb, 0.8908547260332952)
