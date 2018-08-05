@@ -113,3 +113,9 @@ def test_bundle_bypassing_Bell():
 def test_unequal_baffle_spacing_Bell():
     Js = unequal_baffle_spacing_Bell(16, .1, .15, 0.15)
     assert_allclose(Js, 0.9640087802805195)
+
+def test_laminar_correction_Bell():
+    Jr = laminar_correction_Bell(30, 80)
+    assert_allclose(Jr, 0.7267995454361379)
+    
+    assert_allclose(0.4, laminar_correction_Bell(30, 80000))

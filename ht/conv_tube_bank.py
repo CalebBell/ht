@@ -29,7 +29,8 @@ import numpy as np
 __all__ = ['dP_Kern', 'Kern_f_Re', 'dP_Zukauskas', 'dP_staggered_f',
            'dP_staggered_correction', 'dP_inline_f', 'dP_inline_correction',
            'baffle_correction_Bell', 'baffle_leakage_Bell',
-           'bundle_bypassing_Bell', 'unequal_baffle_spacing_Bell']
+           'bundle_bypassing_Bell', 'unequal_baffle_spacing_Bell',
+           'laminar_correction_Bell']
 
 def _horner(coeffs, x):
     # TODO put this in a module or something
@@ -1038,3 +1039,67 @@ def unequal_baffle_spacing_Bell(baffles, baffle_spacing,
           + (baffle_spacing_in/baffle_spacing) 
           + (baffle_spacing_out/baffle_spacing))
     return Js
+
+
+def laminar_correction_Bell(Re, total_row_passes):
+    r'''Calculate the correction factor for adverse temperature gradient built
+    up in laminar flow `Jr`.
+    
+    This correction begins at Re = 100, and is interpolated between the value 
+    of the formula until Re = 20, when it is the value of the formula. It is
+    1 for Re >= 100. The value of the formula is not allowed to be less than
+    0.4.
+
+    .. math::
+        Jr^* = \left(\frac{10}{N_{row,passes,tot}}\right)^{0.18}
+        
+    Parameters
+    ----------
+    Re : float
+        Shell Reynolds number in the Bell-Delaware method, [-]
+    total_row_passes : int
+        The total number of rows passed by the fluid, including those in
+        windows and counting repeat passes of tube rows, [-]
+
+    Returns
+    -------
+    Jr : float
+        Correction factor for adverse temperature gradient built up in laminar
+        flow, [-]
+
+    Notes
+    -----
+    [5]_ incorrectly uses the number of tube rows per crosslfow section, not 
+    total.
+        
+    Examples
+    --------
+    >>> laminar_correction_Bell(30, 80)
+    0.7267995454361379
+
+    References
+    ----------
+    .. [1] Bell, Kenneth J. Final Report of the Cooperative Research Program on
+       Shell and Tube Heat Exchangers. University of Delaware, Engineering
+       Experimental Station, 1963.
+    .. [2] Bell, Kenneth J. Delaware Method for Shell-Side Design. In Heat  
+       Transfer Equipment Design, by Shah, R.  K., Eleswarapu Chinna Subbarao,
+       and R. A. Mashelkar. CRC Press, 1988.
+    .. [3] Schlünder, Ernst U, and International Center for Heat and Mass
+       Transfer. Heat Exchanger Design Handbook. Washington:
+       Hemisphere Pub. Corp., 1987.
+    .. [4] Serth, R. W., Process Heat Transfer: Principles,
+       Applications and Rules of Thumb. 2E. Amsterdam: Academic Press, 2014.
+    .. [5] Hall, Stephen. Rules of Thumb for Chemical Engineers, Fifth Edition. 
+       5th edition. Oxford ; Waltham , MA: Butterworth-Heinemann, 2012.
+    '''
+    if Re > 100.0:
+        return 1.0
+    Jrr = (10.0/total_row_passes)**0.18
+    if Re < 20.0:
+        Jr = Jrr
+    else:
+        Jr = Jrr + ((20.0-Re)/80.0)*(Jrr - 1.0)
+    if Jr < 0.4:
+        Jr = 0.4
+    return Jr
