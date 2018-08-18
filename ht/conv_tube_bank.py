@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 '''Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
-Copyright (C) 2016, 2017, 2018 Caleb Bell <Caleb.Andrew.Bell@gmail.com>
+Copyright (C) 2016, Caleb Bell <Caleb.Andrew.Bell@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -21,15 +21,690 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.'''
 
 from __future__ import division
-from math import pi, sin, acos
+from math import pi, sin, acos, radians
 from scipy.constants import g
-from scipy.interpolate import  UnivariateSpline, RectBivariateSpline
+from scipy.interpolate import  UnivariateSpline, interp2d, RectBivariateSpline
 import numpy as np
+from ht.core import wall_factor, WALL_FACTOR_PRANDTL
 
 __all__ = ['dP_Kern', 'Kern_f_Re', 'dP_Zukauskas', 'dP_staggered_f',
            'dP_staggered_correction', 'dP_inline_f', 'dP_inline_correction',
-           'baffle_correction_Bell', 'baffle_leakage_Bell',
+           'Nu_ESDU_73031', 'Nu_Zukauskas_Bejan','Nu_HEDH_tube_bank',
+           'Nu_Grimison_tube_bank',
+           'Zukauskas_tube_row_correction', 
+           'ESDU_tube_row_correction',
+           'ESDU_tube_angle_correction',
+	   'baffle_correction_Bell', 'baffle_leakage_Bell',
            'bundle_bypassing_Bell']
+
+
+# Applies for row 1-9.
+Grimson_Nl_aligned = [0.64, 0.8, 0.87, 0.9, 0.92, 0.94, 0.96, 0.98, 0.99]
+Grimson_Nl_staggered = [0.68, 0.75, 0.83, 0.89, 0.92, 0.95, 0.97, 0.98, 0.99]
+
+
+Grimison_SL_aligned = np.array([1.25, 1.5, 2, 3])
+Grimison_ST_aligned = Grimison_SL_aligned
+Grimison_C1_aligned = np.array([[0.348, 0.275, 0.1, 0.0633],
+                                [0.367, 0.25, 0.101, 0.0678],
+                                [0.418, 0.299, 0.229, 0.198],
+                                [0.29, 0.357, 0.374, 0.286]])
+Grimison_m_aligned = np.array([[0.592, 0.608, 0.704, 0.752],
+                               [0.586, 0.62, 0.702, 0.744],
+                               [0.57, 0.602, 0.632, 0.648],
+                               [0.601, 0.584, 0.581, 0.608]])
+
+Grimison_C1_aligned_interp = RectBivariateSpline(Grimison_ST_aligned, 
+                                                 Grimison_SL_aligned,
+                                                 Grimison_C1_aligned)
+Grimison_m_aligned_interp = RectBivariateSpline(Grimison_ST_aligned, 
+                                                Grimison_SL_aligned, 
+                                                Grimison_m_aligned)
+
+Grimson_SL_staggered = np.array([1.25, 1.5, 2, 3, 1, 1.25, 1.5, 2, 3, 0.9, 
+                                 1.125, 1.25, 1.5, 2, 3, 0.6, 0.9, 1.125, 1.25,
+                                 1.5, 2, 3])
+
+Grimson_ST_staggered = np.array([1.25, 1.25, 1.25, 1.25, 1.5, 1.5, 1.5, 1.5, 
+                                 1.5, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3])
+
+Grimson_m_staggered = np.array([0.556, 0.568, 0.572, 0.592, 0.558, 0.554, 
+                                0.562, 0.568, 0.58, 0.571, 0.565, 0.556, 0.568,
+                                0.556, 0.562, 0.636, 0.581, 0.56, 0.562, 0.568,
+                                0.57, 0.574])
+
+Grimson_C1_staggered = np.array([0.518, 0.451, 0.404, 0.31, 0.497, 0.505, 0.46,
+                                 0.416, 0.356, 0.446, 0.478, 0.519, 0.452,
+                                 0.482, 0.44, 0.213, 0.401, 0.518, 0.522, 
+                                 0.488, 0.449, 0.428])
+
+Grimson_m_staggered_interp = interp2d(Grimson_ST_staggered,
+                                      Grimson_SL_staggered, 
+                                      Grimson_m_staggered, kind='linear')
+Grimson_C1_staggered_interp = interp2d(Grimson_ST_staggered, 
+                                       Grimson_SL_staggered, 
+                                       Grimson_C1_staggered, kind='linear')
+
+
+def Nu_Grimison_tube_bank(Re, Pr, Do, tube_rows, pitch_parallel, pitch_normal):
+    r'''Calculates Nusselt number for crossflow across a tube bank
+    of tube rows at a specified `Re`, `Pr`, and `D` using the Grimison 
+    methodology as described in [1]_.
+
+    .. math::
+        \bar{Nu_D} = 1.13C_1Re_{D,max}^m Pr^{1/3}C_2
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number with respect to average (bulk) fluid properties and
+        tube outside diameter, [-]
+    Pr : float
+        Prandtl number with respect to average (bulk) fluid properties, [-]
+    Do : float
+        Tube outer diameter, [m]
+    tube_rows : int
+        Number of tube rows per bundle, [-]
+    pitch_parallel : float
+        Distance between tube center along a line parallel to the flow;
+        has been called `longitudinal` pitch, `pp`, `s2`, `SL`, and `p2`, [m]
+    pitch_normal : float
+        Distance between tube centers in a line 90° to the line of flow;
+        has been called the `transverse` pitch, `pn`, `s1`, `ST`, and `p1`, [m]
+    
+    Returns
+    -------
+    Nu : float
+        Nusselt number with respect to tube outside diameter, [-]
+
+    Notes
+    -----
+    Tube row correction factors are applied for tube row counts less than 10,
+    also published in [1]_.
+
+    Examples
+    --------
+    >>> Nu_Grimison_tube_bank(Re=10263.37, Pr=.708, tube_rows=11, 
+    ... pitch_normal=.05, pitch_parallel=.05, Do=.025)
+    79.07883866010096
+
+    >>> Nu_Grimison_tube_bank(Re=10263.37, Pr=.708, tube_rows=11, 
+    ... pitch_normal=.07, pitch_parallel=.05, Do=.025)
+    79.92721078571385
+
+    References
+    ----------
+    .. [1] Grimson, E. D. (1937) Correlation and Utilisation of New Data on
+       Flow Resistance and Heat Transfer for Cross Flow of Gases over Tube 
+       Banks. Trans. ASME. 59 583-594
+    '''
+    staggered = abs(1 - pitch_normal/pitch_parallel) > 0.05
+    a = pitch_normal/Do # sT
+    b = pitch_parallel/Do
+    if not staggered:
+        C1 = float(Grimison_C1_aligned_interp(b, a))
+        m = float(Grimison_m_aligned_interp(b, a))
+    else:
+        C1 = float(Grimson_C1_staggered_interp(b, a))
+        m = float(Grimson_m_staggered_interp(b, a))
+        
+    tube_rows = int(tube_rows)
+    if tube_rows < 10:
+        if tube_rows < 1:
+            tube_rows = 1
+        if staggered:
+            C2 = Grimson_Nl_staggered[tube_rows]
+        else:
+            C2 = Grimson_Nl_aligned[tube_rows]
+    else:
+        C2 = 1.0
+    Nu = 1.13*Re**m*Pr**(1.0/3.0)*C2*C1
+    return Nu
+
+
+Zukauskas_Czs_low_Re_staggered = [0.8295, 0.8792, 0.9151, 0.9402, 0.957, 0.9677,
+    0.9745, 0.9785, 0.9808, 0.9823, 0.9838, 0.9855, 0.9873, 0.9891, 0.991,
+    0.9929, 0.9948, 0.9967, 0.9987]
+Zukauskas_Czs_high_Re_staggered = [0.6273, 0.7689, 0.8473, 0.8942, 0.9254,
+    0.945, 0.957, 0.9652, 0.9716, 0.9765, 0.9803, 0.9834, 0.9862, 0.989,
+    0.9918, 0.9943, 0.9965, 0.998, 0.9986]
+Zukauskas_Czs_inline = [0.6768, 0.8089, 0.8687, 0.9054, 0.9303, 0.9465, 0.9569,
+    0.9647, 0.9712, 0.9766, 0.9811, 0.9847, 0.9877, 0.99, 0.992, 0.9937,
+    0.9953, 0.9969, 0.9986]
+
+def Zukauskas_tube_row_correction(tube_rows, staggered=True, Re=1E4):
+    r'''Calculates the tube row correction factor according to a graph
+    digitized from [1]_ and also shown in [2]_ for heat transfer across
+    a tube bundle. The correction factors are slightly different for 
+    staggered vs. inline configurations; for the staggered configuration,
+    factors are avaliable separately for `Re` larger or smaller than 1000.
+    
+    This method is a tabular lookup, with values of 1 when the tube row count
+    is 20 or more.
+    
+    Parameters
+    ----------
+    tube_rows : int
+        Number of tube rows per bundle, [-]
+    staggered : bool, optional
+        Whether in the in-line or staggered configuration, [-]
+    Re : float, optional
+        The Reynolds number of flow through the tube bank using the bare tube
+        outer diameter and the minimum flow area through the bundle, [-]
+        
+    Returns
+    -------
+    F : float
+        Tube row count correction factor, [-]
+
+    Notes
+    -----
+    The basis for this method is that an infinitely long tube bank has a 
+    factor of 1; in practice the factor is reached at 20 rows.
+    
+    Examples
+    --------
+    >>> Zukauskas_tube_row_correction(4, staggered=True)
+    0.8942
+    >>> Zukauskas_tube_row_correction(6, staggered=False)
+    0.9465
+
+    References
+    ----------
+    .. [1] Zukauskas, A. Heat transfer from tubes in crossflow. In T.F. Irvine,
+       Jr. and J. P. Hartnett, editors, Advances in Heat Transfer, volume 8,
+       pages 93-160. Academic Press, Inc., New York, 1972.
+    '''
+    tube_rows = int(tube_rows) # sanity for indexing
+    if tube_rows < 1:
+        tube_rows = 1
+    if staggered: # in-line, with a tolerance of 0.05 proximity
+        if tube_rows <= 19:
+            factors = Zukauskas_Czs_low_Re_staggered if Re < 1000 else Zukauskas_Czs_high_Re_staggered
+            correction = factors[tube_rows-1]
+        else:
+            correction = 1.0
+    else:
+        if tube_rows <= 19:
+            correction = Zukauskas_Czs_inline[tube_rows-1]
+        else:
+            correction = 1.0
+    return correction
+
+
+def Nu_Zukauskas_Bejan(Re, Pr, tube_rows, pitch_parallel, pitch_normal,
+                       Pr_wall=None):
+    r'''Calculates Nusselt number for crossflow across a tube bank
+    of tube number n at a specified `Re` according to the method of Zukauskas 
+    [1]_. A fit to graphs from [1]_ published in [2]_ is used for the 
+    correlation. The tube row correction factor is obtained from digitized 
+    graphs from [1]_, and a lookup table was created and is used for speed.
+
+    The formulas are as follows:
+
+    Aligned tube banks:
+
+    .. math::
+        \bar Nu_D = 0.9 C_nRe_D^{0.4}Pr^{0.36}\left(\frac{Pr}{Pr_w}\right)^{0.25}
+        \text{ for } 1 < Re < 100
+
+    .. math::
+        \bar Nu_D = 0.52 C_nRe_D^{0.5}Pr^{0.36}\left(\frac{Pr}{Pr_w}\right)^{0.25}
+        \text{ for } 100 < Re < 1000
+
+    .. math::
+        \bar Nu_D = 0.27 C_nRe_D^{0.63}Pr^{0.36}\left(\frac{Pr}{Pr_w}\right)^{0.25}
+        \text{ for } 1000 < Re < 20000
+
+    .. math::
+        \bar Nu_D = 0.033 C_nRe_D^{0.8}Pr^{0.36}\left(\frac{Pr}{Pr_w}\right)^{0.25}
+        \text{ for } 20000 < Re < 200000
+
+    Staggered tube banks:
+
+    .. math::
+        \bar Nu_D = 1.04C_nRe_D^{0.4}Pr^{0.36}\left(\frac{Pr}{Pr_w}\right)^{0.25}
+        \text{ for } 1 < Re < 500
+
+    .. math::
+        \bar Nu_D = 0.71C_nRe_D^{0.5}Pr^{0.36}\left(\frac{Pr}{Pr_w}\right)^{0.25}
+        \text{ for } 500 < Re < 1000
+
+    .. math::
+        \bar Nu_D = 0.35 C_nRe_D^{0.6}Pr^{0.36}\left(\frac{Pr}{Pr_w}\right)^{0.25}
+        \left(\frac{X_t}{X_l}\right)^{0.2}
+        \text{ for } 1000 < Re < 20000
+
+    .. math::
+        \bar Nu_D = 0.031 C_nRe_D^{0.8}Pr^{0.36}\left(\frac{Pr}{Pr_w}\right)^{0.25}
+        \left(\frac{X_t}{X_l}\right)^{0.2}
+        \text{ for } 20000 < Re < 200000
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number with respect to average (bulk) fluid properties and
+        tube outside diameter, [-]
+    Pr : float
+        Prandtl number with respect to average (bulk) fluid properties, [-]
+    tube_rows : int
+        Number of tube rows per bundle, [-]
+    pitch_parallel : float
+        Distance between tube center along a line parallel to the flow;
+        has been called `longitudinal` pitch, `pp`, `s2`, `SL`, and `p2`, [m]
+    pitch_normal : float
+        Distance between tube centers in a line 90° to the line of flow;
+        has been called the `transverse` pitch, `pn`, `s1`, `ST`, and `p1`, [m]
+    Pr_wall : float, optional
+        Prandtl number at the wall temperature; provide if a correction with  
+        the defaults parameters is desired; otherwise apply the correction
+        elsewhere, [-]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number with respect to tube outside diameter, [-]
+
+    Notes
+    -----
+    If `Pr_wall` is not provided, the Prandtl number correction
+    is not used and left to an outside function.  A Prandtl number exponent of
+    0.25 is recommended in [1]_ for heating and cooling for both liquids and
+    gases.
+
+    Examples
+    --------
+    >>> Nu_Zukauskas_Bejan(Re=1E4, Pr=7., tube_rows=10, pitch_parallel=.05, pitch_normal=.05)
+    175.9202277145248
+
+    References
+    ----------
+    .. [1] Zukauskas, A. Heat transfer from tubes in crossflow. In T.F. Irvine,
+       Jr. and J. P. Hartnett, editors, Advances in Heat Transfer, volume 8,
+       pages 93-160. Academic Press, Inc., New York, 1972.
+    .. [2] Bejan, Adrian. "Convection Heat Transfer", 4E. Hoboken,
+       New Jersey: Wiley, 2013.
+    '''
+    staggered = abs(1 - pitch_normal/pitch_parallel) > 0.05
+
+    f = 1.0
+    if not staggered:
+        if Re < 100:
+            c, m = 0.9, 0.4
+        elif Re < 1000:
+            c, m = 0.52, 0.05
+        elif Re < 2E5:
+            c, m = 0.27, 0.63
+        else:
+            c, m = 0.033, 0.8
+    else:
+        if Re < 500:
+            c, m = 1.04, 0.4
+        elif Re < 1000:
+            c, m = 0.71, 0.5
+        elif Re < 2E5:
+            c, m = 0.35, 0.6
+            f = (pitch_normal/pitch_parallel)**0.2
+        else:
+            c, m = 0.031, 0.8
+            f = (pitch_normal/pitch_parallel)**0.2
+    
+    Nu = c*Re**m*Pr**0.36*f
+    if Pr_wall is not None:
+        Nu*= (Pr/Pr_wall)**0.25
+    Cn = Zukauskas_tube_row_correction(tube_rows, staggered=staggered, Re=Re)
+    Nu *= Cn
+    return Nu
+
+
+# For row counts 3 to 9, inclusive. Lower tube counts shouldn't be considered
+# tube banks. 10 is 1.
+ESDU_73031_F2_inline = [0.8479, 0.8957, 0.9306, 0.9551, 0.9724, 0.9839, 0.9902]
+ESDU_73031_F2_staggered = [0.8593, 0.8984, 0.9268, 0.9482, 0.965, 0.9777, 0.9868]
+
+def ESDU_tube_row_correction(tube_rows, staggered=True, Re=3000, method='Hewitt'):
+    r'''Calculates the tube row correction factor according to [1]_ as shown in
+    [2]_ for heat transfer across a tube bundle. This is also used for finned 
+    bundles. The correction factors are slightly different for staggered vs. 
+    inline configurations.
+    
+    This method is a tabular lookup, with values of 1 when the tube row count
+    is 10 or more.
+    
+    Parameters
+    ----------
+    tube_rows : int
+        Number of tube rows per bundle, [-]
+    staggered : bool, optional
+        Whether in the in-line or staggered configuration, [-]
+    Re : float, optional
+        The Reynolds number of flow through the tube bank using the bare tube
+        outer diameter and the minimum flow area through the bundle, [-]
+    method : str, optional
+        'Hewitt'; this may have another option in the future, [-]
+        
+    Returns
+    -------
+    F2 : float
+        ESDU tube row count correction factor, [-]
+
+    Notes
+    -----
+    In [1]_, for line data, there are two curves given for different Reynolds
+    number ranges. This is not included in [2]_ and only an average curve is 
+    given. This is not implemented here; `Re` is an argument but does not
+    impact the result of this function.
+    
+    For tube counts 1-7, [3]_ claims the factors from [1]_ are on average:
+    [0.65, 0.77, 0.84, 0.9, 0.94, 0.97, 0.99].
+    
+    Examples
+    --------
+    >>> ESDU_tube_row_correction(4, staggered=True)
+    0.8984
+    >>> ESDU_tube_row_correction(6, staggered=False)
+    0.9551
+
+    References
+    ----------
+    .. [1] "Convective Heat Transfer During Crossflow of Fluids Over Plain Tube 
+       Banks." ESDU 73031 (November 1, 1973). 
+    .. [2] Hewitt, G. L. Shires, T. Reg Bott G. F., George L. Shires, and T.
+       R. Bott. Process Heat Transfer. 1st edition. Boca Raton: CRC Press, 
+       1994.
+    .. [3] Rabas, T. J., and J. Taborek. "Survey of Turbulent Forced-Convection
+       Heat Transfer and Pressure Drop Characteristics of Low-Finned Tube Banks
+       in Cross Flow."  Heat Transfer Engineering 8, no. 2 (January 1987): 
+       49-62.
+    '''
+    if method == 'Hewitt':
+        if staggered: # in-line, with a tolerance of 0.05 proximity
+            if tube_rows <= 2:
+                correction = ESDU_73031_F2_staggered[0]
+            elif tube_rows >= 10:
+                correction = 1.0
+            else:
+                correction = ESDU_73031_F2_staggered[tube_rows-3]
+        else:
+            if tube_rows <= 2:
+                correction = ESDU_73031_F2_inline[0]
+            elif tube_rows >= 10:
+                correction = 1.0
+            else:
+                correction = ESDU_73031_F2_inline[tube_rows-3]
+        return correction
+
+
+def ESDU_tube_angle_correction(angle):
+    r'''Calculates the tube bank inclination correction factor according to 
+    [1]_ for heat transfer across a tube bundle. 
+
+    .. math::
+        F_3 = \frac{Nu_{\theta}}{Nu_{\theta=90^{\circ}}} = (\sin(\theta))^{0.6}
+    
+    Parameters
+    ----------
+    angle : float
+        The angle of inclination of the tuba bank with respect to the 
+        longitudinal axis (90° for a straight tube bank)
+        
+    Returns
+    -------
+    F3 : float
+        ESDU tube inclination correction factor, [-]
+
+    Notes
+    -----
+    A curve is given in [1]_ but it is so close the function, it is likely the
+    function is all that is used. [1]_ claims this correction is valid for
+    :math:`100 < Re < 10^{6}`.
+    
+    For angles less than 10°, the problem should be considered internal
+    flow, not flow across a tube bank.
+    
+    Examples
+    --------
+    >>> ESDU_tube_angle_correction(75)
+    0.9794139080247666
+
+    References
+    ----------
+    .. [1] "Convective Heat Transfer During Crossflow of Fluids Over Plain Tube 
+       Banks." ESDU 73031 (November 1, 1973). 
+    '''
+    return sin(radians(angle))**0.6
+
+
+def Nu_ESDU_73031(Re, Pr, tube_rows, pitch_parallel, pitch_normal, 
+                  Pr_wall=None, angle=90.0):
+    r'''Calculates the Nusselt number for crossflow across a tube bank
+    with a specified number of tube rows, at a specified `Re` according to 
+    [1]_, also shown in [2]_.
+    
+    .. math::
+        \text{Nu} = a \text{Re}^m\text{Pr}^{0.34}F_1 F_2
+
+    The constants `a` and `m` come from the following tables:
+    
+    In-line tube banks:
+
+    +---------+-------+-------+
+    | Re      | a     | m     |
+    +=========+=======+=======+
+    | 10-300  | 0.742 | 0.431 |
+    +---------+-------+-------+
+    | 300-2E5 | 0.211 | 0.651 |
+    +---------+-------+-------+
+    | 2E5-2E6 | 0.116 | 0.700 |
+    +---------+-------+-------+
+    
+    Staggered tube banks:
+        
+    +---------+-------+-------+
+    | Re      | a     | m     |
+    +=========+=======+=======+
+    | 10-300  | 1.309 | 0.360 |
+    +---------+-------+-------+
+    | 300-2E5 | 0.273 | 0.635 |
+    +---------+-------+-------+
+    | 2E5-2E6 | 0.124 | 0.700 |
+    +---------+-------+-------+
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number with respect to average (bulk) fluid properties and
+        tube outside diameter, [-]
+    Pr : float
+        Prandtl number with respect to average (bulk) fluid properties, [-]
+    tube_rows : int
+        Number of tube rows per bundle, [-]
+    pitch_parallel : float
+        Distance between tube center along a line parallel to the flow;
+        has been called `longitudinal` pitch, `pp`, `s2`, `SL`, and `p2`, [m]
+    pitch_normal : float
+        Distance between tube centers in a line 90° to the line of flow;
+        has been called the `transverse` pitch, `pn`, `s1`, `ST`, and `p1`, [m]
+    Pr_wall : float, optional
+        Prandtl number at the wall temperature; provide if a correction with  
+        the defaults parameters is desired; otherwise apply the correction
+        elsewhere, [-]
+    angle : float, optional
+        The angle of inclination of the tuba bank with respect to the 
+        longitudinal axis (90° for a straight tube bank)
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number with respect to tube outside diameter, [-]
+
+    Notes
+    -----
+    The tube-row count correction factor `F2` can be disabled by setting `tube_rows`
+    to 10. The property correction factor `F1` can be disabled by not specifiying
+    `Pr_wall`. A Prandtl number exponent of 0.26 is recommended in [1]_ for 
+    heating and cooling for both liquids and gases.
+
+    The pitches are used to determine whhether or not to use data for staggered
+    or inline tube banks.
+    
+    The inline coefficients are valid for a normal pitch to tube diameter ratio
+    from 1.2 to 4; and the staggered ones from 1 to 4. 
+    The overall accuracy of this method is claimed to be 15%.
+    
+    See Also
+    --------
+    ESDU_tube_angle_correction
+    ESDU_tube_row_correction
+    
+    Examples
+    --------
+    >>> Nu_ESDU_73031(Re=1.32E4, Pr=0.71, tube_rows=8, pitch_parallel=.09, 
+    ... pitch_normal=.05)
+    98.2563319140594
+
+    References
+    ----------
+    .. [1] "High-Fin Staggered Tube Banks: Heat Transfer and Pressure Drop for
+       Turbulent Single Phase Gas Flow." ESDU 86022 (October 1, 1986). 
+    .. [2] Hewitt, G. L. Shires, T. Reg Bott G. F., George L. Shires, and T.
+       R. Bott. Process Heat Transfer. 1st edition. Boca Raton: CRC Press, 
+       1994.
+    '''
+    staggered = abs(1 - pitch_normal/pitch_parallel) > 0.05
+    if staggered:
+        if Re <= 300:
+            a, m = 1.309, 0.360
+        elif Re <= 2E5:
+            a, m = 0.273, 0.635
+        else:
+            a, m = 0.124, 0.700
+    else:
+        if Re <= 300:
+            a, m = 0.742, 0.431
+        elif Re <= 2E5:
+            a, m = 0.211, 0.651
+        else:
+            a, m = 0.116, 0.700
+    
+    F2 = ESDU_tube_row_correction(tube_rows=tube_rows, staggered=staggered)
+    F3 = ESDU_tube_angle_correction(angle)
+    if Pr_wall is not None:
+        F1 = wall_factor(Pr=Pr, Pr_wall=Pr_wall, Pr_heating_coeff=0.26, 
+                         Pr_cooling_coeff=0.26, 
+                         property_option=WALL_FACTOR_PRANDTL)
+    else:
+        F1 = 1.0
+    return a*Re**m*Pr**0.34*F1*F2*F3
+
+
+def Nu_HEDH_tube_bank(Re, Pr, Do, tube_rows, pitch_parallel, pitch_normal):
+    r'''Calculates Nusselt number for crossflow across a tube bank
+    of tube rows at a specified `Re`, `Pr`, and `D` using the Heat Exchanger
+    Design Handbook (HEDH) methodology, presented in [1]_.
+
+    .. math::
+        Nu = Nu_m f_A f_N
+
+    .. math::
+        Nu_m = 0.3 + \sqrt{Nu_{m,lam}^2 + Nu_{m,turb}^2}
+
+    .. math::
+        Nu_{m,turb} = \frac{0.037Re^{0.8} Pr}{1 + 2.443Re^{-0.1}(Pr^{2/3} -1)}
+
+    .. math::
+        Nu_{m,lam} = 0.664Re^{0.5} Pr^{1/3}
+
+    .. math::
+        \psi = 1 - \frac{\pi}{4a} \text{ if b >= 1}
+
+    .. math::
+        \psi = 1 - \frac{\pi}{4ab} \text{if b < 1}
+
+    .. math::
+        f_A = 1 + \frac{0.7}{\psi^{1.5}}\frac{b/a-0.3}{(b/a) + 0.7)^2} \text{if inline}
+
+    .. math::
+        f_A = 1 + \frac{2}{3b} \text{elif partly staggered}
+
+    .. math::
+        f_N = \frac{1 + (n-1)}{n}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number with respect to average (bulk) fluid properties and
+        tube outside diameter, [-]
+    Pr : float
+        Prandtl number with respect to average (bulk) fluid properties, [-]
+    Do : float
+        Tube outer diameter, [m]
+    tube_rows : int
+        Number of tube rows per bundle, [-]
+    pitch_parallel : float
+        Distance between tube center along a line parallel to the flow;
+        has been called `longitudinal` pitch, `pp`, `s2`, `SL`, and `p2`, [m]
+    pitch_normal : float
+        Distance between tube centers in a line 90° to the line of flow;
+        has been called the `transverse` pitch, `pn`, `s1`, `ST`, and `p1`, [m]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number with respect to tube outside diameter, [-]
+
+    Notes
+    -----
+    Prandtl number correction left to an outside function, although a set
+    of coefficients were specified in [1]_ because they depent on whether 
+    heating or cooling is happening, and for gases, use a temperature ratio
+    instaed of Prandtl number.
+
+    The claimed range of validity of these expressions is :math:`10 < Re < 1E5`
+    and :math:`0.6 < Pr < 1000`.
+
+    Examples
+    --------
+    >>> Nu_HEDH_tube_bank(Re=1E4, Pr=7., tube_rows=10, pitch_normal=.05, 
+    ... pitch_parallel=.05, Do=.03)
+    382.4636554404698
+    
+    Example 3.11 in [2]_:
+    
+    >>> Nu_HEDH_tube_bank(Re=10263.37, Pr=.708, tube_rows=11, pitch_normal=.05, 
+    ... pitch_parallel=.05, Do=.025)
+    149.18735251017594
+
+    References
+    ----------
+    .. [1] Schlunder, Ernst U, and International Center for Heat and Mass
+       Transfer. Heat Exchanger Design Handbook. Washington:
+       Hemisphere Pub. Corp., 1987.
+    .. [2] Baehr, Hans Dieter, and Karl Stephan. Heat and Mass Transfer.
+       Springer, 2013.
+    '''
+    staggered = abs(1 - pitch_normal/pitch_parallel) > 0.05
+    a = pitch_normal/Do
+    b = pitch_parallel/Do
+    if b >= 1:
+        voidage = 1. - pi/(4.0*a)
+    else:
+        voidage = 1. - pi/(4.0*a*b)
+    Re = Re/voidage
+    Nu_laminar = 0.664*Re**0.5*Pr**(1.0/3.)
+    Nu_turbulent = 0.037*Re**0.8*Pr/(1. + 2.443*Re**-0.1*(Pr**(2/3.) - 1.0))
+    Nu = 0.3 + (Nu_laminar*Nu_laminar + Nu_turbulent*Nu_turbulent)**0.5
+    if not staggered:
+        fA = 1.0 + 0.7/voidage**1.5*(b/a - 0.3)/(b/a + 0.7)**2
+    else:
+        fA = 1.0 + 2./(3.0*b)
+        # a further partly staggered tube bank correlation exists, using another pitch
+    if tube_rows < 10:
+        fn = (1.0 + (n - 1.0))/tube_rows
+    else:
+        fn = 1.0
+    Nu = Nu*fn*fA
+    return Nu
 
 _Kern_dP_Res = np.array([9.9524, 11.0349, 12.0786, 13.0504, 14.0121, 15.0431, 16.1511, 17.1176, 17.9105, 18.9822,
     19.9879, 21.0484, 22.0217, 23.1893, 24.8973, 26.0495, 27.7862, 29.835, 31.8252, 33.9506, 35.9822, 38.3852,
@@ -420,7 +1095,6 @@ def dP_Zukauskas(Re, n, ST, SL, D, rho, Vmax):
         x = float(dP_staggered_correction(parameter, Re))
 
     return n*x*f*rho/2*Vmax**2
-
 
 Bell_baffle_configuration_Fcs = np.array([0, 0.0138889, 0.0277778, 0.0416667, 0.0538194, 0.0659722, 0.100694, 0.114583,
     0.126736, 0.140625, 0.152778, 0.166667, 0.178819, 0.192708, 0.215278, 0.227431, 0.241319, 0.255208,

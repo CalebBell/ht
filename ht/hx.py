@@ -4160,7 +4160,7 @@ HEDH_shells = [round(i*inch, 6) for i in HEDH_shells_imperial]
 HEDH_pitches = {0.25: (1.25, 1.5), 0.375: (1.330, 1.420),
 0.5: (1.250, 1.310, 1.380), 0.625: (1.250, 1.300, 1.400),
 0.75: (1.250, 1.330, 1.420, 1.500), 1.: (1.250, 1.312, 1.375),
-1.25: (1.250), 1.5: (1.250), 2.: (1.250)}
+1.25: (1.250,), 1.5: (1.250,), 2.: (1.250,)}
 
 def DBundle_min(Do):
     r'''Very roughly, determines a good choice of shell diameter for a given
@@ -6433,8 +6433,27 @@ def size_bundle_from_tubecount(N, Do, pitch, Ntp=1, angle=30, Method=None,
 
 
 
-TEMA_heads = {'A': 'Removable Channel and Cover', 'B': 'Bonnet (Integral Cover)', 'C': 'Integral With Tubesheet Removable Cover', 'N': 'Channel Integral With Tubesheet and Removable Cover', 'D': 'Special High-Pressure Closures'}
-TEMA_shells = {'E': 'One-Pass Shell', 'F': 'Two-Pass Shell with Longitudinal Baffle', 'G': 'Split Flow', 'H': 'Double Split Flow', 'J': 'Divided Flow', 'K': 'Kettle-Type Reboiler',  'X': 'Cross Flow'}
-TEMA_rears = {'L': 'Fixed Tube Sheet; Like "A" Stationary Head', 'M': 'Fixed Tube Sheet; Like "B" Stationary Head', 'N': 'Fixed Tube Sheet; Like "C" Stationary Head', 'P': 'Outside Packed Floating Head', 'S': 'Floating Head with Backing Device', 'T': 'Pull-Through Floating Head', 'U': 'U-Tube Bundle', 'W': 'Externally Sealed Floating Tubesheet'}
-TEMA_services = {'B': 'Chemical', 'R': 'Refinery', 'C': 'General'}
-baffle_types = ['segmental', 'double segmental', 'triple segmental', 'disk and doughnut', 'no tubes in window', 'orifice', 'rod']
+TEMA_heads = {'A': 'Removable Channel and Cover', 
+              'B': 'Bonnet (Integral Cover)', 
+              'C': 'Integral With Tubesheet Removable Cover',
+              'N': 'Channel Integral With Tubesheet and Removable Cover', 
+              'D': 'Special High-Pressure Closures'}
+TEMA_shells = {'E': 'One-Pass Shell',
+               'F': 'Two-Pass Shell with Longitudinal Baffle', 
+               'G': 'Split Flow', 'H': 'Double Split Flow', 
+               'J': 'Divided Flow',
+               'K': 'Kettle-Type Reboiler',  
+               'X': 'Cross Flow'}
+TEMA_rears = {'L': 'Fixed Tube Sheet; Like "A" Stationary Head',
+              'M': 'Fixed Tube Sheet; Like "B" Stationary Head', 
+              'N': 'Fixed Tube Sheet; Like "C" Stationary Head', 
+              'P': 'Outside Packed Floating Head', 
+              'S': 'Floating Head with Backing Device',
+              'T': 'Pull-Through Floating Head', 
+              'U': 'U-Tube Bundle',
+              'W': 'Externally Sealed Floating Tubesheet'}
+TEMA_services = {'B': 'Chemical',
+                 'R': 'Refinery', 
+                 'C': 'General'}
+baffle_types = ['segmental', 'double segmental', 'triple segmental', 
+                'disk and doughnut', 'no tubes in window', 'orifice', 'rod']

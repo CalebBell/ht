@@ -22,11 +22,18 @@ SOFTWARE.'''
 
 from __future__ import division
 from math import atan, sin, log10
-from scipy.constants import hp, minute
-from ht.core import LMTD
+from scipy.constants import hp, minute, inch, foot
+from fluids.geometry import AirCooledExchanger
+from fluids import Prandtl, Reynolds
+from ht.core import LMTD, fin_efficiency_Kern_Kraus, wall_factor, WALL_FACTOR_PRANDTL
+from ht.conv_tube_bank import ESDU_tube_row_correction
+
+
 
 __all__ = ['Ft_aircooler', 'air_cooler_noise_GPSA', 
-           'air_cooler_noise_Mukherjee']
+           'air_cooler_noise_Mukherjee', 'h_Briggs_Young',
+           'h_ESDU_high_fin', 'h_ESDU_low_fin', 'h_Ganguli_VDI', 'dP_ESDU_high_fin',
+           'dP_ESDU_low_fin']
 
 fin_densities_inch = [7, 8, 9, 10, 11] # fins/inch
 fin_densities = [round(i/0.0254, 1) for i in fin_densities_inch]
@@ -285,3 +292,741 @@ def air_cooler_noise_Mukherjee(tip_speed, power, fan_diameter, induced=False):
     if induced:
         noise -= 3.0
     return noise
+
+
+def h_Briggs_Young(m, A, A_min, A_increase, A_fin, A_tube_showing, 
+                   tube_diameter, fin_diameter, fin_thickness, bare_length, 
+                   rho, Cp, mu, k, k_fin):
+    r'''Calculates the air side heat transfer coefficient for an air cooler
+    or other finned tube bundle with the formulas of Briggs and Young [1], [2]_
+    [3]_.
+    
+    .. math::
+        Nu = 0.134Re^{0.681} Pr^{0.33}\left(\frac{S}{h}\right)^{0.2}
+        \left(\frac{S}{b}\right)^{0.1134}
+        
+    Parameters
+    ----------
+    m : float
+        Mass flow rate of air across the tube bank, [kg/s]
+    A : float
+        Surface area of combined finned and non-finned area exposed for heat
+        transfer, [m^2]
+    A_min : float
+        Minimum air flow area, [m^2]
+    A_increase : float
+        Ratio of actual surface area to bare tube surface area
+        :math:`A_{increase} = \frac{A_{tube}}{A_{bare, total/tube}}`, [-]
+    A_fin : float
+        Surface area of all fins in the bundle, [m^2]
+    A_tube_showing : float
+        Area of the bare tube which is exposed in the bundle, [m^2]
+    tube_diameter : float
+        Diameter of the bare tube, [m]
+    fin_diameter : float
+        Outer diameter of each tube after including the fin on both sides,
+        [m]
+    fin_thickness : float
+        Thickness of the fins, [m]
+    bare_length : float
+        Length of bare tube between two fins 
+        :math:`\text{bare length} = \text{fin interval} - t_{fin}`, [m]
+    rho : float
+        Average (bulk) density of air across the tube bank, [kg/m^3]
+    Cp : float
+        Average (bulk) heat capacity of air across the tube bank, [J/kg/K]
+    mu : float
+        Average (bulk) viscosity of air across the tube bank, [Pa*s]
+    k : float
+        Average (bulk) thermal conductivity of air across the tube bank, 
+        [W/m/K]
+    k_fin : float
+        Thermal conductivity of the fin, [W/m/K]
+        
+    Returns
+    -------
+    h_bare_tube_basis : float
+        Air side heat transfer coefficient on a bare-tube surface area as if 
+        there were no fins present basis, [W/K/m^2]
+
+    Notes
+    -----
+    The limits on this equation are :math:`1000 < Re < `8000`, 
+    11.13 mm :math:`< D_o < ` 40.89 mm, 1.42 mm < fin height < 16.57 mm,
+    0.33 mm < fin thickness < 2.02 mm, 1.30 mm < fin pitch < 4.06 mm, and 
+    24.49 mm < normal pitch < 111 mm.
+    
+    Examples
+    --------
+    >>> AC = AirCooledExchanger(tube_rows=4, tube_passes=4, tubes_per_row=20, tube_length=3, 
+    ... tube_diameter=1*inch, fin_thickness=0.000406, fin_density=1/0.002309,
+    ... pitch_normal=.06033, pitch_parallel=.05207,
+    ... fin_height=0.0159, tube_thickness=(.0254-.0186)/2,
+    ... bundles_per_bay=1, parallel_bays=1, corbels=True)
+    
+    >>> h_Briggs_Young(m=21.56, A=AC.A, A_min=AC.A_min, A_increase=AC.A_increase, A_fin=AC.A_fin,
+    ... A_tube_showing=AC.A_tube_showing, tube_diameter=AC.tube_diameter,
+    ... fin_diameter=AC.fin_diameter, bare_length=AC.bare_length,
+    ... fin_thickness=AC.fin_thickness,
+    ... rho=1.161, Cp=1007., mu=1.85E-5, k=0.0263, k_fin=205)
+    1422.8722403237716
+
+    References
+    ----------
+    .. [1] Briggs, D.E., and Young, E.H., 1963, "Convection Heat Transfer and
+       Pressure Drop of Air Flowing across Triangular Banks of Finned Tubes",
+       Chemical Engineering Progress Symp., Series 41, No. 59. Chem. Eng. Prog.
+       Symp. Series No. 41, "Heat Transfer - Houston".
+    .. [2] Mukherjee, R., and Geoffrey Hewitt. Practical Thermal Design of 
+       Air-Cooled Heat Exchangers. New York: Begell House Publishers Inc.,U.S.,
+       2007.
+    .. [3] Kroger, Detlev. Air-Cooled Heat Exchangers and Cooling Towers: 
+       Thermal-Flow Performance Evaluation and Design, Vol. 1. Tulsa, Okl:
+       PennWell Corp., 2004.
+    '''
+    fin_height = 0.5*(fin_diameter - tube_diameter)
+    
+    V_max = m/(A_min*rho)
+    
+    Re = Reynolds(V=V_max, D=tube_diameter, rho=rho, mu=mu)
+    Pr = Prandtl(Cp=Cp, mu=mu, k=k)
+
+    Nu = 0.134*Re**0.681*Pr**(1/3.)*(bare_length/fin_height)**0.2*(bare_length/fin_thickness)**0.1134
+
+    h = k/tube_diameter*Nu
+    efficiency = fin_efficiency_Kern_Kraus(Do=tube_diameter, D_fin=fin_diameter,
+                                           t_fin=fin_thickness, k_fin=k_fin, h=h)
+    h_total_area_basis = (efficiency*A_fin + A_tube_showing)/A*h
+    h_bare_tube_basis = h_total_area_basis*A_increase
+        
+    return h_bare_tube_basis
+
+
+def h_ESDU_high_fin(m, A, A_min, A_increase, A_fin, A_tube_showing, 
+                    tube_diameter, fin_diameter, fin_thickness, bare_length,
+                    pitch_parallel, pitch_normal, tube_rows, 
+                    rho, Cp, mu, k, k_fin, Pr_wall=None):
+    r'''Calculates the air side heat transfer coefficient for an air cooler
+    or other finned tube bundle with the formulas of [2]_ as presented in [1]_.
+
+    .. math::
+        Nu = 0.242 Re^{0.658} \left(\frac{\text{bare length}}
+        {\text{fin height}}\right)^{0.297}
+        \left(\frac{P_1}{P_2}\right)^{-0.091} P_r^{1/3}\cdot F_1\cdot F_2
+                
+    .. math::
+        h_{A,total} = \frac{\eta A_{fin} + A_{bare, showing}}{A_{total}} h
+        
+    .. math::
+        h_{bare,total} = A_{increase} h_{A,total}
+
+    Parameters
+    ----------
+    m : float
+        Mass flow rate of air across the tube bank, [kg/s]
+    A : float
+        Surface area of combined finned and non-finned area exposed for heat
+        transfer, [m^2]
+    A_min : float
+        Minimum air flow area, [m^2]
+    A_increase : float
+        Ratio of actual surface area to bare tube surface area
+        :math:`A_{increase} = \frac{A_{tube}}{A_{bare, total/tube}}`, [-]
+    A_fin : float
+        Surface area of all fins in the bundle, [m^2]
+    A_tube_showing : float
+        Area of the bare tube which is exposed in the bundle, [m^2]
+    tube_diameter : float
+        Diameter of the bare tube, [m]
+    fin_diameter : float
+        Outer diameter of each tube after including the fin on both sides,
+        [m]
+    fin_thickness : float
+        Thickness of the fins, [m]
+    bare_length : float
+        Length of bare tube between two fins 
+        :math:`\text{bare length} = \text{fin interval} - t_{fin}`, [m]
+    pitch_parallel : float
+        Distance between tube center along a line parallel to the flow;
+        has been called `longitudinal` pitch, `pp`, `s2`, `SL`, and `p2`, [m]
+    pitch_normal : float
+        Distance between tube centers in a line 90° to the line of flow;
+        has been called the `transverse` pitch, `pn`, `s1`, `ST`, and `p1`, [m]
+    tube_rows : int
+        Number of tube rows per bundle, [-]
+    rho : float
+        Average (bulk) density of air across the tube bank, [kg/m^3]
+    Cp : float
+        Average (bulk) heat capacity of air across the tube bank, [J/kg/K]
+    mu : float
+        Average (bulk) viscosity of air across the tube bank, [Pa*s]
+    k : float
+        Average (bulk) thermal conductivity of air across the tube bank, 
+        [W/m/K]
+    k_fin : float
+        Thermal conductivity of the fin, [W/m/K]
+    Pr_wall : float, optional
+        Prandtl number at the wall temperature; provide if a correction with  
+        the defaults parameters is desired; otherwise apply the correction
+        elsewhere, [-]
+
+    Returns
+    -------
+    h_bare_tube_basis : float
+        Air side heat transfer coefficient on a bare-tube surface area as if 
+        there were no fins present basis, [W/K/m^2]
+
+    Notes
+    -----
+    The tube-row count correction factor is 1 for four or more rows, 0.92 for
+    three rows, 0.84 for two rows, and 0.76 for one row according to [1]_.
+    
+    The property correction factor can be disabled by not specifiying
+    `Pr_wall`. A Prandtl number exponent of 0.26 is recommended in [1]_ for 
+    heating and cooling for both liquids and gases.
+    
+    Examples
+    --------
+    >>> AC = AirCooledExchanger(tube_rows=4, tube_passes=4, tubes_per_row=20, tube_length=3, 
+    ... tube_diameter=1*inch, fin_thickness=0.000406, fin_density=1/0.002309,
+    ... pitch_normal=.06033, pitch_parallel=.05207,
+    ... fin_height=0.0159, tube_thickness=(.0254-.0186)/2,
+    ... bundles_per_bay=1, parallel_bays=1, corbels=True)
+    
+    >>> h_ESDU_high_fin(m=21.56, A=AC.A, A_min=AC.A_min, A_increase=AC.A_increase, A_fin=AC.A_fin,
+    ... A_tube_showing=AC.A_tube_showing, tube_diameter=AC.tube_diameter,
+    ... fin_diameter=AC.fin_diameter, bare_length=AC.bare_length,
+    ... fin_thickness=AC.fin_thickness, tube_rows=AC.tube_rows,
+    ... pitch_normal=AC.pitch_normal, pitch_parallel=AC.pitch_parallel, 
+    ... rho=1.161, Cp=1007., mu=1.85E-5, k=0.0263, k_fin=205)
+    1390.888918049757
+
+    References
+    ----------
+    .. [1] Hewitt, G. L. Shires, T. Reg Bott G. F., George L. Shires, and T.
+       R. Bott. Process Heat Transfer. 1st edition. Boca Raton: CRC Press, 
+       1994.
+    .. [2] "High-Fin Staggered Tube Banks: Heat Transfer and Pressure Drop for
+       Turbulent Single Phase Gas Flow." ESDU 86022 (October 1, 1986). 
+    .. [3] Rabas, T. J., and J. Taborek. "Survey of Turbulent Forced-Convection
+       Heat Transfer and Pressure Drop Characteristics of Low-Finned Tube Banks
+       in Cross Flow."  Heat Transfer Engineering 8, no. 2 (January 1987): 
+       49-62.
+    '''
+    fin_height = 0.5*(fin_diameter - tube_diameter)
+
+    V_max = m/(A_min*rho)
+    Re = Reynolds(V=V_max, D=tube_diameter, rho=rho, mu=mu)
+    Pr = Prandtl(Cp=Cp, mu=mu, k=k)
+    Nu = 0.242*Re**0.658*(bare_length/fin_height)**0.297*(pitch_normal/pitch_parallel)**-0.091*Pr**(1/3.)
+
+    if tube_rows < 2:
+        F2 = 0.76
+    elif tube_rows < 3:
+        F2 = 0.84
+    elif tube_rows < 4:
+        F2 = 0.92
+    else:
+        F2 = 1.0
+
+    Nu *= F2
+    if Pr_wall is not None:
+        F1 = wall_factor(Pr=Pr, Pr_wall=Pr_wall, Pr_heating_coeff=0.26, 
+                         Pr_cooling_coeff=0.26, 
+                         property_option=WALL_FACTOR_PRANDTL)
+        Nu *= F1
+
+    h = k/tube_diameter*Nu
+    efficiency = fin_efficiency_Kern_Kraus(Do=tube_diameter, D_fin=fin_diameter,
+                                           t_fin=fin_thickness, k_fin=k_fin, h=h)
+
+    h_total_area_basis = (efficiency*A_fin + A_tube_showing)/A*h
+    h_bare_tube_basis =  h_total_area_basis*A_increase
+    return h_bare_tube_basis
+
+
+def h_ESDU_low_fin(m, A, A_min, A_increase, A_fin,
+                   A_tube_showing, tube_diameter,
+                   fin_diameter, fin_thickness, bare_length,
+                   pitch_parallel, pitch_normal, tube_rows,
+                   rho, Cp, mu, k, k_fin, Pr_wall=None):
+    r'''Calculates the air side heat transfer coefficient for an air cooler
+    or other finned tube bundle with low fins using the formulas of [1]_ as
+    presented in [2]_ (and also [3]_).
+    
+    .. math::
+        Nu = 0.183Re^{0.7} \left(\frac{\text{bare length}}{\text{fin height}}
+        \right)^{0.36}\left(\frac{p_1}{D_{o}}\right)^{0.06}
+        \left(\frac{\text{fin height}}{D_o}\right)^{0.11}
+        Pr^{0.36} \cdot F_1\cdot F_2
+        
+    .. math::
+        h_{A,total} = \frac{\eta A_{fin} + A_{bare, showing}}{A_{total}} h
+        
+    .. math::
+        h_{bare,total} = A_{increase} h_{A,total}
+        
+    Parameters
+    ----------
+    m : float
+        Mass flow rate of air across the tube bank, [kg/s]
+    A : float
+        Surface area of combined finned and non-finned area exposed for heat
+        transfer, [m^2]
+    A_min : float
+        Minimum air flow area, [m^2]
+    A_increase : float
+        Ratio of actual surface area to bare tube surface area
+        :math:`A_{increase} = \frac{A_{tube}}{A_{bare, total/tube}}`, [-]
+    A_fin : float
+        Surface area of all fins in the bundle, [m^2]
+    A_tube_showing : float
+        Area of the bare tube which is exposed in the bundle, [m^2]
+    tube_diameter : float
+        Diameter of the bare tube, [m]
+    fin_diameter : float
+        Outer diameter of each tube after including the fin on both sides,
+        [m]
+    fin_thickness : float
+        Thickness of the fins, [m]
+    bare_length : float
+        Length of bare tube between two fins 
+        :math:`\text{bare length} = \text{fin interval} - t_{fin}`, [m]
+    pitch_parallel : float
+        Distance between tube center along a line parallel to the flow;
+        has been called `longitudinal` pitch, `pp`, `s2`, `SL`, and `p2`, [m]
+    pitch_normal : float
+        Distance between tube centers in a line 90° to the line of flow;
+        has been called the `transverse` pitch, `pn`, `s1`, `ST`, and `p1`, [m]
+    tube_rows : int
+        Number of tube rows per bundle, [-]
+    rho : float
+        Average (bulk) density of air across the tube bank, [kg/m^3]
+    Cp : float
+        Average (bulk) heat capacity of air across the tube bank, [J/kg/K]
+    mu : float
+        Average (bulk) viscosity of air across the tube bank, [Pa*s]
+    k : float
+        Average (bulk) thermal conductivity of air across the tube bank, 
+        [W/m/K]
+    k_fin : float
+        Thermal conductivity of the fin, [W/m/K]
+    Pr_wall : float, optional
+        Prandtl number at the wall temperature; provide if a correction with  
+        the defaults parameters is desired; otherwise apply the correction
+        elsewhere, [-]
+        
+    Returns
+    -------
+    h_bare_tube_basis : float
+        Air side heat transfer coefficient on a bare-tube surface area as if 
+        there were no fins present basis, [W/K/m^2]
+
+    Notes
+    -----
+    The tube-row count correction factor `F2` can be disabled by setting `tube_rows`
+    to 10. The property correction factor `F1` can be disabled by not specifiying
+    `Pr_wall`. A Prandtl number exponent of 0.26 is recommended in [1]_ for 
+    heating and cooling for both liquids and gases.
+    
+    There is a third correction factor in [1]_ for tube angles not 30, 45, or
+    60 degrees, but it is not fully explained and it is not shown in [2]_. 
+    Another correction factor is in [2]_ for flow at an angle; however it would
+    not make sense to apply it to finned tube banks due to the blockage by the
+    fins.
+    
+    Examples
+    --------
+    >>> AC = AirCooledExchanger(tube_rows=4, tube_passes=4, tubes_per_row=8, tube_length=0.5, 
+    ... tube_diameter=0.0164, fin_thickness=0.001, fin_density=1/0.003,
+    ... pitch_normal=0.0313, pitch_parallel=0.0271, fin_height=0.0041, corbels=True)
+    
+    >>> h_ESDU_low_fin(m=0.914, A=AC.A, A_min=AC.A_min, A_increase=AC.A_increase, A_fin=AC.A_fin,
+    ... A_tube_showing=AC.A_tube_showing, tube_diameter=AC.tube_diameter,
+    ... fin_diameter=AC.fin_diameter, bare_length=AC.bare_length,
+    ... fin_thickness=AC.fin_thickness, tube_rows=AC.tube_rows,
+    ... pitch_normal=AC.pitch_normal, pitch_parallel=AC.pitch_parallel, 
+    ... rho=1.217, Cp=1007., mu=1.8E-5, k=0.0253, k_fin=15)
+    553.853836470948
+
+    References
+    ----------
+    .. [1] Hewitt, G. L. Shires, T. Reg Bott G. F., George L. Shires, and T.
+       R. Bott. Process Heat Transfer. 1st edition. Boca Raton: CRC Press, 
+       1994.
+    .. [2] "High-Fin Staggered Tube Banks: Heat Transfer and Pressure Drop for
+       Turbulent Single Phase Gas Flow." ESDU 86022 (October 1, 1986). 
+    .. [3] Rabas, T. J., and J. Taborek. "Survey of Turbulent Forced-Convection
+       Heat Transfer and Pressure Drop Characteristics of Low-Finned Tube Banks
+       in Cross Flow."  Heat Transfer Engineering 8, no. 2 (January 1987): 
+       49-62.
+    '''
+    fin_height = 0.5*(fin_diameter - tube_diameter)
+
+    V_max = m/(A_min*rho)
+    Re = Reynolds(V=V_max, D=tube_diameter, rho=rho, mu=mu)
+    Pr = Prandtl(Cp=Cp, mu=mu, k=k)
+    Nu = (0.183*Re**0.7*(bare_length/fin_height)**0.36
+          *(pitch_normal/fin_diameter)**0.06
+          *(fin_height/fin_diameter)**0.11*Pr**0.36)
+    
+    staggered = abs(1 - pitch_normal/pitch_parallel) > 0.05
+    F2 = ESDU_tube_row_correction(tube_rows=tube_rows, staggered=staggered)
+    Nu *= F2
+    if Pr_wall is not None:
+        F1 = wall_factor(Pr=Pr, Pr_wall=Pr_wall, Pr_heating_coeff=0.26, 
+                         Pr_cooling_coeff=0.26, 
+                         property_option=WALL_FACTOR_PRANDTL)
+        Nu *= F1
+    
+    h = k/tube_diameter*Nu
+    efficiency = fin_efficiency_Kern_Kraus(Do=tube_diameter, 
+                                           D_fin=fin_diameter, 
+                                           t_fin=fin_thickness, 
+                                           k_fin=k_fin, h=h)
+    h_total_area_basis = (efficiency*A_fin + A_tube_showing)/A*h
+    h_bare_tube_basis = h_total_area_basis*A_increase
+    return h_bare_tube_basis
+
+
+def h_Ganguli_VDI(m, A, A_min, A_increase, A_fin,
+                  A_tube_showing, tube_diameter,
+                  fin_diameter, fin_thickness, bare_length,
+                  pitch_parallel, pitch_normal, tube_rows,
+                  rho, Cp, mu, k, k_fin):
+    r'''Calculates the air side heat transfer coefficient for an air cooler
+    or other finned tube bundle with the formulas of [1]_ as modified in [2]_.
+    
+    Inline:
+        
+    .. math::
+        Nu_d = 0.22Re_d^{0.6}\left(\frac{A}{A_{tube,only}}\right)^{-0.15}Pr^{1/3}
+        
+    Staggered:
+        Nu_d = 0.38 Re_d^{0.6}\left(\frac{A}{A_{tube,only}}\right)^{-0.15}Pr^{1/3}
+            
+    Parameters
+    ----------
+    m : float
+        Mass flow rate of air across the tube bank, [kg/s]
+    A : float
+        Surface area of combined finned and non-finned area exposed for heat
+        transfer, [m^2]
+    A_min : float
+        Minimum air flow area, [m^2]
+    A_increase : float
+        Ratio of actual surface area to bare tube surface area
+        :math:`A_{increase} = \frac{A_{tube}}{A_{bare, total/tube}}`, [-]
+    A_fin : float
+        Surface area of all fins in the bundle, [m^2]
+    A_tube_showing : float
+        Area of the bare tube which is exposed in the bundle, [m^2]
+    tube_diameter : float
+        Diameter of the bare tube, [m]
+    fin_diameter : float
+        Outer diameter of each tube after including the fin on both sides,
+        [m]
+    fin_thickness : float
+        Thickness of the fins, [m]
+    bare_length : float
+        Length of bare tube between two fins 
+        :math:`\text{bare length} = \text{fin interval} - t_{fin}`, [m]
+    pitch_parallel : float
+        Distance between tube center along a line parallel to the flow;
+        has been called `longitudinal` pitch, `pp`, `s2`, `SL`, and `p2`, [m]
+    pitch_normal : float
+        Distance between tube centers in a line 90° to the line of flow;
+        has been called the `transverse` pitch, `pn`, `s1`, `ST`, and `p1`, [m]
+    tube_rows : int
+        Number of tube rows per bundle, [-]
+    rho : float
+        Average (bulk) density of air across the tube bank, [kg/m^3]
+    Cp : float
+        Average (bulk) heat capacity of air across the tube bank, [J/kg/K]
+    mu : float
+        Average (bulk) viscosity of air across the tube bank, [Pa*s]
+    k : float
+        Average (bulk) thermal conductivity of air across the tube bank, 
+        [W/m/K]
+    k_fin : float
+        Thermal conductivity of the fin, [W/m/K]
+        
+    Returns
+    -------
+    h_bare_tube_basis : float
+        Air side heat transfer coefficient on a bare-tube surface area as if 
+        there were no fins present basis, [W/K/m^2]
+
+    Notes
+    -----
+    The VDI modifications were developed in comparison with HTFS and HTRI data
+    according to [2]_.
+    
+    For cases where the tube row count is less than four, the coefficients are
+    modified in [2]_. For the inline case, 0.2 replaces 0.22. For the stagered
+    cases, the coefficient is 0.2, 0.33, 0.36 for 1, 2, or 3 tube rows 
+    respectively.
+    
+    The model is also showin in [4]_.
+    
+    Examples
+    --------
+    Example 12.1 in [3]_:
+    
+    >>> AC = AirCooledExchanger(tube_rows=4, tube_passes=4, tubes_per_row=56, tube_length=36*foot, 
+    ... tube_diameter=1*inch, fin_thickness=0.013*inch, fin_density=10/inch,
+    ... angle=30, pitch_normal=2.5*inch, fin_height=0.625*inch, corbels=True)
+
+    >>> h_Ganguli_VDI(m=130.70315, A=AC.A, A_min=AC.A_min, A_increase=AC.A_increase, A_fin=AC.A_fin,
+    ... A_tube_showing=AC.A_tube_showing, tube_diameter=AC.tube_diameter,
+    ... fin_diameter=AC.fin_diameter, bare_length=AC.bare_length,
+    ... fin_thickness=AC.fin_thickness, tube_rows=AC.tube_rows,
+    ... pitch_parallel=AC.pitch_parallel, pitch_normal=AC.pitch_normal,
+    ... rho=1.2013848, Cp=1009.0188, mu=1.9304793e-05, k=0.027864828, k_fin=238)
+    969.2850818578595
+    
+    References
+    ----------
+    .. [1] Ganguli, A., S. S. Tung, and J. Taborek. "Parametric Study of
+       Air-Cooled Heat Exchanger Finned Tube Geometry." In AIChE Symposium 
+       Series, 81:122-28, 1985.
+    .. [2] Gesellschaft, V. D. I., ed. VDI Heat Atlas. 2nd edition.
+       Berlin; New York:: Springer, 2010.
+    .. [3] Serth, Robert W., and Thomas Lestina. Process Heat Transfer: 
+       Principles, Applications and Rules of Thumb. Academic Press, 2014.
+    .. [4] Kroger, Detlev. Air-Cooled Heat Exchangers and Cooling Towers: 
+       Thermal-Flow Performance Evaluation and Design, Vol. 1. Tulsa, Okl:
+       PennWell Corp., 2004.
+    '''
+    V_max = m/(A_min*rho)
+
+    Re = Reynolds(V=V_max, D=tube_diameter, rho=rho, mu=mu)
+    Pr = Prandtl(Cp=Cp, mu=mu, k=k)
+
+    if abs(1 - pitch_normal/pitch_parallel) < 0.05: # in-line, with a tolerance of 0.05 proximity
+        if tube_rows < 4:
+            coeff = 0.2
+        else:
+            coeff = 0.22
+    else: # staggered
+        if tube_rows == 1:
+            coeff = 0.2
+        elif tube_rows == 2:
+            coeff = 0.33
+        elif tube_rows == 3:
+            coeff = 0.36
+        else:
+            coeff = 0.38
+
+    # VDI example shows the ratio is of the total area, to the original bare tube area
+    # Serth example would match Nu = 47.22 except for lazy rounding
+    Nu = coeff*Re**0.6*Pr**(1/3.)*(A_increase)**-0.15
+    h = k/tube_diameter*Nu
+    efficiency = fin_efficiency_Kern_Kraus(Do=tube_diameter, D_fin=fin_diameter,
+                                           t_fin=fin_thickness, k_fin=k_fin, h=h)
+    h_total_area_basis = (efficiency*A_fin + A_tube_showing)/A*h
+    h_bare_tube_basis = h_total_area_basis*A_increase
+    return h_bare_tube_basis
+
+
+def dP_ESDU_high_fin(m, A_min, A_increase, flow_area_contraction_ratio,
+                     tube_diameter, pitch_parallel, pitch_normal, tube_rows, 
+                     rho, mu):
+    r'''Calculates the air-side pressure drop for a high-finned tube bank
+    according to the ESDU [1]_ method, as described in [2]_. This includes the
+    effects of friction of the fin, and acceleration.
+ 
+    .. math::
+        \Delta P = (K_{acc} + n_{rows} K_{f}) \frac{1}{2}\rho v_{max}^2
+
+    .. math::
+        K_{f} = 4.567 Re_D^{-0.242} \left(\frac{A}{A_{tube,only}}
+        \right)^{0.504} \left(\frac{p_1}{D_o}\right)^{-0.376}
+        \left(\frac{p_2}{D_{o}}\right)^{-0.546}
+
+    .. math::
+        K_{acc} = 1 + \text{(flow area contraction ratio)}^2
+            
+    Parameters
+    ----------
+    m : float
+        Mass flow rate of air across the tube bank, [kg/s]
+    A_min : float
+        Minimum air flow area, [m^2]
+    A_increase : float
+        Ratio of actual surface area to bare tube surface area
+        :math:`A_{increase} = \frac{A_{tube}}{A_{bare, total/tube}}`, [-]
+    flow_area_contraction_ratio : float
+        Ratio of `A_min` to `A_face`, [-]
+    tube_diameter : float
+        Diameter of the bare tube, [m]
+    pitch_parallel : float
+        Distance between tube center along a line parallel to the flow;
+        has been called `longitudinal` pitch, `pp`, `s2`, `SL`, and `p2`, [m]
+    pitch_normal : float
+        Distance between tube centers in a line 90° to the line of flow;
+        has been called the `transverse` pitch, `pn`, `s1`, `ST`, and `p1`, [m]
+    tube_rows : int
+        Number of tube rows per bundle, [-]
+    rho : float
+        Average (bulk) density of air across the tube bank, [kg/m^3]
+    mu : float
+        Average (bulk) viscosity of air across the tube bank, [Pa*s]
+        
+    Returns
+    -------
+    dP : float
+        Overall pressure drop across the finned tube bank, [Pa]
+
+    Notes
+    -----
+    The data used by the ESDU covered:
+        * fin density 4 to 11/inch
+        * tube outer diameters 3/8 to 2 inches
+        * fin heights 1/3 to 5/8 inches
+        * fin tip to fin root diameters 1.2 to 2.4
+        * Reynolds numbers 5000 to 50000
+        
+    [1]_ claims 72% of experimental points were within 10% of the results of 
+    the correlation.    
+    
+    The Reynolds number used in this equation is that based on `V_max`, 
+    calculated using the minimum flow area.
+    
+    Examples
+    --------
+    >>> AC = AirCooledExchanger(tube_rows=4, tube_passes=4, tubes_per_row=8, tube_length=0.5, 
+    ... tube_diameter=0.0164, fin_thickness=0.001, fin_density=1/0.003,
+    ... pitch_normal=0.0313, pitch_parallel=0.0271, fin_height=0.0041, corbels=True)
+
+    >>> dP_ESDU_high_fin(m=0.914, A_min=AC.A_min, A_increase=AC.A_increase, flow_area_contraction_ratio=AC.flow_area_contraction_ratio, tube_diameter=AC.tube_diameter, pitch_parallel=AC.pitch_parallel, pitch_normal=AC.pitch_normal, tube_rows=AC.tube_rows, rho=1.217,  mu=0.000018)
+    485.6307687791502
+    
+    References
+    ----------
+    .. [1] "High-Fin Staggered Tube Banks: Heat Transfer and Pressure Drop for 
+       Turbulent Single Phase Gas Flow." ESDU (October 1, 1986). 
+    .. [2] Hewitt, G. L. Shires T. Reg Bott G. F., George L. Shires, and
+       T. R. Bott. Process Heat Transfer. 1E. Boca Raton: CRC Press, 1994.
+    '''
+    Vmax = m/(A_min*rho)
+    Re = Vmax*tube_diameter*rho/mu
+    Kf = (4.567*Re**-0.242*(A_increase)**0.504
+          *(pitch_normal/tube_diameter)**-0.376
+          *(pitch_parallel/tube_diameter)**-0.546)
+    Ka = 1.0 + flow_area_contraction_ratio*flow_area_contraction_ratio
+    dP = (Ka + tube_rows*Kf)*0.5*rho*Vmax*Vmax
+    return dP
+
+
+def dP_ESDU_low_fin(m, A_min, A_increase, flow_area_contraction_ratio,
+                    tube_diameter, fin_height, bare_length, pitch_parallel, 
+                    pitch_normal, tube_rows, rho, mu):
+    r'''Calculates the air-side pressure drop for a low-finned tube bank
+    according to the ESDU [1]_ method, as described in [2]_. This includes the
+    effects of friction of the fin, and acceleration.
+ 
+    .. math::
+        \Delta P = (K_{acc} + n_{rows} K_{f}) \frac{1}{2}\rho v_{max}^2
+
+    .. math::
+        K_{f} = 4.71 Re_D^{-0.286} \left(\frac{\text{fin height}}
+        {\text{bare length}}\right)^{0.51}
+        \left(\frac{p_1 - D_o}{p_2 - D_o}\right)^{0.536}
+        \left(\frac{D_o}{p_1 - D_o}\right)^{0.36}
+        
+    .. math::
+        K_{acc} = 1 + \text{(flow area contraction ratio)}^2
+            
+    Parameters
+    ----------
+    m : float
+        Mass flow rate of air across the tube bank, [kg/s]
+    A_min : float
+        Minimum air flow area, [m^2]
+    A_increase : float
+        Ratio of actual surface area to bare tube surface area
+        :math:`A_{increase} = \frac{A_{tube}}{A_{bare, total/tube}}`, [-]
+    flow_area_contraction_ratio : float
+        Ratio of `A_min` to `A_face`, [-]
+    tube_diameter : float
+        Diameter of the bare tube, [m]
+    fin_height : float
+        Height above bare tube of the tube fins, [m]
+    bare_length : float
+        Length of bare tube between two fins 
+        :math:`\text{bare length} = \text{fin interval} - t_{fin}`, [m]
+    pitch_parallel : float
+        Distance between tube center along a line parallel to the flow;
+        has been called `longitudinal` pitch, `pp`, `s2`, `SL`, and `p2`, [m]
+    pitch_normal : float
+        Distance between tube centers in a line 90° to the line of flow;
+        has been called the `transverse` pitch, `pn`, `s1`, `ST`, and `p1`, [m]
+    tube_rows : int
+        Number of tube rows per bundle, [-]
+    rho : float
+        Average (bulk) density of air across the tube bank, [kg/m^3]
+    mu : float
+        Average (bulk) viscosity of air across the tube bank, [Pa*s]
+        
+    Returns
+    -------
+    dP : float
+        Overall pressure drop across the finned tube bank, [Pa]
+
+    Notes
+    -----
+    Low fins are fins which were formed on the tube outside wall, normally
+    by the cold rolling process. The data used by the ESDU covered:
+        * fin density 11 to 32/inch
+        * tube outer diameters 0.5 to 1.25 inches
+        * fin heights 0.03 to 0.1 inches
+        * Reynolds numbers 1000 to 80000
+        
+    [1]_ compared this correlation with 81 results and obtained a standard
+    deviation of 7.7%. 
+    
+    The Reynolds number used in this equation is that based on `V_max`, 
+    calculated using the minimum flow area.
+    
+    Examples
+    --------
+    >>> AC = AirCooledExchanger(tube_rows=4, tube_passes=4, tubes_per_row=8, tube_length=0.5, 
+    ... tube_diameter=0.0164, fin_thickness=0.001, fin_density=1/0.003,
+    ... pitch_normal=0.0313, pitch_parallel=0.0271, fin_height=0.0041, corbels=True)
+
+    >>> dP_ESDU_low_fin(m=0.914, A_min=AC.A_min, A_increase=AC.A_increase, 
+    ... flow_area_contraction_ratio=AC.flow_area_contraction_ratio,
+    ... tube_diameter=AC.tube_diameter, fin_height=AC.fin_height, 
+    ... bare_length=AC.bare_length, pitch_parallel=AC.pitch_parallel, 
+    ... pitch_normal=AC.pitch_normal, tube_rows=AC.tube_rows, rho=1.217, 
+    ... mu=0.000018)
+    464.54331418655914
+    
+    References
+    ----------
+    .. [1] "High-Fin Staggered Tube Banks: Heat Transfer and Pressure Drop for 
+       Turbulent Single Phase Gas Flow." ESDU (October 1, 1986). 
+    .. [2] Hewitt, G. L. Shires T. Reg Bott G. F., George L. Shires, and
+       T. R. Bott. Process Heat Transfer. 1E. Boca Raton: CRC Press, 1994.
+    '''
+    Vmax = m/(A_min*rho)
+    Re = Vmax*tube_diameter*rho/mu
+    Kf = (4.72*Re**-0.286*(fin_height/bare_length)**0.51
+          *((pitch_normal-tube_diameter)/(pitch_parallel-tube_diameter))**0.536
+          *(tube_diameter/(pitch_normal-tube_diameter))**0.36)
+    Ka = 1.0 + flow_area_contraction_ratio*flow_area_contraction_ratio
+    dP = (Ka + tube_rows*Kf)*0.5*rho*Vmax*Vmax
+    return dP
+
+
+'''Three more correlations - 
+
+Heat Transfer and Pressure Drop Characteristics of Dry Tower Extended Surfaces: Data Analysis and Correlation. Pacific Northwest Laboratory, 1976.
+* said to be in common use in http://www.thermopedia.com/content/551/
+
+Cao, Eduardo. Heat Transfer in Process Engineering. McGraw Hill Professional, 2009.
+
+Kroger - Mirković
+
+'''
