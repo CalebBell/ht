@@ -58,21 +58,49 @@ def test_air_cooler_noise_Mukherjee():
     assert_allclose(noise, 96.11026329092925)
     
     
-def test_h_ESDU_highfin_staggered():
+def test_h_ESDU_high_fin():
 
     AC = AirCooledExchanger(tube_rows=4, tube_passes=4, tubes_per_row=20, tube_length=3, 
                             tube_diameter=1*inch, fin_thickness=0.000406, fin_density=1/0.002309,
                             pitch_normal=.06033, pitch_parallel=.05207,
                             fin_height=0.0159, tube_thickness=(.0254-.0186)/2,
                             bundles_per_bay=1, parallel_bays=1, corbels=True)
-    h_bare_tube_basis = h_ESDU_highfin_staggered(m=21.56, A=AC.A, A_min=AC.A_min, A_increase=AC.A_increase, A_fin=AC.A_fin,
+    h_bare_tube_basis = h_ESDU_high_fin(m=21.56, A=AC.A, A_min=AC.A_min, A_increase=AC.A_increase, A_fin=AC.A_fin,
                          A_tube_showing=AC.A_tube_showing, tube_diameter=AC.tube_diameter,
                          fin_diameter=AC.fin_diameter, bare_length=AC.bare_length,
-                         fin_thickness=AC.fin_thickness,
+                         fin_thickness=AC.fin_thickness, tube_rows=AC.tube_rows,
                          pitch_normal=AC.pitch_normal, pitch_parallel=AC.pitch_parallel, 
                          rho=1.161, Cp=1007., mu=1.85E-5, k=0.0263, k_fin=205)
     assert_allclose(h_bare_tube_basis, 1390.888918049757)
 
+
+def test_h_ESDU_low_fin():
+    AC = AirCooledExchanger(tube_rows=4, tube_passes=4, tubes_per_row=8, tube_length=0.5, 
+    tube_diameter=0.0164, fin_thickness=0.001, fin_density=1/0.003,
+                        pitch_normal=0.0313, pitch_parallel=0.0271,
+    fin_height=0.0041,
+   bundles_per_bay=1, parallel_bays=1, corbels=True)
+
+    # All factors are matching again, except for the A min being different!
+    # 5% diff, minor.
+
+    h = h_ESDU_low_fin(m=0.914, A=AC.A, A_min=AC.A_min, A_increase=AC.A_increase, A_fin=AC.A_fin,
+         A_tube_showing=AC.A_tube_showing, tube_diameter=AC.tube_diameter,
+         fin_diameter=AC.fin_diameter, bare_length=AC.bare_length,
+         fin_thickness=AC.fin_thickness, tube_rows=AC.tube_rows,
+         pitch_normal=AC.pitch_normal, pitch_parallel=AC.pitch_parallel, 
+         rho=1.217, Cp=1007., mu=1.8E-5, k=0.0253, k_fin=15)
+
+    assert_allclose(h, 553.853836470948)
+    
+    h = h_ESDU_low_fin(m=0.914, A=AC.A, A_min=AC.A_min, A_increase=AC.A_increase, A_fin=AC.A_fin,
+         A_tube_showing=AC.A_tube_showing, tube_diameter=AC.tube_diameter,
+         fin_diameter=AC.fin_diameter, bare_length=AC.bare_length,
+         fin_thickness=AC.fin_thickness, tube_rows=AC.tube_rows,
+         pitch_normal=AC.pitch_normal, pitch_parallel=AC.pitch_parallel, 
+         rho=1.217, Cp=1007., mu=1.8E-5, k=0.0253, k_fin=15, Pr_wall=0.68)
+
+    assert_allclose(h, 560.74807767957759)
 
 def test_h_Briggs_Young():
     AC = AirCooledExchanger(tube_rows=4, tube_passes=4, tubes_per_row=20, tube_length=3, 
@@ -138,8 +166,29 @@ def test_h_Ganguli_VDI():
     # 22.49 goal, but there was a correction for velocity due to temperature increase
     # in the vdi answer
     assert_allclose(h/AC.A_increase, 22.49, rtol=2e-2)
-    
-    
+
+
+def test_dP_ESDU_high_fin():
+    AC = AirCooledExchanger(tube_rows=4, tube_passes=4, tubes_per_row=8, tube_length=0.5, 
+        tube_diameter=0.0164, fin_thickness=0.001, fin_density=1/0.003,
+        pitch_normal=0.0313, pitch_parallel=0.0271, fin_height=0.0041, corbels=True)
+
+    dP = dP_ESDU_high_fin(m=0.914, A_min=AC.A_min, A_increase=AC.A_increase, flow_area_contraction_ratio=AC.flow_area_contraction_ratio, tube_diameter=AC.tube_diameter, pitch_parallel=AC.pitch_parallel, pitch_normal=AC.pitch_normal, tube_rows=AC.tube_rows, rho=1.217,  mu=0.000018)
+    assert_allclose(dP, 485.6307687791502)
+
+
+def test_dP_ESDU_low_fin():
+    AC = AirCooledExchanger(tube_rows=4, tube_passes=4, tubes_per_row=8, tube_length=0.5, 
+        tube_diameter=0.0164, fin_thickness=0.001, fin_density=1/0.003,
+        pitch_normal=0.0313, pitch_parallel=0.0271, fin_height=0.0041, corbels=True)
+
+    dP = dP_ESDU_low_fin(m=0.914, A_min=AC.A_min, A_increase=AC.A_increase, flow_area_contraction_ratio=AC.flow_area_contraction_ratio,
+                     tube_diameter=AC.tube_diameter, fin_height=AC.fin_height, bare_length=AC.bare_length, pitch_parallel=AC.pitch_parallel, pitch_normal=AC.pitch_normal, tube_rows=AC.tube_rows, rho=1.217,  mu=0.000018)
+    assert_allclose(dP, 464.54331418655914)
+    # vs 414 Pa; Kf, ka almost perfect - A_min is the source of difference
+
+
+
 def test_AirCooledExchangerPermutations():
     '''Demonstration of permutating all sorts of different options.
     
