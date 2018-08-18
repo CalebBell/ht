@@ -35,7 +35,8 @@ __all__ = ['laminar_T_const', 'laminar_Q_const',
 'turbulent_Kawase_Ulbrecht', 'turbulent_Kawase_De', 'turbulent_Bhatti_Shah',
 'Nu_conv_internal', 'Morimoto_Hotta', 'helical_turbulent_Nu_Mori_Nakayama',
 'helical_turbulent_Nu_Schmidt', 'helical_turbulent_Nu_Xin_Ebadian', 
-'Nu_laminar_rectangular_Shan_London']
+'Nu_laminar_rectangular_Shan_London',
+'conv_tube_methods', 'conv_tube_laminar_methods', 'conv_tube_turbulent_methods']
 
 from math import log, log10, exp, tanh
 from fluids.friction import friction_factor, LAMINAR_TRANSITION_PIPE
@@ -103,7 +104,7 @@ def laminar_Q_const():
 
 ### Laminar - entry region
 
-def laminar_entry_thermal_Hausen(Re=None, Pr=None, L=None, Di=None):
+def laminar_entry_thermal_Hausen(Re, Pr, L, Di):
     r'''Calculates average internal convection Nusselt number for laminar flows
     in pipe during the thermal entry region according to [1]_ as shown in
     [2]_ and cited by [3]_.
@@ -211,9 +212,8 @@ def laminar_entry_Seider_Tate(Re, Pr, L, Di, mu=None, mu_w=None):
         Nu *= (mu/mu_w)**0.14
     return Nu
 
-#print [laminar_entry_Seider_Tate(Re=100000, Pr=1.1, L=5, Di=.5, mu=1E-3, mu_w=1.2E-3)]
 
-def laminar_entry_Baehr_Stephan(Re=None, Pr=None, L=None, Di=None):
+def laminar_entry_Baehr_Stephan(Re, Pr, L, Di):
     r'''Calculates average internal convection Nusselt number for laminar flows
     in pipe during the thermal and velocity entry region according to [1]_ as
     shown in [2]_.
@@ -546,7 +546,8 @@ def turbulent_von_Karman(Re, Pr, fd):
     .. [2] T. von Karman, "The Analogy Between Fluid Friction and Heat
        Transfer," Trans. ASME, (61):705-710,1939.
     '''
-    return fd/8.*Re*Pr/(1 + 5*(fd/8.)**0.5*(Pr - 1 + log((5*Pr + 1)/6.)))
+    return (fd/8.0*Re*Pr/(1.0 + 5.0*(fd/8.0)**0.5
+                          *(Pr - 1.0 + log((5.0*Pr + 1.0)/6.))))
 
 
 def turbulent_Prandtl(Re, Pr, fd):
@@ -586,7 +587,7 @@ def turbulent_Prandtl(Re, Pr, fd):
     .. [2] L. Prandt, Fuhrrer durch die Stomungslehre, Vieweg, Braunschweig,
        p. 359, 1944.
     '''
-    return (fd/8.)*Re*Pr/(1 + 8.7*(fd/8.)**0.5*(Pr - 1))
+    return (fd/8.)*Re*Pr/(1.0 + 8.7*(fd/8.)**0.5*(Pr - 1.0))
 
 
 def turbulent_Friend_Metzner(Re, Pr, fd):
@@ -631,7 +632,7 @@ def turbulent_Friend_Metzner(Re, Pr, fd):
     return (fd/8.)*Re*Pr/(1.2 + 11.8*(fd/8.)**0.5*(Pr - 1.)*Pr**(-1/3.))
 
 
-def turbulent_Petukhov_Kirillov_Popov(Re=None, Pr=None, fd=None):
+def turbulent_Petukhov_Kirillov_Popov(Re, Pr, fd):
     r'''Calculates internal convection Nusselt number for turbulent flows
     in pipe according to [2]_ and [3]_ as in [1]_.
 
@@ -1285,6 +1286,46 @@ def turbulent_Bhatti_Shah(Re, Pr, fd, eD):
     return Re*Pr*fd/8./(1 + (fd/8.)**0.5*(4.5*Re_e**0.2*Pr**0.5 - 8.48))
 
 
+conv_tube_laminar_methods = {
+    'Laminar - constant T': (laminar_T_const, ()),
+    'Laminar - constant Q': (laminar_Q_const, ()),
+    'Baehr-Stephan laminar thermal/velocity entry': (laminar_entry_thermal_Hausen, ('Re', 'Pr', 'L', 'Di')), 
+     'Hausen laminar thermal entry': (laminar_entry_Seider_Tate, ('Re', 'Pr', 'L', 'Di')), 
+    'Seider-Tate laminar thermal entry': (laminar_entry_Baehr_Stephan, ('Re', 'Pr', 'L', 'Di')),
+}
+
+conv_tube_turbulent_methods = {
+    'Churchill-Zajic': (turbulent_Churchill_Zajic, ('Re', 'Pr', 'fd')),
+    'Petukhov-Kirillov-Popov': (turbulent_Petukhov_Kirillov_Popov, ('Re', 'Pr', 'fd')),
+    'Gnielinski': (turbulent_Gnielinski, ('Re', 'Pr', 'fd')),
+    'Sandall': (turbulent_Sandall, ('Re', 'Pr', 'fd')),
+    'Webb': (turbulent_Webb, ('Re', 'Pr', 'fd')),
+    'Friend-Metzner': (turbulent_Friend_Metzner, ('Re', 'Pr', 'fd')),
+    'Prandtl': (turbulent_Prandtl, ('Re', 'Pr', 'fd')),
+    'von-Karman': (turbulent_von_Karman, ('Re', 'Pr', 'fd')),
+    'Martinelli': (turbulent_Martinelli, ('Re', 'Pr', 'fd')),
+    'Gowen-Smith': (turbulent_Gowen_Smith, ('Re', 'Pr', 'fd')),
+    'Kawase-Ulbrecht': (turbulent_Kawase_Ulbrecht, ('Re', 'Pr', 'fd')),
+    'Kawase-De': (turbulent_Kawase_De, ('Re', 'Pr', 'fd')),
+    
+    'Dittus-Boelter': (turbulent_Dittus_Boelter, ('Re', 'Pr')),
+    'Sieder-Tate': (turbulent_Sieder_Tate, ('Re', 'Pr')),
+    'Drexel-McAdams': (turbulent_Drexel_McAdams, ('Re', 'Pr')),
+    'Colburn': (turbulent_Colburn, ('Re', 'Pr')),
+    'ESDU': (turbulent_ESDU, ('Re', 'Pr')),
+    'Gnielinski smooth low Pr': (turbulent_Gnielinski_smooth_1, ('Re', 'Pr')),
+    'Gnielinski smooth high Pr': (turbulent_Gnielinski_smooth_2, ('Re', 'Pr')),
+    
+    'Hausen': (turbulent_entry_Hausen, ('Re', 'Pr', 'Di', 'x')),
+    'Bhatti-Shah': (turbulent_Bhatti_Shah, ('Re', 'Pr', 'fd', 'eD')),
+    'Dipprey-Sabersky': (turbulent_Dipprey_Sabersky, ('Re', 'Pr', 'fd', 'eD')),
+    'Nunner': (turbulent_Nunner, ('Re', 'Pr', 'fd', 'fd_smooth')),
+}
+
+conv_tube_methods = conv_tube_laminar_methods.copy()
+conv_tube_methods.update(conv_tube_turbulent_methods)
+
+
 def Nu_conv_internal(Re, Pr, eD=0, Di=None, x=None, fd=None, Method=None, 
                      AvailableMethods=False):
     r'''This function calculates the heat transfer coefficient for internal
@@ -1397,66 +1438,19 @@ def Nu_conv_internal(Re, Pr, eD=0, Di=None, x=None, fd=None, Method=None,
     if not Method:
         Method = list_methods()[0]
         
+    L = x
     if eD is not None and fd is None:
         fd = friction_factor(Re=Re, eD=eD)
 
-    if Method == 'Laminar - constant T':
-        Nu = laminar_T_const()
-    elif Method == 'Laminar - constant Q':
-        Nu = laminar_Q_const()
-    elif Method == 'Baehr-Stephan laminar thermal/velocity entry':
-        Nu = laminar_entry_thermal_Hausen(Re=Re, Pr=Pr, L=x, Di=Di)
-    elif Method == 'Hausen laminar thermal entry':
-        Nu = laminar_entry_Seider_Tate(Re=Re, Pr=Pr, L=x, Di=Di)
-    elif Method == 'Seider-Tate laminar thermal entry':
-        Nu = laminar_entry_Baehr_Stephan(Re=Re, Pr=Pr, L=x, Di=Di)
-    elif Method == 'Churchill-Zajic':
-        Nu = turbulent_Churchill_Zajic(Re=Re, Pr=Pr, fd=fd)
-    elif Method == 'Petukhov-Kirillov-Popov':
-        Nu = turbulent_Petukhov_Kirillov_Popov(Re=Re, Pr=Pr, fd=fd)
-    elif Method == 'Gnielinski':
-        Nu = turbulent_Gnielinski(Re=Re, Pr=Pr, fd=fd)
-    elif Method == 'Sandall':
-        Nu = turbulent_Sandall(Re=Re, Pr=Pr, fd=fd)
-    elif Method == 'Webb':
-        Nu = turbulent_Webb(Re=Re, Pr=Pr, fd=fd)
-    elif Method == 'Friend-Metzner':
-        Nu = turbulent_Friend_Metzner(Re=Re, Pr=Pr, fd=fd)
-    elif Method == 'Prandtl':
-        Nu = turbulent_Prandtl(Re=Re, Pr=Pr, fd=fd)
-    elif Method == 'von-Karman':
-        Nu = turbulent_von_Karman(Re=Re, Pr=Pr, fd=fd)
-    elif Method == 'Martinelli':
-        Nu = turbulent_Martinelli(Re=Re, Pr=Pr, fd=fd)
-    elif Method == 'Gowen-Smith':
-        Nu = turbulent_Gowen_Smith(Re=Re, Pr=Pr, fd=fd)
-    elif Method == 'Kawase-Ulbrecht':
-        Nu = turbulent_Kawase_Ulbrecht(Re=Re, Pr=Pr, fd=fd)
-    elif Method == 'Kawase-De':
-        Nu = turbulent_Kawase_De(Re=Re, Pr=Pr, fd=fd)
-    elif Method == 'Dittus-Boelter':
-        Nu = turbulent_Dittus_Boelter(Re=Re, Pr=Pr)
-    elif Method == 'Sieder-Tate':
-        Nu = turbulent_Sieder_Tate(Re=Re, Pr=Pr)
-    elif Method == 'Drexel-McAdams':
-        Nu = turbulent_Drexel_McAdams(Re=Re, Pr=Pr)
-    elif Method == 'Colburn':
-        Nu = turbulent_Colburn(Re=Re, Pr=Pr)
-    elif Method == 'ESDU':
-        Nu = turbulent_ESDU(Re=Re, Pr=Pr)
-    elif Method == 'Gnielinski smooth low Pr':
-        Nu = turbulent_Gnielinski_smooth_1(Re=Re, Pr=Pr)
-    elif Method == 'Gnielinski smooth high Pr':
-        Nu = turbulent_Gnielinski_smooth_2(Re=Re, Pr=Pr)
-    elif Method == 'Hausen':
-        Nu = turbulent_entry_Hausen(Re=Re, Pr=Pr, Di=Di, x=x)
-    elif Method == 'Bhatti-Shah':
-        Nu = turbulent_Bhatti_Shah(Re=Re, Pr=Pr, fd=fd, eD=eD)
-    elif Method == 'Dipprey-Sabersky':
-        Nu = turbulent_Dipprey_Sabersky(Re=Re, Pr=Pr, fd=fd, eD=eD)
-    elif Method == 'Nunner':
-        fd_smooth = friction_factor(Re, eD=0)
-        Nu = turbulent_Nunner(Re=Re, Pr=Pr, fd=fd, fd_smooth=fd_smooth)
+    if Method in conv_tube_methods:
+        f, args = conv_tube_methods[Method]
+        if f is turbulent_Nunner:
+            fd_smooth = friction_factor(Re, eD=0)
+        
+        kwargs = {}
+        for arg in args:
+            kwargs[arg] = locals()[arg]
+        return f(**kwargs)
     else:
         raise Exception("Correlation name not recognized; see the "
                         "documentation for the available options.")

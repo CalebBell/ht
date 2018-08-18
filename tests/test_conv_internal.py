@@ -161,6 +161,12 @@ def test_Nu_laminar_rectangular_Shan_London():
     Nu = Nu_laminar_rectangular_Shan_London(.7)
     assert_allclose(Nu, 3.751762675455)
     
+def test_Nu_conv_internal_methods():
+    from fluids.units import func_args
+    
+    for name, (func, args) in conv_tube_methods.items():
+        assert tuple(list(func_args(func))[0:len(args)]) == args
+    
 
 def test_Nu_conv_internal():
     Nu = Nu_conv_internal(1E2, .7)
