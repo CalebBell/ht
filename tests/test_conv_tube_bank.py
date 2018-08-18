@@ -257,6 +257,17 @@ def test_baffle_correction_Bell():
     errs = np.array([(baffle_correction_Bell(Fc)-Jc)/Jc for Fc, Jc in zip(Bell_baffle_configuration_Fcs, Bell_baffle_configuration_Jcs)])
     assert np.abs(errs).sum()/len(errs) < 1e-3
     
+    Jc = baffle_correction_Bell(0.1, 'chebyshev')   
+    assert_allclose(Jc, 0.61868011359447)
+     
+    Jc = baffle_correction_Bell(0.82, 'HEDH')
+    assert_allclose(Jc, 1.1404)
+    
+    # Example in spreadsheet 02 - Heat Exchangers, tab Shell htc imperial, 
+    # Rules of Thumb for Chemical Engineers 5E
+    Jc = baffle_correction_Bell(0.67292816689362900, method='HEDH')
+    assert_allclose(1.034508280163413, Jc)
+    
     
 def test_baffle_leakage_Bell():
     Jl = baffle_leakage_Bell(1, 1, 4)
@@ -271,12 +282,44 @@ def test_baffle_leakage_Bell():
     # Silent clipping
     Jl = baffle_leakage_Bell(1, .0001, .00001)
     assert_allclose(Jl,  0.16072739052053492)
+    
+    Jl = baffle_leakage_Bell(1, 3, 8, method='HEDH')
+    assert_allclose(Jl, 0.5530236260777133)
+    
+    # Example in spreadsheet 02 - Heat Exchangers, tab Shell htc imperial, 
+    # Rules of Thumb for Chemical Engineers 5E
+    # Has an error
+    Jl = baffle_leakage_Bell(Ssb=5.5632369907320000000, Stb=4.7424109055909500, Sm=42.7842616174504, method='HEDH')
+    assert_allclose(Jl, 0.6719386427830639)
+
 
 def test_bundle_bypassing_Bell():
     Jb = bundle_bypassing_Bell(0.5, 5, 25)
     assert_allclose(Jb, 0.8469611760884599, rtol=1e-3)
     Jb = bundle_bypassing_Bell(0.5, 5, 25, laminar=True)
-    assert_allclose(Jb, 0.8327442867825271)
+    assert_allclose(Jb, 0.8327442867825271, rtol=1e-3)
     
     Jb = bundle_bypassing_Bell(0.99, 5, 25, laminar=True)
-    assert_allclose(Jb, 0.7786963825447165)
+    assert_allclose(Jb, 0.7786963825447165, rtol=1e-3)
+    
+    Jb = bundle_bypassing_Bell(0.5, 5, 25, method='HEDH')
+    assert_allclose(Jb, 0.8483210970579099)
+    
+    Jb = bundle_bypassing_Bell(0.5, 5, 25, method='HEDH', laminar=True)
+    assert_allclose(0.8372305924553625, Jb)
+    
+    # Example in spreadsheet 02 - Heat Exchangers, tab Shell htc imperial, 
+    # Rules of Thumb for Chemical Engineers 5E
+    Jb = bundle_bypassing_Bell(bypass_area_fraction=0.331946755407654, seal_strips=2, crossflow_rows=10.6516290726817, method='HEDH')
+    assert_allclose(Jb, 0.8908547260332952)
+
+
+def test_unequal_baffle_spacing_Bell():
+    Js = unequal_baffle_spacing_Bell(16, .1, .15, 0.15)
+    assert_allclose(Js, 0.9640087802805195)
+
+def test_laminar_correction_Bell():
+    Jr = laminar_correction_Bell(30, 80)
+    assert_allclose(Jr, 0.7267995454361379)
+    
+    assert_allclose(0.4, laminar_correction_Bell(30, 80000))

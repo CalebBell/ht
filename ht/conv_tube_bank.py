@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 '''Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
-Copyright (C) 2016, Caleb Bell <Caleb.Andrew.Bell@gmail.com>
+Copyright (C) 2016, 2017, 2018 Caleb Bell <Caleb.Andrew.Bell@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -21,7 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.'''
 
 from __future__ import division
-from math import pi, sin, acos, radians
+from math import pi, sin, acos, radians, exp
 from scipy.constants import g
 from scipy.interpolate import  UnivariateSpline, interp2d, RectBivariateSpline
 import numpy as np
@@ -35,8 +35,15 @@ __all__ = ['dP_Kern', 'Kern_f_Re', 'dP_Zukauskas', 'dP_staggered_f',
            'ESDU_tube_row_correction',
            'ESDU_tube_angle_correction',
 	   'baffle_correction_Bell', 'baffle_leakage_Bell',
-           'bundle_bypassing_Bell']
+           'bundle_bypassing_Bell', 'unequal_baffle_spacing_Bell',
+           'laminar_correction_Bell']
 
+def _horner(coeffs, x):
+    # TODO put this in a module or something
+    tot = 0.
+    for c in coeffs:
+        tot = tot * x + c
+    return tot
 
 # Applies for row 1-9.
 Grimson_Nl_aligned = [0.64, 0.8, 0.87, 0.9, 0.92, 0.94, 0.96, 0.98, 0.99]
@@ -1096,6 +1103,7 @@ def dP_Zukauskas(Re, n, ST, SL, D, rho, Vmax):
 
     return n*x*f*rho/2*Vmax**2
 
+
 Bell_baffle_configuration_Fcs = np.array([0, 0.0138889, 0.0277778, 0.0416667, 0.0538194, 0.0659722, 0.100694, 0.114583,
     0.126736, 0.140625, 0.152778, 0.166667, 0.178819, 0.192708, 0.215278, 0.227431, 0.241319, 0.255208,
     0.267361, 0.28125, 0.295139, 0.340278, 0.354167, 0.366319, 0.380208, 0.394097, 0.402778, 0.416667, 0.430556,
@@ -1121,13 +1129,29 @@ function should fit the smoothed function, not the raw data.
 Bell_baffle_configuration_obj = UnivariateSpline(Bell_baffle_configuration_Fcs, 
                                                  Bell_baffle_configuration_Jcs, 
                                                  s=8e-5)
+'''Derived with:
+
+fit = Chebfun.from_function(lambda x: Bell_baffle_configuration_obj(0.5*(x+1)), domain=[-1,1], N=8)
+cheb2poly(fit.coefficients())[::-1].tolist()
+
+xs = np.linspace(0, 1, 3000)
+f = Bell_baffle_configuration_obj
+print(max([(f(i)-fit(i*2-1))/f(i) for i in xs]), 'MAX ERR')
+print(np.mean([abs(f(i)-fit(i*2-1))/f(i) for i in xs]), 'MEAN ERR')
+'''
+Bell_baffle_configuration_coeffs = [-17.267087530974095, -17.341072676377735, 
+    60.38380262590988, 60.78202803861199, -83.86556326987701, -84.74024411236306, 58.66461844872558,
+    59.56146082596216, -21.786957547130935, -22.229378707598116, 4.1167302227508, 4.226246012504343,
+    -0.3349723004600481, -0.3685826653263089, -0.0629839069257099, 0.35883309630976157, 
+    0.9345478582873352]
 #import matplotlib.pyplot as plt
 #plt.plot(Bell_baffle_configuration_Fcs, Bell_baffle_configuration_Jcs)
 #pts = np.linspace(0, 1, 5000)
 #plt.plot(pts, [Bell_baffle_configuration_obj(i) for i in pts])
+#plt.plot(pts, [0.55 + 0.72*i for i in pts]) # Serth and HEDH 3.3.6g misses the tip
 #plt.show()
 
-def baffle_correction_Bell(crossflow_tube_fraction):
+def baffle_correction_Bell(crossflow_tube_fraction, method='spline'):
     r'''Calculate the baffle correction factor `Jc` which accounts for
     the fact that all tubes are not in crossflow to the fluid - some
     have fluid flowing parallel to them because they are situated in 
@@ -1139,12 +1163,30 @@ def baffle_correction_Bell(crossflow_tube_fraction):
     for very large baffle cuts. Well designed exchangers should typically
     have a value near 1.0.
     
+    Cubic spline interpolation is the default method of retrieving a value
+    from the graph, which was digitized with Engauge-Digitizer.
+    
+    The interpolation can be slightly slow, so a Chebyshev polynomial was fit
+    to a maximum error of 0.142%, average error 0.04% - well within the margin
+    of error of the digitization of the graph; this is approximately 10 times
+    faster, accessible via the 'chebyshev' method.
+    
+    The Heat Exchanger Design Handbook [4]_, [5]_ provides the linear curve 
+    fit, which covers the "practical" range of baffle cuts 15-45% but not the 
+    last dip in the graph. This method is not recommended, but can be used via 
+    the method "HEDH".
+        
+    .. math::
+        J_c = 0.55 + 0.72Fc
     Parameters
     ----------
     crossflow_tube_fraction : float
         Fraction of tubes which are between baffle tips and not
         in the window, [-]
 
+    method : str, optional
+        One of 'chebyshev', 'spline', or 'HEDH'
+    
     Returns
     -------
     Jc : float
@@ -1156,10 +1198,9 @@ def baffle_correction_Bell(crossflow_tube_fraction):
     min: ~0.5328 at 0
     value at 1: ~1.0314
     
-    Takes ~13 us per call, and 40 us to construct the spline.
-    
-    This method returns NumPy arrays if given vector inputs.
-    
+    For the 'spline' method, this function takes ~13 us per call, and 40 us to 
+    construct the spline. The other two methods are approximately 10x faster.
+             
     Examples
     --------
     For a HX with four groups of tube bundles; the top and bottom being 9 
@@ -1180,11 +1221,19 @@ def baffle_correction_Bell(crossflow_tube_fraction):
        and R. A. Mashelkar. CRC Press, 1988.
     .. [3] Green, Don, and Robert Perry. Perry's Chemical Engineers' Handbook,
        Eighth Edition. McGraw-Hill Professional, 2007.
+    .. [4] Schlünder, Ernst U, and International Center for Heat and Mass
+       Transfer. Heat Exchanger Design Handbook. Washington:
+       Hemisphere Pub. Corp., 1987.
+    .. [5] Serth, R. W., Process Heat Transfer: Principles,
+       Applications and Rules of Thumb. 2E. Amsterdam: Academic Press, 2014.
     '''
-    Jc = Bell_baffle_configuration_obj(crossflow_tube_fraction)
-    if Jc.shape:
-        return Jc
-    return float(Jc)
+    if method == 'spline':
+        Jc = float(Bell_baffle_configuration_obj(crossflow_tube_fraction))
+    elif method == 'chebyshev':
+        return _horner(Bell_baffle_configuration_coeffs, 2.0*crossflow_tube_fraction - 1.0)
+    elif method == 'HEDH':
+        Jc = 0.55 + 0.72*crossflow_tube_fraction
+    return Jc
 
 
 Bell_baffle_leakage_x = np.array([0.0, 1e-5, 1e-4, 1e-3, 0.0037779, 0.00885994, 0.012644, 0.0189629, 0.0213694, 0.0241428, 0.0289313, 0.0339093, 0.0376628,
@@ -1259,6 +1308,7 @@ for some values; this must be checked!
 '''
 Bell_baffle_leakage_x_max = Bell_baffle_leakage_x[-1]
 
+#import matplotlib.pyplot as plt
 #for ys in Bell_baffle_leakage_zs.T:
 #    plt.plot(Bell_baffle_leakage_x, ys)
 #for z in Bell_baffle_leakage_z_values:
@@ -1266,10 +1316,31 @@ Bell_baffle_leakage_x_max = Bell_baffle_leakage_x[-1]
 #    ys = np.clip(Bell_baffle_leakage_obj(xs, z), 0, 1)
 #    plt.plot(xs, ys, '--')
 
-def baffle_leakage_Bell(Ssb, Stb, Sm):
+#for z in Bell_baffle_leakage_z_values:
+#    xs = np.linspace(min(Bell_baffle_leakage_x), max(Bell_baffle_leakage_x), 1000)
+#    rs = z
+#    rl = xs
+#    ys = 0.44*(1.0 - rs) + (1.0 - 0.44*(1.0 - rs))*np.exp(-2.2*rl)
+#    plt.plot(xs, ys, '--')
+            
+    
+def baffle_leakage_Bell(Ssb, Stb, Sm, method='spline'):
     r'''Calculate the baffle leakage factor `Jl` which accounts for
     leakage between each baffle.
+    Cubic spline interpolation is the default method of retrieving a value
+    from the graph, which was digitized with Engauge-Digitizer.
     
+    The Heat Exchanger Design Handbook [4]_, [5]_ provides a curve 
+    fit as well. This method is not recommended, but can be used via 
+    the method "HEDH".
+        
+    .. math::
+        J_L = 0.44(1-r_s) + [1 - 0.44(1-r_s)]\exp(-2.2r_{lm})
+        
+        r_s = \frac{S_{sb}}{S_{sb} + S_{tb}}
+        
+        r_{lm} = \frac{S_{sb} + S_{tb}}{S_m}
+        
     Parameters
     ----------
     Ssb : float
@@ -1279,6 +1350,9 @@ def baffle_leakage_Bell(Ssb, Stb, Sm):
     Sm : float
         Crossflow area, [m^2]
 
+    method : str, optional
+        One of 'spline', or 'HEDH'
+    
     Returns
     -------
     Jl : float
@@ -1288,11 +1362,17 @@ def baffle_leakage_Bell(Ssb, Stb, Sm):
     -----
     Takes ~5 us per call, and 600 us to construct the spline.
     If the `x` parameter is larger than 0.743614, it is clipped to it.
+    
+    The HEDH curve fits are rather poor and only 6x faster to evaluate. 
+    The HEDH example in [6]_'s spreadsheet has an error and uses 0.044 instead
+    of 0.44 in the equation.
         
     Examples
     --------
     >>> baffle_leakage_Bell(1, 3, 8)
     0.5906621282470395
+    >>> baffle_leakage_Bell(1, 3, 8, 'HEDH')
+    0.5530236260777133
     
     References
     ----------
@@ -1304,15 +1384,27 @@ def baffle_leakage_Bell(Ssb, Stb, Sm):
        and R. A. Mashelkar. CRC Press, 1988.
     .. [3] Green, Don, and Robert Perry. Perry's Chemical Engineers' Handbook,
        Eighth Edition. McGraw-Hill Professional, 2007.
+    .. [4] Schlünder, Ernst U, and International Center for Heat and Mass
+       Transfer. Heat Exchanger Design Handbook. Washington:
+       Hemisphere Pub. Corp., 1987.
+    .. [5] Serth, R. W., Process Heat Transfer: Principles,
+       Applications and Rules of Thumb. 2E. Amsterdam: Academic Press, 2014.
+    .. [6] Hall, Stephen. Rules of Thumb for Chemical Engineers, Fifth Edition. 
+       5th edition. Oxford ; Waltham , MA: Butterworth-Heinemann, 2012.
     '''
     x = (Ssb + Stb)/Sm
     if x > Bell_baffle_leakage_x_max:
         x = Bell_baffle_leakage_x_max
-    y = Ssb/(Ssb + Stb)
-    if y > 1 or y < 0:
+    z = Ssb/(Ssb + Stb)
+    if z > 1 or z < 0:
         raise ValueError('Ssb/(Ssb + Stb) must be between 0 and 1')
-    Jl = Bell_baffle_leakage_obj(x, y)
-    return min(float(Jl), 1.0)
+    if method == 'spline':
+        Jl = Bell_baffle_leakage_obj(x, z)
+        Jl = min(float(Jl), 1.0)
+    elif method == 'HEDH':
+        # Hemisphere uses 0.44 as coefficient, rules of thumb uses 0.044 in spreadsheet
+        Jl = 0.44*(1.0 - z) + (1.0 - 0.44*(1.0 - z))*exp(-2.2*x)
+    return Jl
 
 Bell_bundle_bypass_x = np.array([0.0, 1e-5, 1e-4, 1e-3, 0.0388568, 0.0474941, 0.0572083, 0.0807999, 0.0915735, 0.0959337, 0.118724, 0.128469, 0.134716,
     0.142211, 0.146821, 0.156504, 0.162821, 0.169488, 0.178126, 0.185301, 0.194997, 0.200798, 0.210512, 0.212373, 0.221063, 0.222122, 0.228864,
@@ -1387,12 +1479,20 @@ Bell_bundle_bypass_z_high_0 = np.array([1.0, 0.99999, 0.9999, 0.999, 0.952236, 0
 Bell_bundle_bypass_z_high = np.array([Bell_bundle_bypass_z_high_0, Bell_bundle_bypass_z_high_0_05, Bell_bundle_bypass_z_high_0_1, Bell_bundle_bypass_z_high_0_167, Bell_bundle_bypass_z_high_0_3, Bell_bundle_bypass_z_high_0_5]).T
 Bell_bundle_bypass_high_obj = RectBivariateSpline(Bell_bundle_bypass_x, Bell_bundle_bypass_z_values, Bell_bundle_bypass_z_high, kx = 3, ky = 3, s = 0.0007)
 
+#import matplotlib.pyplot as plt
 #for ys in Bell_bundle_bypass_z_high.T:
 #    plt.plot(Bell_bundle_bypass_x, ys)
-#    
 #for z in Bell_bundle_bypass_z_values:
 #    xs = np.linspace(min(Bell_bundle_bypass_x), max(Bell_bundle_bypass_x), 1000)
 #    ys = np.clip(Bell_bundle_bypass_high_obj(xs, z), 0, 1)
+#    plt.plot(xs, ys, '--')
+#for z in Bell_bundle_bypass_z_values:
+#    xs = np.linspace(min(Bell_bundle_bypass_x), max(Bell_bundle_bypass_x), 1000)
+#    ys = np.exp(-1.25*xs*(1.0 - (2.0*z)**(1/3.) )) # This one is a good fit!
+#    plt.plot(xs, ys, '.')
+#for z in Bell_bundle_bypass_z_values:
+#    xs = np.linspace(min(Bell_bundle_bypass_x), max(Bell_bundle_bypass_x), 1000)
+#    ys = exp(1.25*z*(1.0 - (2*xs)**(1/3.)))
 #    plt.plot(xs, ys, '--')
 #plt.show()
 
@@ -1466,9 +1566,20 @@ Bell_bundle_bypass_low_obj = RectBivariateSpline(Bell_bundle_bypass_x, Bell_bund
 
 
 def bundle_bypassing_Bell(bypass_area_fraction, seal_strips, crossflow_rows,
-                          laminar=False):
+                          laminar=False, method='spline'):
     r'''Calculate the bundle bypassing effect `Jb` according to the 
     Bell-Delaware method for heat exchanger design.   
+    Cubic spline interpolation is the default method of retrieving a value
+    from the graph, which was digitized with Engauge-Digitizer.
+    
+    The Heat Exchanger Design Handbook [4]_, [5]_ provides a curve 
+    fit as well. This method is not recommended, but can be used via 
+    the method "HEDH":
+    
+    .. math::
+        J_b = \exp\left[-1.25 F_{sbp} (1 -  {2r_{ss}}^{1/3} )\right]
+    
+    For laminar flows, replace 1.25 with 1.35.
         
     Parameters
     ----------
@@ -1483,6 +1594,8 @@ def bundle_bypassing_Bell(bypass_area_fraction, seal_strips, crossflow_rows,
     laminar : bool
         Whether to use the turbulent correction values or the laminar ones;
         the Bell-Delaware method uses a Re criteria of 100 for this, [-]
+    method : str, optional
+        One of 'spline', or 'HEDH'
 
     Returns
     -------
@@ -1501,8 +1614,9 @@ def bundle_bypassing_Bell(bypass_area_fraction, seal_strips, crossflow_rows,
     --------
     >>> bundle_bypassing_Bell(0.5, 5, 25)
     0.8469611760884599
-    >>> bundle_bypassing_Bell(0.5, 5, 25, laminar=True)
-    0.8327442867825271
+    
+    >>> bundle_bypassing_Bell(0.5, 5, 25, method='HEDH')
+    0.8483210970579099
     
     References
     ----------
@@ -1517,11 +1631,146 @@ def bundle_bypassing_Bell(bypass_area_fraction, seal_strips, crossflow_rows,
     '''
     z = seal_strips/crossflow_rows
     x = bypass_area_fraction
-    
-    obj = Bell_bundle_bypass_low_obj if laminar else Bell_bundle_bypass_high_obj
-    
-    if x > Bell_bundle_bypass_x_max:
-        x = Bell_bundle_bypass_x_max
+    if method == 'spline':
+        obj = Bell_bundle_bypass_low_obj if laminar else Bell_bundle_bypass_high_obj
+        if x > Bell_bundle_bypass_x_max:
+            x = Bell_bundle_bypass_x_max
+        Jb = obj(x, z)
+        Jb = min(float(Jb), 1.0)
+    elif method == 'HEDH':
+        c = 1.35 if laminar else 1.25
+        Jb = exp(-c*x*(1.0 - (2.0*z)**(1/3.)))
+    return Jb
+
+
+def unequal_baffle_spacing_Bell(baffles, baffle_spacing, 
+                                baffle_spacing_in=None, 
+                                baffle_spacing_out=None, 
+                                laminar=False):
+    r'''Calculate the correction factor for unequal baffle spacing `Js`,
+    which accounts for higher velocity of fluid flow and greater heat transfer
+    coefficients when the in and/or out baffle spacing is less than the
+    standard spacing.
+            
+    .. math::
+        J_s = \frac{(n_b - 1) + (B_{in}/B)^{(1-n_b)} + (B_{out}/B)^{(1-n_b)}}
+        {(n_b - 1) + (B_{in}/B) + (B_{out}/B)}
         
-    Jb = obj(x, z)
-    return min(float(Jb), 1.0)
+    Parameters
+    ----------
+    baffles : int
+        Number of baffles, [-]
+    baffle_spacing : float
+        Average spacing between one end of one baffle to the start of
+        the next baffle for non-exit baffles, [m]
+    baffle_spacing_in : float, optional
+        Spacing between entrace to first baffle, [m]
+    baffle_spacing_out : float, optional
+        Spacing between last baffle and exit, [m]
+    laminar : bool, optional
+        Whether to use the turbulent exponent or the laminar one;
+        the Bell-Delaware method uses a Re criteria of 100 for this, [-]
+
+    Returns
+    -------
+    Js : float
+        Unequal baffle spacing correction factor, [-]
+
+    Notes
+    -----
+        
+    Examples
+    --------
+    >>> unequal_baffle_spacing_Bell(16, .1, .15, 0.15)
+    0.9640087802805195
+
+    References
+    ----------
+    .. [1] Bell, Kenneth J. Final Report of the Cooperative Research Program on
+       Shell and Tube Heat Exchangers. University of Delaware, Engineering
+       Experimental Station, 1963.
+    .. [2] Bell, Kenneth J. Delaware Method for Shell-Side Design. In Heat  
+       Transfer Equipment Design, by Shah, R.  K., Eleswarapu Chinna Subbarao,
+       and R. A. Mashelkar. CRC Press, 1988.
+    .. [3] Schlünder, Ernst U, and International Center for Heat and Mass
+       Transfer. Heat Exchanger Design Handbook. Washington:
+       Hemisphere Pub. Corp., 1987.
+    .. [4] Serth, R. W., Process Heat Transfer: Principles,
+       Applications and Rules of Thumb. 2E. Amsterdam: Academic Press, 2014.
+    .. [5] Hall, Stephen. Rules of Thumb for Chemical Engineers, Fifth Edition. 
+       5th edition. Oxford ; Waltham , MA: Butterworth-Heinemann, 2012.
+    '''
+    if baffle_spacing_in is None:
+        baffle_spacing_in = baffle_spacing
+    if baffle_spacing_out is None:
+        baffle_spacing_out = baffle_spacing
+    n = 1.0/3.0 if laminar else 0.6
+    Js = ((baffles - 1.0) + (baffle_spacing_in/baffle_spacing)**(1.0 - n) 
+          + (baffle_spacing_out/baffle_spacing)**(1.0 - n))/((baffles - 1.0) 
+          + (baffle_spacing_in/baffle_spacing) 
+          + (baffle_spacing_out/baffle_spacing))
+    return Js
+
+
+def laminar_correction_Bell(Re, total_row_passes):
+    r'''Calculate the correction factor for adverse temperature gradient built
+    up in laminar flow `Jr`.
+    
+    This correction begins at Re = 100, and is interpolated between the value 
+    of the formula until Re = 20, when it is the value of the formula. It is
+    1 for Re >= 100. The value of the formula is not allowed to be less than
+    0.4.
+
+    .. math::
+        Jr^* = \left(\frac{10}{N_{row,passes,tot}}\right)^{0.18}
+        
+    Parameters
+    ----------
+    Re : float
+        Shell Reynolds number in the Bell-Delaware method, [-]
+    total_row_passes : int
+        The total number of rows passed by the fluid, including those in
+        windows and counting repeat passes of tube rows, [-]
+
+    Returns
+    -------
+    Jr : float
+        Correction factor for adverse temperature gradient built up in laminar
+        flow, [-]
+
+    Notes
+    -----
+    [5]_ incorrectly uses the number of tube rows per crosslfow section, not 
+    total.
+        
+    Examples
+    --------
+    >>> laminar_correction_Bell(30, 80)
+    0.7267995454361379
+
+    References
+    ----------
+    .. [1] Bell, Kenneth J. Final Report of the Cooperative Research Program on
+       Shell and Tube Heat Exchangers. University of Delaware, Engineering
+       Experimental Station, 1963.
+    .. [2] Bell, Kenneth J. Delaware Method for Shell-Side Design. In Heat  
+       Transfer Equipment Design, by Shah, R.  K., Eleswarapu Chinna Subbarao,
+       and R. A. Mashelkar. CRC Press, 1988.
+    .. [3] Schlünder, Ernst U, and International Center for Heat and Mass
+       Transfer. Heat Exchanger Design Handbook. Washington:
+       Hemisphere Pub. Corp., 1987.
+    .. [4] Serth, R. W., Process Heat Transfer: Principles,
+       Applications and Rules of Thumb. 2E. Amsterdam: Academic Press, 2014.
+    .. [5] Hall, Stephen. Rules of Thumb for Chemical Engineers, Fifth Edition. 
+       5th edition. Oxford ; Waltham , MA: Butterworth-Heinemann, 2012.
+    '''
+    if Re > 100.0:
+        return 1.0
+    Jrr = (10.0/total_row_passes)**0.18
+    if Re < 20.0:
+        Jr = Jrr
+    else:
+        Jr = Jrr + ((20.0-Re)/80.0)*(Jrr - 1.0)
+    if Jr < 0.4:
+        Jr = 0.4
+    return Jr
