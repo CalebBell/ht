@@ -1042,7 +1042,7 @@ def effectiveness_NTU_method(mh, mc, Cph, Cpc, subtype='counterflow', Thi=None,
             'Tci': Tci, 'Tco': Tco} 
         
 
-def temperature_effectiveness_air_cooler(R1, NTU1, rows, passes):
+def temperature_effectiveness_air_cooler(R1, NTU1, rows, passes, coerce=True):
     r'''Returns temperature effectiveness `P1` of an air cooler with 
     a specified heat capacity ratio, number of transfer units `NTU1`,
     number of rows `rows`, and number of passes `passes`. The supported cases
@@ -1120,6 +1120,10 @@ def temperature_effectiveness_air_cooler(R1, NTU1, rows, passes):
         Number of rows of tubes in the air cooler [-]
     passes : int
         Number of passes the process fluid undergoes [-]
+    coerce : bool
+        If True, the number of passes or rows, if otherwise unsupported, will
+        be replaced with a similar number to allow the calculation to proceed,
+        [-]
         
     Returns
     -------
@@ -1228,7 +1232,24 @@ def temperature_effectiveness_air_cooler(R1, NTU1, rows, passes):
               + 0.125*K**2)*(1 - exp(4.*K*R1)))*(1. + R1*K**2)**-2
         return 1./R1*(1. - 1./xi)
     else:
-        raise Exception('Number of passes and rows not supported.')
+        if coerce:
+            if passes > rows:
+                passes = rows # bad user input - replace with an exception?
+            new_passes, new_rows = passes, rows
+            # Domain reduction
+            if passes > 5:
+                new_passes = passes = 5
+            if rows > 5:
+                new_rows = rows = 5
+            if rows -1 == passes:
+                new_rows, new_passes = rows -1, passes
+            elif (passes == 2 or passes == 3 or passes == 5) and rows >= 4:
+                new_rows, new_passes = 4, 2
+                
+            return temperature_effectiveness_air_cooler(R1=R1, NTU1=NTU1, rows=new_rows, passes=new_passes)
+                
+        else:
+            raise Exception('Number of passes and rows not supported.')
 
 
 def temperature_effectiveness_basic(R1, NTU1, subtype='crossflow'):

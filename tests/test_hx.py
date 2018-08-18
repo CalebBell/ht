@@ -740,7 +740,14 @@ def test_temperature_effectiveness_air_cooler():
     
     # Tentative checking of the above has been done with hete.c for isolated cases
     
+def test_temperature_effectiveness_air_cooler_coerce():
+    # Simple test a call that the number of row and passes can be domain reduced
+    # without causing a recursion depth error
+    # Do not test the results for any specific answer, as they will ideally one day
+    # be replaced with the exactly correct one
+    [temperature_effectiveness_air_cooler(.5, 2, rows=j, passes=i) for i in range(1, 10) for j in range(1, 10)]
 
+    
 @pytest.mark.mpmath
 def test_P_NTU_method():
     # Counterflow case

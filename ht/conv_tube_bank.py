@@ -23,11 +23,11 @@ SOFTWARE.'''
 from __future__ import division
 from math import pi, sin, acos, radians, exp
 from scipy.constants import g
-from scipy.interpolate import  UnivariateSpline, interp2d, RectBivariateSpline
+from scipy.interpolate import  UnivariateSpline, interp2d, RectBivariateSpline, bisplev, splev
 import numpy as np
 from ht.core import wall_factor, WALL_FACTOR_PRANDTL
 
-__all__ = ['dP_Kern', 'Kern_f_Re', 'dP_Zukauskas', 'dP_staggered_f',
+__all__ = ['dP_Kern', 'dP_Zukauskas', 'dP_staggered_f',
            'dP_staggered_correction', 'dP_inline_f', 'dP_inline_correction',
            'Nu_ESDU_73031', 'Nu_Zukauskas_Bejan','Nu_HEDH_tube_bank',
            'Nu_Grimison_tube_bank',
@@ -85,12 +85,28 @@ Grimson_C1_staggered = np.array([0.518, 0.451, 0.404, 0.31, 0.497, 0.505, 0.46,
                                  0.482, 0.44, 0.213, 0.401, 0.518, 0.522, 
                                  0.488, 0.449, 0.428])
 
-Grimson_m_staggered_interp = interp2d(Grimson_ST_staggered,
-                                      Grimson_SL_staggered, 
-                                      Grimson_m_staggered, kind='linear')
-Grimson_C1_staggered_interp = interp2d(Grimson_ST_staggered, 
-                                       Grimson_SL_staggered, 
-                                       Grimson_C1_staggered, kind='linear')
+'''`interp2d` creates warnings when used on these. They are avoided by
+pre-generating the splines, and interfacing with fitpack at a lower level.
+'''
+tck_Grimson_m_staggered = [np.array([1.25, 1.25, 1.8667584356619125, 2.0, 2.8366905775206916, 3.0, 3.0]), 
+     np.array([0.6, 0.6, 1.0085084989709654, 1.340729148958038, 1.5154196399508033, 3.0, 3.0]), 
+     np.array([1.731351706314169, 0.3675823638826614, 0.6267891238439347, 0.5623083927989683, 0.5920000000000982, 1.180171700201992, 
+               0.7874995409316767, 0.4622370503994375, 0.562004066622535, 0.5623955950882191, 0.5680620929528815, 0.5720626262793304, 
+               0.5510099520872309, 0.5641771077227365, 0.5597975310692721, 0.0, 0.0, 0.0, 0.0, 0.0, 0.6361653765016168, 
+               0.5601991640778442, 0.5621224100266599, 0.5684014375982079, 0.573932491076899]),
+    1, 1]
+
+tck_Grimson_C1_staggered = [np.array([1.25, 1.25, 1.936293121624252, 2.0, 2.094408820089069, 3.0, 3.0]), 
+    np.array([0.6, 0.6, 1.1841422334268308, 1.3897531616318943, 1.6483901017748916, 3.0, 3.0]),
+    np.array([0.534042720665836, 0.5446897215451869, 0.4613632028066018, 0.4370513304331604, 0.31000000000000005, 0.3060114256888106,
+              0.4719357486311919, 0.5043332405690643, 0.4371755864391464, 0.4362779343788622, 0.364660449991649, 0.5144234623651529, 
+              0.4513822953351327, 0.4852710459180796, 0.4420724694173403, 0.0, 0.0, 0.0, 0.0, 0.0, 0.21898644381978172,
+              0.5500312131715677, 0.4969529176876636, 0.46150347905703587, 0.4270770845430577]),
+    1, 1]
+
+Grimson_m_staggered_interp = lambda x, y: float(bisplev(x, y, tck_Grimson_m_staggered))
+Grimson_C1_staggered_interp = lambda x, y: float(bisplev(x, y, tck_Grimson_C1_staggered))
+
 
 
 def Nu_Grimison_tube_bank(Re, Pr, Do, tube_rows, pitch_parallel, pitch_normal):
@@ -713,41 +729,21 @@ def Nu_HEDH_tube_bank(Re, Pr, Do, tube_rows, pitch_parallel, pitch_normal):
     Nu = Nu*fn*fA
     return Nu
 
-_Kern_dP_Res = np.array([9.9524, 11.0349, 12.0786, 13.0504, 14.0121, 15.0431, 16.1511, 17.1176, 17.9105, 18.9822,
-    19.9879, 21.0484, 22.0217, 23.1893, 24.8973, 26.0495, 27.7862, 29.835, 31.8252, 33.9506, 35.9822, 38.3852,
-    41.481, 43.9664, 47.2083, 50.6891, 54.0782, 58.0635, 63.5667, 68.2537, 74.247, 78.6957, 83.9573, 90.1511,
-    95.5596, 102.613, 110.191, 116.806, 128.724, 137.345, 150.384, 161.484, 171.185, 185.031, 196.139, 210.639,
-    230.653, 250.933, 281.996, 300.884, 329.472, 353.842, 384.968, 408.108, 444.008, 505.513, 560.821, 638.506,
-    690.227, 741.254, 827.682, 918.205, 1018.63, 1122.76, 1213.62, 1320.38, 1417.94, 1522.93, 1667.69, 1838.11,
-    2012.76, 2247.44, 2592.21, 2932.18, 3381.87, 3875.42, 4440.83, 5056.16, 5608.95, 6344.58, 7038.48, 8224.34,
-    9123.83, 10121.7, 11598, 12701.4, 14090, 15938.5, 17452.9, 19112.6, 20929.3, 24614, 29324.6, 34044.8,
-    37282.2, 42999.9, 50570.2, 55737.9, 59860.6, 65553, 70399.2, 78101.5, 84965.7, 96735.3, 110139, 122977,
-    136431, 152339, 165740, 180319, 194904, 207981, 223357, 241440, 257621, 283946, 317042, 353996, 408315,
-    452956, 519041, 590939, 668466, 751216, 827981, 894985, 1012440
-])
-_Kern_dP_fs = 144.0 * np.array([0.0429177, 0.0382731, 0.0347901, 0.0316208, 0.0298653, 0.0276702, 0.0259671, 0.024523,
-    0.0237582, 0.0224369, 0.0211881, 0.0202668, 0.0193847, 0.0184234, 0.0172894, 0.0166432, 0.0155182,
-    0.0147509, 0.0138423, 0.0131572, 0.0124255, 0.0118105, 0.0110842, 0.0106028, 0.0100785, 0.00958019,
-    0.0092235, 0.00871144, 0.00817649, 0.0077722, 0.00743616, 0.0071132, 0.00684836, 0.00655159, 0.00634789,
-    0.00611185, 0.00592242, 0.00577517, 0.00552603, 0.00542355, 0.00522267, 0.00502847, 0.00493497, 0.00481301,
-    0.00469334, 0.00460654, 0.00449314, 0.00438231, 0.00424799, 0.00416922, 0.00406658, 0.00401703, 0.00394314,
-    0.0038947, 0.00382305, 0.00373007, 0.00368555, 0.00359592, 0.00357512, 0.003509, 0.00344515, 0.00338229,
-    0.00332057, 0.00328077, 0.00322026, 0.00316102, 0.00308274, 0.00308446, 0.00302787, 0.00297247, 0.0028993,
-    0.00284654, 0.00277759, 0.0027099, 0.00262738, 0.00256361, 0.00248541, 0.00244055, 0.00238072, 0.0023227,
-    0.00228032, 0.00222531, 0.00218471, 0.00214484, 0.00206613, 0.00205439, 0.00200402, 0.00196775, 0.00191932,
-    0.00189622, 0.00186143, 0.00180501, 0.0017393, 0.00170817, 0.00168761, 0.00163622, 0.00158663, 0.0015576,
-    0.00153862, 0.0015201, 0.00149199, 0.00147418, 0.00142864, 0.00139389, 0.00136874, 0.00133524, 0.00131931,
-    0.0012953, 0.00127147, 0.00124808, 0.00121724, 0.00121785, 0.00119533, 0.00118082, 0.00116638, 0.00114504,
-    0.00111702, 0.00108969, 0.00107013, 0.00104389, 0.00101205, 0.000987437, 0.000969567, 0.000939849,
-    0.000922653, 0.000905634, 0.000894962
-])
-# Used in preference over interp1d as saves 30% of execution time, and
-# performs some marginally small amount of smoothing
-# s=0.1 is chosen to have 9 knots, a reasonable amount.
-Kern_f_Re = UnivariateSpline(_Kern_dP_Res, _Kern_dP_fs, s=0.1)
 
-# Graph presented in Peters and Timmerhaus uses fanning friction factor.
-# This uses Darcy's friction factor.
+'''
+Graph presented in Peters and Timmerhaus uses fanning friction factor.
+This uses Darcy's friction factor.
+These coefficients were generated to speed up loading of this module. 
+They are regenerated and checked in the tests.
+
+'''
+Kern_f_Re_tck = [np.array([9.9524, 9.9524, 9.9524, 9.9524, 17.9105, 27.7862, 47.2083, 83.9573,
+                           281.996, 1122.76, 42999.9, 1012440.0, 1012440.0, 1012440.0, 1012440.0]), 
+                 np.array([6.040435949178239, 4.64973456285782, 2.95274850806163, 1.9569061885042,
+                           1.1663069946420412, 0.6830549536215098, 0.4588680265447762, 0.22387792331971723, 
+                           0.12721190975530583, 0.1395456548881242, 0.12888895743468684, 0.0, 0.0, 0.0, 0.0]),
+                 3]
+Kern_f_Re = lambda x: splev(x, Kern_f_Re_tck)
 
 
 def dP_Kern(m, rho, mu, DShell, LSpacing, pitch, Do, NBaffles, mu_w=None):
@@ -1125,6 +1121,7 @@ Bell_baffle_configuration_Jcs = np.array([0.534317, 0.544632, 0.556665, 0.566983
 getting near to requiring more knots. The fitting for a digitized graph is
 likely to be at the maximum possible accuracy. Any speed increasing fit 
 function should fit the smoothed function, not the raw data.
+125 us to create.
 '''
 Bell_baffle_configuration_obj = UnivariateSpline(Bell_baffle_configuration_Fcs, 
                                                  Bell_baffle_configuration_Jcs, 
