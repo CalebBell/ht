@@ -171,14 +171,14 @@ def test_Phadkeb_numbers():
     # https://oeis.org/A001481
     # Quick and efficient
     # Translated from Mathematica
-    # upTo = 160; With[{max = Ceiling[Sqrt[upTo]]}, Select[Union[Total /@ (Tuples[Range[0, max], {2}]^2)], # <= upTo &]]  (* Harvey P. Dale, Apr 22 2011 *) 
+    # up to = 160; With[{max = Ceiling[Sqrt[upTo]]}, Select[Union[Total /@ (Tuples[Range[0, max], {2}]^2)], # <= upTo &]]  (* Harvey P. Dale, Apr 22 2011 *) 
     # 10 loops, best of 3: 17.3 ms per loop
     # Confirmed with SymPy
-    upTo = 100000
-    max_range = int(ceil(upTo**0.5))
+    up_to = 100000
+    max_range = int(ceil(up_to**0.5))
     squares = [i*i for i in range(max_range+1)]
     seq = [i+j for i in squares for j in squares]
-    seq = [i for i in set(seq) if i < upTo] # optional
+    seq = [i for i in set(seq) if i < up_to] # optional
     nums = seq[0:len(square_Ns)]
     assert_allclose(nums, square_Ns)
 
@@ -1174,7 +1174,7 @@ def test_NTU_from_P_E():
         tot +=1
     assert tot >= 85
     
-    # 2 tube passes (optimal arangement) (analytical)
+    # 2 tube passes (optimal arrangement) (analytical)
     R1 = 1.1
     NTU1 = 10
     P1 = temperature_effectiveness_TEMA_E(R1=R1, NTU1=NTU1, Ntp=2, optimal=True)
