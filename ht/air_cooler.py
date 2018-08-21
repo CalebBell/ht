@@ -481,7 +481,7 @@ def h_ESDU_high_fin(m, A, A_min, A_increase, A_fin, A_tube_showing,
     The tube-row count correction factor is 1 for four or more rows, 0.92 for
     three rows, 0.84 for two rows, and 0.76 for one row according to [1]_.
     
-    The property correction factor can be disabled by not specifiying
+    The property correction factor can be disabled by not specifying
     `Pr_wall`. A Prandtl number exponent of 0.26 is recommended in [1]_ for 
     heating and cooling for both liquids and gases.
     
@@ -625,7 +625,7 @@ def h_ESDU_low_fin(m, A, A_min, A_increase, A_fin,
     Notes
     -----
     The tube-row count correction factor `F2` can be disabled by setting `tube_rows`
-    to 10. The property correction factor `F1` can be disabled by not specifiying
+    to 10. The property correction factor `F1` can be disabled by not specifying
     `Pr_wall`. A Prandtl number exponent of 0.26 is recommended in [1]_ for 
     heating and cooling for both liquids and gases.
     
@@ -703,6 +703,8 @@ def h_Ganguli_VDI(m, A, A_min, A_increase, A_fin,
         Nu_d = 0.22Re_d^{0.6}\left(\frac{A}{A_{tube,only}}\right)^{-0.15}Pr^{1/3}
         
     Staggered:
+        
+    .. math::
         Nu_d = 0.38 Re_d^{0.6}\left(\frac{A}{A_{tube,only}}\right)^{-0.15}Pr^{1/3}
             
     Parameters

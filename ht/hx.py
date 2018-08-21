@@ -2236,7 +2236,7 @@ def temperature_effectiveness_plate(R1, NTU1, Np1, Np2, counterflow=True,
         counterflow or parallel flow, [-]
     passes_counterflow : bool
         In addition to the overall flow direction, in some cases individual 
-        passes may be in counter or parallel flow; this controlls that [-]
+        passes may be in counter or parallel flow; this controls that [-]
     reverse : bool
         Used **internally only** to allow cases like the 1-4 formula to work  
         for the 4-1 flow case, without having to duplicate the code [-]
@@ -2370,7 +2370,7 @@ def temperature_effectiveness_plate(R1, NTU1, Np1, Np2, counterflow=True,
             D = 0.5*(A + B - 0.5*A*B*R1)
             return 2.*D - ((1. + R1)*D*D)
     if not reverse:
-        # only the assymetric cases will be able to solve by flipping things
+        # only the asymmetric cases will be able to solve by flipping things
         # Note that asymmetric performs differently depending on the arguments
         # The user still needs to input R1, NTU1 for side 1
         # so if they want to do a 3-1 instead of a 1-3 as is implemented here
@@ -3386,7 +3386,7 @@ def NTU_from_P_E(P1, R1, Ntp, optimal=True):
         return NTU_from_P_basic(P1, R1, subtype='counterflow')
     elif Ntp == 2 and optimal:
         # Nice analytical solution is available
-        # There are actualy two roots but one of them is complex
+        # There are actually two roots but one of them is complex
         x1 = R1*R1 + 1.
         return 2.*log(((P1*R1 - P1*x1**0.5 + P1 - 2.)/(P1*R1 + P1*x1**0.5 + P1 - 2.))**0.5)*(x1)**-.5
     elif Ntp == 2 and not optimal:
@@ -3536,7 +3536,7 @@ def NTU_from_P_plate(P1, R1, Np1, Np2, counterflow=True,
         counterflow or parallel flow, [-]
     passes_counterflow : bool
         In addition to the overall flow direction, in some cases individual 
-        passes may be in counter or parallel flow; this controlls that [-]
+        passes may be in counter or parallel flow; this controls that [-]
     reverse : bool
         Used **internally only** to allow cases like the 1-4 formula to work  
         for the 4-1 flow case, without having to duplicate the code [-]
@@ -4415,7 +4415,7 @@ _L_unsupported_aluminium = [0.559, 0.762, 0.965, 1.143, 1.321, 1.524, 1.626,
 
 def L_unsupported_max(Do, material='CS'):
     r'''Determines the maximum length of a heat exchanger tube can go without
-    a support, acording to TEMA [1]_. The limits provided apply for the 
+    a support, according to TEMA [1]_. The limits provided apply for the 
     worst-case temperature allowed for the material to be used at.
 
     Parameters
@@ -5731,7 +5731,7 @@ def Ntubes_Phadkeb(DBundle, Do, pitch, Ntp, angle=30):
     -----
     For single-pass cases, the result is exact, and no tubes need to be removed
     for any reason. For 4, 6, 8 pass arrangements, a number of tubes must be 
-    removed to accomodate pass partition plates. The following assumptions
+    removed to accommodate pass partition plates. The following assumptions
     are involved with that:
         * The pass partition plate is where a row of tubes would have been. 
           Only one or two rows are assumed affected.

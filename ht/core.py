@@ -180,7 +180,7 @@ Kays_Crawford_laminar_liquid_fd = {'mu_heating_coeff': -0.58,
                                    'mu_cooling_coeff': -0.5,
                                    'property_option': WALL_FACTOR_VISCOSITY}
 
-# 1.35 as a result suggested by an experiment byt the analysis is "prefered"
+# 1.35 as a result suggested by an experiment byt the analysis is "preferred"
 Kays_Crawford_laminar_gas_fd = {'mu_heating_coeff': -1, 
                                 'mu_cooling_coeff': -1,
                                 'property_option': WALL_FACTOR_VISCOSITY}

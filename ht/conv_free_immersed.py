@@ -1038,7 +1038,7 @@ def Nu_horizontal_cylinder(Pr, Gr, Method=None, AvailableMethods=False):
     used directly. Will automatically select the correlation to use if none is
     provided; returns None if insufficient information is provided.
 
-    Prefered functions are 'Morgan' when discontinuous results are acceptable
+    Preferred functions are 'Morgan' when discontinuous results are acceptable
     and 'Churchill-Chu' otherwise.
 
     Parameters

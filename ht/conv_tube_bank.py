@@ -200,7 +200,7 @@ def Zukauskas_tube_row_correction(tube_rows, staggered=True, Re=1E4):
     digitized from [1]_ and also shown in [2]_ for heat transfer across
     a tube bundle. The correction factors are slightly different for 
     staggered vs. inline configurations; for the staggered configuration,
-    factors are avaliable separately for `Re` larger or smaller than 1000.
+    factors are available separately for `Re` larger or smaller than 1000.
     
     This method is a tabular lookup, with values of 1 when the tube row count
     is 20 or more.
@@ -564,7 +564,7 @@ def Nu_ESDU_73031(Re, Pr, tube_rows, pitch_parallel, pitch_normal,
     Notes
     -----
     The tube-row count correction factor `F2` can be disabled by setting `tube_rows`
-    to 10. The property correction factor `F1` can be disabled by not specifiying
+    to 10. The property correction factor `F1` can be disabled by not specifying
     `Pr_wall`. A Prandtl number exponent of 0.26 is recommended in [1]_ for 
     heating and cooling for both liquids and gases.
 
