@@ -49,6 +49,7 @@ def Lazarek_Black(m, D, mul, kl, Hvap, q=None, Te=None):
     .. math::
         h_{tp} = 30 Re_{lo}^{0.857} Bg^{0.714} \frac{k_l}{D}
         
+    .. math::
         Re_{lo} = \frac{G_{tp}D}{\mu_l}
     
     Parameters
@@ -125,6 +126,7 @@ def Li_Wu(m, x, D, rhol, rhog, mul, kl, Hvap, sigma, q=None, Te=None):
     .. math::
         h_{tp} = 334 Bg^{0.3}(Bo\cdot Re_l^{0.36})^{0.4}\frac{k_l}{D}
         
+    .. math::
         Re_{l} = \frac{G(1-x)D}{\mu_l}
     
     Parameters
@@ -212,6 +214,7 @@ def Sun_Mishima(m, D, rhol, rhog, mul, kl, Hvap, sigma, q=None, Te=None):
         h_{tp} = \frac{ 6 Re_{lo}^{1.05} Bg^{0.54}}
         {We_l^{0.191}(\rho_l/\rho_g)^{0.142}}\frac{k_l}{D}
         
+    .. math::
         Re_{lo} = \frac{G_{tp}D}{\mu_l}
     
     Parameters
@@ -295,45 +298,64 @@ def Thome(m, x, D, rhol, rhog, mul, mug, kl, kg, Cpl, Cpg, Hvap, sigma, Psat,
         h(z) = \frac{t_l}{\tau} h_l(z) +\frac{t_{film}}{\tau} h_{film}(z) 
         +  \frac{t_{dry}}{\tau} h_{g}(z) 
     
+    .. math::
         h_{l/g}(z) = (Nu_{lam}^4 + Nu_{trans}^4)^{1/4} k/D
         
+    .. math::
         Nu_{laminar} = 0.91 {Pr}^{1/3} \sqrt{ReD/L(z)}
         
+    .. math::
         Nu_{trans} = \frac{ (f/8) (Re-1000)Pr}{1+12.7 (f/8)^{1/2} (Pr^{2/3}-1)}
         \left[ 1 + \left( \frac{D}{L(z)}\right)^{2/3}\right]
         
+    .. math::
         f = (1.82 \log_{10} Re - 1.64 )^{-2}
         
+    .. math::
         L_l = \frac{\tau G_{tp}}{\rho_l}(1-x)
         
+    .. math::
         L_{dry} = v_p t_{dry}
         
+    .. math::
         t_l = \frac{\tau}{1 + \frac{\rho_l}{\rho_g}\frac{x}{1-x}}
         
+    .. math::
         t_v = \frac{\tau}{1 + \frac{\rho_g}{\rho_l}\frac{1-x}{x}}
         
+    .. math::
         \tau = \frac{1}{f_{opt}}
         
+    .. math::
         f_{opt} = \left(\frac{q}{q_{ref}}\right)^{n_f}
         
+    .. math::
         q_{ref} = 3328\left(\frac{P_{sat}}{P_c}\right)^{-0.5}
         
+    .. math::
         t_{dry,film} = \frac{\rho_l \Delta H_{vap}}{q}[\delta_0(z) - 
         \delta_{min}]
         
+    .. math::
         \frac{\delta_0}{D} = C_{\delta 0}\left(3\sqrt{\frac{\nu_l}{v_p D}}
         \right)^{0.84}\left[(0.07Bo^{0.41})^{-8} + 0.1^{-8}\right]^{-1/8}
         
+    .. math::
         Bo = \frac{\rho_l D}{\sigma} v_p^2
         
+    .. math::
         v_p = G_{tp} \left[\frac{x}{\rho_g} + \frac{1-x}{\rho_l}\right]
         
+    .. math::
         h_{film}(z) = \frac{2 k_l}{\delta_0(z) + \delta_{min}(z)}
         
+    .. math::
         \delta_{min} = 0.3\cdot 10^{-6} \text{m}
         
+    .. math::
         C_{\delta,0} = 0.29
         
+    .. math::
         n_f = 1.74
         
     if t dry film > tv:
@@ -341,8 +363,10 @@ def Thome(m, x, D, rhol, rhog, mul, mug, kl, kg, Cpl, Cpg, Hvap, sigma, Psat,
     .. math::
         \delta_{end}(x) = \delta(z, t_v)
         
+    .. math::
         t_{film} = t_v
         
+    .. math::
         t_{dry} = 0
     
     Otherwise:
@@ -350,8 +374,10 @@ def Thome(m, x, D, rhol, rhog, mul, mug, kl, kg, Cpl, Cpg, Hvap, sigma, Psat,
     .. math::
         \delta_{end}(z) = \delta_{min}
         
+    .. math::
         t_{film} = t_{dry,film}
         
+    .. math::
         t_{dry} = t_v - t_{film}
     
     Parameters
@@ -502,8 +528,10 @@ def Yun_Heo_Kim(m, x, D, rhol, mul, Hvap, sigma, q=None, Te=None):
     .. math::
         h_{tp} = 136876(Bg\cdot We_l)^{0.1993} Re_l^{-0.1626}
         
+    .. math::
         Re_l = \frac{G D (1-x)}{\mu_l}
         
+    .. math::
         We_l = \frac{G^2 D}{\rho_l \sigma}
     
     Parameters
@@ -583,19 +611,25 @@ def Chen_Edelstein(m, x, D, rhol, rhog, mul, mug, kl, Cpl, Hvap, sigma,
     .. math::
         h_{tp} = S\cdot h_{nb} + F \cdot h_{sp,l}
         
+    .. math::
         h_{sp,l} = 0.023 Re_l^{0.8} Pr_l^{0.4} k_l/D
         
+    .. math::
         Re_l = \frac{DG(1-x)}{\mu_l}
         
+    .. math::
         h_{nb} = 0.00122\left( \frac{\lambda_l^{0.79} c_{p,l}^{0.45} 
         \rho_l^{0.49}}{\sigma^{0.5} \mu^{0.29} H_{vap}^{0.24} \rho_g^{0.24}}
         \right)\Delta T_{sat}^{0.24} \Delta p_{sat}^{0.75}
         
+    .. math::
         F = (1 + X_{tt}^{-0.5})^{1.78}
         
+    .. math::
         X_{tt} = \left( \frac{1-x}{x}\right)^{0.9} \left(\frac{\rho_g}{\rho_l}
         \right)^{0.5}\left( \frac{\mu_l}{\mu_g}\right)^{0.1}
     
+    .. math::
         S = 0.9622 - 0.5822\left(\tan^{-1}\left(\frac{Re_L\cdot F^{1.25}}
         {6.18\cdot 10^4}\right)\right)
         
@@ -692,23 +726,30 @@ def Chen_Bennett(m, x, D, rhol, rhog, mul, mug, kl, Cpl, Hvap, sigma,
     .. math::
         h_{tp} = S\cdot h_{nb} + F \cdot h_{sp,l}
         
-        h_{sp,l} = 0.023 Re_l^{0.8} Pr_l^{0.4} k_l/D
+     .. math::
+       h_{sp,l} = 0.023 Re_l^{0.8} Pr_l^{0.4} k_l/D
         
-        Re_l = \frac{DG(1-x)}{\mu_l}
+     .. math::
+       Re_l = \frac{DG(1-x)}{\mu_l}
         
-        h_{nb} = 0.00122\left( \frac{\lambda_l^{0.79} c_{p,l}^{0.45} 
+     .. math::
+       h_{nb} = 0.00122\left( \frac{\lambda_l^{0.79} c_{p,l}^{0.45} 
         \rho_l^{0.49}}{\sigma^{0.5} \mu^{0.29} H_{vap}^{0.24} \rho_g^{0.24}}
         \right)\Delta T_{sat}^{0.24} \Delta p_{sat}^{0.75}
         
-        F = \left(\frac{Pr_1+1}{2}\right)^{0.444}\cdot (1+X_{tt}^{-0.5})^{1.78}
+     .. math::
+       F = \left(\frac{Pr_1+1}{2}\right)^{0.444}\cdot (1+X_{tt}^{-0.5})^{1.78}
         
-        S = \frac{1-\exp(-F\cdot h_{conv} \cdot X_0/k_l)}
+     .. math::
+       S = \frac{1-\exp(-F\cdot h_{conv} \cdot X_0/k_l)}
         {F\cdot h_{conv}\cdot X_0/k_l}
         
-        X_{tt} = \left( \frac{1-x}{x}\right)^{0.9} \left(\frac{\rho_g}{\rho_l}
+     .. math::
+       X_{tt} = \left( \frac{1-x}{x}\right)^{0.9} \left(\frac{\rho_g}{\rho_l}
         \right)^{0.5}\left( \frac{\mu_l}{\mu_g}\right)^{0.1}
     
-        X_0 = 0.041 \left(\frac{\sigma}{g \cdot (\rho_l-\rho_v)}\right)^{0.5} 
+     .. math::
+       X_0 = 0.041 \left(\frac{\sigma}{g \cdot (\rho_l-\rho_v)}\right)^{0.5} 
         
     Parameters
     ----------
@@ -801,15 +842,20 @@ def Liu_Winterton(m, x, D, rhol, rhog, mul, kl, Cpl, MW, P,  Pc, Te):
     .. math::
         h_{tp} = \sqrt{ (F\cdot h_l)^2 + (S\cdot h_{nb})^2} 
         
-        S = \left( 1+0.055F^{0.1} Re_{L}^{0.16}\right)^{-1}
+     .. math::
+       S = \left( 1+0.055F^{0.1} Re_{L}^{0.16}\right)^{-1}
         
-        h_{l} = 0.023 Re_L^{0.8} Pr_l^{0.4} k_l/D
+     .. math::
+       h_{l} = 0.023 Re_L^{0.8} Pr_l^{0.4} k_l/D
 
-        Re_L = \frac{GD}{\mu_l}
+     .. math::
+       Re_L = \frac{GD}{\mu_l}
         
-        F = \left[ 1+ xPr_{l}(\rho_l/\rho_g-1)\right]^{0.35}
+     .. math::
+       F = \left[ 1+ xPr_{l}(\rho_l/\rho_g-1)\right]^{0.35}
         
-        h_{nb} = \left(55\Delta Te^{0.67} \frac{P}{P_c}^{(0.12 - 0.2\log_{10}
+     .. math::
+       h_{nb} = \left(55\Delta Te^{0.67} \frac{P}{P_c}^{(0.12 - 0.2\log_{10}
          R_p)}(-\log_{10} \frac{P}{P_c})^{-0.55} MW^{-0.5}\right)^{1/0.33}
     
     Parameters

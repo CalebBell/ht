@@ -244,16 +244,21 @@ def h_boiling_Han_Lee_Kim(m, x, Dh, rhol, rhog, mul, kl, Hvap, Cpl, q,
     .. math::
         h = Ge_1\left(\frac{k_l}{D_h}\right)Re_{eq}^{Ge_2} Pr^{0.4} Bo_{eq}^{0.3}
         
+    .. math::
         Ge_1 = 2.81\left(\frac{\lambda}{D_h}\right)^{-0.041}\left(\frac{\pi}{2}
         -\beta\right)^{-2.83}
         
+    .. math::
         Ge_2 = 0.746\left(\frac{\lambda}{D_h}\right)^{-0.082}\left(\frac{\pi}
         {2}-\beta\right)^{0.61}
         
+    .. math::
         Re_{eq} = \frac{G_{eq} D_h}{\mu_l}
         
+    .. math::
         Bo_{eq} = \frac{q}{G_{eq} H_{vap}}
         
+    .. math::
         G_{eq} = \frac{m}{A_{flow}}\left[1 - x + x\left(\frac{\rho_l}{\rho_g}
         \right)^{1/2}\right]
 
@@ -369,6 +374,7 @@ def h_boiling_Huang_Sheer(rhol, rhog, mul, kl, Hvap, sigma, Cpl, q, Tsat,
         {k_l T_{sat}}\right)^{0.56}
         \left(\frac{H_{vap} d_o^2}{\alpha_l^2}\right)^{0.31} Pr_l^{0.33}
 
+    .. math::
         d_o = 0.0146\theta\left[\frac{2\sigma}{g(\rho_l-\rho_g)}\right]^{0.5}\\
         \theta =  35^\circ
 
@@ -473,13 +479,17 @@ def h_boiling_Yan_Lin(m, x, Dh, rhol, rhog, mul, kl, Hvap, Cpl, q,
         h = 1.926\left(\frac{k_l}{D_h}\right) Re_{eq} Pr_l^{1/3} Bo_{eq}^{0.3}
         Re^{-0.5}
         
+    .. math::
         Re_{eq} = \frac{G_{eq} D_h}{\mu_l}
         
+    .. math::
         Bo_{eq} = \frac{q}{G_{eq} H_{vap}}
         
+    .. math::
         G_{eq} = \frac{m}{A_{flow}}\left[1 - x + x\left(\frac{\rho_l}{\rho_g}
         \right)^{1/2}\right]
     
+    .. math::
         Re = \frac{G D_h}{\mu_l}
         
     Claimed to be valid for :math:`2000 < Re_{eq} < 10000`.

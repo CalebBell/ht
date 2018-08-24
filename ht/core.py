@@ -42,10 +42,12 @@ def LMTD(Thi, Tho, Tci, Tco, counterflow=True):
     .. math::
         \Delta T_{LMTD}=\frac{\Delta T_1-\Delta T_2}{\ln(\Delta T_1/\Delta T_2)}
 
+    .. math::
         \text{For countercurrent:      } \\
         \Delta T_1=T_{h,i}-T_{c,o}\\
         \Delta T_2=T_{h,o}-T_{c,i}
 
+    .. math::
         \text{Parallel Flow Only:} \\
         {\Delta T_1=T_{h,i}-T_{c,i}}\\
         {\Delta T_2=T_{h,o}-T_{c,o}}
@@ -458,10 +460,13 @@ def fin_efficiency_Kern_Kraus(Do, D_fin, t_fin, k_fin, h):
         \left[\frac{I_1(mr_e)K_1(mr_o) - K_1(mr_e) I_1(mr_o)}
         {I_0(mr_o) K_1(mr_e) + I_1(mr_e) K_0(mr_o)}\right]
         
+    .. math::
         m = \sqrt{\frac{2h}{k_{fin} t_{fin}}}
 
+    .. math::
         r_e = 0.5 D_{fin}
         
+    .. math::
         r_o = 0.5 D_{o}
 
     Parameters

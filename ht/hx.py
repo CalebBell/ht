@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 '''Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
-Copyright (C) 2016, 2017, Caleb Bell <Caleb.Andrew.Bell@gmail.com>
+Copyright (C) 2016, 2017, 2018 Caleb Bell <Caleb.Andrew.Bell@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -84,6 +84,7 @@ def effectiveness_from_NTU(NTU, Cr, subtype='counterflow'):
     .. math::
         \epsilon = \frac{1 - \exp[-NTU(1-C_r)]}{1-C_r\exp[-NTU(1-C_r)]},\; C_r < 1
 
+    .. math::
         \epsilon = \frac{NTU}{1+NTU},\; C_r = 1
 
     For TEMA E shell-and-tube heat exchangers with one shell pass, 2n tube 
@@ -343,6 +344,7 @@ def NTU_from_effectiveness(effectiveness, Cr, subtype='counterflow'):
     .. math::
         NTU = \frac{1}{C_r-1}\ln\left(\frac{\epsilon-1}{\epsilon C_r-1}\right)
         
+    .. math::
         NTU = \frac{\epsilon}{1-\epsilon} \text{ if } C_r = 1
 
     For TEMA E shell-and-tube heat exchangers with one shell pass, 2n tube 
@@ -351,6 +353,7 @@ def NTU_from_effectiveness(effectiveness, Cr, subtype='counterflow'):
     .. math::
         (NTU)_1 = -(1 + C_r^2)^{-0.5}\ln\left(\frac{E-1}{E+1}\right)
         
+    .. math::
         E = \frac{2/\epsilon_1 - (1 + C_r)}{(1 + C_r^2)^{0.5}}
 
     For TEMA E shell-and-tube heat exchangers with more than one shell pass, 2n  
@@ -360,8 +363,10 @@ def NTU_from_effectiveness(effectiveness, Cr, subtype='counterflow'):
     .. math::
         \epsilon_1 = \frac{F-1}{F-C_r}
         
+    .. math::
         F = \left(\frac{\epsilon C_r-1}{\epsilon-1}\right)^{1/n}
         
+    .. math::
         NTU = n(NTU)_1
         
     For cross-flow (single-pass) heat exchangers with both fluids unmixed, 
@@ -611,8 +616,10 @@ def calc_Cmax(mh, mc, Cph, Cpc):
     .. math::
         C_c = m_cC_{p,c}
 
+    .. math::
         C_h = m_h C_{p,h}
 
+    .. math::
         C_{max} = \max(C_c, C_h)
 
     Parameters
@@ -1064,8 +1071,10 @@ def temperature_effectiveness_air_cooler(R1, NTU1, rows, passes, coerce=True):
     .. math::
         P_1 = \frac{1}{R}\left(1 -\frac{1}{\xi}\right)
         
+    .. math::
         \xi = \frac{K}{2} + \left(1 - \frac{K}{2}\right)\exp(2KR)
         
+    .. math::
         K = 1 - \exp\left(\frac{-NTU}{2}\right)
         
     For 3 rows / 3 passes (cited as from [4]_ in [1]_):
@@ -1074,6 +1083,7 @@ def temperature_effectiveness_air_cooler(R1, NTU1, rows, passes, coerce=True):
         \xi = K\left[1 - \frac{K}{4} - RK\left(1 - \frac{K}{2}\right)\right]
         \exp(KR) + \exp(3KR)\left(1 - \frac{K}{2}\right)^2
         
+    .. math::
         K = 1 - \exp\left(\frac{-NTU}{3}\right)
         
     For 4 rows / 4 passes (cited as from [4]_ in [1]_):
@@ -1084,6 +1094,7 @@ def temperature_effectiveness_air_cooler(R1, NTU1, rows, passes, coerce=True):
         \left[1 - \frac{R}{8}K\left(1 - \frac{K}{2}\right)\exp(2KR)\right]
         + \exp(4KR)\left(1 - \frac{K}{2}\right)^3
         
+    .. math::
         K = 1 - \exp\left(\frac{-NTU}{4}\right)
         
     For 5 rows / 5 passes (cited as from [4]_ in [1]_):
@@ -1101,11 +1112,13 @@ def temperature_effectiveness_air_cooler(R1, NTU1, rows, passes, coerce=True):
     .. math::
         P_1 = \frac{1}{R}\left(1 -\frac{1}{\xi}\right)
         
+    .. math::
         \xi = \left\{\frac{R}{2}K^3[4 - K + 2RK^2] + \exp(4KR)
         + K\left[1 - \frac{K}{2} + \frac{K^2}{8}\right]
         \left[1 - \exp(4KR)\right]
         \right\}\frac{1}{(1+RK^2)^2}
         
+    .. math::
         K = 1 - \exp\left(\frac{-NTU}{4}\right)
         
     Parameters
@@ -1298,6 +1311,7 @@ def temperature_effectiveness_basic(R1, NTU1, subtype='crossflow'):
     .. math::
         P_1 = 1 - \exp\left(-\frac{K}{R_1}\right)
         
+    .. math::
         K = 1 - \exp(-R_1 NTU_1)
 
     For cross-flow (single-pass) heat exchangers with fluid 2 mixed, fluid 1 
@@ -1306,6 +1320,7 @@ def temperature_effectiveness_basic(R1, NTU1, subtype='crossflow'):
     .. math::
         P_1 = \frac{1 - \exp(-K R_1)}{R_1}
         
+    .. math::
         K = 1 - \exp(-NTU_1)
 
     For cross-flow (single-pass) heat exchangers with both fluids mixed 
@@ -1314,8 +1329,10 @@ def temperature_effectiveness_basic(R1, NTU1, subtype='crossflow'):
     .. math::
         P_1 = \left(\frac{1}{K_1} + \frac{R_1}{K_2} - \frac{1}{NTU_1}\right)^{-1}
         
+    .. math::
         K_1 = 1 - \exp(-NTU_1)
         
+    .. math::
         K_2 = 1 - \exp(-R_1 NTU_1)
         
     Parameters
@@ -1418,14 +1435,19 @@ def temperature_effectiveness_TEMA_J(R1, NTU1, Ntp):
     .. math::
         P_1 = \left[1 + \frac{R_1}{2} + \lambda B - 2\lambda C D\right]^{-1}
         
+    .. math::
         B = \frac{(A^\lambda +1)}{A^\lambda -1}
         
+    .. math::
         C = \frac{A^{(1 + \lambda)/2}}{\lambda - 1 + (1 + \lambda)A^\lambda}
         
+    .. math::
         D = 1 + \frac{\lambda A^{(\lambda-1)/2}}{A^\lambda -1}
         
+    .. math::
         A = \exp(NTU_1)
         
+    .. math::
         \lambda = (1 + R_1^2/4)^{0.5}
         
     For 1-4 TEMA J, shell and tube exchanger with both sides mixed:
@@ -1434,16 +1456,22 @@ def temperature_effectiveness_TEMA_J(R1, NTU1, Ntp):
         P_1 = \left[1 + \frac{R_1}{4}\left(\frac{1+3E}{1+E}\right) + \lambda B 
         - 2 \lambda C D\right]^{-1}
         
+    .. math::
         B = \frac{A^\lambda +1}{A^\lambda -1}
         
+    .. math::
         C = \frac{A^{(1+\lambda)/2}}{\lambda - 1 + (1 + \lambda)A^\lambda}
         
+    .. math::
         D = 1 + \frac{\lambda A^{(\lambda-1)/2}}{A^\lambda -1}
         
+    .. math::
         A = \exp(NTU_1)
         
+    .. math::
         E = \exp(R_1 NTU_1/2)
         
+    .. math::
         \lambda = (1 + R_1^2/16)^{0.5}
         
     Parameters
@@ -1531,12 +1559,16 @@ def temperature_effectiveness_TEMA_H(R1, NTU1, Ntp, optimal=True):
     .. math::
         P_1 = E[1 + (1 - BR_1/2)(1 - A R_1/2 + ABR_1)] - AB(1 - BR_1/2)
         
+    .. math::
         A = \frac{1}{1 + R_1/2}\{1 - \exp[-NTU_1(1 + R_1/2)/2]\}
         
+    .. math::
         B = \frac{1-D}{1-R_1 D/2}
         
+    .. math::
         D = \exp[-NTU_1(1-R_1/2)/2]
         
+    .. math::
         E = (A + B - ABR_1/2)/2
         
     1-2 TEMA H, shell and tube fluids mixed in each pass at the cross section:
@@ -1544,18 +1576,25 @@ def temperature_effectiveness_TEMA_H(R1, NTU1, Ntp, optimal=True):
     .. math::
         P_1 = \frac{1}{R_1}\left[1 - \frac{(1-D)^4}{B - 4G/R_1}\right]
         
+    .. math::
         B = (1+H)(1+E)^2
         
+    .. math::
         G = (1-D)^2(D^2 + E^2) + D^2(1 + E)^2
         
+    .. math::
         H = [1 - \exp(-2\beta)]/(4/R_1 -1)
         
+    .. math::
         E = [1 - \exp(-\beta)]/(4/R_1 - 1)
         
+    .. math::
         D = [1 - \exp(-\alpha)]/(4/R_1 + 1)
         
+    .. math::
         \alpha = NTU_1(4 + R_1)/8
         
+    .. math::
         \beta = NTU_1(4-R_1)/8
         
     1-2 TEMA H, shell and tube fluids mixed in each pass at the cross section
@@ -1566,18 +1605,25 @@ def temperature_effectiveness_TEMA_H(R1, NTU1, Ntp, optimal=True):
     .. math::
         P_2 = \left[1 - \frac{B + 4GR_2}{(1-D)^4}\right]
     
+    .. math::
         B = (1 + H)(1 + E)^2
         
+    .. math::
         G = (1-D)^2(D^2 + E^2) + D^2(1 + E)^2
         
+    .. math::
         D = \frac{1 - \exp(-\alpha)}{1 - 4R_2}
         
+    .. math::
         E = \frac{\exp(-\beta) - 1}{4R_2 +1}
         
+    .. math::
         H = \frac{\exp(-2\beta) - 1}{4R_2 +1}
         
+    .. math::
         \alpha = \frac{NTU_2}{8}(4R_2 -1)
         
+    .. math::
         \beta = \frac{NTU_2}{8}(4R_2 +1)
                 
     Parameters
@@ -1691,10 +1737,13 @@ def temperature_effectiveness_TEMA_G(R1, NTU1, Ntp, optimal=True):
     .. math::
         P_1 = A + B - AB(1 + R_1) + R_1 AB^2
         
+    .. math::
         A = \frac{1}{1 + R_1}\{1 - \exp(-NTU_1(1+R_1)/2)\}
         
+    .. math::
         B = \frac{1 - D}{1 - R_1 D}
         
+    .. math::
         D = \exp[-NTU_1(1-R_1)/2]
         
     1-2 TEMA G, shell and tube exchanger with shell and tube fluids mixed in 
@@ -1703,12 +1752,16 @@ def temperature_effectiveness_TEMA_G(R1, NTU1, Ntp, optimal=True):
     .. math::
         P_1 = (B - \alpha^2)/(A + 2 + R_1 B)
         
+    .. math::
         A = -2 R_1(1-\alpha)^2/(2 + R_1)
         
+    .. math::
         B = [4 - \beta(2+R_1)]/(2 - R_1)
         
+    .. math::
         \alpha = \exp[-NTU_1(2+R_1)/4]
         
+    .. math::
         \beta = \exp[-NTU_1(2 - R_1)/2]
         
     1-2 TEMA G, shell and tube exchanger in overall parallelflow arrangement 
@@ -1719,12 +1772,16 @@ def temperature_effectiveness_TEMA_G(R1, NTU1, Ntp, optimal=True):
     .. math::
         P_2 = \frac{(B-\alpha^2)}{R_2(A - \alpha^2/R_2 + 2)}
         
+    .. math::
         A = \frac{(1-\alpha)^2}{(R_2-0.5)}
         
+    .. math::
         B = \frac{4R_2 - \beta(2R_2 - 1)}{2R_2 + 1}
         
+    .. math::
         \alpha = \exp\left(\frac{-NTU_2(2R_2-1)}{4}\right)
         
+    .. math::
         \beta = \exp\left(\frac{-NTU_2(2R_2+1)}{2}\right)
         
     Parameters
@@ -1836,6 +1893,7 @@ def temperature_effectiveness_TEMA_E(R1, NTU1, Ntp=1, optimal=True):
     .. math::
         P_1 = \frac{2}{1 + R_1 + E\coth(E\cdot NTU_1/2)}
         
+    .. math::
         E = [1 + R_1^2]^{1/2}
     
     1-2 TEMA E, shell fluid split into two steams individually mixed:
@@ -1844,8 +1902,10 @@ def temperature_effectiveness_TEMA_E(R1, NTU1, Ntp=1, optimal=True):
         P_1 = \frac{1}{R_1}\left[1 - \frac{(2-R_1)(2E+R_1B)}{(2+R_1)(2E-R_1/B)}
         \right]
         
+    .. math::
         E = \exp(NTU_1)
         
+    .. math::
         B = \exp(-NTU_1 R_1/2)
         
     1-3 TEMA E, shell and tube fluids mixed, one parallel pass and two 
@@ -1854,21 +1914,29 @@ def temperature_effectiveness_TEMA_E(R1, NTU1, Ntp=1, optimal=True):
     .. math::
         P_1 = \frac{1}{R_1} \left[1 - \frac{C}{AC + B^2}\right]
         
+    .. math::
         A = X_1(R_1 + \lambda_1)(R_1 - \lambda_2)/(2\lambda_1) - X_3 \delta
         - X_2(R_1 + \lambda_2)(R_1-\lambda_1)/(2\lambda_2) + 1/(1-R_1)
         
+    .. math::
         B = X_1(R_1-\lambda_2) - X_2(R_1-\lambda_1) + X_3\delta
         
+    .. math::
         C = X_2(3R_1 + \lambda_1) - X_1(3R_1 + \lambda_2) + X_3 \delta
         
+    .. math::
         X_i = \exp(\lambda_i NTU_1/3)/(2\delta),\;\; i = 1,2,3
         
+    .. math::
         \delta = \lambda_1 - \lambda_2
         
+    .. math::
         \lambda_1 = -\frac{3}{2} + \left[\frac{9}{4} + R_1(R_1-1)\right]^{1/2}
         
+    .. math::
         \lambda_2 = -\frac{3}{2} - \left[\frac{9}{4} + R_1(R_1-1)\right]^{1/2}
         
+    .. math::
         \lambda_3 = R_1
         
     1-3 TEMA E, shell and tube fluids mixed, two parallel passes and one 
@@ -1877,23 +1945,32 @@ def temperature_effectiveness_TEMA_E(R1, NTU1, Ntp=1, optimal=True):
     .. math::
         P_2 = \left[1 - \frac{C}{(AC + B^2)}\right]
         
+    .. math::
         A = \chi_1(1 + R_2 \lambda_1)(1 - R_2\lambda_2)/(2R_2^2\lambda_1) - E
         -\chi_2(1 + R_2\lambda_2)(1 - R_2\lambda_1)/(2R^2\lambda_2) + R/(R-1)
         
+    .. math::
         B = \chi_1(1 - R_2\lambda_2)/R_2 - \chi_2(1 - R_2 \lambda_1)/R_2 + E
         
+    .. math::
         C = -\chi_1(3 + R_2\lambda_2)/R_2 + \chi_2(3 + R_2\lambda_1)/R_2 + E
         
+    .. math::
         E = 0.5\exp(NTU_2/3)
         
+    .. math::
         \lambda_1 = (-3 + \delta)/2
         
+    .. math::
         \lambda_2 = (-3 - \delta)/2
         
+    .. math::
         \delta = \frac{[9R_2^2 + 4(1-R_2))]^{0.5}}{R_2}
             
+    .. math::
         \chi_1 = \frac{\exp(\lambda_1 R_2 NTU_2/3)}{2\delta}
         
+    .. math::
         \chi_2 = \frac{\exp(\lambda_2 R_2 NTU_2/3)}{2\delta}
         
     1-N TEMA E, shall and tube fluids mixed, efficient counterflow orientation,
@@ -1902,13 +1979,17 @@ def temperature_effectiveness_TEMA_E(R1, NTU1, Ntp=1, optimal=True):
     .. math::
         P_2 = \frac{2}{A + B + C}
         
+    .. math::
         A = 1 + R_2 + \coth(NTU_2/2)
         
+    .. math::
         B = \frac{-1}{N_1}\coth\left(\frac{NTU_2}{2N_1}\right)
         
+    .. math::
         C = \frac{1}{N_1}\sqrt{1 + N_1^2 R_2^2}
         \coth\left(\frac{NTU_2}{2N_1}\sqrt{1 + N_1^2 R_2^2}\right)
         
+    .. math::
         N_1 = \frac{N_{tp}}{2}
         
     Parameters
@@ -2099,8 +2180,10 @@ def temperature_effectiveness_plate(R1, NTU1, Np1, Np2, counterflow=True,
     .. math::
         P_1 = 0.5(A + B - 0.5ABR_1)
         
+    .. math::
         A = P_p(NTU_1, 0.5R_1)
         
+    .. math::
         B = P_c(NTU_1, 0.5R_1)
         
     For 1 pass/3 pass (with the two end passes in parallel):
@@ -2109,8 +2192,10 @@ def temperature_effectiveness_plate(R1, NTU1, Np1, Np2, counterflow=True,
         P_1 = \frac{1}{3}\left[B + A\left(1 - \frac{R_1 B}{3}\right)\left(2 
         - \frac{R_1 A}{3}\right)\right]
         
+    .. math::
         A = P_p\left(NTU_1, \frac{R_1}{3}\right)
         
+    .. math::
         B = P_c\left(NTU_1, \frac{R_1}{3}\right)
         
     For 1 pass/3 pass (with the two end passes in counterflow):
@@ -2119,8 +2204,10 @@ def temperature_effectiveness_plate(R1, NTU1, Np1, Np2, counterflow=True,
         P_1 = \frac{1}{3}\left[A + B\left(1 - \frac{R_1 A}{3}\right)\left(2
         - \frac{R_1 B}{3}\right)\right]
             
+    .. math::
         A = P_p\left(NTU_1, \frac{R_1}{3}\right)
         
+    .. math::
         B = P_c\left(NTU_1, \frac{R_1}{3}\right)
         
     For 1 pass/4 pass (any of the four possible configurations):
@@ -2128,10 +2215,13 @@ def temperature_effectiveness_plate(R1, NTU1, Np1, Np2, counterflow=True,
     .. math::
         P_1 = \frac{1-Q}{R_1}
         
+    .. math::
         Q = \left(1 - \frac{AR_1}{4}\right)^2\left(1 - \frac{BR_1}{4}\right)^2
         
+    .. math::
         A = P_p\left(NTU_1, \frac{R_1}{4}\right)
         
+    .. math::
         B = P_c\left(NTU_1, \frac{R_1}{4}\right)
         
     For 2 pass/2 pass, overall parallelflow, individual passes in parallel 
@@ -2146,6 +2236,7 @@ def temperature_effectiveness_plate(R1, NTU1, Np1, Np2, counterflow=True,
     .. math::
         P_1 = B[2 - B(1 + R_1)]
         
+    .. math::
         B = P_c\left(\frac{NTU_1}{2}, R_1\right)
         
     For 2 pass/2 pass, overall counterflow, individual passes parallelflow 
@@ -2154,6 +2245,7 @@ def temperature_effectiveness_plate(R1, NTU1, Np1, Np2, counterflow=True,
     .. math::
         P_1 = \frac{2A - A^2(1 + R_1)}{1 - R_1 A^2}
         
+    .. math::
         A = P_p\left(\frac{NTU_1}{2}, R_1\right)
         
     For 2 pass/2 pass, overall counterflow and individual passes counterflow 
@@ -2169,10 +2261,13 @@ def temperature_effectiveness_plate(R1, NTU1, Np1, Np2, counterflow=True,
         (A^2 + B^2) - \left(\frac{5}{9} + \frac{4D}{3}\right)AB
         + \frac{D(1+D)AB(A+B)}{3} - \frac{D^2A^2B^2}{9}
         
+    .. math::
         A = P_p\left(\frac{NTU_1}{2}, D\right)
         
+    .. math::
         B = P_c\left(\frac{NTU_1}{2}, D\right)
         
+    .. math::
         D = \frac{2R_1}{3}
         
     For 2 pass/3 pass, overall counterflow:
@@ -2180,21 +2275,29 @@ def temperature_effectiveness_plate(R1, NTU1, Np1, Np2, counterflow=True,
     .. math::
         P_1 = \frac{A + 0.5B + 0.5C + D}{R_1}
         
+    .. math::
         A = \frac{2R_1 EF^2 - 2EF + F - F^2}
         {2R_1 E^2 F^2 - E^2 - F^2 - 2EF + E + F}
         
+    .. math::
         B = \frac{A(E-1)}{F}
         
+    .. math::
         C = \frac{1 - A}{E}
         
+    .. math::
         D = R_1 E^2 C - R_1 E + R_1 - \frac{C}{2}
         
+    .. math::
         E = \frac{3}{2R_1 G}
         
+    .. math::
         F = \frac{3}{2R_1 H}
         
+    .. math::
         G = P_c\left(\frac{NTU_1}{2}, \frac{2R_1}{3}\right)
         
+    .. math::
         H = P_p\left(\frac{NTU_1}{2}, \frac{2R_1}{3}\right)
         
     For 2 pass/4 pass, overall parallel flow:
@@ -2202,10 +2305,13 @@ def temperature_effectiveness_plate(R1, NTU1, Np1, Np2, counterflow=True,
     .. math::
         P_1 = 2D - (1 + R_1)D^2
         
+    .. math::
         D = \frac{A + B - 0.5ABR_1}{2}
         
+    .. math::
         A = P_p\left(\frac{NTU_1}{2}, \frac{R_1}{2}\right)
         
+    .. math::
         B = P_c\left(\frac{NTU_1}{2}, \frac{R_1}{2}\right)
         
     For 2 pass/4 pass, overall counterflow flow:
@@ -2213,10 +2319,13 @@ def temperature_effectiveness_plate(R1, NTU1, Np1, Np2, counterflow=True,
     .. math::
         P_1 = \frac{2D - (1+R_1)D^2}{1 - D^2 R_1}
         
+    .. math::
         D = \frac{A + B - 0.5ABR_1}{2}
         
+    .. math::
         A = P_p\left(\frac{NTU_1}{2}, \frac{R_1}{2}\right)
         
+    .. math::
         B = P_c\left(\frac{NTU_1}{2}, \frac{R_1}{2}\right)
                 
     Parameters
@@ -3701,32 +3810,46 @@ def P_NTU_method(m1, m2, Cp1, Cp2, UA=None, T1i=None, T1o=None,
     .. math::
         Q = P_1 C_1 \Delta T_{max} = P_2 C_2 \Delta T_{max}
         
+    .. math::
         \Delta T_{max} = T_{h,i} - T_{c,i} = |T_{2,i} - T_{1,i}|
         
+    .. math::
         R_1 = \frac{C_1}{C_2} = \frac{T_{2,i} - T_{2,o}}{T_{1,o} - T_{1, i}}
         
+    .. math::
         R_2 = \frac{C_2}{C_1} = \frac{T_{1,o} - T_{1, i}}{T_{2,i} - T_{2,o}}
 
+    .. math::
         R_1 = \frac{1}{R_2}
         
+    .. math::
         NTU_1 = \frac{UA}{C_1}
         
+    .. math::
         NTU_2 = \frac{UA}{C_2}
         
+    .. math::
         NTU_1 = NTU_2 R_2
         
+    .. math::
         NTU_2 = NTU_1 R_1
         
+    .. math::
         P_1 = \frac{T_{1,o} - T_{1,i}}{T_{2,i} - T_{1,i}}
         
+    .. math::
         P_2 = \frac{T_{2,i} - T_{2,o}}{T_{2,i} - T_{1,i}}
         
+    .. math::
         P_1 = P_2 R_2
         
+    .. math::
         P_2 = P_1 R_1
         
+    .. math::
         C_1 = m_1 Cp_1
         
+    .. math::
         C_2 = m_2 Cp_2
         
     Once `P1` has been calculated, there are six different cases for calculating
@@ -3738,6 +3861,7 @@ def P_NTU_method(m1, m2, Cp1, Cp2, UA=None, T1i=None, T1o=None,
     .. math::
         T_{1,o} = - P_{1} T_{1,i} + P_{1} T_{2,i} + T_{1,i}
         
+    .. math::
         T_{2,o} = P_{1} R_{1} T_{1,i} - P_{1} R_{1} T_{2,i} + T_{2,i}
         
     Two known outlet temperatures:
@@ -3746,6 +3870,7 @@ def P_NTU_method(m1, m2, Cp1, Cp2, UA=None, T1i=None, T1o=None,
         T_{1,i} = \frac{P_{1} R_{1} T_{1,o} + P_{1} T_{2,o} 
         - T_{1,o}}{P_{1} R_{1} + P_{1} - 1}
         
+    .. math::
         T_{2,i} = \frac{P_{1} R_{1} T_{1,o} + P_{1} T_{2,o}
         - T_{2,o}}{P_{1} R_{1} + P_{1} - 1}
         
@@ -3755,6 +3880,7 @@ def P_NTU_method(m1, m2, Cp1, Cp2, UA=None, T1i=None, T1o=None,
         T_{1,o} = \frac{1}{P_{1} R_{1} - 1} \left(P_{1} R_{1} T_{1,i}
         + P_{1} T_{1,i} - P_{1} T_{2,o} - T_{1,i}\right)
         
+    .. math::
         T_{2,i} = \frac{P_{1} R_{1} T_{1,i} - T_{2,o}}{P_{1} R_{1} - 1}
         
     Outlet 1 known, inlet 2 known:
@@ -3762,6 +3888,7 @@ def P_NTU_method(m1, m2, Cp1, Cp2, UA=None, T1i=None, T1o=None,
     .. math::
         T_{1,i} = \frac{P_{1} T_{2,i} - T_{1,o}}{P_{1} - 1}
         
+    .. math::
         T_{2,o}  = \frac{1}{P_{1} - 1} \left(R_{1} \left(P_{1} T_{2,i}
         - T_{1,o}\right) - \left(P_{1} - 1\right) \left(R_{1} T_{1,o}
         - T_{2,i}\right)\right)
@@ -3772,6 +3899,7 @@ def P_NTU_method(m1, m2, Cp1, Cp2, UA=None, T1i=None, T1o=None,
         T_{1,i} = \frac{1}{P_{1} R_{1}} \left(P_{1} R_{1} T_{2,i} 
         - T_{2,i} + T_{2,o}\right)
         
+    .. math::
         T_{1,o} = \frac{1}{P_{1} R_{1}} \left(P_{1} R_{1} T_{2,i} 
         + \left(P_{1} - 1\right) \left(T_{2,i} - T_{2,o}\right)\right)
         
@@ -3781,6 +3909,7 @@ def P_NTU_method(m1, m2, Cp1, Cp2, UA=None, T1i=None, T1o=None,
         T_{2,i} = \frac{1}{P_{1}} \left(P_{1} T_{1,i} - T_{1,i} 
         + T_{1,o}\right)
         
+    .. math::
         T_{2,o} = \frac{1}{P_{1}} \left(P_{1} R_{1} \left(T_{1,i} 
         - T_{1,o}\right) + P_{1} T_{1,i} - T_{1,i} + T_{1,o}\right)
         
@@ -4006,12 +4135,16 @@ def F_LMTD_Fakheri(Thi, Tho, Tci, Tco, shells=1):
     .. math::
         F_t=\frac{S\ln W}{\ln \frac{1+W-S+SW}{1+W+S-SW}}
 
+    .. math::
         S = \frac{\sqrt{R^2+1}}{R-1}
         
+    .. math::
         W = \left(\frac{1-PR}{1-P}\right)^{1/N}
         
+    .. math::
         R = \frac{T_{in}-T_{out}}{t_{out}-t_{in}}
         
+    .. math::
         P = \frac{t_{out}-t_{in}}{T_{in}-t_{in}}
         
     If R = 1 and logarithms cannot be evaluated:
@@ -4019,6 +4152,7 @@ def F_LMTD_Fakheri(Thi, Tho, Tci, Tco, shells=1):
     .. math::
         W' = \frac{N-NP}{N-NP+P}
         
+    .. math::
         F_t = \frac{\sqrt{2}\frac{1-W'}{W'}}{\ln\frac{\frac{W'}{1-W'}+\frac{1}
         {\sqrt{2}}}{\frac{W'}{1-W'}-\frac{1}{\sqrt{2}}}}
         
@@ -4363,7 +4497,7 @@ def baffle_thickness(Dshell, L_unsupported, service='C'):
 
 
 
-def D_baffle_holes(do=None, L_unsupported=None):
+def D_baffle_holes(do, L_unsupported):
     r'''Determines the diameter of holes in baffles for tubes according to
     TEMA [1]_. Applies for all geometries.
 

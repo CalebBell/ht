@@ -103,6 +103,7 @@ def Elamvaluthi_Srinivas(m, x, D, rhol, rhog, Cpl, kl, mug, mu_b, mu_w=None):
         \frac{h_{TP} D}{k_L} = 0.5\left(\frac{\mu_G}{\mu_L}\right)^{0.25} 
         Re_M^{0.7} Pr^{1/3}_L (\mu_b/\mu_w)^{0.14}
         
+    .. math::
         Re_M = \frac{D V_L \rho_L}{\mu_L} + \frac{D V_g \rho_g}{\mu_g}
         
     Parameters
@@ -645,8 +646,10 @@ def Aggour(m, x, alpha, D, rhol, Cpl, kl, mu_b, mu_w=None, L=None,
     .. math::
         h_{TP} = 0.0155\frac{k_l}{D} Pr_l^{0.5} Re_l^{0.83}
     
+    .. math::
         Re_l = \frac{\rho_l v_l D}{\mu_l}
         
+    .. math::
         V_l = \frac{V_{ls}}{1-\alpha}
 
     Parameters

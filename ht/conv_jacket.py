@@ -37,12 +37,16 @@ def Lehrer(m, Dtank, Djacket, H, Dinlet, rho, Cp, k, mu, muw=None,
         Nu_{S,L} = \left[\frac{0.03Re_S^{0.75}Pr}{1 + \frac{1.74(Pr-1)}
         {Re_S^{0.125}}}\right]\left(\frac{\mu}{\mu_w}\right)^{0.14}
 
+    .. math::
         d_g = \left(\frac{8}{3}\right)^{0.5}\delta
 
+    .. math::
         v_h = (v_Sv_{inlet})^{0.5} + v_A
 
+    .. math::
         v_{inlet} = \frac{Q}{\frac{\pi}{4}d_{inlet}^2}
 
+    .. math::
         v_s = \frac{Q}{\frac{\pi}{4}(D_{jacket}^2 - D_{tank}^2)}
 
     For Radial inlets:
@@ -158,29 +162,40 @@ def Stein_Schmidt(m, Dtank, Djacket, H, Dinlet,
     .. math::
         l_{ch} = \left[\left(\frac{\pi}{2}\right)^2 D_{tank}^2+H^2\right]^{0.5}
 
+    .. math::
         d_{ch} = 2\delta
 
+    .. math::
         Re_j = \frac{v_{ch}d_{ch}\rho}{\mu}
 
+    .. math::
         Gr_J = \frac{g\rho(\rho-\rho_w)d_{ch}^3}{\mu^2}
 
+    .. math::
         Re_{J,eq} = \left[Re_J^2\pm \left(\frac{|Gr_J|\frac{H}{d_{ch}}}{50}
         \right)\right]^{0.5}
 
+    .. math::
         Nu_J = (Nu_A^3 + Nu_B^3 + Nu_C^3 + Nu_D^3)^{1/3}\left(\frac{\mu}
         {\mu_w}\right)^{0.14}
 
+    .. math::
         Nu_J = \frac{h d_{ch}}{k}
 
+    .. math::
         Nu_A = 3.66
 
+    .. math::
         Nu_B = 1.62 Pr^{1/3}Re_{J,eq}^{1/3}\left(\frac{d_{ch}}{l_{ch}}
         \right)^{1/3}
 
+    .. math::
         Nu_C = 0.664Pr^{1/3}(Re_{J,eq}\frac{d_{ch}}{l_{ch}})^{0.5}
 
+    .. math::
         \text{if } Re_{J,eq} < 2300: Nu_D = 0
 
+    .. math::
         Nu_D = 0.0115Pr^{1/3}Re_{J,eq}^{0.9}\left(1 - \left(\frac{2300}
         {Re_{J,eq}}\right)^{2.5}\right)\left(1 + \left(\frac{d_{ch}}{l_{ch}}
         \right)^{2/3}\right)
@@ -192,11 +207,14 @@ def Stein_Schmidt(m, Dtank, Djacket, H, Dinlet,
         v_{ch} = v_{Mit}\left(\frac{\ln\frac{b_{Mit}}{b_{Ein}}}{1 -
         \frac{b_{Ein}}{b_{Mit}}}\right)
 
+    .. math::
         b_{Ein} = \frac{\pi}{8}\frac{D_{inlet}^2}{\delta}
 
+    .. math::
         b_{Mit} = \frac{\pi}{2}D_{tank}\sqrt{1 + \frac{\pi^2}{4}\frac
         {D_{tank}^2}{H^2}}
 
+    .. math::
         v_{Mit} = \frac{Q}{2\delta b_{Mit}}
 
     For Tangential inlets:
@@ -204,17 +222,23 @@ def Stein_Schmidt(m, Dtank, Djacket, H, Dinlet,
     .. math::
         v_{ch} = (v_x^2 + v_z^2)^{0.5}
 
+    .. math::
         v_x = v_{inlet}\left(\frac{\ln[1 + \frac{f_d D_{tank}H}{D_{inlet}^2}
         \frac{v_x(0)}{v_{inlet}}]}{\frac{f_d D_{tank}H}{D_{inlet}^2}}\right)
 
+    .. math::
         v_x(0) = K_3 + (K_3^2 + K_4)^{0.5}
 
+    .. math::
         K_3 = \frac{v_{inlet}}{4} -\frac{D_{inlet}^2v_{inlet}}{4f_d D_{tank}H}
 
+    .. math::
         K_4 = \frac{D_{inlet}^2v_{inlet}^2}{2f_d D_{tank} H}
 
+    .. math::
         v_z = \frac{Q}{\pi D_{tank}\delta}
 
+    .. math::
         v_{inlet} = \frac{Q}{\frac{\pi}{4}D_{inlet}^2}
 
 

@@ -227,13 +227,17 @@ def Nu_Jackson(Re, Pr, rho_w=None, rho_b=None, Cp_avg=None, Cp_b=None, T_b=None,
         \left(\frac{\rho_w}{\rho_b}\right)^{0.3}
         \left(\frac{\bar C_p}{C_{p,b}}\right)^n
         
+    .. math::
         n = 0.4 \text{ for } T_b < T_w < T_{pc} \text{ or } 1.2T_{pc} < T_b < T_w
         
+    .. math::
         n = 0.4 + 0.2(T_w/T_{pc} - 1) \text{ for } T_b < T_{pc} <T_w
         
+    .. math::
         n = 0.4 + 0.2(T_w/T_{pc} - 1)[1 - 5(T_b/T_{pc}-1)]
         \text{ for } T_{pc} < T_b < 1.2T_{pc} \text{ and } T_b < T_w
 
+    .. math::
         \bar{Cp} = \frac{H_w-H_b}{T_w-T_b}
         
     Parameters
@@ -329,6 +333,7 @@ def Nu_Gupta(Re, Pr, rho_w=None, rho_b=None, mu_w=None, mu_b=None):
         \left(\frac{\rho_w}{\rho_b}\right)^{0.186}
         \left(\frac{\mu_w}{\mu_b}\right)^{0.366}
         
+    .. math::
         \bar{Cp} = \frac{H_w-H_b}{T_w-T_b}
         
     Parameters
@@ -400,6 +405,7 @@ def Nu_Swenson(Re, Pr, rho_w=None, rho_b=None):
         Nu_w = 0.00459 Re_w^{0.923} Pr_w^{0.613}
         \left(\frac{\rho_w}{\rho_b}\right)^{0.231}
 
+    .. math::
         \bar{Cp} = \frac{H_w-H_b}{T_w-T_b}
         
     Parameters
@@ -476,6 +482,7 @@ def Nu_Xu(Re, Pr, rho_w=None, rho_b=None, mu_w=None, mu_b=None):
         \left(\frac{\rho_w}{\rho_b}\right)^{0.6638}
         \left(\frac{\mu_w}{\mu_b}\right)^{0.8687}
         
+    .. math::
         \bar{Cp} = \frac{H_w-H_b}{T_w-T_b}
         
     Parameters
@@ -547,6 +554,7 @@ def Nu_Mokry(Re, Pr, rho_w=None, rho_b=None):
         Nu_b = 0.0061 Re_b^{0.904} \bar{Pr}_b^{0.684}
         \left(\frac{\rho_w}{\rho_b}\right)^{0.564}
         
+    .. math::
         \bar{Cp} = \frac{H_w-H_b}{T_w-T_b}
         
     Parameters
@@ -638,8 +646,10 @@ def Nu_Bringer_Smith(Re, Pr):
     .. math::
         T_{ref} = T_b \text{ if } \frac{T_{pc}-T_b}{T_w-T_b} < 0
 
+    .. math::
         T_{ref} = T_{pc} \text{ if } 0 < \frac{T_{pc}-T_b}{T_w-T_b}  < 1
         
+    .. math::
         T_{ref} = T_w \text{ if } \frac{T_{pc}-T_b}{T_w-T_b} > 1
     
     Examples
@@ -782,6 +792,7 @@ def Nu_Zhu(Re, Pr, rho_w=None, rho_b=None, k_w=None, k_b=None):
         \left(\frac{\rho_w}{\rho_b}\right)^{0.17}
         \left(\frac{k_w}{k_b}\right)^{0.29}
 
+    .. math::
         \bar{Cp} = \frac{H_w-H_b}{T_w-T_b}
         
     Parameters
@@ -854,6 +865,7 @@ def Nu_Bishop(Re, Pr, rho_w=None, rho_b=None, D=None, x=None):
         Nu_b = 0.0069 Re_b^{0.9} \bar Pr_b^{0.66}
         \left(\frac{\rho_w}{\rho_b}\right)^{0.43}(1+2.4D/x)
 
+    .. math::
         \bar{Cp} = \frac{H_w-H_b}{T_w-T_b}
         
     Parameters
@@ -938,18 +950,24 @@ def Nu_Yamagata(Re, Pr, Pr_pc=None, Cp_avg=None, Cp_b=None, T_b=None,
     .. math::
         Nu_b = 0.0138 Re_b^{0.85}Pr_b^{0.8}F
         
+    .. math::
         F = \left(\frac{\bar C_p}{C_{p,b}}\right)^{n_2} \text{ if } 
         \frac{T_{pc}-T_b}{T_w-T_b} < 0
 
+    .. math::
         F = 0.67Pr_{pc}^{-0.05} \left(\frac{\bar C_p}{C_{p,b}}\right)^{n_1} 
         \text{ if } 0 < \frac{T_{pc}-T_b}{T_w-T_b}  < 1
 
+    .. math::
         F = 1\text{ if } \frac{T_{pc}-T_b}{T_w-T_b} > 1
 
+    .. math::
         n_1 = -0.77(1 + 1/Pr_{pc}) + 1.49
         
+    .. math::
         n_2 = 1.44(1 + 1/Pr_{pc}) - 0.53
     
+    .. math::
         \bar{Cp} = \frac{H_w-H_b}{T_w-T_b}
         
     Parameters
@@ -1040,16 +1058,21 @@ def Nu_Kitoh(Re, Pr, H=None, G=None, q=None):
     .. math::
         Nu_b = 0.015Re_b^{0.85} Pr_b^m
         
+    .. math::
         m = 0.69 - \frac{81000}{q_{dht}} + f_cq
         
+    .. math::
         q_{dht} = 200 G^{1.2}
         
+    .. math::
         f_c = 2.9\times10^{-8} + \frac{0.11}{q_{dht}} \text{ for } 
         H_b < 1500 \text{ kJ/kg}
         
+    .. math::
         f_c = -8.7\times10^{-8} - \frac{0.65}{q_{dht}} \text{ for } 
         1500 \text{ kJ/kg} < H_b < 3300 \text{ kJ/kg}
         
+    .. math::
         f_c = -9.7\times10^{-7} + \frac{1.3}{q_{dht}} \text{ for } 
         H_b > 3300 \text{ kJ/kg}
 
@@ -1140,9 +1163,11 @@ def Nu_Krasnoshchekov_Protopopov(Re, Pr, Cp_avg=None, Cp_b=None, k_w=None,
         Nu_b = Nu_0\left(\frac{\mu_w}{\mu_b}\right)^{0.11}\left(\frac{k_b}{k_w}
         \right)^{-0.33}\left(\frac{\bar C_p}{C_{p,b}}\right)^{0.35}
         
+    .. math::
         Nu_0 = \frac{(f/8)Re_b \bar Pr_b}{1.07+12.7(f/8)^{1/2}
         (\bar Pr_b)^{2/3}-1)}
 
+    .. math::
         fd = [1.82\log_{10}(Re_b) - 1.64]^{-2}
         
     Parameters
@@ -1227,9 +1252,11 @@ def Nu_Petukhov(Re, Pr, rho_w=None, rho_b=None, mu_w=None, mu_b=None):
         Nu_b = \frac{(f/8)Re_b \bar Pr_b}{1+900/Re_b+12.7(f/8)^{1/2}
         (\bar Pr_b)^{2/3}-1)}
         
+    .. math::
         f = f_d\left(\frac{\rho_w}{\rho_b}\right)^{0.4}
         \left(\frac{\mu_w}{\mu_b}\right)^{0.2}
 
+    .. math::
         f_d = [1.82\log_{10}(Re_b) - 1.64]^{-2}
         
     Parameters
@@ -1294,16 +1321,21 @@ def Nu_Krasnoshchekov(Re, Pr, rho_w=None, rho_b=None, Cp_avg=None, Cp_b=None,
         Nu_b = Nu_0\left(\frac{\rho_w}{\rho_b}\right)^{0.3}\left(
         \frac{\bar C_p}{C_{p,b}}\right)^{n}
         
+    .. math::
         Nu_0 = \frac{(f/8)Re_b \bar Pr_b}{1.07+12.7(f/8)^{1/2}
         (\bar Pr_b^{2/3}-1)}
         
+    .. math::
         f_d = [1.82\log_{10}(Re_b) - 1.64]^{-2}
         
+    .. math::
         n = 0.4 \text{ for } T_b < T_w < T_{pc} \text{ or }
         1.2T_{pc} < T_b < T_w
         
+    .. math::
         n = n_1 = 0.22 + 0.18T_w/T_{pc} \text{ for } 1 < T_w/T_{pc} < 2.5
         
+    .. math::
         n = n_1 + (5n_1 - 2)(1 - T_b/T_{pc}) \text{ for } T_{pc} < T_b < 
         1.2T_{pc} \text{ and } T_{b} < T_w
 

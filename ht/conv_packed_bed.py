@@ -34,12 +34,16 @@ def Nu_packed_bed_Gnielinski(dp, voidage, vs, rho, mu, Pr, fa=None):
     .. math::
         Nu = f_a Nu_{sphere}
 
+    .. math::
         Nu_{sphere} = 2 + \sqrt{Nu_{m,lam}^2 + Nu_{m,turb}^2}
 
+    .. math::
         Nu_{m,lam} = 0.664Re^{0.5} Pr^{1/3}
 
+    .. math::
         Nu_{m,turb} = \frac{0.037Re^{0.8} Pr}{1 + 2.443Re^{-0.1}(Pr^{2/3} -1)}
 
+    .. math::
         Re = \frac{\rho v_s d_p}{\mu \epsilon}
 
     Parameters

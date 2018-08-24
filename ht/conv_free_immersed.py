@@ -153,6 +153,7 @@ def Nu_vertical_cylinder_Griffiths_Davis_Morgan(Pr, Gr, turbulent=None):
     .. math::
         Nu_H = 0.67 Ra_H^{0.25},\; 10^{7} < Ra < 10^{9}
 
+    .. math::
         Nu_H = 0.0782 Ra_H^{0.357}, \; 10^{9} < Ra < 10^{11}
 
     Parameters
@@ -212,6 +213,7 @@ def Nu_vertical_cylinder_Jakob_Linke_Morgan(Pr, Gr, turbulent=None):
     .. math::
         Nu_H = 0.555 Ra_H^{0.25},\; 10^{4} < Ra < 10^{8}
 
+    .. math::
         Nu_H = 0.129 Ra_H^{1/3},\; 10^{8} < Ra < 10^{12}
 
     Parameters
@@ -335,8 +337,10 @@ def Nu_vertical_cylinder_Eigenson_Morgan(Pr, Gr, turbulent=None):
     .. math::
         Nu_H = 0.48 Ra_H^{0.25},\; 10^{9} < Ra
 
+    .. math::
         Nu_H = 51.5 + 0.0000726 Ra_H^{0.63},\; 10^{9} < Ra < 1.69 \times 10^{10}
 
+    .. math::
         Nu_H = 0.148 Ra_H^{1/3} - 127.6 ,\; 1.69 \times 10^{10} < Ra
 
     Parameters
@@ -402,6 +406,7 @@ def Nu_vertical_cylinder_Touloukian_Morgan(Pr, Gr, turbulent=None):
     .. math::
         Nu_H = 0.726 Ra_H^{0.25},\; 2\times 10^{8} < Ra < 4\times 10^{10}
 
+    .. math::
         Nu_H = 0.0674 (Gr_H Pr^{1.29})^{1/3},\; 4\times 10^{10} < Ra < 9\times 10^{11}
 
     Parameters
@@ -463,6 +468,7 @@ def Nu_vertical_cylinder_McAdams_Weiss_Saunders(Pr, Gr, turbulent=None):
     .. math::
         Nu_H = 0.59 Ra_H^{0.25},\; 10^{4} < Ra < 10^{9}
 
+    .. math::
         Nu_H = 0.13 Ra_H^{1/3.},\; 10^{9} < Ra < 10^{12}
 
     Parameters
@@ -526,6 +532,7 @@ def Nu_vertical_cylinder_Kreith_Eckert(Pr, Gr, turbulent=None):
     .. math::
         Nu_H = 0.555 Ra_H^{0.25},\; 10^{5} < Ra < 10^{9}
 
+    .. math::
         Nu_H = 0.021 Ra_H^{0.4},\; 10^{9} < Ra < 10^{12}
 
     Parameters
@@ -637,6 +644,7 @@ def Nu_vertical_cylinder_Al_Arabi_Khamis(Pr, Gr, L, D, turbulent=None):
     .. math::
         Nu_H = 2.9Ra_H^{0.25}/Gr_D^{1/12},\; 9.88 \times 10^7 \le Ra_H \le 2.7\times10^{9}
 
+    .. math::
         Nu_H = 0.47 Ra_H^{0.333}/Gr_D^{1/12},\; 2.7 \times 10^9 \le Ra_H \le 2.95\times10^{10}
 
     Parameters
@@ -702,8 +710,10 @@ def Nu_vertical_cylinder_Popiel_Churchill(Pr, Gr, L, D,
     .. math::
         \frac{Nu}{Nu_{L,fp}} = 1 + B\left[32^{0.5}Gr_L^{-0.25}\frac{L}{D}\right]^C
 
+    .. math::
         B = 0.0571322 + 0.20305 Pr^{-0.43}
 
+    .. math::
         C = 0.9165 - 0.0043Pr^{0.5} + 0.01333\ln Pr + 0.0004809/Pr
 
     Parameters

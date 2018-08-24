@@ -110,8 +110,10 @@ def Ft_aircooler(Thi, Tho, Tci, Tco, Ntp=1, rows=1):
     .. math::
         F_T = 1 - \sum_{i=1}^m \sum_{k=1}^n a_{i,k}(1-r_{1,m})^k\sin(2i\arctan R)
 
+    .. math::
         R = \frac{T_{hi} - T_{ho}}{T_{co}-T_{ci}}
 
+    .. math::
         r_{1,m} = \frac{\Delta T_{lm}}{T_{hi} - T_{ci}}
 
     Parameters

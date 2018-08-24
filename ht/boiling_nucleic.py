@@ -350,22 +350,31 @@ def Stephan_Abdelsalam(rhol, rhog, mul, kl, Cpl, Hvap, sigma, Tsat, Te=None,
     .. math::
         h = 0.23X_1^{0.674} X_2^{0.35} X_3^{0.371} X_5^{0.297} X_8^{-1.73} k_L/d_B
 
+    .. math::
         X1 = \frac{q D_d}{K_L T_{sat}}
 
+    .. math::
         X2 = \frac{\alpha^2 \rho_L}{\sigma D_d}
 
+    .. math::
         X3 = \frac{C_{p,L} T_{sat} D_d^2}{\alpha^2}
 
+    .. math::
         X4 = \frac{H_{vap} D_d^2}{\alpha^2}
 
+    .. math::
         X5 = \frac{\rho_V}{\rho_L}
 
+    .. math::
         X6 = \frac{C_{p,l} \mu_L}{k_L}
 
+    .. math::
         X7 = \frac{\rho_W C_{p,W} k_W}{\rho_L C_{p,L} k_L}
 
+    .. math::
         X8 = \frac{\rho_L-\rho_V}{\rho_L}
 
+    .. math::
         D_b = 0.0146\theta\sqrt{\frac{2\sigma}{g(\rho_L-\rho_g)}}
 
     Respectively, the following four correlations are for water, hydrocarbons,
@@ -374,10 +383,13 @@ def Stephan_Abdelsalam(rhol, rhog, mul, kl, Cpl, Hvap, sigma, Tsat, Te=None,
     .. math::
         h = 0.246\times 10^7 X1^{0.673} X4^{-1.58} X3^{1.26}X8^{5.22}k_L/d_B
 
+    .. math::
         h = 0.0546 X5^{0.335} X1^{0.67} X8^{-4.33} X4^{0.248}k_L/d_B
 
+    .. math::
         h = 4.82 X1^{0.624} X7^{0.117} X3^{0.374} X4^{-0.329}X5^{0.257} k_L/d_B
 
+    .. math::
         h = 207 X1^{0.745} X5^{0.581} X6^{0.533} k_L/d_B
 
     Parameters
@@ -721,10 +733,13 @@ def Gorenflo(P, Pc, q=None, Te=None, CASRN=None, h0=None, Ra=4E-7):
     .. math::
         \frac{h}{h_0} = C_W F(p^*) \left(\frac{q}{q_0}\right)^n
         
+    .. math::
         C_W = \left(\frac{R_a}{R_{ao}}\right)^{0.133}
 
+    .. math::
         q_0 = 20 \;000 \frac{\text{W}}{\text{m}^{2}}
         
+    .. math::
         R_{ao} = 0.4 \mu\text{m}
         
     For fluids other than water:
@@ -732,6 +747,7 @@ def Gorenflo(P, Pc, q=None, Te=None, CASRN=None, h0=None, Ra=4E-7):
     .. math::
         n = 0.9 - 0.3 p^{*0.3}
         
+    .. math::
         f(p^*) = 1.2p^{*0.27} + \left(2.5 + \frac{1}{1-p^*}\right)p^*
     
     For water:
@@ -739,6 +755,7 @@ def Gorenflo(P, Pc, q=None, Te=None, CASRN=None, h0=None, Ra=4E-7):
     .. math::
         n = 0.9 - 0.3 p^{*0.15}
         
+    .. math::
         f(p^*) = 1.73p^{*0.27} + \left(6.1 + \frac{0.68}{1-p^*}\right)p^2
 
     Parameters
@@ -1063,10 +1080,13 @@ def Serth_HEDH(D, sigma, Hvap, rhol, rhog):
     .. math::
         q_c = KH_{vap} \rho_g^{0.5}\left[\sigma g (\rho_L-\rho_g)\right]^{0.25}
 
+    .. math::
         K = 0.123 (R^*)^{-0.25} \text{ for 0.12 < R* < 1.17}
 
+    .. math::
         K = 0.118
 
+    .. math::
         R^* = \frac{D}{2} \left[\frac{g(\rho_L-\rho_G)}{\sigma}\right]^{0.5}
 
     Parameters

@@ -98,6 +98,7 @@ def Boyko_Kruzhilin(m, rhog, rhol, kl, mul, Cpl, D, x):
     .. math::
         h_f = h_{LO}\left[1 + x\left(\frac{\rho_L}{\rho_G} - 1\right)\right]^{0.5}
 
+    .. math::
         h_{LO} = 0.021 \frac{k_L}{L} Re_{LO}^{0.8} Pr^{0.43}
 
     Parameters
@@ -161,12 +162,16 @@ def Akers_Deans_Crosser(m, rhog, rhol, kl, mul, Cpl, D, x):
     .. math::
         Nu = \frac{hD_i}{k_l} = C Re_e^n Pr_l^{1/3}
         
+    .. math::
         C = 0.0265, n=0.8 \text{ for } Re_e > 5\times10^4
         
+    .. math::
         C = 5.03, n=\frac{1}{3} \text{ for } Re_e < 5\times10^4
 
+    .. math::
         Re_e = \frac{D_i G_e}{\mu_l}
         
+    .. math::
         G_e = G\left[(1-x)+x(\rho_l/\rho_g)^{0.5}\right]
         
     Parameters
@@ -288,10 +293,13 @@ def Cavallini_Smith_Zecchin(m, x, D, rhol, rhog, mul, mug, kl, Cpl):
     .. math::
         Nu = \frac{hD_i}{k_l} = 0.05 Re_e^{0.8} Pr_l^{0.33}
         
+    .. math::
         Re_{eq} = Re_g(\mu_g/\mu_l)(\rho_l/\rho_g)^{0.5} + Re_l
 
+    .. math::
         v_{gs} = \frac{mx}{\rho_g \frac{\pi}{4}D^2}
 
+    .. math::
         v_{ls} = \frac{m(1-x)}{\rho_l \frac{\pi}{4}D^2}
 
     Parameters

@@ -222,6 +222,7 @@ def laminar_entry_Baehr_Stephan(Re, Pr, L, Di):
         Nu_D=\frac{\frac{3.657}{\tanh[2.264 Gz_D^{-1/3}+1.7Gz_D^{-2/3}]}
         +0.0499Gz_D\tanh(Gz_D^{-1})}{\tanh(2.432Pr^{1/6}Gz_D^{-1/6})}
 
+    .. math::
         Gz = \frac{D}{L}Re_D Pr
 
     Parameters
@@ -897,10 +898,13 @@ def turbulent_Churchill_Zajic(Re, Pr, fd):
         \left[1-\left(\frac{Pr_T}{Pr}\right)^{2/3}\right]\frac{1}{Nu_{D\infty}}
         \right\}^{-1}
 
+    .. math::
         Nu_{di} = \frac{Re(f/8)}{1 + 145(8/f)^{-5/4}}
 
+    .. math::
         Nu_{D\infty} = 0.07343Re\left(\frac{Pr}{Pr_T}\right)^{1/3}(f/8)^{0.5}
 
+    .. math::
         Pr_T = 0.85 + \frac{0.015}{Pr}
 
     Parameters
@@ -1492,8 +1496,10 @@ def Morimoto_Hotta(Re, Pr, Dh, Rm):
     .. math::
         Nu = 0.0239\left(1 + 5.54\frac{D_h}{R_m}\right)Re^{0.806}Pr^{0.268}
         
+    .. math::
         D_h = \frac{2HS}{H+S}
         
+    .. math::
         R_m = \frac{R_{min} + R_{max}}{2}
     
 
@@ -1794,4 +1800,3 @@ def Nu_laminar_rectangular_Shan_London(a_r):
     return 8.235*(1 - 2.0421*a_r + 3.0853*a_r**2 - 2.4765*a_r**3 
                   + 1.0578*a_r**4 - 0.1861*a_r**5)
 
-### Plate
