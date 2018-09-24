@@ -905,6 +905,8 @@ _dP_staggered_Re_25 = np.array([1.79994, 1.76013, 1.72122, 1.65648, 1.61986, 1.5
 _dP_staggered_Re_parameters = np.array([_dP_staggered_Re_125, _dP_staggered_Re_15, _dP_staggered_Re_2, _dP_staggered_Re_25]).T
 dP_staggered_f = RectBivariateSpline(_dP_staggered_Res, np.array([1.25, 1.5, 2, 2.5]), _dP_staggered_Re_parameters, kx=3, ky=3, s=0.002)
 
+# Excellent plot, though it does linear extrapolation on some lines
+#import matplotlib.pyplot as plt
 #dP_staggered_f_zs = np.array([1.25, 1.5, 2, 2.5])
 #low, high = min(_dP_staggered_Res), max(_dP_staggered_Res)
 #xs = np.linspace(low, high, 50000)
@@ -940,13 +942,13 @@ _dP_staggered_correction_Re_100000 = np.array([1.45829, 1.42587, 1.40486, 1.3829
 _dP_staggered_correction_Re_parameters = np.array([_dP_staggered_correction_Re_100, _dP_staggered_correction_Re_1000, _dP_staggered_correction_Re_10000, _dP_staggered_correction_Re_100000]).T
 dP_staggered_correction = RectBivariateSpline(_dP_staggered_correction_parameters, np.array([1E2, 1E3, 1E4, 1E5]), _dP_staggered_correction_Re_parameters, kx=1, ky=3, s=0.002)
 
-# Very good plot
+# Maybe good plot - bad around the middle
 #dP_staggered_correction_zs = np.array([1E2, 1E3, 1E4, 1E5])
 #low, high = min(_dP_staggered_correction_parameters), max(_dP_staggered_correction_parameters)
-#xs = np.linspace(low, high, 5000)
+#xs = np.linspace(low, high, 50000)
 #for i in range(4):
-#    plt.loglog(_dP_staggered_correction_parameters, _dP_staggered_correction_Re_parameters.T[i, :], '--')
-#    plt.loglog(xs, dP_staggered_correction(xs, dP_staggered_correction_zs[i]))
+#    plt.loglog(_dP_staggered_correction_parameters, _dP_staggered_correction_Re_parameters.T[i, :], '.')
+#    plt.loglog(xs, dP_staggered_correction(xs, dP_staggered_correction_zs[i]), '--')
 #plt.show()
 
 
@@ -1055,10 +1057,10 @@ dP_inline_correction = RectBivariateSpline(_dP_inline_correction_parameters, _dP
 # RectBivariateSpline does a terrible job
 
 #low, high = min(_dP_inline_correction_parameters), max(_dP_inline_correction_parameters)
-#xs = np.linspace(low, high, 1000)
+#xs = np.logspace(np.log10(low), np.log10(high), 300000)
 #for i in range(4):
-#    plt.loglog(_dP_inline_correction_parameters, _dP_inline_correction_Re_parameters.T[i, :], '--')
-#    plt.loglog(xs, dP_inline_correction(xs, _dP_inline_correction_zs[i]))
+#    plt.loglog(_dP_inline_correction_parameters, _dP_inline_correction_Re_parameters.T[i, :], '.')
+#    plt.loglog(xs, dP_inline_correction(xs, _dP_inline_correction_zs[i]), '--')
 #plt.show()
 
 def dP_Zukauskas(Re, n, ST, SL, D, rho, Vmax):

@@ -27,7 +27,7 @@ from math import log, log10
 __all__ = ['Rohsenow', 'McNelly', 'Forster_Zuber', 'Montinsky',
 'Stephan_Abdelsalam', 'HEDH_Taborek', 'Bier', 'Cooper', 'Gorenflo', 
 'h_nucleic', 'Zuber', 'Serth_HEDH', 'HEDH_Montinsky', 'qmax_boiling', 
-'h0_VDI_2e', 'h0_Gorenflow_1993']
+'h0_VDI_2e', 'h0_Gorenflow_1993', 'qmax_boiling_methods', 'h_nucleic_methods']
 
 
 def Rohsenow(rhol, rhog, mul, kl, Cpl, Hvap, sigma, Te=None, q=None, Csf=0.013,
@@ -852,7 +852,10 @@ cryogenics = {'132259-10-0': 'Air', '7440-37-1': 'Argon', '630-08-0':
 '74-82-8': 'methane', '7440-01-9': 'neon', '7727-37-9': 'nitrogen',
 '7782-44-7': 'oxygen', '7440-63-3': 'xenon'}
 
-
+h_nucleic_methods = ['Stephan-Abdelsalam', 'Stephan-Abdelsalam water', 
+                     'Stephan-Abdelsalam cryogenic', 'HEDH-Taborek', 
+                     'Forster-Zuber', 'Rohsenow', 'Cooper', 'Bier',
+                     'Montinsky', 'McNelly', 'Gorenflo (1993)']
 
 
 def h_nucleic(Te=None, q=None, Tsat=None, P=None, dPsat=None, Cpl=None, 
@@ -1180,6 +1183,9 @@ def HEDH_Montinsky(P, Pc):
     '''
     Pr = P/Pc
     return 367*(Pc/1000.)*Pr**0.35*(1-Pr)**0.9
+
+
+qmax_boiling_methods = ['Serth-HEDH', 'Zuber', 'HEDH-Montinsky']
 
 
 def qmax_boiling(rhol=None, rhog=None, sigma=None, Hvap=None, D=None, P=None, 

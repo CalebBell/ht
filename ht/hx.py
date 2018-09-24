@@ -30,6 +30,7 @@ from scipy.optimize import bisect as sp_bisect
 from scipy.integrate import quad
 from scipy.special import iv
 from scipy.constants import inch, foot, degree_Fahrenheit, hour, Btu
+from fluids.core import horner
 from fluids.piping import BWG_integers, BWG_inch, BWG_SI
 from pprint import pprint
 
@@ -3086,12 +3087,6 @@ NTU_from_P_basic_crossflow_mixed_12 = {
 }
 
 
-def _horner(coeffs, x):
-    # TODO put this in a module or something
-    tot = 0.
-    for c in coeffs:
-        tot = tot * x + c
-    return tot
 
 
 def _NTU_from_P_objective(NTU1, R1, P1, function, **kwargs):
@@ -3143,7 +3138,7 @@ def _NTU_max_for_P_solver(data, R1):
     for offset, p, q in zip(data['offset'], data['p'], data['q']):
         if R1 < offset or offset == offset_max:
             x = R1 - offset
-            return _horner(p, x)/_horner(q, x)
+            return horner(p, x)/horner(q, x)
 
 
 def NTU_from_P_basic(P1, R1, subtype='crossflow'):
