@@ -27,7 +27,8 @@ from ht.conv_internal import laminar_entry_Seider_Tate
 
 __all__ = ['Davis_David', 'Elamvaluthi_Srinivas', 'Groothuis_Hendal',
            'Hughmark', 'Knott', 'Kudirka_Grosh_McFadden', 'Martin_Sims',
-           'Ravipudi_Godbold', 'Aggour']
+           'Ravipudi_Godbold', 'Aggour', 'conv_two_phase_methods',
+           'h_two_phase']
 
 
 def Davis_David(m, x, D, rhol, rhog, Cpl, kl, mul):
@@ -573,9 +574,7 @@ def Martin_Sims(m, x, D, rhol, rhog, hl=None,
         Pr = Prandtl(Cp=Cpl, k=kl, mu=mu_b)
         Nul = laminar_entry_Seider_Tate(Re=Re, Pr=Pr, L=L, Di=D, mu=mu_b, mu_w=mu_w)
         hl = Nul*kl/D
-    
-    
-    return hl*(1 + 0.64*(Vgs/Vls)**0.5)
+    return hl*(1.0 + 0.64*(Vgs/Vls)**0.5)
 
 
 def Ravipudi_Godbold(m, x, D, rhol, rhog, Cpl, kl, mug, mu_b, mu_w=None):
@@ -740,12 +739,115 @@ def Aggour(m, x, alpha, D, rhol, Cpl, kl, mu_b, mu_w=None, L=None,
     Prl = Prandtl(Cp=Cpl, k=kl, mu=mu_b)
     Rel = Reynolds(V=Vl, D=D, rho=rhol, mu=mu_b)
 
-    if turbulent or (Rel > 2000 and turbulent is None):
+    if turbulent or (Rel > 2000.0 and turbulent is None):
         hl = 0.0155*(kl/D)*Rel**0.83*Prl**0.5
         return hl*(1-alpha)**-0.83
     else:
         hl = 1.615*(kl/D)*(Rel*Prl*D/L)**(1/3.)
         if mu_w:
             hl *= (mu_b/mu_w)**0.14
-        return hl*(1-alpha)**(-1/3.)
+        return hl*(1.0 - alpha)**(-1/3.)
 
+
+conv_two_phase_methods = {
+    'Davis-David': (Davis_David, ('m', 'x', 'D', 'rhol', 'rhog', 'Cpl', 'kl', 'mul')),
+    'Elamvaluthi_Srinivas': (Elamvaluthi_Srinivas, ('m', 'x', 'D', 'rhol', 'rhog', 'Cpl', 'kl', 'mug', 'mu_b', 'mu_w')),
+    'Groothuis_Hendal': (Groothuis_Hendal, ('m', 'x', 'D', 'rhol', 'rhog', 'Cpl', 'kl', 'mug', 'mu_b', 'mu_w')),
+    'Hughmark': (Hughmark, ('m', 'x', 'alpha', 'D', 'L', 'Cpl', 'kl', 'mu_b', 'mu_w')),
+    'Knott': (Knott, ('m', 'x', 'D', 'rhol', 'rhog', 'Cpl', 'kl', 'mu_b', 'mu_w', 'L')),
+    'Kudirka_Grosh_McFadden': (Kudirka_Grosh_McFadden, ('m', 'x', 'D', 'rhol', 'rhog', 'Cpl', 'kl', 'mug', 'mu_b', 'mu_w')),
+    'Martin_Sims': (Martin_Sims, ('m', 'x', 'D', 'rhol', 'rhog', 'Cpl', 'kl', 'mu_b', 'mu_w', 'L')),
+    'Ravipudi_Godbold': (Ravipudi_Godbold, ('m', 'x', 'D', 'rhol', 'rhog', 'Cpl', 'kl', 'mug', 'mu_b', 'mu_w')),
+    'Aggour': (Aggour, ('m', 'x', 'alpha', 'D', 'rhol', 'Cpl', 'kl', 'mu_b', 'mu_w', 'L')),
+}
+
+# Not actually ranked
+conv_two_phase_methods_ranked = ['Knott', 'Martin_Sims', 'Kudirka_Grosh_McFadden', 'Groothuis_Hendal', 
+                                 'Aggour', 'Hughmark', 'Elamvaluthi_Srinivas', 'Davis-David', 'Ravipudi_Godbold']
+
+
+def h_two_phase(m, x, D, Cpl, kl, rhol=None, rhog=None, mul=None, 
+                mu_b=None, mu_w=None, mug=None, L=None, alpha=None,
+                method=None, available_methods=False):
+    r'''Calculates the two-phase non-boiling laminar heat transfer coefficient  
+    of a liquid and gas flowing inside a tube according to the specified
+    method.
+
+
+    Parameters
+    ----------
+    m : float
+        Mass flow rate [kg/s]
+    x : float
+        Quality at the specific tube interval [-]
+    D : float
+        Diameter of the tube [m]
+    Cpl : float
+        Constant-pressure heat capacity of liquid [J/kg/K]
+    kl : float
+        Thermal conductivity of liquid [W/m/K]
+    rhol : float
+        Density of the liquid [kg/m^3]
+    rhog : float
+        Density of the gas [kg/m^3]
+    mul : float
+        Viscosity of liquid [Pa*s]
+    mu_b : float
+        Viscosity of liquid at bulk conditions (average of inlet/outlet 
+        temperature) [Pa*s]
+    mu_w : float, optional
+        Viscosity of liquid at wall temperature [Pa*s]
+    mug : float
+        Viscosity of gas [Pa*s]
+    L : float, optional
+        Length of the tube, [m]
+    alpha : float
+        Void fraction in the tube, [-]
+
+    Returns
+    -------
+    h : float
+        Heat transfer coefficient [W/m^2/K]
+
+    Other Parameters
+    ----------------
+    method : string, optional
+        A string of the function name to use, as in the dictionary
+        conv_two_phase_methods.
+    available_methods : bool, optional
+        If True, function will consider which methods which can be used to
+        calculate the Nusselt number with the given inputs and return
+        them as a list instead of performing a calculation.
+
+    Notes
+    -----
+
+
+    Examples
+    --------
+    >>> h_two_phase(m=1, x=.9, D=.3, alpha=.9, rhol=1000, Cpl=2300, kl=.6, mu_b=1E-3, mu_w=1.2E-3, L=5, method='Aggour')
+    420.9347146885667
+    '''
+    def list_methods(variables):
+        methods = []
+        for method in conv_two_phase_methods_ranked:
+            args = conv_two_phase_methods[method][1]
+            if all(variables[i] is not None for i in args):
+                methods.append(method)
+        return methods
+    
+    if available_methods:
+        return list_methods(dict(locals()))
+    if not method:
+        method = list_methods(dict(locals()))[0]
+
+    if method in conv_two_phase_methods:
+        f, args = conv_two_phase_methods[method]
+        
+        kwargs = {}
+        for arg in args:
+            kwargs[arg] = locals()[arg]
+        return f(**kwargs)
+    else:
+        raise Exception("Correlation name not recognized; the availble methods "
+                        "are %s." %(list(conv_two_phase_methods.keys())))
