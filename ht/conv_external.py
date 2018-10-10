@@ -27,7 +27,8 @@ __all__ = ['Nu_cylinder_Zukauskas', 'Nu_cylinder_Churchill_Bernstein',
            'Nu_cylinder_Sanitjai_Goldstein', 'Nu_cylinder_Fand',
            'Nu_cylinder_Perkins_Leppert_1964',
            'Nu_cylinder_Perkins_Leppert_1962', 'Nu_cylinder_Whitaker',
-           'Nu_cylinder_McAdams']
+           'Nu_cylinder_McAdams',
+           'conv_external_cylinder_methods', 'Nu_external_cylinder']
 
 ### Single Cylinders in Crossflow
 
@@ -448,3 +449,95 @@ def Nu_cylinder_Perkins_Leppert_1964(Re, Pr, mu=None, muw=None):
         Nu *= (mu/muw)**0.25
     return Nu
 
+
+conv_external_cylinder_turbulent_methods = {
+    'Zukauskas': (Nu_cylinder_Zukauskas, ('Re', 'Pr', 'Prw')),
+    'Churchill-Bernstein': (Nu_cylinder_Churchill_Bernstein, ('Re', 'Pr')),
+    'Sanitjai-Goldstein': (Nu_cylinder_Sanitjai_Goldstein, ('Re', 'Pr')),
+    'Fand': (Nu_cylinder_Fand, ('Re', 'Pr')),
+    'McAdams': (Nu_cylinder_McAdams, ('Re', 'Pr')),
+    'Whitaker': (Nu_cylinder_Whitaker, ('Re', 'Pr', 'mu', 'muw')),
+    'Perkins-Leppert 1962': (Nu_cylinder_Perkins_Leppert_1962, ('Re', 'Pr', 'mu', 'muw')),
+    'Perkins-Leppert 1964': (Nu_cylinder_Perkins_Leppert_1964, ('Re', 'Pr', 'mu', 'muw')),
+}
+
+conv_external_cylinder_turbulent_methods_ranked = ['Sanitjai-Goldstein', 
+                                                   'Churchill-Bernstein', 
+                                                   'Zukauskas', 'Whitaker', 
+                                                   'Perkins-Leppert 1964',  
+                                                   'McAdams',  'Fand', 
+                                                   'Perkins-Leppert 1962']
+
+conv_external_cylinder_methods = conv_external_cylinder_turbulent_methods.copy()
+
+
+def Nu_external_cylinder(Re, Pr, Prw=None, mu=None, muw=None, Method=None, 
+                           AvailableMethods=False):
+    r'''Calculates Nusselt number for crossflow across a single tube at a 
+    specified `Re` and `Pr` according to the specified method. Optional
+    parameters are `Prw`, `mu`, and `muw`. This function has eight methods
+    available, all only for turbulent flow. The 'Sanitjai-Goldstein' method is
+    the default.
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number of fluid with respect to cylinder diameter, [-]
+    Pr : float
+        Prandtl number at either the free stream or wall temperature 
+        depending on the method, [-]
+    Prw : float, optional
+        Prandtl number at wall temperature, [-]
+    mu : float, optional
+        Viscosity of fluid at the free stream temperature [Pa*s]
+    muw : float, optional
+        Viscosity of fluid at the wall temperature [Pa*s]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number with respect to cylinder diameter, [-]
+
+    Other Parameters
+    ----------------
+    Method : string, optional
+        A string of the function name to use, as in the dictionary
+        conv_external_cylinder_methods.
+    AvailableMethods : bool, optional
+        If True, function will consider which methods which can be used to
+        calculate the Nusselt number with the given inputs and return
+        them as a list instead of performing a calculation.
+
+    Notes
+    -----
+    A comparison of the methods for various Prandtl and Reynolds number ranges
+    is plotted below.
+    
+    .. plot:: plots/Nu_external_cylinder.py
+
+    Examples
+    --------
+    >>> Nu_external_cylinder(6071, 0.7)
+    40.38327083519522
+    '''
+    def list_methods():
+        methods = []
+        methods.extend(conv_external_cylinder_turbulent_methods_ranked)
+        return methods
+    
+    if AvailableMethods:
+        return list_methods()
+    if not Method:
+        Method = list_methods()[0]
+
+    if Method in conv_external_cylinder_methods:
+        f, args = conv_external_cylinder_methods[Method]
+        
+        kwargs = {}
+        for arg in args:
+            kwargs[arg] = locals()[arg]
+        return f(**kwargs)
+    else:
+        raise Exception("Correlation name not recognized; the availble methods "
+                        "are %s." %(list(conv_external_cylinder_methods.keys())))
+    return Nu

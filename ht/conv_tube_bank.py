@@ -25,6 +25,7 @@ from math import pi, sin, acos, radians, exp
 from scipy.constants import g
 from scipy.interpolate import  UnivariateSpline, interp2d, RectBivariateSpline, bisplev, splev
 import numpy as np
+from fluids.core import horner
 from ht.core import wall_factor, WALL_FACTOR_PRANDTL
 
 __all__ = ['dP_Kern', 'dP_Zukauskas', 'dP_staggered_f',
@@ -38,12 +39,6 @@ __all__ = ['dP_Kern', 'dP_Zukauskas', 'dP_staggered_f',
            'bundle_bypassing_Bell', 'unequal_baffle_spacing_Bell',
            'laminar_correction_Bell']
 
-def _horner(coeffs, x):
-    # TODO put this in a module or something
-    tot = 0.
-    for c in coeffs:
-        tot = tot * x + c
-    return tot
 
 # Applies for row 1-9.
 Grimson_Nl_aligned = [0.64, 0.8, 0.87, 0.9, 0.92, 0.94, 0.96, 0.98, 0.99]
@@ -1240,7 +1235,7 @@ def baffle_correction_Bell(crossflow_tube_fraction, method='spline'):
     if method == 'spline':
         Jc = float(Bell_baffle_configuration_obj(crossflow_tube_fraction))
     elif method == 'chebyshev':
-        return _horner(Bell_baffle_configuration_coeffs, 2.0*crossflow_tube_fraction - 1.0)
+        return horner(Bell_baffle_configuration_coeffs, 2.0*crossflow_tube_fraction - 1.0)
     elif method == 'HEDH':
         Jc = 0.55 + 0.72*crossflow_tube_fraction
     return Jc

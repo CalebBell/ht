@@ -75,3 +75,16 @@ def test_Nu_cylinder_Perkins_Leppert_1964():
     assert_allclose(Nu, 53.61767038619986)
     Nu = Nu_cylinder_Perkins_Leppert_1964(6071, 0.7, 1E-3, 1.2E-3)
     assert_allclose(Nu, 51.22861670528418)
+
+
+def test_Nu_external_cylinder():
+    Nu = Nu_external_cylinder(6071, 0.7)
+    assert_allclose(Nu, 40.38327083519522)
+    
+    Nu = Nu_external_cylinder(6071, 0.7, Method='Zukauskas')
+    assert_allclose(Nu, 42.4244052368103)
+    
+    methods = Nu_external_cylinder(6071, 0.7, AvailableMethods=True)
+    
+    with pytest.raises(Exception):
+        Nu_external_cylinder(6071, 0.7, Method='BADMETHOD')

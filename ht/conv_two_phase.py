@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 '''Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
-Copyright (C) 2016, Caleb Bell <Caleb.Andrew.Bell@gmail.com>
+Copyright (C) 2016, 2017, 2018 Caleb Bell <Caleb.Andrew.Bell@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -499,7 +499,8 @@ def Kudirka_Grosh_McFadden(m, x, D, rhol, rhog, Cpl, kl, mug, mu_b, mu_w=None):
     return Nu*kl/D
 
 
-def Martin_Sims(m, x, D, rhol, rhog, hl):
+def Martin_Sims(m, x, D, rhol, rhog, hl=None,
+                Cpl=None, kl=None, mu_b=None, mu_w=None, L=None):
     r'''Calculates the two-phase non-boiling heat transfer coefficient of a 
     liquid and gas flowing inside a tube of any inclination, as in [1]_ and 
     reviewed in [2]_.
@@ -519,8 +520,19 @@ def Martin_Sims(m, x, D, rhol, rhog, hl):
         Density of the liquid [kg/m^3]
     rhog : float
         Density of the gas [kg/m^3]
-    hl : float
+    hl : float, optional
         Liquid-phase heat transfer coefficient as described below, [W/m^2/K]
+    Cpl : float, optional
+        Constant-pressure heat capacity of liquid [J/kg/K]
+    kl : float, optional
+        Thermal conductivity of liquid [W/m/K]
+    mu_b : float, optional
+        Viscosity of liquid at bulk conditions (average of inlet/outlet 
+        temperature) [Pa*s]
+    mu_w : float, optional
+        Viscosity of liquid at wall temperature [Pa*s]
+    L : float, optional
+        Length of the tube [m]
 
     Returns
     -------
@@ -529,14 +541,17 @@ def Martin_Sims(m, x, D, rhol, rhog, hl):
 
     Notes
     -----
-    No suggestion for how to calculate the liquid-phase heat transfer
+    No specific suggestion for how to calculate the liquid-phase heat transfer
     coefficient is given in [1]_; [2]_ suggests to use the same procedure as
-    in `Knott`, but this has not been implemented.
+    in `Knott`.
     
     Examples
     --------
     >>> Martin_Sims(m=1, x=.9, D=.3, rhol=1000, rhog=2.5, hl=141.2)
     5563.280000000001
+    >>> Martin_Sims(m=1, x=.9, D=.3, rhol=1000, rhog=2.5, Cpl=2300, kl=.6, 
+    ... mu_b=1E-3, mu_w=1.2E-3, L=24)
+    5977.505465781747
 
     References
     ----------
@@ -552,6 +567,14 @@ def Martin_Sims(m, x, D, rhol, rhog, hl):
     '''
     Vgs = m*x/(rhog*pi/4*D**2)
     Vls = m*(1-x)/(rhol*pi/4*D**2)
+    if hl is None:
+        V = Vgs + Vls # Net velocity
+        Re = Reynolds(V=V, D=D, rho=rhol, mu=mu_b)
+        Pr = Prandtl(Cp=Cpl, k=kl, mu=mu_b)
+        Nul = laminar_entry_Seider_Tate(Re=Re, Pr=Pr, L=L, Di=D, mu=mu_b, mu_w=mu_w)
+        hl = Nul*kl/D
+    
+    
     return hl*(1 + 0.64*(Vgs/Vls)**0.5)
 
 
