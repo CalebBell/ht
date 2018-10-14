@@ -22,7 +22,7 @@ SOFTWARE.'''
 
 import difflib
 import numpy as np
-from scipy.interpolate import interp1d
+from fluids.core import interp
 from ht.conduction import R_to_k
 
 __all__ = ['nearest_material', 'k_material', 'rho_material', 'Cp_material',
@@ -532,7 +532,7 @@ def refractory_VDI_k(ID, T=None):
             T = _refractory_Ts[0]
         elif T > _refractory_Ts[-1]:
             T = _refractory_Ts[-1]
-        return float(np.interp(T, _refractory_Ts, ks))
+        return float(interp(T, _refractory_Ts, ks))
 
 
 def refractory_VDI_Cp(ID, T=None):
@@ -574,7 +574,7 @@ def refractory_VDI_Cp(ID, T=None):
             T = _refractory_Ts[0]
         elif T > _refractory_Ts[-1]:
             T = _refractory_Ts[-1]
-        return float(np.interp(T, _refractory_Ts, Cps))
+        return float(interp(T, _refractory_Ts, Cps))
 
 
 def nearest_material(name, complete=False):

@@ -771,7 +771,7 @@ def h_two_phase(m, x, D, Cpl, kl, rhol=None, rhog=None, mul=None,
                 method=None, available_methods=False):
     r'''Calculates the two-phase non-boiling laminar heat transfer coefficient  
     of a liquid and gas flowing inside a tube according to the specified
-    method.
+    method. Nine methods are available.
 
 
     Parameters
@@ -821,7 +821,7 @@ def h_two_phase(m, x, D, Cpl, kl, rhol=None, rhog=None, mul=None,
 
     Notes
     -----
-
+    It is difficult to compare correlations.
 
     Examples
     --------

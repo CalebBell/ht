@@ -80,3 +80,9 @@ def test_Aggour():
     h = Aggour(m=.1, x=.9, D=.3, alpha=.9, rhol=1000, Cpl=2300, kl=.6, mu_b=1E-3, mu_w=1.2E-3, L=4)
     assert_allclose(h, 33.64542760558181)
     
+
+def test_h_two_phase():
+    h = h_two_phase(m=1, x=.9, D=.3, alpha=.9, rhol=1000, Cpl=2300, kl=.6, mu_b=1E-3, mu_w=1.2E-3, L=5, method='Aggour')
+    assert_allclose(h, 420.9347146885667)
+    
+    
