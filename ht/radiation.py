@@ -22,6 +22,7 @@ SOFTWARE.'''
 
 from __future__ import division
 from math import exp, e
+import sys
 import numpy as np
 from scipy.constants import sigma, h, c, k, pi
 import os
@@ -215,7 +216,7 @@ def solar_spectrum(model='SOLAR-ISS'):
     [2]_ contains another dataset.
     
     99.9% of the time this function takes is to read in the solar data from
-    disk. This can be reduced by using pandas.
+    disk. This could be reduced by using pandas.
     
     Examples
     --------
@@ -248,11 +249,7 @@ def solar_spectrum(model='SOLAR-ISS'):
     '''
     if model == 'SOLAR-ISS':
         pth = os.path.join(folder, 'solar_iss_2018_spectrum.dat')
-        try:
-            import pandas as pd
-            data = pd.read_csv(pth).values
-        except:
-            data = np.loadtxt(pth)
+        data = np.loadtxt(pth)
         wavelengths, SSI, uncertainties = data[:, 0], data[:, 1], data[:, 2]
         
         wavelengths = wavelengths*1E-9

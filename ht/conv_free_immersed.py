@@ -22,7 +22,6 @@ SOFTWARE.'''
 
 from __future__ import division
 from math import exp, log
-import numpy as np
 
 __all__ = ['Nu_vertical_plate_Churchill',
            'Nu_sphere_Churchill', 'Nu_vertical_cylinder_Griffiths_Davis_Morgan',

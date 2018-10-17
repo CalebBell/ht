@@ -23,7 +23,7 @@ SOFTWARE.'''
 from __future__ import division
 from math import pi, log10, atan, exp
 from scipy.constants import g
-from scipy.optimize import newton
+from fluids.numerics import newton
 from fluids.core import Prandtl, Boiling, Bond, Weber, nu_mu_converter
 from fluids.two_phase_voidage import Lockhart_Martinelli_Xtt
 from ht.conv_internal import turbulent_Gnielinski, turbulent_Dittus_Boelter

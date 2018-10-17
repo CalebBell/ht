@@ -23,9 +23,9 @@ SOFTWARE.'''
 from __future__ import division
 from math import pi, sin, acos, radians, exp
 from scipy.constants import g
-from scipy.interpolate import  UnivariateSpline, interp2d, RectBivariateSpline, bisplev, splev
+from scipy.interpolate import UnivariateSpline, interp2d, RectBivariateSpline
 import numpy as np
-from fluids.core import horner
+from fluids.numerics import horner, splev, bisplev
 from ht.core import wall_factor, WALL_FACTOR_PRANDTL
 
 __all__ = ['dP_Kern', 'dP_Zukauskas', 'dP_staggered_f',

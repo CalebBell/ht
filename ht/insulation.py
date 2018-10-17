@@ -22,7 +22,7 @@ SOFTWARE.'''
 
 import difflib
 import numpy as np
-from fluids.core import interp
+from fluids.numerics import interp
 from ht.conduction import R_to_k
 
 __all__ = ['nearest_material', 'k_material', 'rho_material', 'Cp_material',

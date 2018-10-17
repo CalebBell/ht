@@ -25,12 +25,14 @@ from math import exp, log, floor, sqrt, factorial, tanh  # tanh= 1/coth
 import math
 from bisect import bisect, bisect_left, bisect_right
 import numpy as np
-from scipy.optimize import ridder, newton
 from scipy.optimize import bisect as sp_bisect
+from scipy.optimize import ridder
 from scipy.integrate import quad
 from scipy.special import iv
 from scipy.constants import inch, foot, degree_Fahrenheit, hour, Btu
-from fluids.core import horner
+from fluids.numerics import horner, newton
+from fluids.numerics import bisect as sp_bisect
+
 from fluids.piping import BWG_integers, BWG_inch, BWG_SI
 from pprint import pprint
 
