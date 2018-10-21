@@ -24,7 +24,7 @@ from __future__ import division
 from math import pi, radians
 from fluids.core import Reynolds, Prandtl, Bond, thermal_diffusivity
 from fluids import Lockhart_Martinelli_Xtt
-from scipy.constants import g
+from fluids.constants import g
 
 
 __all__ = ['h_boiling_Amalfi', 'h_boiling_Lee_Kang_Kim', 

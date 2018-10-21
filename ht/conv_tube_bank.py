@@ -22,11 +22,11 @@ SOFTWARE.'''
 
 from __future__ import division
 from math import pi, sin, acos, radians, exp
-from scipy.constants import g
-from scipy.interpolate import UnivariateSpline, interp2d, RectBivariateSpline
-import numpy as np
+from fluids.constants import g
 from fluids.numerics import horner, splev, bisplev
 from ht.core import wall_factor, WALL_FACTOR_PRANDTL
+import numpy as np
+from scipy.interpolate import RectBivariateSpline
 
 __all__ = ['dP_Kern', 'dP_Zukauskas', 'dP_staggered_f',
            'dP_staggered_correction', 'dP_inline_f', 'dP_inline_correction',

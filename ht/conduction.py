@@ -22,7 +22,7 @@ SOFTWARE.'''
 
 from __future__ import division
 from math import log, pi, acosh, cosh
-from scipy.constants import inch, foot, hour, Btu, degree_Fahrenheit
+from fluids.constants import inch, foot, hour, Btu, degree_Fahrenheit
 
 
 __all__ = ['R_to_k', 'k_to_R', 'k_to_thermal_resistivity',

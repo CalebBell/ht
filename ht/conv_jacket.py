@@ -22,7 +22,7 @@ SOFTWARE.'''
 
 from __future__ import division
 from math import pi, log
-from scipy.constants import g
+from fluids.constants import g
 from fluids.friction import friction_factor
 
 __all__ =['Lehrer', 'Stein_Schmidt']

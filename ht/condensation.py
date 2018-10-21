@@ -22,8 +22,8 @@ SOFTWARE.'''
 
 from __future__ import division
 from math import sin, pi, log
-from scipy.constants import g, R
-from fluids import Reynolds, Prandtl
+from fluids.constants import g, R
+from fluids.core import Reynolds, Prandtl
 from ht.conv_internal import turbulent_Dittus_Boelter
 
 __all__ = ['Boyko_Kruzhilin', 'Nusselt_laminar', 'h_kinetic', 

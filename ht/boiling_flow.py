@@ -22,7 +22,7 @@ SOFTWARE.'''
 
 from __future__ import division
 from math import pi, log10, atan, exp
-from scipy.constants import g
+from fluids.constants import g
 from fluids.numerics import newton
 from fluids.core import Prandtl, Boiling, Bond, Weber, nu_mu_converter
 from fluids.two_phase_voidage import Lockhart_Martinelli_Xtt

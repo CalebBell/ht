@@ -22,7 +22,7 @@ SOFTWARE.'''
 
 from __future__ import division
 from math import atan, sin, log10
-from scipy.constants import hp, minute, inch, foot
+from fluids.constants import hp, minute, inch, foot
 from fluids.geometry import AirCooledExchanger
 from fluids import Prandtl, Reynolds
 from ht.core import LMTD, fin_efficiency_Kern_Kraus, wall_factor, WALL_FACTOR_PRANDTL

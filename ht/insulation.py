@@ -21,7 +21,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.'''
 
 import difflib
-import numpy as np
 from fluids.numerics import interp
 from ht.conduction import R_to_k
 

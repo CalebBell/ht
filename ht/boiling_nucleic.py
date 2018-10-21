@@ -21,8 +21,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.'''
 
 from __future__ import division
-from scipy.constants import g
 from math import log, log10
+from fluids.constants import g
 
 __all__ = ['Rohsenow', 'McNelly', 'Forster_Zuber', 'Montinsky',
 'Stephan_Abdelsalam', 'HEDH_Taborek', 'Bier', 'Cooper', 'Gorenflo', 
