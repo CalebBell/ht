@@ -451,12 +451,13 @@ def test_baffle_leakage_Bell():
     Jl = baffle_leakage_Bell(Ssb=5.5632369907320000000, Stb=4.7424109055909500, Sm=42.7842616174504, method='HEDH')
     assert_allclose(Jl, 0.6719386427830639)
 
+
 def test_baffle_leakage_Bell_refit():
-    from ht.conv_tube_bank import Bell_baffle_leakage_spl
+    from ht.conv_tube_bank import Bell_baffle_leakage_tck
     # Test refitting the data
     obj = RectBivariateSpline(Bell_baffle_leakage_x, Bell_baffle_leakage_z_values, Bell_baffle_leakage_zs, kx=3, ky=1, s=0.002)
-    new_spl = obj.tck + obj.degrees
-    [assert_allclose(i, j) for (i, j) in zip(Bell_baffle_leakage_spl, new_spl)]
+    new_tck = obj.tck + obj.degrees
+    [assert_allclose(i, j) for (i, j) in zip(Bell_baffle_leakage_tck, new_tck)]
 
 
 #import matplotlib.pyplot as plt

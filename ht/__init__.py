@@ -26,6 +26,7 @@ from . import hx
 from . import conv_internal
 from . import boiling_flow
 from . import boiling_nucleic
+from . import conv_tube_bank
 from . import air_cooler
 from . import radiation
 from . import condensation
@@ -33,7 +34,6 @@ from . import conduction
 from . import conv_jacket
 from . import insulation
 from . import conv_free_immersed
-from . import conv_tube_bank
 from . import conv_packed_bed
 from . import conv_external
 from . import conv_supercritical
