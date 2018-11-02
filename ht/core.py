@@ -22,7 +22,7 @@ SOFTWARE.'''
 
 from __future__ import division
 from math import log
-from scipy.special import i1, i0, k1, k0
+from fluids.numerics import i1, i0, k1, k0
 
 __all__ =['LMTD', 'wall_factor', 'is_heating_property', 
 'is_heating_temperature', 'wall_factor_fd', 'wall_factor_Nu',

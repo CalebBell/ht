@@ -28,9 +28,9 @@ from bisect import bisect, bisect_left, bisect_right
 from fluids.constants import inch, foot, degree_Fahrenheit, hour, Btu
 from fluids.numerics import horner, newton, ridder
 from fluids.numerics import bisect as sp_bisect
+from fluids.numerics import iv
 from fluids.piping import BWG_integers, BWG_inch, BWG_SI
 import numpy as np
-from scipy.special import iv
 
 __all__ = ['effectiveness_from_NTU', 'NTU_from_effectiveness', 'calc_Cmin',
 'calc_Cmax', 'calc_Cr',
@@ -299,7 +299,7 @@ def effectiveness_from_NTU(NTU, Cr, subtype='counterflow'):
         return effectiveness
     elif subtype == 'crossflow':
         def to_int(v, NTU, Cr):
-            return (1. + NTU - v*v/(4.*Cr*NTU))*exp(-v*v/(4.*Cr*NTU))*v*iv(0, v)
+            return (1. + NTU - v*v/(4.*Cr*NTU))*exp(-v*v/(4.*Cr*NTU))*v*float(iv(0, v))
         from scipy.integrate import quad
         int_term = quad(to_int, 0, 2.*NTU*Cr**0.5, args=(NTU, Cr))[0]
         return 1./Cr - exp(-Cr*NTU)/(2.*(Cr*NTU)**2)*int_term
@@ -1380,20 +1380,20 @@ def temperature_effectiveness_basic(R1, NTU1, subtype='crossflow'):
     '''
     if subtype == 'counterflow':
         # Same as TEMA 1 pass
-        P1 = (1 - exp(-NTU1*(1 - R1)))/(1 - R1*exp(-NTU1*(1-R1)))
+        P1 = (1.0 - exp(-NTU1*(1 - R1)))/(1.0 - R1*exp(-NTU1*(1-R1)))
     elif subtype == 'parallel':
-        P1 = (1 - exp(-NTU1*(1 + R1)))/(1 + R1)
+        P1 = (1.0 - exp(-NTU1*(1 + R1)))/(1.0 + R1)
     elif subtype == 'crossflow approximate':
         # This isn't technically accurate, an infinite sum is required
         # It has been computed from two different sources
         # but is found not to be within the 1% claimed of this equation
-        P1 = 1 - exp(NTU1**0.22/R1*(exp(-R1*NTU1**0.78) - 1.))
+        P1 = 1.0 - exp(NTU1**0.22/R1*(exp(-R1*NTU1**0.78) - 1.))
     elif subtype == 'crossflow':
         # TODO attempt chebyshev approximation of P1 as a function of R1, NTU1 (for stability)
         R1_NTU1_4_inv = 1.0/(4.*R1*NTU1)
         def to_int(v):
             v2 = v*v
-            return (1. + NTU1 - v2*R1_NTU1_4_inv)*exp(-v2*R1_NTU1_4_inv)*v*iv(0, v)
+            return (1. + NTU1 - v2*R1_NTU1_4_inv)*exp(-v2*R1_NTU1_4_inv)*v*float(iv(0, v))
         from scipy.integrate import quad
         int_term = quad(to_int, 0.0, 2.*NTU1*R1**0.5)[0]# args=(NTU1, R1)
         P1 = 1./R1 - exp(-R1*NTU1)/(2.*(R1*NTU1)**2)*int_term

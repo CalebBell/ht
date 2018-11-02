@@ -27,6 +27,23 @@ import numpy as np
 from numpy.testing import assert_allclose
 from scipy.interpolate import interp1d, bisplrep, splrep, splev, UnivariateSpline, RectBivariateSpline
 
+
+def test_Nu_Grimison_tube_bank_tcks():
+    from ht.conv_tube_bank import Grimison_ST_aligned, Grimison_SL_aligned, Grimison_C1_aligned, Grimison_C1_aligned_tck
+    Grimison_C1_aligned_interp = RectBivariateSpline(Grimison_ST_aligned, 
+                                                     Grimison_SL_aligned,
+                                                     np.array(Grimison_C1_aligned))
+
+    tck_recalc = Grimison_C1_aligned_interp.tck
+    [assert_allclose(i, j) for i, j in zip(Grimison_C1_aligned_tck, tck_recalc)]
+    
+    from ht.conv_tube_bank import Grimison_m_aligned_tck, Grimison_m_aligned
+    Grimison_m_aligned_interp = RectBivariateSpline(Grimison_ST_aligned, 
+                                                    Grimison_SL_aligned, 
+                                                    np.array(Grimison_m_aligned))
+    tck_recalc = Grimison_m_aligned_interp.tck
+    [assert_allclose(i, j) for i, j in zip(Grimison_m_aligned_tck, tck_recalc)]
+
 def test_Nu_Grimison_tube_bank():
     Nu = Nu_Grimison_tube_bank(Re=10263.37, Pr=.708, tube_rows=11,  pitch_normal=.05, pitch_parallel=.05, Do=.025)
     assert_allclose(Nu, 79.07883866010096)
