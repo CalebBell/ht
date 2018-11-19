@@ -159,7 +159,7 @@ def Ft_aircooler(Thi, Tho, Tci, Tco, Ntp=1, rows=1):
     Examples
     --------
     >>> Ft_aircooler(Thi=125., Tho=45., Tci=25., Tco=95., Ntp=1, rows=4)
-    0.5505093604092708
+    0.5505093604092706
 
     References
     ----------
@@ -198,13 +198,21 @@ def Ft_aircooler(Thi, Tho, Tci, Tco, Ntp=1, rows=1):
     else:
         # A bad assumption, but hey, gotta pick something.
         coefs = _crossflow_4_rows_2_pass
-    tot = 0
-    atanR = atan(R)
+    tot = 0.0
+    atanR2 = 2.0*atan(R)
     cmps = range(len(coefs))
+    sine_terms = [sin((i + 1.)*atanR2) for i in cmps]
+    one_m_rlm = 1.0 - rlm
+    x0s = [one_m_rlm]
+    
     for k in cmps:
-        x0 = (1. - rlm)**(k + 1.)
+        x0s.append(x0s[-1]*one_m_rlm)
+        x0 = x0s[-2]
+        coeffs_k = coefs[k]
+        tot_i = 0.0
         for i in cmps:
-            tot += coefs[k][i]*x0*sin(2.*(i + 1.)*atanR)
+            tot_i += coeffs_k[i]*sine_terms[i]
+        tot += tot_i*x0
     return 1. - tot
 
 
