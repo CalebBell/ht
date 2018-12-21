@@ -61,7 +61,7 @@ def blackbody_spectral_radiance(T, wavelength):
     Checked with Spectral-calc.com, at [2]_.
 
     >>> blackbody_spectral_radiance(800., 4E-6)
-    1311692056.2430143
+    1311694129.7430933
     
     Calculation of power from the sun (earth occupies 6.8E-5 steradian of the
     sun):
@@ -69,7 +69,7 @@ def blackbody_spectral_radiance(T, wavelength):
     >>> from scipy.integrate import quad
     >>> rad = lambda l: blackbody_spectral_radiance(5778., l)*6.8E-5
     >>> quad(rad, 1E-10, 1E-4)[0]
-    1367.9808043781559
+    1367.9827067638964
 
     References
     ----------

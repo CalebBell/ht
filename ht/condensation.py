@@ -268,7 +268,7 @@ def h_kinetic(T, P, MW, Hvap, f=1):
     Water at 1 bar and 300 K:
     
     >>> h_kinetic(300, 1E5, 18.02, 2441674)
-    30788845.562480535
+    30788829.908851154
     
     References
     ----------
