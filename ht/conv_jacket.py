@@ -25,7 +25,7 @@ from math import pi, log
 from fluids.constants import g
 from fluids.friction import friction_factor
 
-__all__ =['Lehrer', 'Stein_Schmidt']
+__all__ = ['Lehrer', 'Stein_Schmidt']
 
 def Lehrer(m, Dtank, Djacket, H, Dinlet, rho, Cp, k, mu, muw=None,
            isobaric_expansion=None, dT=None, inlettype='tangential',

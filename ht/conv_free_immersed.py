@@ -61,7 +61,7 @@ def Nu_vertical_plate_Churchill(Pr, Gr):
     Returns
     -------
     Nu : float
-        Nusselt number, [-]
+        Nusselt number with respect to length, [-]
 
     Notes
     -----
