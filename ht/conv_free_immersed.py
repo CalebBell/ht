@@ -23,7 +23,7 @@ SOFTWARE.'''
 from __future__ import division
 from math import exp, log
 
-__all__ = ['Nu_vertical_plate_Churchill',
+__all__ = ['Nu_vertical_plate_Churchill', 'Nu_horizontal_plate_McAdams',
            'Nu_sphere_Churchill', 'Nu_vertical_cylinder_Griffiths_Davis_Morgan',
            'Nu_vertical_cylinder_Jakob_Linke_Morgan',
            'Nu_vertical_cylinder_Carne_Morgan',
@@ -93,6 +93,65 @@ def Nu_vertical_plate_Churchill(Pr, Gr):
     '''
     Ra = Pr * Gr
     Nu = (0.825 + (0.387*Ra**(1/6.)/(1 + (0.492/Pr)**(9/16.))**(8/27.)))**2
+    return Nu
+
+
+def Nu_horizontal_plate_McAdams(Pr, Gr, buoyancy=True):
+    r'''Calculates the Nusselt number for natural convection above a horizontal
+    plate according to the McAdams [1]_ correlations. The plate must be
+    isothermal. Four different equations are used, two each for laminar and
+    turbulent; the two sets of correlations are required because if the plate
+    is hot, buoyancy lifts the fluid off the plate and enhances free convection
+    whereas if the plate is cold, the cold fluid above it settles on it and
+    decreases the free convection.
+
+    Parameters
+    ----------
+    Pr : float
+        Prandtl number with respect to fluid properties [-]
+    Gr : float
+        Grashof number with respect to fluid properties and plate - fluid
+        temperature difference [-]
+    buoyancy : bool, optional
+        Whether or not the plate's free convection is buoyancy assisted (hot 
+        plate) or not, [-]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number with respect to length, [-]
+
+    Notes
+    -----
+
+    Examples
+    --------
+    >>> Nu_horizontal_plate_McAdams(5.54, 3.21e8, buoyancy=True)
+    181.73121274384457
+    >>> Nu_horizontal_plate_McAdams(5.54, 3.21e8, buoyancy=False)
+    55.44564799362829
+    
+    >>> Nu_horizontal_plate_McAdams(.01, 3.21e8, buoyancy=True)
+    22.857041558492334
+    >>> Nu_horizontal_plate_McAdams(.01, 3.21e8, buoyancy=False)
+    11.428520779246167
+    
+    References
+    ----------
+    .. [1] McAdams, William Henry. Heat Transmission. 3E. Malabar, Fla:
+       Krieger Pub Co, 1985.
+    '''
+    Ra = Pr*Gr
+    if buoyancy:
+        if Ra <= 1E7:
+            Nu = .54*Ra**0.25
+        else:
+            Nu = 0.15*Ra**(1.0/3.0)
+    else:
+        if Ra <= 1E10:
+            Nu = .27*Ra**0.25
+        else:
+            Nu = .15*Ra**(1.0/3.0)
     return Nu
 
 

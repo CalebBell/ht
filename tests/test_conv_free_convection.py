@@ -28,6 +28,18 @@ import pytest
 
 ### Free convection immersed
 
+def test_Nu_horizontal_plate_McAdams():
+    Nu = Nu_horizontal_plate_McAdams(5.54, 3.21e8, buoyancy=True)
+    assert_allclose(Nu, 181.73121274384457)
+    
+    Nu = Nu_horizontal_plate_McAdams(5.54, 3.21e8, buoyancy=False)
+    assert_allclose(Nu, 55.44564799362829)
+    
+    Nu = Nu_horizontal_plate_McAdams(.01, 3.21e8, buoyancy=True)
+    assert_allclose(Nu, 22.857041558492334)
+    Nu = Nu_horizontal_plate_McAdams(.01, 3.21e8, buoyancy=False)
+    assert_allclose(Nu, 11.428520779246167)
+
 def test_Nu_vertical_plate_Churchill():
     Nu = Nu_vertical_plate_Churchill(0.69, 2.63E9)
     assert_allclose(Nu, 147.16185223770603)
