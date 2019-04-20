@@ -28,7 +28,8 @@ __all__ = ['Nu_cylinder_Zukauskas', 'Nu_cylinder_Churchill_Bernstein',
            'Nu_cylinder_Perkins_Leppert_1964',
            'Nu_cylinder_Perkins_Leppert_1962', 'Nu_cylinder_Whitaker',
            'Nu_cylinder_McAdams',
-           'conv_external_cylinder_methods', 'Nu_external_cylinder']
+           'conv_external_cylinder_methods', 'Nu_external_cylinder',
+           'Nu_horizontal_plate_laminar_Baehr']
 
 ### Single Cylinders in Crossflow
 
@@ -100,7 +101,7 @@ def Nu_cylinder_Zukauskas(Re, Pr, Prw=None):
         c, m = 0.26, 0.6
     else:
         c, m = 0.076, 0.7
-    if Pr <= 10:
+    if Pr <= 10.0:
         n = 0.37
     else:
         n = 0.36
@@ -200,7 +201,11 @@ def Nu_cylinder_Sanitjai_Goldstein(Re, Pr):
        Journal of Heat and Mass Transfer 47, no. 22 (October 2004): 4795-4805.
        doi:10.1016/j.ijheatmasstransfer.2004.05.012.
     '''
-    return 0.446*Re**0.5*Pr**0.35 + 0.528*((6.5*exp(Re/5000.))**-5
+    # Interesting numerical issue:
+    # The power of the  -5 exp Re term is moved inside the exponential to
+    # avoid overflow errors
+    # This occurs easily with a large diameter cylinder (such as a vessel)
+    return 0.446*Re**0.5*Pr**0.35 + 0.528*((6.5**-5*exp(-5*Re/5000.))
     + (0.031*Re**0.8)**-5)**-0.2*Pr**0.42
 
 
@@ -472,7 +477,7 @@ conv_external_cylinder_methods = conv_external_cylinder_turbulent_methods.copy()
 
 
 def Nu_external_cylinder(Re, Pr, Prw=None, mu=None, muw=None, Method=None, 
-                           AvailableMethods=False):
+                         AvailableMethods=False):
     r'''Calculates Nusselt number for crossflow across a single tube at a 
     specified `Re` and `Pr` according to the specified method. Optional
     parameters are `Prw`, `mu`, and `muw`. This function has eight methods
@@ -541,3 +546,78 @@ def Nu_external_cylinder(Re, Pr, Prw=None, mu=None, muw=None, Method=None,
         raise Exception("Correlation name not recognized; the availble methods "
                         "are %s." %(list(conv_external_cylinder_methods.keys())))
     return Nu
+
+
+# Horizontal Plate in crossflow
+
+def Nu_horizontal_plate_laminar_Baehr(Re, Pr):
+    r'''Calculates Nusselt number for laminar flow across an **isothermal**  
+    flat plate at a specified `Re` and `Pr`, both evaluated at the bulk 
+    temperature. No other wall correction is necessary for this formulation. 
+    Four different equations are used for different Prandtl number ranges.
+    
+    The equation for the common Prandtl number range is also recommended in
+    [2]_ and [3]_.
+    
+    if :math:`\text{Pr} < 0.005`:
+        
+    .. math::
+        \text{Nu}_L = 1.128\text{Re}^{0.5}\text{Pr}^{0.5}
+        
+    if :math:`0.005 < \text{Pr} < 0.05`:
+        
+    .. math::
+        \text{Nu}_L = 1.0\text{Re}^{0.5}\text{Pr}^{0.5}
+        
+    if :math:`0.6 < \text{Pr} < 10`:
+        
+    .. math::
+        \text{Nu}_L = 0.664\text{Re}^{0.5}\text{Pr}^{1/3}
+        
+    if :math:`\text{Pr} > 10`:
+        
+    .. math::
+        \text{Nu}_L = 0.678\text{Re}^{0.5}\text{Pr}^{1/3}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number with respect to plate length and bulk fluid properties,
+        [-]
+    Pr : float
+        Prandtl number at bulk temperature, [-]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number with respect to plate length and bulk temperature, [-]
+
+    Notes
+    -----
+    Does not take into account the impact of free convection, which can 
+    increase the convection substantially.
+
+    Examples
+    --------
+    >>> Nu_horizontal_plate_laminar_Baehr(1e5, 0.7)
+    186.4378528752262
+
+    References
+    ----------
+    .. [1] Baehr, Hans Dieter, and Karl Stephan. Heat and Mass Transfer.
+       Springer, 2013.
+    .. [2] Bergman, Theodore L., Adrienne S. Lavine, Frank P. Incropera, and
+       David P. DeWitt. Introduction to Heat Transfer. 6E.
+       Hoboken, NJ: Wiley, 2011.
+    .. [3] Gesellschaft, V. D. I., ed. VDI Heat Atlas. 2nd ed. 2010 edition.
+       Berlin ; New York: Springer, 2010.
+    '''
+    if Pr < 0.005:
+        return 1.128*(Re*Pr)**0.5
+    elif Pr < 0.05:
+        return (Re*Pr)**0.5
+    elif Pr < 10.0:
+        # Equation in VDI handbook, G4 as well
+        return 0.664*Re**0.5*Pr**(1/3.)
+    else:
+        return 0.678*Re**0.5*Pr**(1/3.)

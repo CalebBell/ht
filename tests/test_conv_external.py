@@ -88,3 +88,11 @@ def test_Nu_external_cylinder():
     
     with pytest.raises(Exception):
         Nu_external_cylinder(6071, 0.7, Method='BADMETHOD')
+
+
+def test_Nu_horizontal_plate_laminar_Baehr():
+    Prs = [1e-4, 1e-1, 1, 100]
+    Nu_expects = [3.5670492006699317, 97.46187137010543, 209.9752366351804, 995.1679034477633]
+    
+    for Pr, Nu_expect in zip(Prs, Nu_expects):
+        assert_allclose(Nu_horizontal_plate_laminar_Baehr(1e5, Pr), Nu_expect)
