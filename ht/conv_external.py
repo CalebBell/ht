@@ -29,7 +29,10 @@ __all__ = ['Nu_cylinder_Zukauskas', 'Nu_cylinder_Churchill_Bernstein',
            'Nu_cylinder_Perkins_Leppert_1962', 'Nu_cylinder_Whitaker',
            'Nu_cylinder_McAdams',
            'conv_external_cylinder_methods', 'Nu_external_cylinder',
-           'Nu_horizontal_plate_laminar_Baehr']
+           'Nu_horizontal_plate_laminar_Baehr', 
+           'Nu_horizontal_plate_laminar_Churchill_Ozoe',
+           'Nu_horizontal_plate_turbulent_Schlichting',
+           'Nu_horizontal_plate_turbulent_Kreith']
 
 ### Single Cylinders in Crossflow
 
@@ -37,6 +40,7 @@ __all__ = ['Nu_cylinder_Zukauskas', 'Nu_cylinder_Churchill_Bernstein',
 def Nu_cylinder_Zukauskas(Re, Pr, Prw=None):
     r'''Calculates Nusselt number for crossflow across a single tube at a
     specified Re. Method from [1]_, also shown without modification in [2]_.
+    This method applies to both the laminar and turbulent regimes.
 
     .. math::
         Nu_{D}=CRe^{m}Pr^{n}\left(\frac{Pr}{Pr_s}\right)^{1/4}
@@ -139,6 +143,8 @@ def Nu_cylinder_Churchill_Bernstein(Re, Pr):
     described in [1]_ as "appears to provide a lower bound for RePr > 0.4".
     An alternate exponent for a smaller range is also presented in [1]_.
 
+    This method applies to both the laminar and turbulent regimes.
+
     Examples
     --------
     Example 7.3 in [2]_, matches.
@@ -189,6 +195,8 @@ def Nu_cylinder_Sanitjai_Goldstein(Re, Pr):
     water, and air (Pr = 0.7 to 176). Re range from 2E3 to 9E4. Also presents
     results for local heat transfer coefficients.
 
+    This method applies to both the laminar and turbulent regimes.
+
     Examples
     --------
     >>> Nu_cylinder_Sanitjai_Goldstein(6071, 0.7)
@@ -236,6 +244,8 @@ def Nu_cylinder_Fand(Re, Pr):
     compared with other data in the literature. Claimed validity of Re from
     1E-1 to 1E5.
 
+    This method applies to both the laminar and turbulent regimes.
+
     Examples
     --------
     >>> Nu_cylinder_Fand(6071, 0.7)
@@ -278,6 +288,8 @@ def Nu_cylinder_McAdams(Re, Pr):
     Notes
     -----
     Developed with very limited test results for water only.
+
+    This method applies to both the laminar and turbulent regimes.
 
     Examples
     --------
@@ -326,6 +338,8 @@ def Nu_cylinder_Whitaker(Re, Pr, mu=None, muw=None):
     Developed considering data from 1 to 1E5 Re, 0.67 to 300 Pr, and range of
     viscosity ratios from 0.25 to 5.2. Found experimental data to generally
     agree with it within 25%.
+
+    This method applies to both the laminar and turbulent regimes.
 
     Examples
     --------
@@ -380,6 +394,8 @@ def Nu_cylinder_Perkins_Leppert_1962(Re, Pr, mu=None, muw=None):
     Considered results with Re from 40 to 1E5, Pr from 1 to 300; and viscosity
     ratios of 0.25 to 4.
 
+    This method applies to both the laminar and turbulent regimes.
+
     Examples
     --------
     >>> Nu_cylinder_Perkins_Leppert_1962(6071, 0.7)
@@ -433,6 +449,8 @@ def Nu_cylinder_Perkins_Leppert_1964(Re, Pr, mu=None, muw=None):
     1.2E5, Pr from 1 to 7, and surface to bulk temperature differences of
     11 to 66.
 
+    This method applies to both the laminar and turbulent regimes.
+
     Examples
     --------
     >>> Nu_cylinder_Perkins_Leppert_1964(6071, 0.7)
@@ -481,8 +499,13 @@ def Nu_external_cylinder(Re, Pr, Prw=None, mu=None, muw=None, Method=None,
     r'''Calculates Nusselt number for crossflow across a single tube at a 
     specified `Re` and `Pr` according to the specified method. Optional
     parameters are `Prw`, `mu`, and `muw`. This function has eight methods
-    available, all only for turbulent flow. The 'Sanitjai-Goldstein' method is
+    available. The 'Sanitjai-Goldstein' method is
     the default.
+    
+    The front of the cyliner is normally always in a laminar regime; whereas 
+    the back is turbulent. The proportions change with `Re`; all correlations
+    take this into account. For this heat transfer case, there is no separation
+    between laminar and turbulent methods.
 
     Parameters
     ----------
@@ -621,3 +644,136 @@ def Nu_horizontal_plate_laminar_Baehr(Re, Pr):
         return 0.664*Re**0.5*Pr**(1/3.)
     else:
         return 0.678*Re**0.5*Pr**(1/3.)
+
+
+def Nu_horizontal_plate_laminar_Churchill_Ozoe(Re, Pr):
+    r'''Calculates Nusselt number for laminar flow across an **isothermal**  
+    flat plate at a specified `Re` and `Pr`, both evaluated at the bulk 
+    temperature. No other wall correction is necessary for this formulation. 
+    A single equation covers all Prandtl number ranges.
+        
+    .. math::
+        Nu_L = \frac{0.6774Re_L^{1/2}Pr^{1/3}}{[1+(0.0468/Pr)^{2/3}]^{1/4}}
+        
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number with respect to plate length and bulk fluid properties,
+        [-]
+    Pr : float
+        Prandtl number at bulk temperature, [-]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number with respect to plate length and bulk temperature, [-]
+
+    Notes
+    -----
+    Does not take into account the impact of free convection, which can 
+    increase the convection substantially.
+
+    Examples
+    --------
+    >>> Nu_horizontal_plate_laminar_Churchill_Ozoe(1e5, 0.7)
+    183.08600782591418
+
+    References
+    ----------
+    .. [1] Churchill, Stuart W., and Hiroyuki Ozoe. "Correlations for Laminar 
+       Forced Convection in Flow Over an Isothermal Flat Plate and in 
+       Developing and Fully Developed Flow in an Isothermal Tube." Journal of
+       Heat Transfer 95, no. 3 (August 1, 1973): 416
+       https://doi.org/10.1115/1.3450078.
+    .. [2] Bergman, Theodore L., Adrienne S. Lavine, Frank P. Incropera, and
+       David P. DeWitt. Introduction to Heat Transfer. 6E.
+       Hoboken, NJ: Wiley, 2011.
+    '''
+    return (0.6774*Re**(0.5)*Pr**(1/3.)
+            *(1.0 + (0.0468/Pr)**(2.0/3.0))**-0.25 )
+
+
+def Nu_horizontal_plate_turbulent_Schlichting(Re, Pr):
+    r'''Calculates Nusselt number for turbulent flow across an **isothermal**  
+    flat plate at a specified `Re` and `Pr`, both evaluated at the bulk 
+    temperature. The formulation of Schlichting is used, which adds a 
+    surface friction term to a formulation from Petukhov and Popov.
+            
+    .. math::
+        \text{Nu}_L = \frac{0.037\text{Re_L}^{0.8} \text{Pr}}
+        {1 + 2.443\text{Re}_L^{-0.1}(\text{Pr}^{2/3} - 1)}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number with respect to plate length and bulk fluid properties,
+        [-]
+    Pr : float
+        Prandtl number at bulk temperature, [-]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number with respect to plate length and bulk temperature, [-]
+
+    Notes
+    -----
+    Does not take into account the impact of free convection, which can 
+    increase the convection substantially.
+
+    Examples
+    --------
+    >>> Nu_horizontal_plate_turbulent_Schlichting(1e5, 0.7)
+    309.620048541267
+
+    References
+    ----------
+    .. [1] Schlichting, H., and Klaus Gersten. Grenzschicht-Theorie. 9th ed. 
+       Berlin Heidelberg: Springer-Verlag, 1997. 
+       http://www.springer.com/de/book/9783662075548.
+    .. [2] Gesellschaft, V. D. I., ed. VDI Heat Atlas. 2nd ed. 2010 edition.
+       Berlin ; New York: Springer, 2010.
+    '''
+    num = 0.037*Re**0.8*Pr
+    den = (1.0 + 2.443*Re**-0.1*(Pr**(2.0/3.0) - 1.0))
+    return num/den
+
+
+def Nu_horizontal_plate_turbulent_Kreith(Re, Pr):
+    r'''Calculates Nusselt number for turbulent flow across an **isothermal**  
+    flat plate at a specified `Re` and `Pr`, both evaluated at the bulk 
+    temperature. The formulation of Kreith is used.
+            
+    .. math::
+        \text{Nu}_L = 0.036\text{Re}_L^{0.8} \text{Pr}^{2/3}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number with respect to plate length and bulk fluid properties,
+        [-]
+    Pr : float
+        Prandtl number at bulk temperature, [-]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number with respect to plate length and bulk temperature, [-]
+
+    Notes
+    -----
+    Does not take into account the impact of free convection, which can 
+    increase the convection substantially. Applies for turbulent flow only.
+
+    Examples
+    --------
+    >>> Nu_horizontal_plate_turbulent_Kreith(1.03e6, 0.71)
+    2074.8740070411122
+
+    References
+    ----------
+    .. [1] Kreith, Frank, Raj Manglik, and Mark Bohn. Principles of Heat
+       Transfer. Cengage, 2010.
+    '''
+    return 0.036*Pr**(1.0/3.0)*Re**0.8

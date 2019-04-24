@@ -96,3 +96,16 @@ def test_Nu_horizontal_plate_laminar_Baehr():
     
     for Pr, Nu_expect in zip(Prs, Nu_expects):
         assert_allclose(Nu_horizontal_plate_laminar_Baehr(1e5, Pr), Nu_expect)
+
+
+def test_Nu_horizontal_plate_laminar_Churchill_Ozoe():
+    assert_allclose(Nu_horizontal_plate_laminar_Churchill_Ozoe(1e5, .7), 183.08600782591418)
+    
+    
+def test_Nu_horizontal_plate_turbulent_Schlichting():
+    assert_allclose(Nu_horizontal_plate_turbulent_Schlichting(1e5, 0.7), 309.620048541267)
+    
+    
+def test_Nu_horizontal_plate_turbulent_Kreith():
+    Nu = Nu_horizontal_plate_turbulent_Kreith(1.03e6, 0.71)
+    assert_allclose(Nu, 2074.8740070411122)

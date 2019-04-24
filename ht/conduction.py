@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 '''Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
-Copyright (C) 2016, Caleb Bell <Caleb.Andrew.Bell@gmail.com>
+Copyright (C) 2016, 2017, 2018, 2019 Caleb Bell <Caleb.Andrew.Bell@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -23,14 +23,15 @@ SOFTWARE.'''
 from __future__ import division
 from math import log, pi, acosh, cosh
 from fluids.constants import inch, foot, hour, Btu, degree_Fahrenheit
-
+from pprint import pprint
 
 __all__ = ['R_to_k', 'k_to_R', 'k_to_thermal_resistivity',
 'thermal_resistivity_to_k', 'R_value_to_k', 'k_to_R_value', 'R_cylinder',
 'S_isothermal_sphere_to_plane', 'S_isothermal_pipe_to_plane',
 'S_isothermal_pipe_normal_to_plane',
 'S_isothermal_pipe_to_isothermal_pipe', 'S_isothermal_pipe_to_two_planes',
-'S_isothermal_pipe_eccentric_to_isothermal_pipe']
+'S_isothermal_pipe_eccentric_to_isothermal_pipe',
+'cylindrical_heat_transfer']
 
 
 def R_to_k(R, t, A=1.):
@@ -585,3 +586,98 @@ def S_isothermal_pipe_eccentric_to_isothermal_pipe(D1, D2, Z, L=1.):
        Wiley, 2011.
     '''
     return 2.*pi*L/acosh((D2**2 + D1**2 - 4.*Z**2)/(2.*D1*D2))
+
+
+# Specific heat transfer problems of conduction
+
+
+def cylindrical_heat_transfer(Ti, To, hi, ho, Di, ts, ks):
+    r'''Calculation for the heat transfer through a cylindrical wall,
+    as occurs in pipes and cylindrical vessels. This is the core method
+    which calculates the temperatures of each layer - and allows an outer
+    layer to iterate on temperature or duty to meet a fixed specification,
+    or include things like temperature dependent thermal conductivities
+    or radiation.
+    
+    Parameters
+    ----------
+    Ti : float
+        Temperature of the inside of the cylinder, [K]
+    To : float
+        External temperature outside the cylinder, away from the cylinder
+        wall, [K]
+    hi : float
+        Inside heat transfer coefficient, [W/m^2/K]
+    ho : float
+        Outside heat transfer coefficient, [W/m^2/K]
+    Di : float
+        Inside diameter of cylinder, [m]
+    ts : list[float]
+        List of thicknesses of each layer of the cylinder, [m]
+    ks : list[float]
+        List of thermal conductivities of each layer of the cylinder, [w/m/K]
+
+    Returns
+    -------
+    results : dict
+        * Q : Heat exchanged through the cylinder (per meter of length), [W/m]
+        * Rs : Thermal resistances of each of the layers, [m*K/W]
+        * Ts : Temperatures of the outside of each of the layers, [K]
+        * UA : Heat transfer coefficient times area (on a per-meter of 
+               cylinder) basis, [W/K/m]
+        * U_inner : Heat transfer coefficient with respect to the inside
+                    diameter, [W/K]
+        * U_outer : Heat transfer coefficient with respect to the exterior
+                    diameter, [W/K]
+        * q : Specific heat exchanged (per square meter) through the cylinder
+              (per meter of length), [W/m^3]
+
+    Examples
+    --------
+    
+    >>> pprint(cylindrical_heat_transfer(Ti=453.15, To=301.15, hi=1e12, ho=22.697193, Di=0.0779272, ts=[0.0054864, .05], ks=[56.045, 0.0598535265]))
+    {'Q': 73.12000884069367,
+     'Rs': [0.00022201030738405449, 1.189361782070256],
+     'Ts': [453.15, 453.1226455779877, 306.578530147744],
+     'UA': 0.48105268974140575,
+     'U_inner': 1.9649599487726137,
+     'U_outer': 0.8106078714663484,
+     'q': 123.21239646288495}
+    '''
+    length = 1.0 # basis
+    # Note - fouling is just another layer, should be converted to a thickness/thermal conductivity
+    
+    external_diameter = Di + 2.0*sum(ts)
+    A_external = pi*external_diameter*length
+    A_internal = pi*Di*length
+
+    Rs = []
+    Do_running = Di
+    R_layers = 0.0
+    for i in range(len(ts)):
+        Do_running, Di_running = 2.0*ts[i]+Do_running, Do_running
+        Ri = 0.5*external_diameter*log(Do_running/Di_running)/ks[i]
+        R_layers += Ri
+        Rs.append(Ri)
+
+    D_ratio = external_diameter/Di
+    inv_term = D_ratio/hi + R_layers + 1.0/ho
+
+    U_external = 1.0/inv_term
+
+    UA = A_external*U_external
+    dT = Ti - To
+
+    Q = UA*dT
+
+    q = Q/A_external
+
+    # Compute the temperature profile
+    Ts = [Ti]
+    for Ri in Rs:
+        Ts.append(Ts[-1] - q*Ri)
+    
+    # Convert heat transfer coefficient area basis = U_i*A_i = U_o*A_o, divide
+    ans = {'Q': Q, 'q': q, 'UA': UA, 'U_outer': U_external, 'U_inner': UA/A_internal, 'Ts': Ts,
+          'Rs': Rs}
+    return ans

@@ -49,6 +49,20 @@ def test_conduction():
     assert_allclose(S_isothermal_pipe_eccentric_to_isothermal_pipe(.1, .4, .05, 10), 47.709841915608976)
 
 
+def test_cylindrical_heat_transfer():
+    data = cylindrical_heat_transfer(Ti=453.15, To=301.15, hi=1e12, ho=22.697193, Di=0.0779272, ts=[0.0054864, .05], ks=[56.045, 0.0598535265])
+    expect = {'Q': 73.12000884069367,
+     'Rs': [0.00022201030738405449, 1.189361782070256],
+     'Ts': [453.15, 453.1226455779877, 306.578530147744],
+     'UA': 0.48105268974140575,
+     'U_inner': 1.9649599487726137,
+     'U_outer': 0.8106078714663484,
+     'q': 123.21239646288495}
+    
+    for k, v in expect.items():
+        assert_allclose(v, data[k])
+
+
 def test_insulation():
     rho_tot = sum([i[0] for i in building_materials.values()])
     k_tot = sum([i[1] for i in building_materials.values()])
