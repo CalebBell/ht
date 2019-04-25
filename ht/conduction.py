@@ -664,12 +664,10 @@ def cylindrical_heat_transfer(Ti, To, hi, ho, Di, ts, ks):
     inv_term = D_ratio/hi + R_layers + 1.0/ho
 
     U_external = 1.0/inv_term
-
     UA = A_external*U_external
     dT = Ti - To
 
     Q = UA*dT
-
     q = Q/A_external
 
     # Compute the temperature profile

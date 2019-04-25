@@ -32,7 +32,12 @@ __all__ = ['Nu_cylinder_Zukauskas', 'Nu_cylinder_Churchill_Bernstein',
            'Nu_horizontal_plate_laminar_Baehr', 
            'Nu_horizontal_plate_laminar_Churchill_Ozoe',
            'Nu_horizontal_plate_turbulent_Schlichting',
-           'Nu_horizontal_plate_turbulent_Kreith']
+           'Nu_horizontal_plate_turbulent_Kreith',
+           'Nu_external_horizontal_plate',
+           
+           'conv_horizontal_plate_laminar_methods', 'conv_horizontal_plate_turbulent_methods',
+           'LAMINAR_TRANSITION_HORIZONTAL_PLATE', 'conv_horizontal_plate_methods',
+           ]
 
 ### Single Cylinders in Crossflow
 
@@ -777,3 +782,102 @@ def Nu_horizontal_plate_turbulent_Kreith(Re, Pr):
        Transfer. Cengage, 2010.
     '''
     return 0.036*Pr**(1.0/3.0)*Re**0.8
+
+
+conv_horizontal_plate_laminar_methods = {
+    'Baehr': (Nu_horizontal_plate_laminar_Baehr, ('Re', 'Pr')),
+    'Churchill Ozoe': (Nu_horizontal_plate_laminar_Churchill_Ozoe, ('Re', 'Pr')),
+}
+
+conv_horizontal_plate_turbulent_methods = {
+    'Schlichting': (Nu_horizontal_plate_turbulent_Schlichting, ('Re', 'Pr')),
+    'Kreith': (Nu_horizontal_plate_turbulent_Kreith, ('Re', 'Pr')),
+}
+
+conv_horizontal_plate_methods = conv_horizontal_plate_laminar_methods.copy()
+conv_horizontal_plate_methods.update(conv_horizontal_plate_turbulent_methods)
+
+LAMINAR_TRANSITION_HORIZONTAL_PLATE = 5E5
+
+
+def Nu_external_horizontal_plate(Re, Pr, L=None, x=None, Method=None, 
+                                 laminar_method='Baehr',
+                                 turbulent_method='Schlichting', 
+                                 Re_transition=LAMINAR_TRANSITION_HORIZONTAL_PLATE,
+                                 AvailableMethods=False):
+    r'''This function calculates the heat transfer coefficient for external
+    forced convection along a horizontal plate. 
+    
+    Requires at a minimum a flow's Reynolds and Prandtl numbers `Re` and `Pr`. 
+    `L` and `x` are not used by any correlations presently ,but are included 
+    for future support.
+    
+    If no correlation's name is provided as `Method`, the most accurate 
+    applicable correlation is selected.
+    
+    Parameters
+    ----------
+    Re : float
+        Reynolds number with respect to bulk properties and plate length, [-]
+    Pr : float
+        Prandtl number with respect to bulk properties, [-]
+    L : float, optional
+        Length of horizontal plate, [m]
+    x : float, optional
+        Length of horizontal plate for specific calculation distance, [m]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number with respect to plate length, [-]
+    methods : list, only returned if AvailableMethods == True
+        List of methods which can be used to calculate `Nu` with the given inputs
+
+    Other Parameters
+    ----------------
+    Method : string, optional
+        A string of the function name to use, as in the dictionary
+        conv_horizontal_plate_methods
+    laminar_method : str, optional
+        The prefered method for laminar flow, [-]
+    turbulent_method : str, optional
+        The prefered method for turbulent flow, [-]
+    Re_transition : float, optional
+        The transition Reynolds number for laminar changing to turbulent flow,
+        [-]
+    AvailableMethods : bool, optional
+        If True, function will consider which methods which can be used to
+        calculate `Nu` with the given inputs
+        
+    Examples
+    --------
+    Turbulent example
+    
+    >>> Nu_external_horizontal_plate(Re=1E7, Pr=.7)
+    11496.952599969829
+    '''
+    turbulent = False if Re < Re_transition else True
+
+    if Method is None:
+        methods = []
+        if turbulent:
+            methods.extend(['Schlichting', 'Kreith'])
+        else:
+            methods.extend(['Baehr', 'Churchill Ozoe'])
+        
+    if AvailableMethods:
+        return methods
+    if Method is None:
+        Method = turbulent_method if turbulent else laminar_method
+
+
+    if Method in conv_horizontal_plate_methods:
+        f, args = conv_horizontal_plate_methods[Method]
+        
+        kwargs = {}
+        for arg in args:
+            kwargs[arg] = locals()[arg]
+        return f(**kwargs)
+    else:
+        raise Exception("Correlation name not recognized; see the "
+                        "documentation for the available options.")

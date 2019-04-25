@@ -124,7 +124,9 @@ def q_rad(emissivity, T, T2=0):
        David P. DeWitt. Introduction to Heat Transfer. 6E. Hoboken, NJ:
        Wiley, 2011.
     '''
-    return sigma*emissivity*(T**4 - T2**4)
+    T_T = T*T
+    T2_T2 = T2*T2
+    return sigma*emissivity*(T_T*T_T - T2_T2*T2_T2)
 
 
 def grey_transmittance(extinction_coefficient, molar_density, length, base=e):

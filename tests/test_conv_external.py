@@ -109,3 +109,40 @@ def test_Nu_horizontal_plate_turbulent_Schlichting():
 def test_Nu_horizontal_plate_turbulent_Kreith():
     Nu = Nu_horizontal_plate_turbulent_Kreith(1.03e6, 0.71)
     assert_allclose(Nu, 2074.8740070411122)
+    
+    
+def test_Nu_external_horizontal_plate():
+    # default function - turbulent
+    assert_allclose(Nu_external_horizontal_plate(5e6, .7),
+                    Nu_external_horizontal_plate(5e6, .7, turbulent_method='Schlichting'))
+    
+    # specific function - turbulent - vs specify turbulent method
+    assert_allclose(Nu_horizontal_plate_turbulent_Kreith(5e6, .7),
+                    Nu_external_horizontal_plate(5e6, .7, turbulent_method='Kreith'))
+    
+    # specific function - turbulent - vs specify method
+    assert_allclose(Nu_horizontal_plate_turbulent_Kreith(5e6, .7),
+                    Nu_external_horizontal_plate(5e6, .7, Method='Kreith'))
+    
+    # default function - laminar
+    assert_allclose(Nu_external_horizontal_plate(5e3, .7),
+                    Nu_external_horizontal_plate(5e3, .7, laminar_method='Baehr'))
+    
+    # specific function - laminar - vs specify laminar method
+    assert_allclose(Nu_horizontal_plate_laminar_Baehr(5e3, .7),
+                    Nu_external_horizontal_plate(5e3, .7, laminar_method='Baehr'))
+    
+    # specific function - laminar - vs specify method
+    assert_allclose(Nu_horizontal_plate_laminar_Churchill_Ozoe(5e6, .7),
+                    Nu_external_horizontal_plate(5e6, .7, Method='Churchill Ozoe'))
+    
+    # Swith the transition region to be higher
+    assert_allclose(Nu_horizontal_plate_laminar_Baehr(5e6, .7),
+                    Nu_external_horizontal_plate(5e6, .7, Re_transition=1e7))
+    
+    # Check the AvailableMethods
+    assert (set(Nu_external_horizontal_plate(1e5, .7, AvailableMethods=True)) 
+            == set(conv_horizontal_plate_laminar_methods.keys()) )
+    
+    assert (set(Nu_external_horizontal_plate(1e7, .7, AvailableMethods=True)) 
+            == set(conv_horizontal_plate_turbulent_methods.keys()) )
