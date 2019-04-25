@@ -91,9 +91,9 @@ def Nu_vertical_plate_Churchill(Pr, Gr):
        David P. DeWitt. Introduction to Heat Transfer. 6E. Hoboken, NJ:
        Wiley, 2011.
     '''
-    Ra = Pr * Gr
-    Nu = (0.825 + (0.387*Ra**(1/6.)/(1 + (0.492/Pr)**(9/16.))**(8/27.)))**2
-    return Nu
+    Ra = Pr*Gr
+    term = (0.825 + (0.387*Ra**(1/6.)*(1.0 + (Pr/0.492)**(-0.5625))**(-8.0/27.0)))
+    return term*term
 
 
 def Nu_horizontal_plate_McAdams(Pr, Gr, buoyancy=True):
