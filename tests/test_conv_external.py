@@ -146,3 +146,32 @@ def test_Nu_external_horizontal_plate():
     
     assert (set(Nu_external_horizontal_plate(1e7, .7, AvailableMethods=True)) 
             == set(conv_horizontal_plate_turbulent_methods.keys()) )
+    
+    
+    
+def test_Nu_horizontal_plate_VDI():
+    Nu = Nu_horizontal_plate_VDI(5.54, 3.21e8, buoyancy=True)
+    assert_allclose(Nu, 203.89681224927565)
+    Nu = Nu_horizontal_plate_VDI(5.54, 3.21e8, buoyancy=False)
+    assert_allclose(Nu, 39.16864971535617)
+    
+    Nu = Nu_horizontal_plate_VDI(5.54, 3.21e3, buoyancy=True)
+    assert_allclose(Nu, 5.810590581487902)
+    
+def test_Nu_horizontal_plate_Rohsenow():
+    Nu = Nu_horizontal_plate_Rohsenow(5.54, 3.21e8, buoyancy=True)
+    assert_allclose(Nu, 175.91054716322836)
+    
+    Nu = Nu_horizontal_plate_Rohsenow(5.54, 3.21e8, buoyancy=False)
+    assert_allclose(Nu, 35.95799244863986)
+    
+    
+def test_Nu_free_horizontal_plate():
+    Nu = Nu_free_horizontal_plate(5.54, 3.21e8, buoyancy=True)
+    assert_allclose(Nu, 203.89681224927565)
+    
+    Nu = Nu_free_horizontal_plate(5.54, 3.21e8, buoyancy=True, Method='McAdams')
+    assert_allclose(Nu, 181.73121274384457)
+    
+    assert Nu_free_horizontal_plate(5.54, 3.21e8, buoyancy=True, AvailableMethods=True) == ['VDI', 'McAdams', 'Rohsenow']
+    

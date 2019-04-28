@@ -809,7 +809,7 @@ def Nu_external_horizontal_plate(Re, Pr, L=None, x=None, Method=None,
     forced convection along a horizontal plate. 
     
     Requires at a minimum a flow's Reynolds and Prandtl numbers `Re` and `Pr`. 
-    `L` and `x` are not used by any correlations presently ,but are included 
+    `L` and `x` are not used by any correlations presently, but are included 
     for future support.
     
     If no correlation's name is provided as `Method`, the most accurate 

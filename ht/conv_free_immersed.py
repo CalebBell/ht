@@ -24,6 +24,8 @@ from __future__ import division
 from math import exp, log
 
 __all__ = ['Nu_vertical_plate_Churchill', 'Nu_horizontal_plate_McAdams',
+           'Nu_horizontal_plate_VDI', 'Nu_horizontal_plate_Rohsenow',
+           'Nu_free_horizontal_plate',
            'Nu_sphere_Churchill', 'Nu_vertical_cylinder_Griffiths_Davis_Morgan',
            'Nu_vertical_cylinder_Jakob_Linke_Morgan',
            'Nu_vertical_cylinder_Carne_Morgan',
@@ -153,6 +155,235 @@ def Nu_horizontal_plate_McAdams(Pr, Gr, buoyancy=True):
         else:
             Nu = .15*Ra**(1.0/3.0)
     return Nu
+
+
+def Nu_horizontal_plate_VDI(Pr, Gr, buoyancy=True):
+    r'''Calculates the Nusselt number for natural convection above a horizontal
+    plate according to the VDI [1]_ correlations. The plate must be
+    isothermal. Three different equations are used, one each for laminar and
+    turbulent for the heat transfer happening at upper surface case and one for
+    the case of heat transfer happening at the lower surface. The lower surface
+    correlation is recommened for the laminar flow regime.
+    The two different sets of correlations are required because if the plate
+    is hot, buoyancy lifts the fluid off the plate and enhances free convection
+    whereas if the plate is cold, the cold fluid above it settles on it and
+    decreases the free convection.
+
+    Parameters
+    ----------
+    Pr : float
+        Prandtl number with respect to fluid properties [-]
+    Gr : float
+        Grashof number with respect to fluid properties and plate - fluid
+        temperature difference [-]
+    buoyancy : bool, optional
+        Whether or not the plate's free convection is buoyancy assisted (hot 
+        plate) or not, [-]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number with respect to length, [-]
+
+    Notes
+    -----
+    The characteristic length suggested for use is as follows, with `a` and
+    `b` being the length and width of the plate.
+        
+    .. math::
+        L = \frac{ab}{2(a+b)}
+        
+    The buoyancy enhanced cases are from [2]_; the other is said to be from 
+    [3]_, although the equations there not quite the same and do not include
+    the Prandtl number correction.
+
+    Examples
+    --------
+    >>> Nu_horizontal_plate_VDI(5.54, 3.21e8, buoyancy=True)
+    203.89681224927565
+    >>> Nu_horizontal_plate_VDI(5.54, 3.21e8, buoyancy=False)
+    39.16864971535617
+    
+    References
+    ----------
+    .. [1] Gesellschaft, V. D. I., ed. VDI Heat Atlas. 2nd ed. 2010 edition.
+       Berlin ; New York: Springer, 2010.   
+    .. [2] Stewartson, Keith. "On the Free Convection from a Horizontal Plate."
+       Zeitschrift Für Angewandte Mathematik Und Physik ZAMP 9, no. 3 
+       (September 1, 1958): 276-82. https://doi.org/10.1007/BF02033031.
+    .. [3] Schlunder, Ernst U, and International Center for Heat and Mass
+       Transfer. Heat Exchanger Design Handbook. Washington:
+       Hemisphere Pub. Corp., 1987.
+    '''
+    Ra = Pr*Gr
+    if buoyancy:
+        f2 = (1.0 + (0.322/Pr)**(0.55))**(20.0/11.0)
+        if Ra*f2 < 7e4:
+            return 0.766*(Ra*f2)**0.2
+        else:
+            return 0.15*(Ra*f2)**(1.0/3.0)
+    else:
+        f1 = (1.0 + (0.492/Pr)**(9.0/16.0))**(-16.0/9.0)
+        return 0.6*(Ra*f1)**0.2
+
+
+def Nu_horizontal_plate_Rohsenow(Pr, Gr, buoyancy=True):
+    r'''Calculates the Nusselt number for natural convection above a horizontal
+    plate according to the Rohsenow, Hartnett, and Cho (1998) [1]_ correlations. 
+    The plate must be isothermal. Three different equations are used, one each 
+    for laminar and turbulent for the heat transfer happening at upper surface 
+    case and one for the case of heat transfer happening at the lower surface.
+    
+    The lower surface correlation is recommened for the laminar flow regime.
+    The two different sets of correlations are required because if the plate
+    is hot, buoyancy lifts the fluid off the plate and enhances free convection
+    whereas if the plate is cold, the cold fluid above it settles on it and
+    decreases the free convection.
+
+    Parameters
+    ----------
+    Pr : float
+        Prandtl number with respect to fluid properties [-]
+    Gr : float
+        Grashof number with respect to fluid properties and plate - fluid
+        temperature difference [-]
+    buoyancy : bool, optional
+        Whether or not the plate's free convection is buoyancy assisted (hot 
+        plate) or not, [-]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number with respect to length, [-]
+
+    Notes
+    -----
+    The characteristic length suggested for use is as follows, with `a` and
+    `b` being the length and width of the plate.
+        
+    .. math::
+        L = \frac{ab}{2(a+b)}
+        
+
+    Examples
+    --------
+    >>> Nu_horizontal_plate_Rohsenow(5.54, 3.21e8, buoyancy=True)
+    175.91054716322836
+    >>> Nu_horizontal_plate_Rohsenow(5.54, 3.21e8, buoyancy=False)
+    35.95799244863986
+    
+    References
+    ----------
+    .. [1] Rohsenow, Warren and James Hartnett and Young Cho. Handbook of Heat
+       Transfer, 3E. New York: McGraw-Hill, 1998.
+    '''
+    Ra = Pr*Gr
+    if buoyancy:
+        C_tU = 0.14*((1.0 + 0.01707*Pr)/(1.0 + 0.01*Pr))
+        C_tV = 0.13*Pr**0.22/(1.0 + 0.61*Pr**0.81)**0.42
+        
+        t1 = 1.0 # Ah/A # Heated to non heated area ratio
+        t2 = 0.0 # Lf*P/A # Lf vertical distance between lowest and highest point in body
+        # P is perimiter, A is area
+        Cl = (0.0972 - (0.0157 + 0.462*C_tV)*t1 
+              + (0.615*C_tV - 0.0548 - 6e-6*Pr)*t2)
+        
+        Nu_T = 0.835*Cl*Ra**0.25 # average Cl
+        Nu_l = 1.4/(log(1.0 + 1.4/Nu_T))
+        Nu_t = C_tU*Ra**(1.0/3.0)
+        
+        m = 10.0
+        Nu = ((Nu_l)**m + Nu_t**m)**(1.0/m)
+        return Nu
+    else:
+        # No friction/C term
+        Nu_T = 0.527*Ra**0.2/(1.0 + (1.9/Pr)**0.9)**(2.0/9.0) 
+        Nu_l = 2.5/(log(1.0 + 2.5/Nu_T))
+        return Nu_l
+
+
+conv_free_horizontal_plate_methods = {
+    'McAdams': (Nu_horizontal_plate_McAdams, ('Pr', 'Gr', 'buoyancy')),
+    'VDI': (Nu_horizontal_plate_VDI, ('Pr', 'Gr', 'buoyancy')),
+    'Rohsenow': (Nu_horizontal_plate_Rohsenow, ('Pr', 'Gr', 'buoyancy')),
+}
+
+
+def Nu_free_horizontal_plate(Pr, Gr, buoyancy, L=None, W=None, 
+                             Method=None, AvailableMethods=False):
+    r'''This function calculates the heat transfer coefficient for external
+    free convection from a horizontal plate. 
+    
+    Requires at a minimum a fluid's Prandtl number `Pr`, and the Grashof 
+    number `Gr` for the system fluid, temperatures, and geometry.
+    
+    `L` and `W` are not used by any correlations presently, but are included 
+    for future support.
+    
+    If no correlation's name is provided as `Method`, the 'VDI' correlation is
+    selected.
+    
+    Parameters
+    ----------
+    Pr : float
+        Prandtl number with respect to fluid properties [-]
+    Gr : float
+        Grashof number with respect to fluid properties and plate - fluid
+        temperature difference [-]
+    buoyancy : bool, optional
+        Whether or not the plate's free convection is buoyancy assisted (hot 
+        plate) or not, [-]
+    L : float, optional
+        Length of horizontal plate, [m]
+    W : float, optional
+        Width of the horizontal plate, [m]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number with respect to plate length, [-]
+    methods : list, only returned if AvailableMethods == True
+        List of methods which can be used to calculate `Nu` with the given 
+        inputs
+
+    Other Parameters
+    ----------------
+    Method : string, optional
+        A string of the function name to use, as in the dictionary
+        conv_free_horizontal_plate_methods
+    AvailableMethods : bool, optional
+        If True, function will consider which methods which can be used to
+        calculate `Nu` with the given inputs
+        
+    Examples
+    --------
+    Turbulent example
+    
+    >>> Nu_free_horizontal_plate(5.54, 3.21e8, buoyancy=True)
+    203.89681224927565
+    
+    >>> Nu_free_horizontal_plate(5.54, 3.21e8, buoyancy=True, Method='McAdams')
+    181.73121274384457
+    '''
+    if Method is None:
+        methods = ["VDI", "McAdams", "Rohsenow"]
+        
+    if AvailableMethods:
+        return methods
+    if Method is None:
+        Method = methods[0]
+
+
+    if Method in conv_free_horizontal_plate_methods:
+        f, args = conv_free_horizontal_plate_methods[Method]
+        
+        kwargs = {}
+        for arg in args:
+            kwargs[arg] = locals()[arg]
+        return f(**kwargs)
+    else:
+        raise Exception("Correlation name not recognized; see the "
+                        "documentation for the available options.")
 
 
 def Nu_sphere_Churchill(Pr, Gr):
