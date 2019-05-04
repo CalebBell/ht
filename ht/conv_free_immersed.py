@@ -1170,12 +1170,12 @@ def Nu_horizontal_cylinder_Churchill_Chu(Pr, Gr):
     Pr : float
         Prandtl number [-]
     Gr : float
-        Grashof number [-]
+        Grashof number with respect to cylinder diameter, [-]
 
     Returns
     -------
     Nu : float
-        Nusselt number, [-]
+        Nusselt number with respect to cylinder diameter, [-]
 
     Notes
     -----
@@ -1221,14 +1221,14 @@ def Nu_horizontal_cylinder_Kuehn_Goldstein(Pr, Gr):
     Parameters
     ----------
     Pr : float
-        Prandtl number [-]
+        Prandtl number with respect to film temperature [-]
     Gr : float
-        Grashof number [-]
+        Grashof number with respect to cylinder diameter, [-]
 
     Returns
     -------
     Nu : float
-        Nusselt number, [-]
+        Nusselt number with respect to cylinder diameter, [-]
 
     Notes
     -----
@@ -1281,14 +1281,14 @@ def Nu_horizontal_cylinder_Morgan(Pr, Gr):
     Parameters
     ----------
     Pr : float
-        Prandtl number [-]
+        Prandtl number with respect to film temperature [-]
     Gr : float
-        Grashof number [-]
+        Grashof number with respect to cylinder diameter, [-]
 
     Returns
     -------
     Nu : float
-        Nusselt number, [-]
+        Nusselt number with respect to cylinder diameter, [-]
 
     Notes
     -----
@@ -1343,14 +1343,14 @@ def Nu_horizontal_cylinder(Pr, Gr, Method=None, AvailableMethods=False):
     Parameters
     ----------
     Pr : float
-        Prandtl number [-]
+        Prandtl number with respect to film temperature [-]
     Gr : float
-        Grashof number [-]
+        Grashof number with respect to cylinder diameter, [-]
 
     Returns
     -------
     Nu : float
-        Nusselt number, [-]
+        Nusselt number with respect to cylinder diameter, [-]
     methods : list, only returned if AvailableMethods == True
         List of methods which can be used to calculate Nu with the given inputs
 
@@ -1362,6 +1362,16 @@ def Nu_horizontal_cylinder(Pr, Gr, Method=None, AvailableMethods=False):
     AvailableMethods : bool, optional
         If True, function will consider which methods which can be used to
         calculate Nu with the given inputs
+        
+    Notes
+    -----
+    All fluid properties should be evaluated at the film temperature, the 
+    average between the outer surface temperature of the solid, and the fluid
+    temperature far away from the heat transfer interface - normally the same
+    as the temperature before any cooling or heating occurs.
+    
+    .. math::
+        T_f = (T_{\text{surface}} + T_\infty)/2
 
     Examples
     --------

@@ -8,6 +8,7 @@
    ht.conduction
    ht.conv_external
    ht.conv_free_immersed
+   ht.conv_free_enclosed
    ht.conv_internal
    ht.conv_jacket
    ht.conv_packed_bed

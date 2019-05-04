@@ -34,6 +34,7 @@ from . import conduction
 from . import conv_jacket
 from . import insulation
 from . import conv_free_immersed
+from . import conv_free_enclosed
 from . import conv_packed_bed
 from . import conv_external
 from . import conv_supercritical
@@ -56,6 +57,7 @@ from .conduction import *
 from .conv_jacket import *
 from .insulation import *
 from .conv_free_immersed import *
+from .conv_free_enclosed import *
 from .conv_tube_bank import *
 from .conv_packed_bed import *
 from .conv_external import *
@@ -67,7 +69,7 @@ __all__ = ['core', 'hx', 'conv_internal', 'boiling_nucleic', 'air_cooler',
 'radiation', 'condensation', 'conduction', 'conv_jacket', 'conv_free_immersed',
 'conv_tube_bank', 'insulation', 'conv_packed_bed', 'conv_external', 
 'conv_supercritical', 'conv_two_phase', 'boiling_flow', 'boiling_plate',
-'conv_plate']
+'conv_plate', 'conv_free_enclosed']
 
 
 __all__.extend(core.__all__)
@@ -89,6 +91,7 @@ __all__.extend(conv_supercritical.__all__)
 __all__.extend(conv_two_phase.__all__)
 __all__.extend(boiling_plate.__all__)
 __all__.extend(conv_plate.__all__)
+__all__.extend(conv_free_enclosed.__all__)
 
 
 __version__ = '0.1.52'
