@@ -25,7 +25,6 @@ from math import exp, e
 import os
 from io import open
 from fluids.constants import sigma, h, c, k, pi
-import numpy as np
 
 __all__ = ['blackbody_spectral_radiance', 'q_rad', 'grey_transmittance',
            'solar_spectrum']
@@ -232,6 +231,7 @@ def solar_spectrum(model='SOLAR-ISS'):
     Integration - calculate the solar constant, in untis of W/m^2 hitting
     earth's atmosphere.
     
+    >>> import numpy as np
     >>> np.trapz(SSI, wavelengths)
     1344.802978238
 
@@ -249,6 +249,7 @@ def solar_spectrum(model='SOLAR-ISS'):
        https://doi.org/10.1029/2008GL036373.
     '''
     if model == 'SOLAR-ISS':
+        import numpy as np
         pth = os.path.join(folder, 'solar_iss_2018_spectrum.dat')
         data = np.loadtxt(pth)
         wavelengths, SSI, uncertainties = data[:, 0], data[:, 1], data[:, 2]

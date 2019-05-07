@@ -27,6 +27,8 @@ from fluids.numerics import secant, implementation_optimize_tck, bisplev, horner
 __all__ = ['Nu_Nusselt_Rayleigh_Holling_Herwig', 'Nu_Nusselt_Rayleigh_Probert',
            'Nu_Nusselt_Rayleigh_Hollands',
            'Rac_Nusselt_Rayleigh', 'Rac_Nusselt_Rayleigh_disk',
+           'Nu_vertical_helical_coil_Ali', 
+           'Nu_vertical_helical_coil_Prabhanjan_Rennie_Raghavan'
            ]
 
 
@@ -469,3 +471,105 @@ def Rac_Nusselt_Rayleigh_disk(H, D, insulated=True):
     else:
         coeffs = uninsulated_disk_coeffs
     return exp(1.0/horner(coeffs, 0.357142857142857151*(x - 3.2)))
+
+
+### Free convection vertical helical coil
+
+def Nu_vertical_helical_coil_Ali(Pr, Gr):
+    r'''Calculates Nusselt number for natural convection around a vertical
+    helical coil inside a tank or other vessel according to the Ali [1]_ 
+    correlation.
+
+    .. math::
+        Nu_L = 0.555Gr_L^{0.301} Pr^{0.314}
+    
+    Parameters
+    ----------
+    Pr : float
+        Prandtl number of the fluid surrounding the coil with properties 
+        evaluated at bulk conditions or as described in the notes [-]
+    Gr : float
+        Prandtl number of the fluid surrounding the coil with properties 
+        evaluated at bulk conditions or as described in the notes
+        (for the two temperatures, use the average coil fluid temperature and
+        the temperature of the fluid outside the coil) [-]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number with respect to the total length of the helical coil
+        (and bulk thermal conductivity), [-]
+
+    Notes
+    -----
+    In [1]_, the temperature at which the fluid surrounding the coil's
+    properties were evaluated at was calculated in an unusual fashion. The 
+    average temperature of the fluid inside the coil
+    :math:`(T_{in} + T_{out})/2` is averaged with the fluid outside the coil's
+    temperature.
+    
+    The correlation is valid for Prandtl numbers between 4.4 and 345, 
+    and tank diameter/coil outer diameter ratios between 10 and 30.
+
+    Examples
+    --------
+    >>> Nu_vertical_helical_coil_Ali(4.4, 1E11)
+    1808.5774997297106
+
+    References
+    ----------
+    .. [1] Ali, Mohamed E. "Natural Convection Heat Transfer from Vertical
+       Helical Coils in Oil." Heat Transfer Engineering 27, no. 3 (April 1,
+       2006): 79-85.
+    '''
+    return 0.555*Gr**0.301*Pr**0.314
+
+
+def Nu_vertical_helical_coil_Prabhanjan_Rennie_Raghavan(Pr, Gr):
+    r'''Calculates Nusselt number for natural convection around a vertical
+    helical coil inside a tank or other vessel according to the Prabhanjan,
+    Rennie, and Raghavan [1]_ correlation.
+
+    .. math::
+        Nu_H = 0.0749\text{Ra}_H^{0.3421}
+        
+    The range of Rayleigh numbers is as follows:
+        
+    .. math::
+        9 \times 10^{9} < \text{Ra} < 4 \times 10^{11}
+    
+    Parameters
+    ----------
+    Pr : float
+        Prandtl number calculated with the film temperature -
+        wall and temperature very far from the coil average, [-]
+    Gr : float
+        Grashof number calculated with the film temperature -
+        wall and temperature very far from the coil average,
+        and using the total height of the coil [-]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number using the total height of the coil
+        and the film temperature, [-]
+
+    Notes
+    -----    
+    [1]_ also has several other equations using different characteristic
+    lengths.
+    
+    Examples
+    --------
+    >>> Nu_vertical_helical_coil_Prabhanjan_Rennie_Raghavan(4.4, 1E11)
+    720.6211067718227
+
+    References
+    ----------
+    .. [1] Prabhanjan, Devanahalli G., Timothy J. Rennie, and G. S. Vijaya
+       Raghavan. "Natural Convection Heat Transfer from Helical Coiled Tubes." 
+       International Journal of Thermal Sciences 43, no. 4 (April 1, 2004): 
+       359-65.
+    '''
+    Ra = Pr*Gr
+    return 0.0749*Ra**0.3421

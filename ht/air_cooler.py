@@ -24,7 +24,7 @@ from __future__ import division
 from math import atan, sin, log10
 from fluids.constants import hp, minute, inch, foot
 from fluids.geometry import AirCooledExchanger
-from fluids import Prandtl, Reynolds
+from fluids.core import Prandtl, Reynolds
 from ht.core import LMTD, fin_efficiency_Kern_Kraus, wall_factor, WALL_FACTOR_PRANDTL
 from ht.conv_tube_bank import ESDU_tube_row_correction
 

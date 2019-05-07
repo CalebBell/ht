@@ -40,7 +40,8 @@ __all__ = ['Nu_vertical_plate_Churchill', 'Nu_horizontal_plate_McAdams',
            'Nu_horizontal_cylinder_Churchill_Chu',
            'Nu_horizontal_cylinder_Kuehn_Goldstein',
            'Nu_horizontal_cylinder_Morgan',
-           'Nu_horizontal_cylinder', 'Nu_vertical_helical_coil_Ali']
+           'Nu_horizontal_cylinder',
+           'Nu_coil_Xin_Ebadian']
 
 
 def Nu_vertical_plate_Churchill(Pr, Gr):
@@ -1032,7 +1033,7 @@ def Nu_vertical_cylinder_Popiel_Churchill(Pr, Gr, L, D,
     Examples
     --------
     >>> Nu_vertical_cylinder_Popiel_Churchill(0.7, 1E10, 2.5, 1)
-    228.8979005514989
+    228.89790055149896
 
     References
     ----------
@@ -1412,53 +1413,62 @@ def Nu_horizontal_cylinder(Pr, Gr, Method=None, AvailableMethods=False):
 #plt.show()
 
 
-### Free convection vertical helical coil
-
-def Nu_vertical_helical_coil_Ali(Pr, Gr):
+def Nu_coil_Xin_Ebadian(Pr, Gr, horizontal=False):
     r'''Calculates Nusselt number for natural convection around a vertical
-    helical coil inside a tank or other vessel according to the Ali [1]_ 
-    correlation.
-
-    .. math::
-        Nu_L = 0.555Gr_L^{0.301} Pr^{0.314}
+    or horizontal helical coil suspended in a fluid without 
+    forced convection. 
     
+    For horizontal cases:
+    
+    .. math::
+        Nu_D = 0.318 Ra_D^{0.293},\; 5 \times {10}^{3} < Ra < 1 \times {10}^5
+
+    For vertical cases:
+    
+    .. math::
+        Nu_D = 0.290 Ra_D^{0.293},\; 5 \times {10}^{3} < Ra < 1 \times {10}^5
+
     Parameters
     ----------
     Pr : float
-        Prandtl number of the fluid surrounding the coil with properties 
-        evaluated at bulk conditions or as described in the notes [-]
+        Prandtl number calculated with the film temperature -
+        wall and temperature very far from the coil average, [-]
     Gr : float
-        Prandtl number of the fluid surrounding the coil with properties 
-        evaluated at bulk conditions or as described in the notes
-        (for the two temperatures, use the average coil fluid temperature and
-        the temperature of the fluid outside the coil) [-]
+        Grashof number calculated with the film temperature -
+        wall and temperature very far from the coil average,
+        and using the outer diameter of the coil [-]
+    horizontal : bool, optional
+        Whether the coil is horizontal or vertical, [-]
 
     Returns
     -------
     Nu : float
-        Nusselt number with respect to the total length of the helical coil
-        (and bulk thermal conductivity), [-]
+        Nusselt number using the outer diameter of the coil
+        and the film temperature, [-]
 
     Notes
     -----
-    In [1]_, the temperature at which the fluid surrounding the coil's
-    properties were evaluated at was calculated in an unusual fashion. The 
-    average temperature of the fluid inside the coil
-    :math:`(T_{in} + T_{out})/2` is averaged with the fluid outside the coil's
-    temperature.
-    
-    The correlation is valid for Prandtl numbers between 4.4 and 345, 
-    and tank diameter/coil outer diameter ratios between 10 and 30.
+    This correlation is also reviewed in [2]_.
 
     Examples
     --------
-    >>> Nu_vertical_helical_coil_Ali(4.4, 1E11)
-    1808.5774997297106
-
+    >>> Nu_coil_Xin_Ebadian(0.7, 2E4, horizontal=False)
+    4.755689726250451
+    >>> Nu_coil_Xin_Ebadian(0.7, 2E4, horizontal=True)
+    5.2148597687849785
+    
     References
     ----------
-    .. [1] Ali, Mohamed E. "Natural Convection Heat Transfer from Vertical
-       Helical Coils in Oil." Heat Transfer Engineering 27, no. 3 (April 1,
-       2006): 79-85.
+    .. [1] Xin, R. C., and M. A. Ebadian. "Natural Convection Heat Transfer 
+       from Helicoidal Pipes." Journal of Thermophysics and Heat Transfer 10, 
+       no. 2 (1996): 297-302. 
+    .. [2] Prabhanjan, Devanahalli G., Timothy J. Rennie, and G. S. Vijaya
+       Raghavan. "Natural Convection Heat Transfer from Helical Coiled Tubes."
+       International Journal of Thermal Sciences 43, no. 4 (April 1, 2004): 
+       359-65.
     '''
-    return 0.555*Gr**0.301*Pr**0.314
+    Ra = Pr*Gr
+    if horizontal:
+        return 0.318*Ra**0.293
+    else:
+        return 0.290*Ra**0.293

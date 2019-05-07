@@ -152,6 +152,13 @@ def test_Nu_vertical_cylinder():
     assert len(l) == 11
     
 
-def test_Nu_vertical_helical_coil_Ali():
-    Nu = Nu_vertical_helical_coil_Ali(4.4, 1E11)
-    assert_allclose(Nu, 1808.5774997297106)
+def test_Nu_coil_Xin_Ebadian():
+    Nu = Nu_coil_Xin_Ebadian(0.7, 2E4, horizontal=False)
+    assert_allclose(Nu, 4.755689726250451)
+    Nu = Nu_coil_Xin_Ebadian(0.7, 2E4, horizontal=True)
+    assert_allclose(Nu, 5.2148597687849785)
+
+
+def test_Nu_vertical_helical_coil_Prabhanjan_Rennie_Raghavan():
+    Nu = Nu_vertical_helical_coil_Prabhanjan_Rennie_Raghavan(4.4, 1E11)
+    assert_allclose(Nu, 720.6211067718227)

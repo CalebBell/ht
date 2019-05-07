@@ -161,3 +161,9 @@ def test_Rac_Nusselt_Rayleigh_disk_fits():
 #    plt.semilogy(more_ratios, np.exp(1/insulated_fun(np.array(more_ratios))), 'x')
 #    plt.semilogy(more_ratios, np.exp(1/uninsulated_fun(np.array(more_ratios))), 'o')
 #    plt.show()
+
+
+
+def test_Nu_vertical_helical_coil_Ali():
+    Nu = Nu_vertical_helical_coil_Ali(4.4, 1E11)
+    assert_allclose(Nu, 1808.5774997297106)
