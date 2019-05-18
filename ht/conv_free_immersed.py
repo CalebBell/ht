@@ -23,10 +23,13 @@ SOFTWARE.'''
 from __future__ import division
 from math import exp, log
 
-__all__ = ['Nu_vertical_plate_Churchill', 'Nu_horizontal_plate_McAdams',
-           'Nu_horizontal_plate_VDI', 'Nu_horizontal_plate_Rohsenow',
+__all__ = ['Nu_vertical_plate_Churchill', 
+           'Nu_horizontal_plate_McAdams',
+           'Nu_horizontal_plate_VDI', 
+           'Nu_horizontal_plate_Rohsenow',
            'Nu_free_horizontal_plate',
-           'Nu_sphere_Churchill', 'Nu_vertical_cylinder_Griffiths_Davis_Morgan',
+           'Nu_sphere_Churchill', 
+           'Nu_vertical_cylinder_Griffiths_Davis_Morgan',
            'Nu_vertical_cylinder_Jakob_Linke_Morgan',
            'Nu_vertical_cylinder_Carne_Morgan',
            'Nu_vertical_cylinder_Eigenson_Morgan',
