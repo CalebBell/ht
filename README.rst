@@ -14,9 +14,6 @@ Heat Transfer (ht)
 .. image:: http://img.shields.io/badge/license-MIT-blue.svg?style=flat 
    :target: https://github.com/CalebBell/ht/blob/master/LICENSE.txt
    :alt: license
-.. image:: https://img.shields.io/coveralls/CalebBell/ht.svg?
-   :target: https://coveralls.io/github/CalebBell/ht
-   :alt: Coverage
 .. image:: https://img.shields.io/pypi/pyversions/ht.svg?
    :target: https://pypi.python.org/pypi/ht
    :alt: Supported_versions
@@ -99,5 +96,5 @@ Citation
 
 To cite ht in publications use::
 
-    Caleb Bell (2016). ht: Heat transfer component of Chemical Engineering Design Library (ChEDL)
+    Caleb Bell (2016-2019). ht: Heat transfer component of Chemical Engineering Design Library (ChEDL)
     https://github.com/CalebBell/ht.

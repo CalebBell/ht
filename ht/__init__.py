@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 '''Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
-Copyright (C) 2016-2017, Caleb Bell <Caleb.Andrew.Bell@gmail.com>
+Copyright (C) 2016-2019, Caleb Bell <Caleb.Andrew.Bell@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -94,5 +94,5 @@ __all__.extend(conv_plate.__all__)
 __all__.extend(conv_free_enclosed.__all__)
 
 
-__version__ = '0.1.52'
+__version__ = '0.1.53'
 
