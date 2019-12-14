@@ -74,7 +74,7 @@ setup(
   download_url = 'https://github.com/CalebBell/ht/tarball/0.1.54',
   keywords = keywords,
   classifiers = classifiers,
-  install_requires=['fluids>=0.1.75', 'numpy>=1.5.0', 'scipy>=0.9.0'],
+  install_requires=['fluids>=0.1.77', 'numpy>=1.5.0', 'scipy>=0.9.0'],
   package_data={'ht': ['data/*']},
   extras_require = {
       'Coverage documentation':  ['wsgiref>=0.1.2', 'coverage>=4.0.3', 'pint']
