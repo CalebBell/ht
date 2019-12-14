@@ -18,7 +18,7 @@ Heat Transfer (ht)
    :target: https://pypi.python.org/pypi/ht
    :alt: Supported_versions
 .. image:: http://img.shields.io/appveyor/ci/calebbell/ht.svg?
-   :target: https://ci.appveyor.com/project/calebbell/ht/branch/master
+   :target: https://ci.appveyor.com/project/calebbell/ht/branch/release
    :alt: Build_status
 .. image:: https://zenodo.org/badge/48963057.svg?
    :alt: Zendo
