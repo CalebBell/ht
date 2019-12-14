@@ -51,6 +51,11 @@ If you have an installation of Python with pip, simple install it with:
 
     $ pip install ht
 
+Alternatively, if you are using `conda <https://conda.io/en/latest/>`_ as your package management, you can simply
+install ht in your environment from `conda-forge <https://conda-forge.org/>`_ channel with:
+
+    $ conda install -c conda-forge ht
+
 To get the git version, run:
 
     $ git clone git://github.com/CalebBell/ht.git

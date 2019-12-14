@@ -8,7 +8,7 @@ htmlcov
 __pycache__
 *kate-swp
 .spyproject
-fluids.egg-info 
+ht.egg-info 
  
 # Compiled source #
 ###################
