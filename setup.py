@@ -20,8 +20,8 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.'''
 
-from distutils.core import setup
-
+from setuptools import setup 
+ 
 classifiers=[
     'Development Status :: 3 - Alpha',
     'Intended Audience :: Developers',
@@ -53,23 +53,26 @@ classifiers=[
     'Topic :: Scientific/Engineering :: Physics',
 ]
 
-
-
+description = 'Heat transfer component of Chemical Engineering Design Library (ChEDL)'
+keywords = ('heat-transfer heat-exchanger air-cooler tube-bank condensation '
+            'boiling chemical-engineering mechanical-engineering pressure-drop '
+            'radiation process-simulation engineering insulation flow-boiling '
+            'nucleate-boiling reboiler cross-flow')
 
 
 setup(
   name = 'ht',
   packages = ['ht'],
   license='MIT',
-  version = '0.1.53',
-  description = 'Heat transfer component of Chemical Engineering Design Library (ChEDL)',
+  version = '0.1.54',
+  description = description,
   author = 'Caleb Bell',
   long_description = open('README.rst').read(),
   platforms=["Windows", "Linux", "Mac OS", "Unix"],
   author_email = 'Caleb.Andrew.Bell@gmail.com',
   url = 'https://github.com/CalebBell/ht',
-  download_url = 'https://github.com/CalebBell/ht/tarball/0.1.53',
-  keywords = ['chemical engineering', 'heat transfer', 'mechanical engineering'],
+  download_url = 'https://github.com/CalebBell/ht/tarball/0.1.54',
+  keywords = keywords,
   classifiers = classifiers,
   install_requires=['fluids>=0.1.75', 'numpy>=1.5.0', 'scipy>=0.9.0'],
   package_data={'ht': ['data/*']},
