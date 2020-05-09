@@ -24,6 +24,7 @@ from __future__ import division
 from math import exp, log
 
 __all__ = ['Nu_vertical_plate_Churchill', 
+           'Nu_free_vertical_plate',
            'Nu_horizontal_plate_McAdams',
            'Nu_horizontal_plate_VDI', 
            'Nu_horizontal_plate_Rohsenow',
@@ -67,7 +68,7 @@ def Nu_vertical_plate_Churchill(Pr, Gr):
     Returns
     -------
     Nu : float
-        Nusselt number with respect to length, [-]
+        Nusselt number with respect to height, [-]
 
     Notes
     -----
@@ -100,6 +101,70 @@ def Nu_vertical_plate_Churchill(Pr, Gr):
     Ra = Pr*Gr
     term = (0.825 + (0.387*Ra**(1/6.)*(1.0 + (Pr/0.492)**(-0.5625))**(-8.0/27.0)))
     return term*term
+
+Nu_free_vertical_plate_methods = ["Churchill"]
+
+def Nu_free_vertical_plate(Pr, Gr, H=None, W=None, 
+                           Method=None, AvailableMethods=False):
+    r'''This function calculates the heat transfer coefficient for external
+    free convection from a vertival plate. 
+    
+    Requires at a minimum a fluid's Prandtl number `Pr`, and the Grashof 
+    number `Gr` for the system fluid, temperatures, and geometry.
+    
+    `L` and `W` are not used by any correlations presently, but are included 
+    for future support.
+    
+    If no correlation's name is provided as `Method`, the 'Churchill' 
+    correlation is selected.
+    
+    Parameters
+    ----------
+    Pr : float
+        Prandtl number with respect to fluid properties [-]
+    Gr : float
+        Grashof number with respect to fluid properties and plate - fluid
+        temperature difference [-]
+    H : float, optional
+        height of vertical plate, [m]
+    W : float, optional
+        Width of the vertical plate, [m]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number with respect to plate height, [-]
+    methods : list, only returned if AvailableMethods == True
+        List of methods which can be used to calculate `Nu` with the given 
+        inputs
+
+    Other Parameters
+    ----------------
+    Method : string, optional
+        A string of the function name to use;
+        one of ('Churchill', ).
+    AvailableMethods : bool, optional
+        If True, function will consider which methods which can be used to
+        calculate `Nu` with the given inputs
+        
+    Examples
+    --------
+    Turbulent example
+    
+    >>> Nu_free_vertical_plate(0.69, 2.63E9)
+    147.16185223770603
+    '''        
+    if AvailableMethods:
+        return Nu_free_vertical_plate_methods
+    if Method is None:
+        Method = Nu_free_vertical_plate_methods[0]
+
+
+    if Method == 'Churchill':
+        return Nu_vertical_plate_Churchill(Pr, Gr)
+    else:
+        raise Exception("Correlation name not recognized; see the "
+                        "documentation for the available options.")
 
 
 def Nu_horizontal_plate_McAdams(Pr, Gr, buoyancy=True):

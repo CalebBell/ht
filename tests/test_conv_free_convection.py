@@ -24,7 +24,7 @@ from __future__ import division
 from ht import *
 from ht.boiling_nucleic import _angles_Stephan_Abdelsalam
 import numpy as np
-
+from fluids.numerics import assert_close, assert_close1d
 from numpy.testing import assert_allclose
 import pytest
 
@@ -33,6 +33,17 @@ import pytest
 
 ### Free convection immersed
 
+def test_Nu_free_vertical_plate():
+    Nu = Nu_free_vertical_plate(0.69, 2.63E9)
+    assert_close(147.16185223770603, Nu)
+    
+    methods = Nu_free_vertical_plate(0.69, 2.63E9, AvailableMethods=True)
+    assert methods[0] == 'Churchill'
+    assert len(methods) == 1
+    
+    with pytest.raises(Exception):
+        Nu_free_vertical_plate(0.69, 2.63E9, Method='BADMETHOD')
+    
 def test_Nu_horizontal_plate_McAdams():
     Nu = Nu_horizontal_plate_McAdams(5.54, 3.21e8, buoyancy=True)
     assert_allclose(Nu, 181.73121274384457)
