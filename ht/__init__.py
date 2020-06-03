@@ -93,6 +93,10 @@ __all__.extend(boiling_plate.__all__)
 __all__.extend(conv_plate.__all__)
 __all__.extend(conv_free_enclosed.__all__)
 
+submodules = (core, hx, conv_internal, boiling_flow, boiling_nucleic, conv_tube_bank,
+              air_cooler, radiation, condensation, conduction, conv_jacket, insulation, 
+              conv_free_immersed, conv_free_enclosed, conv_packed_bed, conv_external, 
+              conv_supercritical, conv_two_phase, conv_plate, boiling_plate)
 
 __version__ = '0.1.53'
 

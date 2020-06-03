@@ -89,7 +89,7 @@ def test_custom_wraps():
     assert_pint_allclose(k, 0.2116666666666667, {'[length]': 1.0, '[mass]': 1.0, '[temperature]': -1.0, '[time]': -3.0})
         
     k = R_value_to_k(0.71*u.parse_expression('ft^2*delta_degF*hour/(BTU*inch)'))
-    assert_pint_allclose(k, 0.20313787163983463, {'[length]': 1.0, '[mass]': 1.0, '[temperature]': -1.0, '[time]': -3.0})
+    assert_pint_allclose(k, 0.20313790001601909, {'[length]': 1.0, '[mass]': 1.0, '[temperature]': -1.0, '[time]': -3.0})
 
     # k_to_R_value
     R_value = k_to_R_value(k=0.2116666666666667*u.W/u.m/u.K, SI=True)

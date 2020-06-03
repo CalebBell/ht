@@ -39,6 +39,7 @@ __all__ = ['dP_Kern', 'dP_Zukauskas', 'dP_staggered_f',
            'bundle_bypassing_Bell', 'unequal_baffle_spacing_Bell',
            'laminar_correction_Bell']
 
+__numba_additional_funcs__ = ['Grimison_C1_aligned_interp', 'Grimison_m_aligned_interp',]
 
 # Applies for row 1-9.
 Grimson_Nl_aligned = [0.64, 0.8, 0.87, 0.9, 0.92, 0.94, 0.96, 0.98, 0.99]

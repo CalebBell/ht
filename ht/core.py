@@ -106,13 +106,20 @@ def LMTD(Thi, Tho, Tci, Tco, counterflow=True):
     else:
         dTF1 = Thi-Tci
         dTF2 = Tho-Tco
-    try:
+        
+    ratio = dTF2/dTF1
+    if not counterflow and (ratio <= 0.0 or ratio == 1.0):
+        return 0.0
+    elif counterflow and (ratio <= 0.0 or ratio == 1.0):
+        return dTF1
+    else:
         return (dTF2 - dTF1)/log(dTF2/dTF1)
-    except (ZeroDivisionError, ValueError):
-        if counterflow:
-            return dTF1
-        else:
-            return 0.0
+#    try:
+#    except (ZeroDivisionError, ValueError):
+#        if counterflow:
+#            return dTF1
+#        else:
+#            return 0.0
 
 
 def is_heating_temperature(T, T_wall):

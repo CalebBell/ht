@@ -646,7 +646,7 @@ def Ravipudi_Godbold(m, x, D, rhol, rhog, Cpl, kl, mug, mu_b, mu_w=None):
     Prl = Prandtl(Cp=Cpl, mu=mu_b, k=kl)
     Rels = D*Vls*rhol/mu_b
     Nu = 0.56*(Vgs/Vls)**0.3*(mug/mu_b)**0.2*Rels**0.6*Prl**(1/3.)
-    if mu_w:
+    if mu_w is not None:
         Nu *= (mu_b/mu_w)**0.14
     return Nu*kl/D
 

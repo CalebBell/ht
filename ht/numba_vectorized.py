@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 '''Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
-Copyright (C) 2017, Caleb Bell <Caleb.Andrew.Bell@gmail.com>
+Copyright (C) 2020, Caleb Bell <Caleb.Andrew.Bell@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -21,51 +21,23 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.'''
 
 from __future__ import division
+import sys
+import importlib.util
 import types
 import numpy as np
-import ht
-
-
-'''Basic module which wraps all ht functions with numpy's vectorize.
-All other object - dicts, classes, etc - are not wrapped. Supports star 
-imports; so the same objects exported when importing from the main library
-will be imported from here. 
-
->>> from ht.vectorized import *
-
-Inputs do not need to be numpy arrays; they can be any iterable:
-
->>> import ht.vectorized
->>> ht.vectorized.LMTD([100, 101], 60., 30., 40.2)
-array([ 43.20040929,  43.60182765])
-
-Note that because this needs to import ht itself, ht.vectorized
-needs to be imported separately; the following will cause an error:
-    
->>> import ht
->>> ht.vectorized # Won't work, has not been imported yet
-
-The correct syntax is as follows:
-
->>> import ht.vectorized # Necessary
->>> from ht.vectorized import * # May be used without first importing ht
-'''
+import ht as normal_ht
+import numba
+import fluids.numba
 
 __all__ = []
-
-
 __funcs = {}
 
-for name in dir(ht):
-    obj = getattr(ht, name)
-    if isinstance(obj, types.FunctionType):
-        obj = np.vectorize(obj)
-    elif isinstance(obj, str):
-        continue
-    __all__.append(name)
-    __funcs.update({name: obj})
+
+replaced = {}
+replaced, NUMERICS_SUBMOD = fluids.numba.create_numerics(replaced, vec=True)
+normal = normal_ht
+
+fluids.numba.transform_module(normal, __funcs, replaced, vec=True)
+
 globals().update(__funcs)
-
-
-
-        
+globals().update(replaced)
