@@ -36,7 +36,7 @@ __all__ = ['Ft_aircooler', 'air_cooler_noise_GPSA',
            'dP_ESDU_low_fin']
 
 fin_densities_inch = [7, 8, 9, 10, 11] # fins/inch
-fin_densities = [round(i/0.0254, 1) for i in fin_densities_inch]
+fin_densities = [275.6, 315.0, 354.3, 393.7, 433.1] # [round(i/0.0254, 1) for i in fin_densities_inch]
 ODs = [1, 1.25, 1.5, 2] # Actually though, just use TEMA. API 661 says 1 inch min.
 fin_heights = [0.010, 0.012, 0.016] # m
 

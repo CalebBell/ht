@@ -23,6 +23,7 @@ SOFTWARE.'''
 from __future__ import division
 from math import log, exp, sqrt, tanh, factorial
 from ht import *
+import ht
 import numpy as np
 from numpy.testing import assert_allclose
 import pytest
@@ -120,6 +121,7 @@ def test_Ntubes_Phadkeb_fuzz():
 def test_Phadkeb_numbers():
     # One pain point of this code is that it takes 880 kb to store the results
     # in memory as a list
+    ht.hx._load_coeffs_Phadkeb()
     from ht.hx import triangular_Ns, triangular_C1s, square_Ns, square_C1s
     from math import floor, ceil
     # Triangular Ns 
