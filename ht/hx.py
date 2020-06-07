@@ -24,15 +24,17 @@ from __future__ import division
 from math import exp, log, floor, sqrt, factorial, tanh  # tanh= 1/coth
 import math
 import os
-from pprint import pprint
-from bisect import bisect, bisect_left, bisect_right
 from fluids.constants import inch, foot, degree_Fahrenheit, hour, Btu
 from fluids.numerics import horner, newton, ridder, quad
-from fluids.numerics import bisect as sp_bisect
 from fluids.numerics import iv
 from fluids.piping import BWG_integers, BWG_inch, BWG_SI
-import numpy as np
+from fluids.numerics import numpy as np
 
+try:
+    from bisect import bisect, bisect_left, bisect_right
+    from fluids.numerics import bisect as sp_bisect
+except:
+    pass
 __all__ = ['effectiveness_from_NTU', 'NTU_from_effectiveness', 'calc_Cmin',
 'calc_Cmax', 'calc_Cr',
 'NTU_from_UA', 'UA_from_NTU', 'effectiveness_NTU_method', 'F_LMTD_Fakheri', 
@@ -54,7 +56,6 @@ __all__ = ['effectiveness_from_NTU', 'NTU_from_effectiveness', 'calc_Cmin',
 
 R_value = foot*foot*degree_Fahrenheit*hour/Btu
 
-folder = os.path.join(os.path.dirname(__file__), 'data')
 
 
 def effectiveness_from_NTU(NTU, Cr, subtype='counterflow'):
@@ -947,6 +948,7 @@ def effectiveness_NTU_method(mh, mc, Cph, Cpc, subtype='counterflow', Thi=None,
     configuration, flows, subtype, the cold inlet/outlet temperatures, and the
     hot stream inlet temperature.
     
+    >>> from pprint import pprint
     >>> pprint(effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, 
     ... subtype='crossflow, mixed Cmax', Tci=15, Tco=85, Thi=130))
     {'Cmax': 9672.0,
@@ -3928,7 +3930,8 @@ def P_NTU_method(m1, m2, Cp1, Cp2, UA=None, T1i=None, T1o=None,
     Examples
     --------
     Solve a heat exchanger with the UA specified, and known inlet temperatures:
-        
+    
+    >>> from pprint import pprint
     >>> pprint(P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900, 
     ... subtype='E', Ntp=4, T2i=15, T1i=130, UA=3041.75))
     {'C1': 9672.0,
@@ -4603,7 +4606,7 @@ square_C1s = square_Ns = triangular_C1s = triangular_Ns = None
 
 def _load_coeffs_Phadkeb():
     global square_C1s, square_Ns, triangular_C1s, triangular_Ns
-    
+    folder = os.path.join(os.path.dirname(__file__), 'data')
     triangular_Ns = np.load(os.path.join(folder, "triangular_Ns_Phadkeb.npy"))
     triangular_C1s = np.load(os.path.join(folder, "triangular_C1s_Phadkeb.npy"))
     square_Ns = np.load(os.path.join(folder, "square_Ns_Phadkeb.npy"))
