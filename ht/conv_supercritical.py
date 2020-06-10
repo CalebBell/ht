@@ -594,7 +594,7 @@ def Nu_Mokry(Re, Pr, rho_w=None, rho_b=None):
     Examples
     --------
     >>> Nu_Mokry(1E5, 1.2, 330, 290.)
-    246.1156319156992
+    246.11563191569923
 
     References
     ----------
@@ -610,7 +610,7 @@ def Nu_Mokry(Re, Pr, rho_w=None, rho_b=None):
        451-60. doi:10.1016/j.anucene.2014.10.027.
     '''
     Nu = 0.0061*Re**0.904*Pr**0.684
-    if rho_w and rho_b:
+    if rho_w is not None and rho_b is not None:
         Nu *= (rho_w/rho_b)**0.564
     return Nu
 

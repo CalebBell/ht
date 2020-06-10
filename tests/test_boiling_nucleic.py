@@ -99,9 +99,8 @@ def test_boiling_nucleic_Montinsky():
 
 
 def test_boiling_nucleic_Stephan_Abdelsalam():
-    # Stephan Abdelsalam function
-    with pytest.raises(Exception):
-        Stephan_Abdelsalam(Te=16.2, Tsat=437.5, Cpl=2730., kl=0.086, mul=156E-6,  sigma=0.0082, Hvap=272E3, rhol=567, rhog=18.09, angle=35, correlation='fail')
+    # Stephan Abdelsalam function; allow bad function method
+    Stephan_Abdelsalam(Te=16.2, Tsat=437.5, Cpl=2730., kl=0.086, mul=156E-6,  sigma=0.0082, Hvap=272E3, rhol=567, rhog=18.09, angle=35, correlation='fail')
 
     cs = ['general', 'water', 'hydrocarbon', 'cryogenic', 'refrigerant']
     h_SA = [Stephan_Abdelsalam(Te=16.2, Tsat=437.5, Cpl=2730., kl=0.086, mul=156E-6, sigma=0.0082, Hvap=272E3, rhol=567, rhog=18.09, correlation=i) for i in cs]

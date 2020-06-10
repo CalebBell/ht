@@ -102,13 +102,13 @@ def Rohsenow(rhol, rhog, mul, kl, Cpl, Hvap, sigma, Te=None, q=None, Csf=0.013,
        Surface Boiling of Liquids." Technical Report. Cambridge, Mass. : M.I.T.
        Division of Industrial Cooporation, 1951
     '''
-    if Te:
+    if Te is not None:
         return mul*Hvap*(g*(rhol-rhog)/sigma)**0.5*(Cpl*Te**(2/3.)/Csf/Hvap/(Cpl*mul/kl)**n)**3
-    elif q:
+    elif q is not None:
         A = mul*Hvap*(g*(rhol-rhog)/sigma)**0.5*(Cpl/Csf/Hvap/(Cpl*mul/kl)**n)**3
         return A**(1/3.)*q**(2/3.)
     else:
-        raise Exception('Either q or Te is needed for this correlation')
+        raise ValueError('Either q or Te is needed for this correlation')
 
 
 def McNelly(rhol, rhog, kl, Cpl, Hvap, sigma, P, Te=None, q=None):
@@ -175,10 +175,10 @@ def McNelly(rhol, rhog, kl, Cpl, Hvap, sigma, P, Te=None, q=None):
     .. [2] McNelly M. J.: "A correlation of the rates of heat transfer to n
        ucleate boiling liquids," J. Imp Coll. Chem Eng Soc 7:18, 1953.
     '''
-    if Te:
+    if Te is not None:
         return (0.225*(Te*Cpl/Hvap)**0.69*(P*kl/sigma)**0.31*(rhol/rhog-1.)**0.33
             )**(1./0.31)
-    elif q:
+    elif q is not None:
         return 0.225*(q*Cpl/Hvap)**0.69*(P*kl/sigma)**0.31*(rhol/rhog-1.)**0.33
     else:
         raise Exception('Either q or Te is needed for this correlation')
@@ -254,9 +254,9 @@ def Forster_Zuber(rhol, rhog, mul, kl, Cpl, Hvap, sigma, dPsat, Te=None, q=None)
     .. [3] Serth, R. W., Process Heat Transfer: Principles,
        Applications and Rules of Thumb. 2E. Amsterdam: Academic Press, 2014.
     '''
-    if Te:
+    if Te is not None:
         return 0.00122*(kl**0.79*Cpl**0.45*rhol**0.49/sigma**0.5/mul**0.29/Hvap**0.24/rhog**0.24)*Te**0.24*dPsat**0.75
-    elif q:
+    elif q is not None:
         return (0.00122*(kl**0.79*Cpl**0.45*rhol**0.49/sigma**0.5/mul**0.29/Hvap**0.24/rhog**0.24)*q**0.24*dPsat**0.75)**(1/1.24)
     else:
         raise Exception('Either q or Te is needed for this correlation')
@@ -324,10 +324,10 @@ def Montinsky(P, Pc, Te=None, q=None):
     .. [4] Serth, R. W., Process Heat Transfer: Principles,
        Applications and Rules of Thumb. 2E. Amsterdam: Academic Press, 2014.
     '''
-    if Te:
+    if Te is not None:
         return (0.00417*(Pc/1000.)**0.69*Te**0.7*(1.8*(P/Pc)**0.17 + 4*(P/Pc)**1.2
         +10*(P/Pc)**10))**(1/0.3)
-    elif q:
+    elif q is not None:
         return (0.00417*(Pc/1000.)**0.69*q**0.7*(1.8*(P/Pc)**0.17 + 4*(P/Pc)**1.2
         +10*(P/Pc)**10))
     else:
@@ -460,15 +460,21 @@ def Stephan_Abdelsalam(rhol, rhog, mul, kl, Cpl, Hvap, sigma, Tsat, Te=None,
        Applications and Rules of Thumb. 2E. Amsterdam: Academic Press, 2014.
     '''
     if Te is None and q is None:
-        raise Exception('Either q or Te is needed for this correlation')
-    angle = _angles_Stephan_Abdelsalam[correlation]
-
+        raise ValueError('Either q or Te is needed for this correlation')
+        
+    if correlation == 'water':
+        angle = 45.0
+    elif correlation == 'cryogenic':
+        angle = 1.0
+    elif correlation == 'general' or correlation == 'hydrocarbon' or correlation == 'refrigerant' or True:
+        angle = 35.0
+        
     db = 0.0146*angle*(2*sigma/g/(rhol-rhog))**0.5
     diffusivity_L = kl/rhol/Cpl
 
-    if Te:
+    if Te is not None:
         X1 = db/kl/Tsat*Te
-    else:
+    elif q is not None:
         X1 = db/kl/Tsat*q
     X2 = diffusivity_L**2*rhol/sigma/db
     X3 = Hvap*db**2/diffusivity_L**2
@@ -479,27 +485,27 @@ def Stephan_Abdelsalam(rhol, rhog, mul, kl, Cpl, Hvap, sigma, Tsat, Te=None,
     X8 = (rhol-rhog)/rhol
 
     if correlation == 'general':
-        if Te:
+        if Te is not None:
             h = (0.23*X1**0.674*X2**0.35*X3**0.371*X5**0.297*X8**-1.73*kl/db)**(1/0.326)
         else:
             h = (0.23*X1**0.674*X2**0.35*X3**0.371*X5**0.297*X8**-1.73*kl/db)
     elif correlation == 'water':
-        if Te:
+        if Te is not None:
             h = (0.246E7*X1**0.673*X4**-1.58*X3**1.26*X8**5.22*kl/db)**(1/0.327)
         else:
             h = (0.246E7*X1**0.673*X4**-1.58*X3**1.26*X8**5.22*kl/db)
     elif correlation == 'hydrocarbon':
-        if Te:
+        if Te is not None:
             h = (0.0546*X5**0.335*X1**0.67*X8**-4.33*X4**0.248*kl/db)**(1/0.33)
         else:
             h = (0.0546*X5**0.335*X1**0.67*X8**-4.33*X4**0.248*kl/db)
     elif correlation == 'cryogenic':
-        if Te:
+        if Te is not None:
             h = (4.82*X1**0.624*X7**0.117*X3**0.374*X4**-0.329*X5**0.257*kl/db)**(1/0.376)
         else:
             h = (4.82*X1**0.624*X7**0.117*X3**0.374*X4**-0.329*X5**0.257*kl/db)
     else:
-        if Te:
+        if Te is not None:
             h = (207*X1**0.745*X5**0.581*X6**0.533*kl/db)**(1/0.255)
         else:
             h = (207*X1**0.745*X5**0.581*X6**0.533*kl/db)
@@ -563,14 +569,14 @@ def HEDH_Taborek(P, Pc, Te=None, q=None):
        Applications and Rules of Thumb. 2E. Amsterdam: Academic Press, 2014.
     '''
     Pr = P/Pc
-    if Te:
+    if Te is not None:
         return (0.00417*(Pc/1000.)**0.69*Te**0.7*(2.1*Pr**0.27
         + (9 + 1./(1-Pr**2))*Pr**2))**(1/0.3)
-    elif q:
+    elif q is not None:
         return (0.00417*(Pc/1000.)**0.69*q**0.7*(2.1*Pr**0.27
         + (9 + 1./(1-Pr**2))*Pr**2))
     else:
-        raise Exception('Either q or Te is needed for this correlation')
+        raise ValueError('Either q or Te is needed for this correlation')
 
 
 def Bier(P, Pc, Te=None, q=None):
@@ -625,9 +631,9 @@ def Bier(P, Pc, Te=None, q=None):
        Transfer, 3E. New York: McGraw-Hill, 1998.
     '''
     Pr = P/Pc
-    if Te:
+    if Te is not None:
         return (0.00417*(Pc/1000.)**0.69*Te**0.7*(0.7 + 2.*Pr*(4. + 1./(1.-Pr))))**(1./0.3)
-    elif q:
+    elif q is not None:
         return 0.00417*(Pc/1000.)**0.69*q**0.7*(0.7 + 2.*Pr*(4. + 1./(1. - Pr)))
     else:
         raise Exception('Either q or Te is needed for this correlation')
@@ -696,14 +702,14 @@ def Cooper(P, Pc, MW, Te=None, q=None, Rp=1E-6):
        Applications and Rules of Thumb. 2E. Amsterdam: Academic Press, 2014.
     '''
     Rp*= 1E6
-    if Te:
+    if Te is not None:
         return (55*Te**0.67*(P/Pc)**(0.12 - 0.2*log10(Rp))*(
              -log10(P/Pc))**-0.55*MW**-0.5)**(1/0.33)
-    elif q:
+    elif q is not None:
         return (55*q**0.67*(P/Pc)**(0.12 - 0.2*log10(Rp))*(
              -log10(P/Pc))**-0.55*MW**-0.5)
     else:
-        raise Exception('Either q or Te is needed for this correlation')
+        raise ValueError('Either q or Te is needed for this correlation')
 
 
 h0_Gorenflow_1993 = {'74-82-8': 7000.0, '74-84-0': 4500.0, '74-98-6': 4000.0, 
@@ -718,7 +724,15 @@ h0_Gorenflow_1993 = {'74-82-8': 7000.0, '74-84-0': 4500.0, '74-98-6': 4000.0,
 '7664-41-7': 7000.0, '124-38-9': 5100.0, '2551-62-4': 3700.0, '7782-44-7': 9500.0, 
 '7727-37-9': 10000.0, '7440-37-1': 8200.0, '7440-01-9': 20000.0, '1333-74-0': 24000.0, 
 '7440-59-7': 2000.0}
-
+try:
+    if IS_NUMBA:
+        h0_Gorenflow_1993_keys = tuple(h0_Gorenflow_1993.keys())
+        h0_Gorenflow_1993_values = tuple(h0_Gorenflow_1993.values())
+#        import numpy as np
+#        h0_Gorenflow_1993_keys = np.array(list(h0_Gorenflow_1993.keys()))
+#        h0_Gorenflow_1993_values = np.array(list(h0_Gorenflow_1993.values()))
+except:
+    pass
 
 def Gorenflo(P, Pc, q=None, Te=None, CASRN=None, h0=None, Ra=4E-7):
     r'''Calculates heat transfer coefficient for a pool boiling according to 
@@ -807,10 +821,19 @@ def Gorenflo(P, Pc, q=None, Te=None, CASRN=None, h0=None, Ra=4E-7):
     Pr = P/Pc
     Ra0 = 0.4E-6
     q0 = 2E4
-    if CASRN not in h0_Gorenflow_1993 and h0 is None:
-        raise Exception('Reference heat transfer coefficient not known')
-    if not h0:
-        h0 = h0_Gorenflow_1993[CASRN]
+    if h0 is None: # NUMBA: DELETE
+        try:
+            h0 = h0_Gorenflow_1993[CASRN]
+        except:
+            raise ValueError('Reference heat transfer coefficient not known')
+    if h0 is None:
+        try:
+#            h0 = h0_Gorenflow_1993_values[np.where(h0_Gorenflow_1993_keys==CASRN)[0]]
+            h0 = h0_Gorenflow_1993_values[h0_Gorenflow_1993_keys.index(CASRN)]
+        except:
+            raise ValueError('Reference heat transfer coefficient not known')
+#        h0 = h0_Gorenflow_1993[CASRN]
+#        h0 = h0_Gorenflow_1993[CASRN]
     if CASRN != '7732-18-5':
         # Case for not dealing with water
         n = 0.9 - 0.3*Pr**0.3
@@ -820,13 +843,13 @@ def Gorenflo(P, Pc, q=None, Te=None, CASRN=None, h0=None, Ra=4E-7):
         n = 0.9 - 0.3*Pr**0.15
         Fp = 1.73*Pr**0.27 + (6.1 + 0.68/(1-Pr))*Pr**2
     CW = (Ra/Ra0)**0.133
-    if q:
+    if q is not None:
         return h0*CW*Fp*(q/q0)**n
-    elif Te:
+    elif Te is not None:
         A = h0*CW*Fp*(Te/q0)**n
         return A**(-1./(n - 1.))
     else:
-        raise Exception('Either q or Te is needed for this correlation')
+        raise ValueError('Either q or Te is needed for this correlation')
         
 
 h0_VDI_2e = {'74-82-8': 7200.0, '74-85-1': 4200.0, '74-84-0': 4600.0, 
@@ -1260,5 +1283,5 @@ def qmax_boiling(rhol=None, rhog=None, sigma=None, Hvap=None, D=None, P=None,
     elif Method == 'HEDH-Montinsky':
         return HEDH_Montinsky(P=P, Pc=Pc)
     else:
-        raise Exception("Correlation name not recognized; options are "
+        raise ValueError("Correlation name not recognized; options are "
                         "'Serth-HEDH', 'Zuber' and 'HEDH-Montinsky'")

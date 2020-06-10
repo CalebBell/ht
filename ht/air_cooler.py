@@ -200,19 +200,18 @@ def Ft_aircooler(Thi, Tho, Tci, Tco, Ntp=1, rows=1):
         coefs = _crossflow_4_rows_2_pass
     tot = 0.0
     atanR2 = 2.0*atan(R)
-    cmps = range(len(coefs))
-    sine_terms = [sin((i + 1.)*atanR2) for i in cmps]
-    one_m_rlm = 1.0 - rlm
-    x0s = [one_m_rlm]
-    
-    for k in cmps:
-        x0s.append(x0s[-1]*one_m_rlm)
-        x0 = x0s[-2]
+    N = len(coefs)
+    sine_terms = [0.0]*N
+    for i in range(N):
+        sine_terms[i] = sin((i + 1.)*atanR2)
+    x0 = one_m_rlm_orig = 1.0 - rlm
+    for k in range(N):
         coeffs_k = coefs[k]
         tot_i = 0.0
-        for i in cmps:
+        for i in range(N):
             tot_i += coeffs_k[i]*sine_terms[i]
         tot += tot_i*x0
+        x0 *= one_m_rlm_orig
     return 1. - tot
 
 

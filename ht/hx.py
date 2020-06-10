@@ -1166,7 +1166,7 @@ def temperature_effectiveness_air_cooler(R1, NTU1, rows, passes, coerce=True):
     >>> temperature_effectiveness_air_cooler(.5, 1.1, rows=200, passes=1.0)
     Traceback (most recent call last):
     ...
-    OverflowError: long int too large to convert to float
+    OverflowError: int too large to convert to float
     
 
     Examples
@@ -3314,7 +3314,7 @@ def NTU_from_P_G(P1, R1, Ntp, optimal=True):
     Examples
     --------
     >>> NTU_from_P_G(P1=.573, R1=1/3., Ntp=1)
-    0.9999513707769526
+    0.9999513707764522
     '''
     NTU_min = 1E-11
     function = temperature_effectiveness_TEMA_G
@@ -3369,7 +3369,7 @@ def NTU_from_P_J(P1, R1, Ntp):
     an exception is raised).
         
     >>> NTU_from_P_J(P1=.995024, R1=.01, Ntp=1)
-    13.940758760696617
+    13.94075876069712
     >>> NTU_from_P_J(P1=.99502487562188, R1=.01, Ntp=1)
     536.4817955951684
     >>> NTU_from_P_J(P1=.99502487562189, R1=.01, Ntp=1)
@@ -3568,7 +3568,7 @@ def NTU_from_P_H(P1, R1, Ntp, optimal=True):
     Examples
     --------
     >>> NTU_from_P_H(P1=0.573, R1=1/3., Ntp=1)
-    0.9997628696881165
+    0.9997628696886166
     '''
     NTU_min = 1E-11
     function = temperature_effectiveness_TEMA_H
@@ -4604,13 +4604,13 @@ def L_unsupported_max(Do, material='CS'):
 
 square_C1s = square_Ns = triangular_C1s = triangular_Ns = None
 
+hx_data_folder = os.path.join(os.path.dirname(__file__), 'data')
 def _load_coeffs_Phadkeb():
     global square_C1s, square_Ns, triangular_C1s, triangular_Ns
-    folder = os.path.join(os.path.dirname(__file__), 'data')
-    triangular_Ns = np.load(os.path.join(folder, "triangular_Ns_Phadkeb.npy"))
-    triangular_C1s = np.load(os.path.join(folder, "triangular_C1s_Phadkeb.npy"))
-    square_Ns = np.load(os.path.join(folder, "square_Ns_Phadkeb.npy"))
-    square_C1s = np.load(os.path.join(folder, "square_C1s_Phadkeb.npy"))
+    triangular_Ns = np.load(os.path.join(hx_data_folder, "triangular_Ns_Phadkeb.npy"))
+    triangular_C1s = np.load(os.path.join(hx_data_folder, "triangular_C1s_Phadkeb.npy"))
+    square_Ns = np.load(os.path.join(hx_data_folder, "square_Ns_Phadkeb.npy"))
+    square_C1s = np.load(os.path.join(hx_data_folder, "square_C1s_Phadkeb.npy"))
 
 def Ntubes_Phadkeb(DBundle, Do, pitch, Ntp, angle=30):
     r'''Using tabulated values and correction factors for number of passes,

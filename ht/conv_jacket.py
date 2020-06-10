@@ -294,7 +294,7 @@ def Stein_Schmidt(m, Dtank, Djacket, H, Dinlet,
 
     >>> Stein_Schmidt(m=2.5, Dtank=0.6, Djacket=0.65, H=0.6, Dinlet=0.025,
     ... rho=995.7, Cp=4178.1, k=0.615, mu=798E-6, muw=355E-6, rhow=971.8)
-    5695.204169808863
+    5695.2041698088615
 
     References
     ----------

@@ -23,7 +23,7 @@ SOFTWARE.'''
 from __future__ import division
 from math import pi, log10, atan, exp
 from fluids.constants import g
-from fluids.numerics import newton
+from fluids.numerics import secant
 from fluids.core import Prandtl, Boiling, Bond, Weber, nu_mu_converter
 from fluids.two_phase_voidage import Lockhart_Martinelli_Xtt
 from ht.conv_internal import turbulent_Gnielinski, turbulent_Dittus_Boelter
@@ -34,6 +34,7 @@ from ht.boiling_nucleic import Forster_Zuber, Cooper
 __all__ = ['Thome', 'Liu_Winterton', 'Chen_Edelstein', 'Chen_Bennett', 
            'Lazarek_Black', 'Li_Wu', 'Sun_Mishima', 'Yun_Heo_Kim']
 
+__numba_additional_funcs__ = ('to_solve_q_Thome',)
 
 def Lazarek_Black(m, D, mul, kl, Hvap, q=None, Te=None):
     r'''Calculates heat transfer coefficient for film boiling of saturated
@@ -111,7 +112,7 @@ def Lazarek_Black(m, D, mul, kl, Hvap, q=None, Te=None):
         # Solved with sympy
         return 27000*30**(71/143)*(1./(G*Hvap))**(357/143)*Relo**(857/286)*Te**(357/143)*kl**(500/143)/D**(500/143)
     else:
-        raise Exception('Either q or Te is needed for this correlation')
+        raise ValueError('Either q or Te is needed for this correlation')
 
 
 def Li_Wu(m, x, D, rhol, rhog, mul, kl, Hvap, sigma, q=None, Te=None):
@@ -169,7 +170,7 @@ def Li_Wu(m, x, D, rhol, rhog, mul, kl, Hvap, sigma, q=None, Te=None):
     Examples
     --------
     >>> Li_Wu(m=1, x=0.2, D=0.3, rhol=567., rhog=18.09, kl=0.086, mul=156E-6, sigma=0.02, Hvap=9E5, q=1E5)
-    5345.409399239493
+    5345.409399239492
 
     References
     ----------
@@ -197,7 +198,7 @@ def Li_Wu(m, x, D, rhol, rhog, mul, kl, Hvap, sigma, q=None, Te=None):
         A = 334*(Bo*Rel**0.36)**0.4*kl/D
         return A**(10/7.)*Te**(3/7.)/(G**(3/7.)*Hvap**(3/7.))
     else:
-        raise Exception('Either q or Te is needed for this correlation')
+        raise ValueError('Either q or Te is needed for this correlation')
 
 
 def Sun_Mishima(m, D, rhol, rhog, mul, kl, Hvap, sigma, q=None, Te=None):
@@ -280,7 +281,7 @@ def Sun_Mishima(m, D, rhol, rhog, mul, kl, Hvap, sigma, q=None, Te=None):
         A = 6*Relo**1.05/(We**0.191*(rhol/rhog)**0.142)*kl/D
         return A**(50/23.)*Te**(27/23.)/(G**(27/23.)*Hvap**(27/23.))
     else:
-        raise Exception('Either q or Te is needed for this correlation')
+        raise ValueError('Either q or Te is needed for this correlation')
 
 
 def Thome(m, x, D, rhol, rhog, mul, mug, kl, kg, Cpl, Cpg, Hvap, sigma, Psat, 
@@ -460,23 +461,23 @@ def Thome(m, x, D, rhol, rhog, mul, mug, kl, kg, Cpl, Cpg, Hvap, sigma, Psat,
        Small Channels." Nanoscale and Microscale Thermophysical Engineering 12,
        no. 3 (September 4, 2008): 187-227. doi:10.1080/15567260802317357.
     '''
-    if q is None and Te:
-        to_solve = lambda q : q/Thome(m=m, x=x, D=D, rhol=rhol, rhog=rhog, kl=kl, kg=kg, mul=mul, mug=mug, Cpl=Cpl, Cpg=Cpg, sigma=sigma, Hvap=Hvap, Psat=Psat, Pc=Pc, q=q) - Te
-        q = newton(to_solve, 1E4)
+    if q is None and Te is not None:
+        q = secant(to_solve_q_Thome, 1E4, args=( m, x, D, rhol, rhog, kl, kg, mul, mug, Cpl, Cpg, sigma, Hvap, Psat, Pc, Te))
         return Thome(m=m, x=x, D=D, rhol=rhol, rhog=rhog, kl=kl, kg=kg, mul=mul, mug=mug, Cpl=Cpl, Cpg=Cpg, sigma=sigma, Hvap=Hvap, Psat=Psat, Pc=Pc, q=q)
     elif q is None and Te is None:
-        raise Exception('Either q or Te is needed for this correlation')
+        raise ValueError('Either q or Te is needed for this correlation')
     C_delta0 = 0.3E-6
     G = m/(pi/4*D**2)
     Rel = G*D*(1-x)/mul
     Reg = G*D*x/mug
     qref = 3328*(Psat/Pc)**-0.5
+    if q is None: q = 1e4 # Make numba happy, their bug, never gets ran
     fopt = (q/qref)**1.74
     tau = 1./fopt
     
     vp = G*(x/rhog + (1-x)/rhol)
     Bo = rhol*D/sigma*vp**2 # Not standard definition
-    nul = nu_mu_converter(rho=rhol, mu=mul)
+    nul = mul/rhol
     delta0 = D*0.29*(3*(nul/vp/D)**0.5)**0.84*((0.07*Bo**0.41)**-8 + 0.1**-8)**(-1/8.)
     
     tl = tau/(1 + rhol/rhog*(x/(1.-x)))
@@ -514,7 +515,10 @@ def Thome(m, x, D, rhol, rhog, mul, mug, kl, kg, Cpl, Cpg, Hvap, sigma, Psat,
     h_film = 2*kl/(delta0 + C_delta0)
     return tl/tau*h_Zl + t_film/tau*h_film + t_dry/tau*h_Zg
         
-
+def to_solve_q_Thome(q, m, x, D, rhol, rhog, kl, kg, mul, mug, Cpl, Cpg, sigma, Hvap, Psat, Pc, Te):
+    err = q/Thome(m=m, x=x, D=D, rhol=rhol, rhog=rhog, kl=kl, kg=kg, mul=mul, mug=mug, Cpl=Cpl, Cpg=Cpg, sigma=sigma, Hvap=Hvap, Psat=Psat, Pc=Pc, q=q) - Te
+    return err
+    
 def Yun_Heo_Kim(m, x, D, rhol, mul, Hvap, sigma, q=None, Te=None):
     r'''Calculates heat transfer coefficient for film boiling of saturated
     fluid in any orientation of flow. Correlation
@@ -595,7 +599,7 @@ def Yun_Heo_Kim(m, x, D, rhol, mul, Hvap, sigma, q=None, Te=None):
         A = 136876*(We)**0.1993*Rel**-0.1626*(Te/G/Hvap)**0.1993
         return A**(10000/8007.)
     else:
-        raise Exception('Either q or Te is needed for this correlation')
+        raise ValueError('Either q or Te is needed for this correlation')
 
 
 def Chen_Edelstein(m, x, D, rhol, rhog, mul, mug, kl, Cpl, Hvap, sigma, 

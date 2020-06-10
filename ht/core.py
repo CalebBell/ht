@@ -114,12 +114,6 @@ def LMTD(Thi, Tho, Tci, Tco, counterflow=True):
         return dTF1
     else:
         return (dTF2 - dTF1)/log(dTF2/dTF1)
-#    try:
-#    except (ZeroDivisionError, ValueError):
-#        if counterflow:
-#            return dTF1
-#        else:
-#            return 0.0
 
 
 def is_heating_temperature(T, T_wall):
@@ -359,6 +353,10 @@ def wall_factor_Nu(mu, mu_wall, turbulent=True, liquid=False):
     return wall_factor(mu=mu, mu_wall=mu_wall, **params)
 
 
+wall_factor_bad_option_msg = 'Supported options are %s' %(
+        [WALL_FACTOR_VISCOSITY, WALL_FACTOR_PRANDTL, WALL_FACTOR_TEMPERATURE,
+         WALL_FACTOR_DEFAULT])
+    
 def wall_factor(mu=None, mu_wall=None, Pr=None, Pr_wall=None, T=None, 
                 T_wall=None, mu_heating_coeff=0.11, mu_cooling_coeff=0.25, 
                 Pr_heating_coeff=0.11, Pr_cooling_coeff=0.25, 
@@ -450,10 +448,7 @@ def wall_factor(mu=None, mu_wall=None, Pr=None, Pr_wall=None, T=None,
         else:
             return (Pr/Pr_wall)**Pr_cooling_coeff
     else:
-        raise Exception('Supported options are %s' %([WALL_FACTOR_VISCOSITY, 
-                                                      WALL_FACTOR_PRANDTL, 
-                                                      WALL_FACTOR_TEMPERATURE,
-                                                      WALL_FACTOR_DEFAULT]))
+        raise ValueError(wall_factor_bad_option_msg)
 
     
 def fin_efficiency_Kern_Kraus(Do, D_fin, t_fin, k_fin, h):

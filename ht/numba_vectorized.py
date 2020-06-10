@@ -28,16 +28,23 @@ import numpy as np
 import ht as normal_ht
 import numba
 import fluids.numba
-
+import ht.numba
+orig_file = __file__
+normal = ht
 __all__ = []
 __funcs = {}
-
-
 replaced = {}
-replaced, NUMERICS_SUBMOD = fluids.numba.create_numerics(replaced, vec=True)
-normal = normal_ht
 
-fluids.numba.transform_module(normal, __funcs, replaced, vec=True)
+ht.numba.transform_complete(replaced, __funcs, __all__, normal, vec=True)
+
+#
+#replaced, NUMERICS_SUBMOD = fluids.numba.create_numerics(replaced, vec=True)
+#normal = normal_ht
+#
+#fluids.numba.transform_module(normal, __funcs, replaced, vec=True)
 
 globals().update(__funcs)
 globals().update(replaced)
+
+__name__ = 'ht.numba_vectorized'
+__file__ = orig_file
