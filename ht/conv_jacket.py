@@ -130,7 +130,7 @@ def Lehrer(m, Dtank, Djacket, H, Dinlet, rho, Cp, k, mu, muw=None,
     Pr = Cp*mu/k
     vs = Q/H/delta
     vo = Q/(pi/4*Dinlet**2)
-    if dT and isobaric_expansion and inlettype == 'radial' and inletlocation:
+    if dT is not None and isobaric_expansion is not None and inlettype == 'radial' and inletlocation is not None:
         if dT > 0: # Heating jacket fluid
             if inletlocation == 'auto' or inletlocation == 'bottom':
                 va = 0.5*(2*g*H*isobaric_expansion*abs(dT))**0.5
@@ -146,7 +146,7 @@ def Lehrer(m, Dtank, Djacket, H, Dinlet, rho, Cp, k, mu, muw=None,
     vh = (vs*vo)**0.5 + va
     dg = (8/3.)**0.5*delta
     Res = vh*dg*rho/mu
-    if muw:
+    if muw is not None:
         NuSL = (0.03*Res**0.75*Pr)/(1 + 1.74*(Pr-1)/Res**0.125)*(mu/muw)**0.14
     else:
         NuSL = (0.03*Res**0.75*Pr)/(1 + 1.74*(Pr-1)/Res**0.125)

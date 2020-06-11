@@ -56,6 +56,17 @@ __all__ = ['effectiveness_from_NTU', 'NTU_from_effectiveness', 'calc_Cmin',
 
 R_value = foot*foot*degree_Fahrenheit*hour/Btu
 
+__numba_additional_funcs__ = []
+try:
+    if IS_NUMBA:
+        from scipy.special import gamma
+        __numba_additional_funcs__.append('factorial')
+        def factorial(n):
+            return gamma(n + 1.0)
+        
+except:
+    pass
+
 
 
 def effectiveness_from_NTU(NTU, Cr, subtype='counterflow'):
@@ -1193,11 +1204,15 @@ def temperature_effectiveness_air_cooler(R1, NTU1, rows, passes, coerce=True):
         NKR1 = N*K*R1
         NTU1_N = NTU1/N
         top = N*exp(N*K*R1)
+        # TODO speed this up
         # Precalculate integer factorials up to N
+        # Factorial fits in 64 bit int only up to N = 20
+        # https://stackoverflow.com/questions/62056035/how-to-call-math-factorial-from-numba-with-nopython-mode
+        Np1 = N+1
         factorials = [factorial(i) for i in range(N)]
         K_powers = [K**j for j in range(0, N+1)]
         NKR1_powers = [NKR1**k for k in range(0, N+1)]
-        exp_terms = [exp(i*NTU1_N) for i in range(-N+1, 1)]
+        exp_terms = [exp(i*NTU1_N) for i in range(-N+1, 1)] # Only need to compute one exp, then multiply
         NKR1_powers_over_factorials = [NKR1_powers[k]/factorials[k] 
                                        for k in range(N)]
         
@@ -1207,7 +1222,10 @@ def temperature_effectiveness_air_cooler(R1, NTU1, rows, passes, coerce=True):
             NKR1_pows_div_factorials.append(NKR1_pows_div_factorials[-1]+k)
         NKR1_pows_div_factorials.pop(0)
         
-        final_speed = [i*j for i, j in zip(K_powers, NKR1_pows_div_factorials)]
+        final_speed = [0.0]*N
+        for i in range(N):
+            final_speed[i] = K_powers[i]*NKR1_pows_div_factorials[i]
+#        final_speed = [i*j for i, j in zip(K_powers, NKR1_pows_div_factorials)]
         
         tot = 0.
         for i in range(1, N):
@@ -1266,7 +1284,7 @@ def temperature_effectiveness_air_cooler(R1, NTU1, rows, passes, coerce=True):
             return temperature_effectiveness_air_cooler(R1=R1, NTU1=NTU1, rows=new_rows, passes=new_passes)
                 
         else:
-            raise Exception('Number of passes and rows not supported.')
+            raise ValueError('Number of passes and rows not supported.')
 
 
 def temperature_effectiveness_basic(R1, NTU1, subtype='crossflow'):
@@ -1414,7 +1432,7 @@ def temperature_effectiveness_basic(R1, NTU1, subtype='crossflow'):
         K2 = 1. - exp(-R1*NTU1)
         P1 = (1./K1 + R1/K2 - 1./NTU1)**-1
     else:
-        raise Exception('Subtype not recognized.')
+        raise ValueError('Subtype not recognized.')
     return P1
 
 
@@ -1718,7 +1736,7 @@ def temperature_effectiveness_TEMA_H(R1, NTU1, Ntp, optimal=True):
             P1 = (1. - (B + 4.*G*R1)/(1. - D)**4)
         P1 = P1/R1_orig # switch 3, confirmed
     else:
-        raise Exception('Supported numbers of tube passes are 1 and 2.')
+        raise ValueError('Supported numbers of tube passes are 1 and 2.')
     return P1
 
 
@@ -1867,7 +1885,7 @@ def temperature_effectiveness_TEMA_G(R1, NTU1, Ntp, optimal=True):
             P1 = (1. + 2.*R1*NTU1 - beta)/R1/(4. + 4.*R1*NTU1 + R1**2*NTU1**2)
         P1 = P1/R1_orig # switch 3, confirmed
     else:
-        raise Exception('Supported numbers of tube passes are 1 and 2.')
+        raise ValueError('Supported numbers of tube passes are 1 and 2.')
     return P1
 
 
@@ -2124,7 +2142,7 @@ def temperature_effectiveness_TEMA_E(R1, NTU1, Ntp=1, optimal=True):
         
         P1 = P1/R1_orig # switch 3, confirmed
     else:
-        raise Exception('For TEMA E shells with an odd number of tube passes more than 3, no solution is implemented.')
+        raise ValueError('For TEMA E shells with an odd number of tube passes more than 3, no solution is implemented.')
     return P1
 
 

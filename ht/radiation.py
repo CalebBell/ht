@@ -78,10 +78,12 @@ def blackbody_spectral_radiance(T, wavelength):
     .. [2] Spectral-calc.com. Blackbody Calculator, 2015.
        http://www.spectralcalc.com/blackbody_calculator/blackbody.php
     '''
-    try:
-        return 2.*h*c**2/wavelength**5/(exp(h*c/(wavelength*T*k)) - 1.)
-    except OverflowError:
+    to_exp = h*c/(wavelength*T*k)
+    if to_exp > 709.7:
         return 0.0
+    else:
+        exp_term = exp(to_exp)
+    return 2.*h*c*c*wavelength**-5/(exp_term - 1.0)
 
 
 def q_rad(emissivity, T, T2=0):

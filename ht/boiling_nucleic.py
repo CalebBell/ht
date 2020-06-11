@@ -27,7 +27,7 @@ from fluids.constants import g
 __all__ = ['Rohsenow', 'McNelly', 'Forster_Zuber', 'Montinsky',
 'Stephan_Abdelsalam', 'HEDH_Taborek', 'Bier', 'Cooper', 'Gorenflo', 
 'h_nucleic', 'Zuber', 'Serth_HEDH', 'HEDH_Montinsky', 'qmax_boiling', 
-'h0_VDI_2e', 'h0_Gorenflow_1993', 'qmax_boiling_methods', 'h_nucleic_methods']
+'h0_VDI_2e', 'h0_Gorenflow_1993', 'qmax_boiling_all_methods', 'h_nucleic_all_methods']
 
 
 def Rohsenow(rhol, rhog, mul, kl, Cpl, Hvap, sigma, Te=None, q=None, Csf=0.013,
@@ -728,9 +728,6 @@ try:
     if IS_NUMBA:
         h0_Gorenflow_1993_keys = tuple(h0_Gorenflow_1993.keys())
         h0_Gorenflow_1993_values = tuple(h0_Gorenflow_1993.values())
-#        import numpy as np
-#        h0_Gorenflow_1993_keys = np.array(list(h0_Gorenflow_1993.keys()))
-#        h0_Gorenflow_1993_values = np.array(list(h0_Gorenflow_1993.values()))
 except:
     pass
 
@@ -828,12 +825,9 @@ def Gorenflo(P, Pc, q=None, Te=None, CASRN=None, h0=None, Ra=4E-7):
             raise ValueError('Reference heat transfer coefficient not known')
     if h0 is None:
         try:
-#            h0 = h0_Gorenflow_1993_values[np.where(h0_Gorenflow_1993_keys==CASRN)[0]]
             h0 = h0_Gorenflow_1993_values[h0_Gorenflow_1993_keys.index(CASRN)]
         except:
             raise ValueError('Reference heat transfer coefficient not known')
-#        h0 = h0_Gorenflow_1993[CASRN]
-#        h0 = h0_Gorenflow_1993[CASRN]
     if CASRN != '7732-18-5':
         # Case for not dealing with water
         n = 0.9 - 0.3*Pr**0.3
@@ -875,10 +869,39 @@ cryogenics = {'132259-10-0': 'Air', '7440-37-1': 'Argon', '630-08-0':
 '74-82-8': 'methane', '7440-01-9': 'neon', '7727-37-9': 'nitrogen',
 '7782-44-7': 'oxygen', '7440-63-3': 'xenon'}
 
-h_nucleic_methods = ['Stephan-Abdelsalam', 'Stephan-Abdelsalam water', 
+h_nucleic_all_methods = ['Stephan-Abdelsalam', 'Stephan-Abdelsalam water', 
                      'Stephan-Abdelsalam cryogenic', 'HEDH-Taborek', 
                      'Forster-Zuber', 'Rohsenow', 'Cooper', 'Bier',
                      'Montinsky', 'McNelly', 'Gorenflo (1993)']
+
+def h_nucleic_methods(Te=None, Tsat=None, P=None, dPsat=None, Cpl=None, 
+          kl=None, mul=None, rhol=None, sigma=None, Hvap=None, rhog=None, 
+          MW=None, Pc=None, CAS=None, check_ranges=False):
+    methods = []
+    if P is not None and Pc is not None:
+        if CAS is not None and CAS in h0_Gorenflow_1993:
+            methods.append('Gorenflo (1993)')
+    if all((Te, Tsat, Cpl, kl, mul, sigma, Hvap, rhol, rhog)):
+        if CAS is not None and CAS == '7732-18-5':
+            methods.append('Stephan-Abdelsalam water')
+        if CAS is not None and CAS in cryogenics:
+            methods.append('Stephan-Abdelsalam cryogenic')
+        methods.append('Stephan-Abdelsalam')
+    if all((Te, P, Pc)):
+        methods.append('HEDH-Taborek')
+    if all((Te, dPsat, Cpl, kl, mul, sigma, Hvap, rhol, rhog)):
+        methods.append('Forster-Zuber')
+    if all((Te, Cpl, kl, mul, sigma, Hvap, rhol, rhog)):
+        methods.append('Rohsenow')
+    if all((Te, P, Pc, MW)):
+        methods.append('Cooper')
+    if all((Te, P, Pc)):
+        methods.append('Bier')
+    if all((Te, P, Pc)):
+        methods.append('Montinsky')
+    if all((Te, P, Cpl, kl, sigma, Hvap, rhol, rhog)):
+        methods.append('McNelly')
+    return methods
 
 
 def h_nucleic(Te=None, q=None, Tsat=None, P=None, dPsat=None, Cpl=None, 
@@ -966,40 +989,17 @@ def h_nucleic(Te=None, q=None, Tsat=None, P=None, dPsat=None, Cpl=None,
     ... Method='Rohsenow')
     3723.655267067467
     '''
-    def list_methods():
-        methods = []
-        if all((P, Pc)):
-            if CAS and CAS in h0_Gorenflow_1993:
-                methods.append('Gorenflo (1993)')
-        if all((Te, Tsat, Cpl, kl, mul, sigma, Hvap, rhol, rhog)):
-            if CAS and CAS == '7732-18-5':
-                methods.append('Stephan-Abdelsalam water')
-            if CAS and CAS in cryogenics:
-                methods.append('Stephan-Abdelsalam cryogenic')
-            methods.append('Stephan-Abdelsalam')
-        if all((Te, P, Pc)):
-            methods.append('HEDH-Taborek')
-        if all((Te, dPsat, Cpl, kl, mul, sigma, Hvap, rhol, rhog)):
-            methods.append('Forster-Zuber')
-        if all((Te, Cpl, kl, mul, sigma, Hvap, rhol, rhog)):
-            methods.append('Rohsenow')
-        if all((Te, P, Pc, MW)):
-            methods.append('Cooper')
-        if all((Te, P, Pc)):
-            methods.append('Bier')
-        if all((Te, P, Pc)):
-            methods.append('Montinsky')
-        if all((Te, P, Cpl, kl, sigma, Hvap, rhol, rhog)):
-            methods.append('McNelly')
-        return methods
 
-    if AvailableMethods:
-        return list_methods()
-    if not Method:
-        methods = list_methods()
-        if methods == []:
-            raise Exception('Insufficient property data for any method.')
-        Method = methods[0]
+    if AvailableMethods or Method is None:
+        methods = h_nucleic_methods(Te=Te, Tsat=Tsat, P=P, dPsat=dPsat, Cpl=Cpl, 
+              kl=kl, mul=mul, rhol=rhol, sigma=sigma, Hvap=Hvap, rhog=rhog, 
+              MW=MW, Pc=Pc, CAS=CAS)
+        if AvailableMethods:
+            return methods
+        else:
+            if not methods:
+                raise Exception('Insufficient property data for any method.')
+            Method = methods[0]
 
     if Method == 'Stephan-Abdelsalam':
         return Stephan_Abdelsalam(Te=Te, q=q, Tsat=Tsat, Cpl=Cpl, kl=kl, mul=mul,
@@ -1033,7 +1033,7 @@ def h_nucleic(Te=None, q=None, Tsat=None, P=None, dPsat=None, Cpl=None,
     elif Method == 'Gorenflo (1993)':
         return Gorenflo(P=P, q=q, Pc=Pc, Te=Te, CASRN=CAS, **kwargs)
     else:
-        raise Exception("Correlation name not recognized; see the "
+        raise ValueError("Correlation name not recognized; see the "
                         "documentation for the available options.")
 
 
@@ -1208,7 +1208,18 @@ def HEDH_Montinsky(P, Pc):
     return 367*(Pc/1000.)*Pr**0.35*(1-Pr)**0.9
 
 
-qmax_boiling_methods = ['Serth-HEDH', 'Zuber', 'HEDH-Montinsky']
+qmax_boiling_all_methods = ['Serth-HEDH', 'Zuber', 'HEDH-Montinsky']
+
+def qmax_boiling_methods(sigma=None, Hvap=None, rhol=None, rhog=None, P=None,
+                         Pc=None, D=None, check_ranges=False):
+    methods = []
+    if all((sigma, Hvap, rhol, rhog, D)):
+        methods.append('Serth-HEDH')
+    if all((sigma, Hvap, rhol, rhog)):
+        methods.append('Zuber')
+    if all((P, Pc)):
+        methods.append('HEDH-Montinsky')
+    return methods
 
 
 def qmax_boiling(rhol=None, rhog=None, sigma=None, Hvap=None, D=None, P=None, 
@@ -1257,24 +1268,20 @@ def qmax_boiling(rhol=None, rhog=None, sigma=None, Hvap=None, D=None, P=None,
     >>> qmax_boiling(D=0.0127, sigma=8.2E-3, Hvap=272E3, rhol=567, rhog=18.09)
     351867.46522901946
     '''
-    def list_methods():
-        methods = []
-        if all((sigma, Hvap, rhol, rhog, D)):
-            methods.append('Serth-HEDH')
-        if all((sigma, Hvap, rhol, rhog)):
-            methods.append('Zuber')
-        if all((P, Pc)):
-            methods.append('HEDH-Montinsky')
-        return methods
-
     if AvailableMethods:
-        return list_methods()
-    if not Method:
-        methods = list_methods()
-        if methods == []:
-            raise Exception('Insufficient property or geometry data for any '
+        return qmax_boiling_methods(sigma=sigma, Hvap=Hvap, rhol=rhol, rhog=rhog, P=P, Pc=Pc, D=D, check_ranges=True)
+    if Method is None:
+        if (sigma is not None and Hvap is not None and rhol is not None
+            and rhog is not None and D is not None):
+            Method = 'Serth-HEDH'
+        elif (sigma is not None and Hvap is not None and rhol is not None
+            and rhog is not None):
+            Method = 'Zuber'
+        elif P is not None and Pc is not None:
+            Method = 'HEDH-Montinsky'
+        else:
+            raise ValueError('Insufficient property or geometry data for any '
                             'method.')
-        Method = methods[0]
 
     if Method == 'Serth-HEDH':
         return Serth_HEDH(D=D, sigma=sigma, Hvap=Hvap, rhol=rhol, rhog=rhog)
