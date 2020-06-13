@@ -25,7 +25,7 @@ from math import exp, log, floor, sqrt, factorial, tanh  # tanh= 1/coth
 import math
 import os
 from fluids.constants import inch, foot, degree_Fahrenheit, hour, Btu
-from fluids.numerics import horner, newton, ridder, quad
+from fluids.numerics import horner, newton, ridder, quad, secant
 from fluids.numerics import iv
 from fluids.piping import BWG_integers, BWG_inch, BWG_SI
 from fluids.numerics import numpy as np
@@ -543,7 +543,7 @@ possible for this configuration; the maximum effectiveness possible is %s.' % (m
         guess = NTU_from_effectiveness(effectiveness, Cr, 'crossflow approximate')
         def to_solve(NTU, Cr, effectiveness):
             return effectiveness_from_NTU(NTU, Cr, subtype='crossflow') - effectiveness
-        return newton(to_solve, guess, args=(Cr, effectiveness))
+        return secant(to_solve, guess, args=(Cr, effectiveness))
     elif subtype == 'crossflow approximate':
         # This will fail if NTU is more than 10,000 or less than 1E-7, but
         # this is extremely unlikely to occur in normal usage.
@@ -3266,7 +3266,7 @@ def NTU_from_P_basic(P1, R1, subtype='crossflow'):
     elif subtype == 'crossflow':
         guess = NTU_from_P_basic(P1, R1, subtype='crossflow approximate')
         to_solve = lambda NTU1 : _NTU_from_P_objective(NTU1, R1, P1, function, subtype='crossflow')
-        return newton(to_solve, guess)
+        return secant(to_solve, guess)
     else:
         raise Exception('Subtype not recognized.')
     return _NTU_from_P_solver(P1, R1, NTU_min, NTU_max, function, subtype=subtype)

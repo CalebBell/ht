@@ -101,7 +101,7 @@ def Nu_packed_bed_Gnielinski(dp, voidage, vs, rho, mu, Pr, fa=None):
     Nu_lam = 0.664*Re**0.5*Pr**(1/3.)
     Nu_turb = 0.037*Re**0.8*Pr/(1 + 2.443*Re**-0.1*(Pr**(2/3.)-1))
     Nu_sphere = 2 + (Nu_lam**2 + Nu_turb**2)**0.5
-    if not fa:
+    if fa is None:
         fa = 1 + 1.5*(1-voidage)
     return fa*Nu_sphere
 

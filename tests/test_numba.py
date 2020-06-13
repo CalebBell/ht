@@ -156,8 +156,12 @@ def test_boiling_nucleic():
     assert_close(ht.numba.Rohsenow(rhol=957.854, rhog=0.595593, mul=2.79E-4, kl=0.680, Cpl=4217, Hvap=2.257E6, sigma=0.0589, Te=4.9, Csf=0.011, n=1.26),
                  ht.Rohsenow(rhol=957.854, rhog=0.595593, mul=2.79E-4, kl=0.680, Cpl=4217, Hvap=2.257E6, sigma=0.0589, Te=4.9, Csf=0.011, n=1.26))
 
-
-
+@pytest.mark.numba
+@pytest.mark.skipif(numba is None, reason="Numba is missing")
+def test_packed_bed():
+    # All good
+    assert_close(ht.numba.Nu_packed_bed_Gnielinski(dp=8E-4, voidage=0.4, vs=1, rho=1E3, mu=1E-3, Pr=0.7),
+                 ht.Nu_packed_bed_Gnielinski(dp=8E-4, voidage=0.4, vs=1, rho=1E3, mu=1E-3, Pr=0.7))
     
 @pytest.mark.numba
 @pytest.mark.skipif(numba is None, reason="Numba is missing")

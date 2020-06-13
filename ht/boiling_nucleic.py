@@ -1210,8 +1210,42 @@ def HEDH_Montinsky(P, Pc):
 
 qmax_boiling_all_methods = ['Serth-HEDH', 'Zuber', 'HEDH-Montinsky']
 
-def qmax_boiling_methods(sigma=None, Hvap=None, rhol=None, rhog=None, P=None,
-                         Pc=None, D=None, check_ranges=False):
+def qmax_boiling_methods(rhol=None, rhog=None, sigma=None, Hvap=None, D=None,
+                          P=None, Pc=None, check_ranges=False):
+    r'''This function returns a list of methods names which can be used to
+    calculate nucleate boiling critical heat flux.
+    Preferred methods are 'Serth-HEDH' when a tube diameter is specified,
+    and 'Zuber' otherwise.
+
+    Parameters
+    ----------
+    rhol : float, optional
+        Density of the liquid [kg/m^3]
+    rhog : float, optional
+        Density of the produced gas [kg/m^3]
+    sigma : float, optional
+        Surface tension of liquid [N/m]
+    Hvap : float, optional
+        Heat of vaporization of the fluid at T, [J/kg]
+    D : float, optional
+        Diameter of tubes [m]
+    P : float, optional
+        Saturation pressure of fluid, [Pa]
+    Pc : float, optional
+        Critical pressure of fluid, [Pa]
+    check_ranges : bool, optional
+        Added for Future use only
+
+    Returns
+    -------
+    methods : list
+        List of methods which can be used to calculate qmax with the given inputs
+        
+    Examples
+    --------
+    >>> qmax_boiling_methods(D=0.0127, sigma=8.2E-3, Hvap=272E3, rhol=567, rhog=18.09)
+    ['Serth-HEDH', 'Zuber']
+    '''
     methods = []
     if all((sigma, Hvap, rhol, rhog, D)):
         methods.append('Serth-HEDH')
