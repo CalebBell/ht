@@ -782,9 +782,10 @@ def Gorenflo(P, Pc, q=None, Te=None, CASRN=None, h0=None, Ra=4E-7):
     CASRN : str, optional
         CASRN of fluid
     h0 : float
-        Reference heat transfer coefficient, [W/m^2/K]
+        Reference heat transfer coefficient for Gorenflo method, [W/m^2/K]
     Ra : float, optional
-        Roughness parameter of the surface (0.4 micrometer default), [m]
+        Roughness parameter of the surface (0.4 micrometer default) for 
+        Gorenflo method, [m]
 
     Returns
     -------
@@ -906,8 +907,10 @@ def h_nucleic_methods(Te=None, Tsat=None, P=None, dPsat=None, Cpl=None,
 
 def h_nucleic(Te=None, q=None, Tsat=None, P=None, dPsat=None, Cpl=None, 
               kl=None, mul=None, rhol=None, sigma=None, Hvap=None, rhog=None, 
-              MW=None, Pc=None, CAS=None, Method=None, AvailableMethods=False, 
-              **kwargs):
+              MW=None, Pc=None, Csf=0.013, n=1.7, kw=401, rhow=8.96, Cpw=384,
+              angle=35.0, Rp=1e-6, Ra=0.4e-6, h0=None,
+              CAS=None, Method=None, AvailableMethods=False, 
+              ):
     r'''This function handles the calculation of nucleate boiling
     heat flux and chooses the best method for performing the calculation
     based on the provided information.
@@ -989,7 +992,7 @@ def h_nucleic(Te=None, q=None, Tsat=None, P=None, dPsat=None, Cpl=None,
     ... Method='Rohsenow')
     3723.655267067467
     '''
-
+    kwargs = {}
     if AvailableMethods or Method is None:
         methods = h_nucleic_methods(Te=Te, Tsat=Tsat, P=P, dPsat=dPsat, Cpl=Cpl, 
               kl=kl, mul=mul, rhol=rhol, sigma=sigma, Hvap=Hvap, rhog=rhog, 
@@ -1020,7 +1023,7 @@ def h_nucleic(Te=None, q=None, Tsat=None, P=None, dPsat=None, Cpl=None,
                           sigma=sigma, Hvap=Hvap, rhol=rhol, rhog=rhog, **kwargs)
     elif Method == 'Rohsenow':
         return Rohsenow(Te=Te, q=q, Cpl=Cpl, kl=kl, mul=mul, sigma=sigma, Hvap=Hvap,
-                     rhol=rhol, rhog=rhog, **kwargs)
+                     rhol=rhol, rhog=rhog, Csf=Csf, n=n)
     elif Method == 'Cooper':
         return Cooper(Te=Te, q=q, P=P, Pc=Pc, MW=MW, **kwargs)
     elif Method == 'Bier':
@@ -1031,7 +1034,7 @@ def h_nucleic(Te=None, q=None, Tsat=None, P=None, dPsat=None, Cpl=None,
         return McNelly(Te=Te, q=q, P=P, Cpl=Cpl, kl=kl, sigma=sigma, Hvap=Hvap,
                     rhol=rhol, rhog=rhog, **kwargs)
     elif Method == 'Gorenflo (1993)':
-        return Gorenflo(P=P, q=q, Pc=Pc, Te=Te, CASRN=CAS, **kwargs)
+        return Gorenflo(P=P, q=q, Pc=Pc, Te=Te, CASRN=CAS, h0=h0, Ra=Ra)
     else:
         raise ValueError("Correlation name not recognized; see the "
                         "documentation for the available options.")

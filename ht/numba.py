@@ -44,7 +44,7 @@ __funcs = {}
 
 replaced = {}
 
-def transform_complete(replaced, __funcs, __all__, normal, vec=False):
+def transform_complete_ht(replaced, __funcs, __all__, normal, vec=False):
     replaced, NUMERICS_SUBMOD = fluids.numba.create_numerics(replaced, vec=vec)
     
     __funcs.update(fluids.numba.__dict__.copy())
@@ -81,7 +81,7 @@ def transform_complete(replaced, __funcs, __all__, normal, vec=False):
         
     __funcs['hx']._load_coeffs_Phadkeb()
 
-transform_complete(replaced, __funcs, __all__, normal, vec=False)
+transform_complete_ht(replaced, __funcs, __all__, normal, vec=False)
 
 
 
