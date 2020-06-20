@@ -669,8 +669,9 @@ def Cooper(P, Pc, MW, Te=None, q=None, Rp=1E-6):
         Excess wall temperature, [K]
     q : float, optional
         Heat flux, [W/m^2]
-    Rp : float
-        Roughness parameter of the surface (1 micrometer default), [m]
+    Rp : float, optional
+        Roughness parameter of the surface (1 micrometer default) used by 
+        `Cooper` method, [m]
 
     Returns
     -------
@@ -947,6 +948,26 @@ def h_nucleic(Te=None, q=None, Tsat=None, P=None, dPsat=None, Cpl=None,
         Molecular weight of fluid, [g/mol]
     Pc : float, optional
         Critical pressure of fluid, [Pa]
+    Csf : float, optional
+        Rohsenow coefficient specific to fluid and metal [-]
+    n : float, optional
+        Rohsenow constant, 1 for water, 1.7 (default) for other fluids usually [-]
+    kw : float, optional
+        Thermal conductivity of wall (only for cryogenics) [W/m/K]
+    rhow : float, optional
+        Density of the wall (only for cryogenics) [kg/m^3]
+    Cpw : float, optional
+        Heat capacity of wall (only for cryogenics) [J/kg/K]
+    angle : float, optional
+        Contact angle of bubble with wall [degrees]
+    Rp : float, optional
+        Roughness parameter of the surface (1 micrometer default) used by 
+        `Cooper` method, [m]
+    Ra : float, optional
+        Roughness parameter of the surface (0.4 micrometer default) for 
+        Gorenflo method, [m]
+    h0 : float
+        Reference heat transfer coefficient for Gorenflo method, [W/m^2/K]
     CAS : str, optional
         CAS of fluid
 
@@ -1007,15 +1028,18 @@ def h_nucleic(Te=None, q=None, Tsat=None, P=None, dPsat=None, Cpl=None,
     if Method == 'Stephan-Abdelsalam':
         return Stephan_Abdelsalam(Te=Te, q=q, Tsat=Tsat, Cpl=Cpl, kl=kl, mul=mul,
                                sigma=sigma, Hvap=Hvap, rhol=rhol, rhog=rhog,
-                               correlation='general', **kwargs)
+                               correlation='general', 
+                               kw=kw, rhow=rhow, Cpw=Cpw, angle=angle)
     elif Method == 'Stephan-Abdelsalam water':
         return Stephan_Abdelsalam(Te=Te, q=q, Tsat=Tsat, Cpl=Cpl, kl=kl, mul=mul,
                                sigma=sigma, Hvap=Hvap, rhol=rhol, rhog=rhog,
-                               correlation='water', **kwargs)
+                               correlation='water',
+                               kw=kw, rhow=rhow, Cpw=Cpw, angle=angle)
     elif Method == 'Stephan-Abdelsalam cryogenic':
         return Stephan_Abdelsalam(Te=Te, q=q, Tsat=Tsat, Cpl=Cpl, kl=kl, mul=mul,
                                sigma=sigma, Hvap=Hvap, rhol=rhol, rhog=rhog,
-                               correlation='cryogenic', **kwargs)
+                               correlation='cryogenic', 
+                               kw=kw, rhow=rhow, Cpw=Cpw, angle=angle)
     elif Method == 'HEDH-Taborek':
         return HEDH_Taborek(Te=Te, q=q, P=P, Pc=Pc)
     elif Method == 'Forster-Zuber':
@@ -1025,7 +1049,7 @@ def h_nucleic(Te=None, q=None, Tsat=None, P=None, dPsat=None, Cpl=None,
         return Rohsenow(Te=Te, q=q, Cpl=Cpl, kl=kl, mul=mul, sigma=sigma, Hvap=Hvap,
                      rhol=rhol, rhog=rhog, Csf=Csf, n=n)
     elif Method == 'Cooper':
-        return Cooper(Te=Te, q=q, P=P, Pc=Pc, MW=MW, **kwargs)
+        return Cooper(Te=Te, q=q, P=P, Pc=Pc, MW=MW, Rp=Rp)
     elif Method == 'Bier':
         return Bier(Te=Te, q=q, P=P, Pc=Pc, **kwargs)
     elif Method == 'Montinsky':
