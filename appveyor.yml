@@ -27,7 +27,7 @@ install:
   - cmd: python setup.py install
 
 test_script:
-  - cmd: py.test --cov-report html --cov=ht -m "not slow"
+  - cmd: py.test --cov-report html --cov=ht -m "not slow and not numba"
 branches:
   only:
     - release

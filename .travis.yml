@@ -36,6 +36,6 @@ install:
   - pip install -r requirements_test.txt
   - python setup.py -q install
 script:
-  - py.test . -v --cov-report html --cov=ht --cov-report term-missing -m "not slow"
+  - py.test . -v --cov-report html --cov=ht --cov-report term-missing -m "not slow and not numba"
 after_success:
   - coveralls
