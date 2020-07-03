@@ -4622,9 +4622,9 @@ def L_unsupported_max(Do, material='CS'):
 
 square_C1s = square_Ns = triangular_C1s = triangular_Ns = None
 
-hx_data_folder = os.path.join(os.path.dirname(__file__), 'data')
 def _load_coeffs_Phadkeb():
     global square_C1s, square_Ns, triangular_C1s, triangular_Ns
+    hx_data_folder = os.path.join(os.path.dirname(__file__), 'data')
     triangular_Ns = np.load(os.path.join(hx_data_folder, "triangular_Ns_Phadkeb.npy"))
     triangular_C1s = np.load(os.path.join(hx_data_folder, "triangular_C1s_Phadkeb.npy"))
     square_Ns = np.load(os.path.join(hx_data_folder, "square_Ns_Phadkeb.npy"))

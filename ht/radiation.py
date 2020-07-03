@@ -29,7 +29,6 @@ from fluids.constants import sigma, h, c, k, pi
 __all__ = ['blackbody_spectral_radiance', 'q_rad', 'grey_transmittance',
            'solar_spectrum']
 
-folder = os.path.join(os.path.dirname(__file__), 'data')
 
 def blackbody_spectral_radiance(T, wavelength):
     r'''Returns the spectral radiance, in units of W/m^2/sr/µm.
@@ -251,6 +250,7 @@ def solar_spectrum(model='SOLAR-ISS'):
        https://doi.org/10.1029/2008GL036373.
     '''
     if model == 'SOLAR-ISS':
+        folder = os.path.join(os.path.dirname(__file__), 'data')
         import numpy as np
         pth = os.path.join(folder, 'solar_iss_2018_spectrum.dat')
         data = np.loadtxt(pth)

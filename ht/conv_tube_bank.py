@@ -23,9 +23,8 @@ SOFTWARE.'''
 from __future__ import division
 from math import pi, sin, acos, radians, exp
 from fluids.constants import g
-from fluids.numerics import horner, splev, bisplev, implementation_optimize_tck, tck_interp2d_linear
+from fluids.numerics import horner, splev, bisplev, implementation_optimize_tck, tck_interp2d_linear, numpy as np
 from ht.core import wall_factor, WALL_FACTOR_PRANDTL
-import numpy as np
 
 __all__ = ['dP_Kern', 'dP_Zukauskas', 
            'Nu_ESDU_73031', 'Nu_Zukauskas_Bejan','Nu_HEDH_tube_bank',
