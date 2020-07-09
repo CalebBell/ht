@@ -25,10 +25,12 @@ from math import exp, log
 
 __all__ = ['Nu_vertical_plate_Churchill', 
            'Nu_free_vertical_plate',
+           'Nu_free_vertical_plate_methods',
            'Nu_horizontal_plate_McAdams',
            'Nu_horizontal_plate_VDI', 
            'Nu_horizontal_plate_Rohsenow',
            'Nu_free_horizontal_plate',
+           'Nu_free_horizontal_plate_methods',
            'Nu_sphere_Churchill', 
            'Nu_vertical_cylinder_Griffiths_Davis_Morgan',
            'Nu_vertical_cylinder_Jakob_Linke_Morgan',
@@ -41,10 +43,12 @@ __all__ = ['Nu_vertical_plate_Churchill',
            'Nu_vertical_cylinder_Al_Arabi_Khamis',
            'Nu_vertical_cylinder_Popiel_Churchill',
            'Nu_vertical_cylinder',
+           'Nu_vertical_cylinder_methods',
            'Nu_horizontal_cylinder_Churchill_Chu',
            'Nu_horizontal_cylinder_Kuehn_Goldstein',
            'Nu_horizontal_cylinder_Morgan',
            'Nu_horizontal_cylinder',
+           'Nu_horizontal_cylinder_methods',
            'Nu_coil_Xin_Ebadian']
 
 
@@ -102,15 +106,52 @@ def Nu_vertical_plate_Churchill(Pr, Gr):
     term = (0.825 + (0.387*Ra**(1/6.)*(1.0 + (Pr/0.492)**(-0.5625))**(-8.0/27.0)))
     return term*term
 
-Nu_free_vertical_plate_methods = ["Churchill"]
+Nu_free_vertical_plate_all_methods = ["Churchill"]
 
-def Nu_free_vertical_plate(Pr, Gr, H=None, W=None, 
-                           Method=None, AvailableMethods=False):
-    r'''This function calculates the heat transfer coefficient for external
-    free convection from a vertival plate. 
+def Nu_free_vertical_plate_methods(Pr, Gr, H=None, W=None, check_ranges=True):
+    r'''This function returns a list of methods for calculating heat transfer
+    coefficient for external free convection from a verical plate. 
     
     Requires at a minimum a fluid's Prandtl number `Pr`, and the Grashof 
-    number `Gr` for the system fluid, temperatures, and geometry.
+    number `Gr` for the system fluid (which require T and P to obtain).
+    
+    `L` and `W` are not used by any correlations presently, but are included 
+    for future support.
+    
+    Parameters
+    ----------
+    Pr : float
+        Prandtl number with respect to fluid properties [-]
+    Gr : float
+        Grashof number with respect to fluid properties and plate - fluid
+        temperature difference [-]
+    H : float, optional
+        Height of vertical plate, [m]
+    W : float, optional
+        Width of the vertical plate, [m]
+    check_ranges : bool, optional
+        Whether or not to return only correlations suitable for the provided
+        data, [-]
+
+    Returns
+    -------
+    methods : list[str]
+        List of methods which can be used to calculate `Nu` with the given 
+        inputs, [-]
+        
+    Examples
+    --------
+    >>> Nu_free_vertical_plate_methods(0.69, 2.63E9)
+    ['Churchill']
+    '''        
+    return Nu_free_vertical_plate_all_methods
+    
+def Nu_free_vertical_plate(Pr, Gr, buoyancy=None, H=None, W=None, Method=None):
+    r'''This function calculates the heat transfer coefficient for external
+    free convection from a verical plate. 
+    
+    Requires at a minimum a fluid's Prandtl number `Pr`, and the Grashof 
+    number `Gr` for the system fluid (which require T and P to obtain).
     
     `L` and `W` are not used by any correlations presently, but are included 
     for future support.
@@ -125,8 +166,11 @@ def Nu_free_vertical_plate(Pr, Gr, H=None, W=None,
     Gr : float
         Grashof number with respect to fluid properties and plate - fluid
         temperature difference [-]
+    buoyancy : bool, optional
+        Whether or not the plate's free convection is buoyancy assisted (hot 
+        plate) or not, [-]
     H : float, optional
-        height of vertical plate, [m]
+        Height of vertical plate, [m]
     W : float, optional
         Width of the vertical plate, [m]
 
@@ -134,36 +178,26 @@ def Nu_free_vertical_plate(Pr, Gr, H=None, W=None,
     -------
     Nu : float
         Nusselt number with respect to plate height, [-]
-    methods : list, only returned if AvailableMethods == True
-        List of methods which can be used to calculate `Nu` with the given 
-        inputs
 
     Other Parameters
     ----------------
     Method : string, optional
         A string of the function name to use;
         one of ('Churchill', ).
-    AvailableMethods : bool, optional
-        If True, function will consider which methods which can be used to
-        calculate `Nu` with the given inputs
         
     Examples
     --------
     Turbulent example
     
-    >>> Nu_free_vertical_plate(0.69, 2.63E9)
+    >>> Nu_free_vertical_plate(0.69, 2.63E9, False)
     147.16185223770603
     '''        
-    if AvailableMethods:
-        return Nu_free_vertical_plate_methods
     if Method is None:
-        Method = Nu_free_vertical_plate_methods[0]
-
-
+        Method = 'Churchill'
     if Method == 'Churchill':
         return Nu_vertical_plate_Churchill(Pr, Gr)
     else:
-        raise Exception("Correlation name not recognized; see the "
+        raise ValueError("Correlation name not recognized; see the "
                         "documentation for the available options.")
 
 
@@ -371,15 +405,59 @@ def Nu_horizontal_plate_Rohsenow(Pr, Gr, buoyancy=True):
         return Nu_l
 
 
-conv_free_horizontal_plate_methods = {
+conv_free_horizontal_plate_all_methods = {
     'McAdams': (Nu_horizontal_plate_McAdams, ('Pr', 'Gr', 'buoyancy')),
     'VDI': (Nu_horizontal_plate_VDI, ('Pr', 'Gr', 'buoyancy')),
     'Rohsenow': (Nu_horizontal_plate_Rohsenow, ('Pr', 'Gr', 'buoyancy')),
 }
 
+Nu_free_horizontal_plate_all_methods = ["VDI", "McAdams", "Rohsenow"]
+
+
+def Nu_free_horizontal_plate_methods(Pr, Gr, buoyancy, L=None, W=None,
+                                     check_ranges=True):
+    r'''This function returns a list of methods for calculating heat transfer
+    coefficient for external free convection from a verical plate. 
+    
+    Requires at a minimum a fluid's Prandtl number `Pr`, and the Grashof 
+    number `Gr` for the system fluid, temperatures, and geometry.
+    
+    `L` and `W` are not used by any correlations presently, but are included 
+    for future support.
+    
+    Parameters
+    ----------
+    Pr : float
+        Prandtl number with respect to fluid properties [-]
+    Gr : float
+        Grashof number with respect to fluid properties and plate - fluid
+        temperature difference [-]
+    buoyancy : bool, optional
+        Whether or not the plate's free convection is buoyancy assisted (hot 
+        plate) or not, [-]
+    L : float, optional
+        Length of horizontal plate, [m]
+    W : float, optional
+        Width of the horizontal plate, [m]
+    check_ranges : bool, optional
+        Whether or not to return only correlations suitable for the provided
+        data, [-]
+
+    Returns
+    -------
+    methods : list[str]
+        List of methods which can be used to calculate `Nu` with the given 
+        inputs, [-]
+        
+    Examples
+    --------
+    >>> Nu_free_horizontal_plate_methods(0.69, 2.63E9, True)
+    ["VDI", "McAdams", "Rohsenow"]
+    '''        
+    return Nu_free_horizontal_plate_all_methods
 
 def Nu_free_horizontal_plate(Pr, Gr, buoyancy, L=None, W=None, 
-                             Method=None, AvailableMethods=False):
+                             Method=None):
     r'''This function calculates the heat transfer coefficient for external
     free convection from a horizontal plate. 
     
@@ -411,18 +489,12 @@ def Nu_free_horizontal_plate(Pr, Gr, buoyancy, L=None, W=None,
     -------
     Nu : float
         Nusselt number with respect to plate length, [-]
-    methods : list, only returned if AvailableMethods == True
-        List of methods which can be used to calculate `Nu` with the given 
-        inputs
 
     Other Parameters
     ----------------
     Method : string, optional
         A string of the function name to use, as in the dictionary
         conv_free_horizontal_plate_methods
-    AvailableMethods : bool, optional
-        If True, function will consider which methods which can be used to
-        calculate `Nu` with the given inputs
         
     Examples
     --------
@@ -435,23 +507,16 @@ def Nu_free_horizontal_plate(Pr, Gr, buoyancy, L=None, W=None,
     181.73121274384457
     '''
     if Method is None:
-        methods = ["VDI", "McAdams", "Rohsenow"]
+        Method = "VDI"
         
-    if AvailableMethods:
-        return methods
-    if Method is None:
-        Method = methods[0]
-
-
-    if Method in conv_free_horizontal_plate_methods:
-        f, args = conv_free_horizontal_plate_methods[Method]
-        
-        kwargs = {}
-        for arg in args:
-            kwargs[arg] = locals()[arg]
-        return f(**kwargs)
+    if Method == 'VDI':
+        return Nu_horizontal_plate_VDI(Pr=Pr, Gr=Gr, buoyancy=buoyancy)
+    if Method == 'McAdams':
+        return Nu_horizontal_plate_McAdams(Pr=Pr, Gr=Gr, buoyancy=buoyancy)
+    if Method == 'Rohsenow':
+        return Nu_horizontal_plate_Rohsenow(Pr=Pr, Gr=Gr, buoyancy=buoyancy)
     else:
-        raise Exception("Correlation name not recognized; see the "
+        raise ValueError("Correlation name not recognized; see the "
                         "documentation for the available options.")
 
 
@@ -1138,9 +1203,51 @@ vertical_cylinder_correlations = {
 'Popiel & Churchill': (Nu_vertical_cylinder_Popiel_Churchill, False, True, 1.00E+009, False),
 }
 
+def Nu_vertical_cylinder_methods(Pr, Gr, L=None, D=None, check_ranges=True):
+    r'''This function returns a list of correlation names for free convetion 
+    to a vertical cylinder.
+    
+    The functions returned are 'Popiel & Churchill' for fully defined geometries,
+    and 'McAdams, Weiss & Saunders' otherwise.
 
-def Nu_vertical_cylinder(Pr, Gr, L=None, D=None, Method=None,
-                         AvailableMethods=False):
+    Parameters
+    ----------
+    Pr : float
+        Prandtl number [-]
+    Gr : float
+        Grashof number with respect to cylinder height [-]
+    L : float, optional
+        Length of vertical cylinder, [m]
+    D : float, optional
+        Diameter of cylinder, [m]
+    check_ranges : bool, optional
+        Whether or not to return only correlations suitable for the provided
+        data, [-]
+
+
+    Returns
+    -------
+    methods : list[str]
+        List of methods which can be used to calculate `Nu` with the given 
+        inputs
+        
+    Examples
+    --------
+    >>> Nu_vertical_cylinder_methods(0.72, 1E7)[0]
+    'McAdams, Weiss & Saunders'
+    '''
+    if L is None or D is None:
+        return ['McAdams, Weiss & Saunders', 'Churchill Vertical Plate',
+                'Griffiths, Davis, & Morgan', 'Jakob, Linke, & Morgan', 'Carne & Morgan',
+                'Eigenson & Morgan', 'Touloukian & Morgan', 'Kreith & Eckert', 'Hanesian, Kalish & Morgan']
+    else:
+        return ['Popiel & Churchill', 'Churchill Vertical Plate', 'Griffiths, Davis, & Morgan', 
+                'Jakob, Linke, & Morgan', 'Carne & Morgan', 'Eigenson & Morgan', 'Touloukian & Morgan',
+                'McAdams, Weiss & Saunders', 'Kreith & Eckert', 'Hanesian, Kalish & Morgan', 
+                'Al-Arabi & Khamis']
+
+
+def Nu_vertical_cylinder(Pr, Gr, L=None, D=None, Method=None):
     r'''This function handles choosing which vertical cylinder free convection
     correlation is used. Generally this is used by a helper class, but can be
     used directly. Will automatically select the correlation to use if none is
@@ -1169,50 +1276,53 @@ def Nu_vertical_cylinder(Pr, Gr, L=None, D=None, Method=None,
     -------
     Nu : float
         Nusselt number, [-]
-    methods : list, only returned if AvailableMethods == True
-        List of methods which can be used to calculate Nu with the given inputs
 
     Other Parameters
     ----------------
     Method : string, optional
         A string of the function name to use, as in the dictionary
         vertical_cylinder_correlations
-    AvailableMethods : bool, optional
-        If True, function will consider which methods which can be used to
-        calculate Nu with the given inputs
     '''
-    def list_methods():
-        methods = []
-        for key, values in vertical_cylinder_correlations.items():
-            if values[4] or all((L, D)):
-                methods.append(key)
-        if 'Popiel & Churchill' in methods:
-            methods.remove('Popiel & Churchill')
-            methods.insert(0, 'Popiel & Churchill')
-        elif 'McAdams, Weiss & Saunders' in methods:
-            methods.remove('McAdams, Weiss & Saunders')
-            methods.insert(0, 'McAdams, Weiss & Saunders')
-        return methods
-
-    if AvailableMethods:
-        return list_methods()
-    if not Method:
-        Method = list_methods()[0]
-
-    if Method in vertical_cylinder_correlations:
-        if vertical_cylinder_correlations[Method][4]:
-            return vertical_cylinder_correlations[Method][0](Pr=Pr, Gr=Gr)
+    if Method is None:
+        if L is None or D is None:
+            Method2 = 'McAdams, Weiss & Saunders'
         else:
-            return vertical_cylinder_correlations[Method][0](Pr=Pr, Gr=Gr, L=L, D=D)
+            Method2 = 'Popiel & Churchill'
     else:
-        raise Exception("Correlation name not recognized; see the "
+        Method2 = Method
+        
+    if Method2 == 'Churchill Vertical Plate':
+        return Nu_vertical_plate_Churchill(Pr=Pr, Gr=Gr)
+    elif Method2 == 'Griffiths, Davis, & Morgan':
+        return Nu_vertical_cylinder_Griffiths_Davis_Morgan(Pr=Pr, Gr=Gr)
+    elif Method2 == 'Jakob, Linke, & Morgan':
+        return Nu_vertical_cylinder_Jakob_Linke_Morgan(Pr=Pr, Gr=Gr)
+    elif Method2 == 'Carne & Morgan':
+        return Nu_vertical_cylinder_Carne_Morgan(Pr=Pr, Gr=Gr)
+    elif Method2 == 'Eigenson & Morgan':
+        return Nu_vertical_cylinder_Eigenson_Morgan(Pr=Pr, Gr=Gr)
+    elif Method2 == 'Touloukian & Morgan':
+        return Nu_vertical_cylinder_Touloukian_Morgan(Pr=Pr, Gr=Gr)
+    elif Method2 == 'McAdams, Weiss & Saunders':
+        return Nu_vertical_cylinder_McAdams_Weiss_Saunders(Pr=Pr, Gr=Gr)
+    elif Method2 == 'Kreith & Eckert':
+        return Nu_vertical_cylinder_Kreith_Eckert(Pr=Pr, Gr=Gr)
+    elif Method2 == 'Hanesian, Kalish & Morgan':
+        return Nu_vertical_cylinder_Hanesian_Kalish_Morgan(Pr=Pr, Gr=Gr)
+
+    elif Method2 == 'Al-Arabi & Khamis':
+        return Nu_vertical_cylinder_Al_Arabi_Khamis(Pr=Pr, Gr=Gr, L=L, D=D)
+    elif Method2 == 'Popiel & Churchill':
+        return Nu_vertical_cylinder_Popiel_Churchill(Pr=Pr, Gr=Gr, L=L, D=D)
+    else:
+        raise ValueError("Correlation name not recognized; see the "
                         "documentation for the available options.")
 
 #import matplotlib.pyplot as plt
 #import numpy as np
 ##L, D = 1.5, 0.1
 #Pr, Gr = 0.72, 1E8
-#methods = Nu_vertical_cylinder(Pr, Gr, AvailableMethods=True)
+#methods = Nu_vertical_cylinder_methods(Pr, Gr)
 #Grs = np.logspace(2, 12, 10000)
 #
 #for method in methods:
@@ -1400,7 +1510,37 @@ horizontal_cylinder_correlations = {
 'Morgan': (Nu_horizontal_cylinder_Morgan)
 }
 
-def Nu_horizontal_cylinder(Pr, Gr, Method=None, AvailableMethods=False):
+def Nu_horizontal_cylinder_methods(Pr, Gr, check_ranges=True):
+    r'''This function returns a list of correlation names for free convetion 
+    to a horizontal cylinder.
+    
+    Preferred functions are 'Morgan' when discontinuous results are acceptable
+    and 'Churchill-Chu' otherwise.
+
+    Parameters
+    ----------
+    Pr : float
+        Prandtl number with respect to film temperature [-]
+    Gr : float
+        Grashof number with respect to cylinder diameter, [-]
+    check_ranges : bool, optional
+        Whether or not to return only correlations suitable for the provided
+        data, [-]
+
+    Returns
+    -------
+    methods : list[str]
+        List of methods which can be used to calculate `Nu` with the given 
+        inputs
+        
+    Examples
+    --------
+    >>> Nu_horizontal_cylinder_methods(0.72, 1E7)[0]
+    'Morgan'
+    '''
+    return ['Morgan', 'Churchill-Chu', 'Kuehn & Goldstein']
+
+def Nu_horizontal_cylinder(Pr, Gr, Method=None):
     r'''This function handles choosing which horizontal cylinder free convection
     correlation is used. Generally this is used by a helper class, but can be
     used directly. Will automatically select the correlation to use if none is
@@ -1420,17 +1560,12 @@ def Nu_horizontal_cylinder(Pr, Gr, Method=None, AvailableMethods=False):
     -------
     Nu : float
         Nusselt number with respect to cylinder diameter, [-]
-    methods : list, only returned if AvailableMethods == True
-        List of methods which can be used to calculate Nu with the given inputs
 
     Other Parameters
     ----------------
     Method : string, optional
         A string of the function name to use, as in the dictionary
         horizontal_cylinder_correlations
-    AvailableMethods : bool, optional
-        If True, function will consider which methods which can be used to
-        calculate Nu with the given inputs
         
     Notes
     -----
@@ -1447,31 +1582,25 @@ def Nu_horizontal_cylinder(Pr, Gr, Method=None, AvailableMethods=False):
     >>> Nu_horizontal_cylinder(0.72, 1E7)
     24.864192615468973
     '''
-    def list_methods():
-        methods = []
-        for key, values in horizontal_cylinder_correlations.items():
-                methods.append(key)
-        if 'Morgan' in methods:
-            methods.remove('Morgan')
-            methods.insert(0, 'Morgan')
-        return methods
-
-    if AvailableMethods:
-        return list_methods()
-    if not Method:
-        Method = list_methods()[0]
-
-    if Method in horizontal_cylinder_correlations:
-        return horizontal_cylinder_correlations[Method](Pr=Pr, Gr=Gr)
+    if Method is None:
+        Method2 = 'Morgan'
     else:
-        raise Exception("Correlation name not recognized; see the "
+        Method2 = Method
+    if Method2 == 'Churchill-Chu':
+        return Nu_horizontal_cylinder_Churchill_Chu(Pr=Pr, Gr=Gr)
+    elif Method2 == 'Kuehn & Goldstein':
+        return Nu_horizontal_cylinder_Kuehn_Goldstein(Pr=Pr, Gr=Gr)
+    elif Method2 == 'Morgan':
+        return Nu_horizontal_cylinder_Morgan(Pr=Pr, Gr=Gr)
+    else:
+        raise ValueError("Correlation name not recognized; see the "
                         "documentation for the available options.")
 
 
 #import matplotlib.pyplot as plt
 #import numpy as np
 #Pr, Gr = 0.72, 1E8
-#methods = Nu_horizontal_cylinder(Pr, Gr, AvailableMethods=True)
+#methods = Nu_horizontal_cylinder_methods(Pr, Gr)
 #Grs = np.logspace(-2, 2.5, 10000)
 #
 #for method in methods:

@@ -305,10 +305,13 @@ def effectiveness_from_NTU(NTU, Cr, subtype='counterflow'):
         shells = int(str_shells) if str_shells else 1
         NTU = NTU/shells
         
-        top = 1. + exp(-NTU*(1. + Cr**2)**.5)
-        bottom = 1. - exp(-NTU*(1. + Cr**2)**.5)
-        effectiveness = 2./(1. + Cr + (1. + Cr**2)**.5*top/bottom)
+        x0 = (1. + Cr*Cr)**.5
+        x1 = exp(-NTU*x0)
+        top = 1. + x1
+        bottom = 1. - x1
+        effectiveness = 2./(1. + Cr + x0*top/bottom)
         if shells > 1:
+            # this applies to crossflow also according to Efficiency and Effectiveness of Heat Exchanger Series equation 21
             term = ((1. - effectiveness*Cr)/(1. - effectiveness))**shells
             effectiveness = (term - 1.)/(term - Cr)
         return effectiveness
@@ -5206,12 +5209,11 @@ def DBundle_for_Ntubes_HEDH(N, Do, pitch, angle=30):
     elif angle == 45 or angle == 90:
         C1 = 1.
     else:
-        raise Exception('Only 30, 60, 45 and 90 degree layouts are supported')
+        raise ValueError('Only 30, 60, 45 and 90 degree layouts are supported')
     return (Do + (1./.78)**0.5*pitch*(C1*N)**0.5)
 
 
-def Ntubes(DBundle, Do, pitch, Ntp=1, angle=30, Method=None, 
-           AvailableMethods=False):
+def Ntubes(DBundle, Do, pitch, Ntp=1, angle=30, Method=None):
     r'''Calculates the number of tubes which can fit in a heat exchanger.
     The tube count is effected by the pitch, number of tube passes, and angle.
     
@@ -5236,16 +5238,11 @@ def Ntubes(DBundle, Do, pitch, Ntp=1, angle=30, Method=None,
     -------
     N : int
         Total number of tubes that fit in the heat exchanger, [-]
-    methods : list, only returned if AvailableMethods == True
-        List of methods which can be used to calculate the tube count
 
     Other Parameters
     ----------------
     Method : string, optional
         One of 'Phadkeb', 'HEDH', 'VDI' or 'Perry'
-    AvailableMethods : bool, optional
-        If True, function will consider which methods which can be used to
-        calculate the tube count with the given inputs
 
     See Also
     --------
@@ -5269,19 +5266,7 @@ def Ntubes(DBundle, Do, pitch, Ntp=1, angle=30, Method=None,
     >>> Ntubes(DBundle=1.2, Do=0.025, pitch=0.03125, Method='HEDH')
     1272
     '''
-    def list_methods():
-        methods = ['Phadkeb']
-        if Ntp == 1:
-            methods.append('HEDH')
-        if Ntp in [1, 2, 4, 8]:
-            methods.append('VDI')
-        if Ntp in [1, 2, 4, 6]:
-             # Also restricted to 1.25 pitch ratio but not hard coded
-            methods.append('Perry')
-        return methods
-    if AvailableMethods:
-        return list_methods()
-    if not Method:
+    if Method is None:
         Method = 'Phadkeb'
 
     if Method == 'Phadkeb':
@@ -5293,12 +5278,11 @@ def Ntubes(DBundle, Do, pitch, Ntp=1, angle=30, Method=None,
     elif Method == 'Perry':
         return Ntubes_Perrys(DBundle=DBundle, Do=Do, Ntp=Ntp, angle=angle)
     else:
-        raise Exception('Method not recognized; allowable methods are '
+        raise ValueError('Method not recognized; allowable methods are '
                         '"Phadkeb", "HEDH", "VDI", and "Perry"')
 
 
-def size_bundle_from_tubecount(N, Do, pitch, Ntp=1, angle=30, Method=None,
-                               AvailableMethods=False):
+def size_bundle_from_tubecount(N, Do, pitch, Ntp=1, angle=30, Method=None):
     r'''Calculates the outer diameter of a tube bundle containing a specified
     number of tubes.
     The tube count is effected by the pitch, number of tube passes, and angle.
@@ -5324,16 +5308,11 @@ def size_bundle_from_tubecount(N, Do, pitch, Ntp=1, angle=30, Method=None,
     -------
     DBundle : float
         Outer diameter of tube bundle, [m]
-    methods : list, only returned if AvailableMethods == True
-        List of methods which can be used to calculate the tube count
 
     Other Parameters
     ----------------
     Method : string, optional
         One of 'Phadkeb', 'HEDH', 'VDI' or 'Perry'
-    AvailableMethods : bool, optional
-        If True, function will consider which methods which can be used to
-        calculate the tube count with the given inputs
 
     See Also
     --------
@@ -5351,21 +5330,8 @@ def size_bundle_from_tubecount(N, Do, pitch, Ntp=1, angle=30, Method=None,
     >>> size_bundle_from_tubecount(N=1285, Do=0.025, pitch=0.03125)
     1.1985676402390355
     '''
-    def list_methods():
-        methods = ['Phadkeb']
-        if Ntp == 1:
-            methods.append('HEDH')
-        if Ntp in [1, 2, 4, 8]:
-            methods.append('VDI')
-        if Ntp in [1, 2, 4, 6]:
-             # Also restricted to 1.25 pitch ratio but not hard coded
-            methods.append('Perry')
-        return methods
-    if AvailableMethods:
-        return list_methods()
-    if not Method:
+    if Method is None:
         Method = 'Phadkeb'
-        
     if Method == 'Phadkeb':
         return DBundle_for_Ntubes_Phadkeb(Ntubes=N, Ntp=Ntp, Do=Do, pitch=pitch, angle=angle)
     elif Method == 'VDI':
@@ -5376,7 +5342,7 @@ def size_bundle_from_tubecount(N, Do, pitch, Ntp=1, angle=30, Method=None,
         to_solve = lambda D : Ntubes_Perrys(DBundle=D, Do=Do, Ntp=Ntp, angle=angle) - N
         return ridder(to_solve, Do*5, 1000*Do)
     else:
-        raise Exception('Method not recognized; allowable methods are '
+        raise ValueError('Method not recognized; allowable methods are '
                         '"Phadkeb", "HEDH", "VDI", and "Perry"')
 
 

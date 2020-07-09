@@ -26,7 +26,8 @@ from fluids.constants import g
 
 __all__ = ['Rohsenow', 'McNelly', 'Forster_Zuber', 'Montinsky',
 'Stephan_Abdelsalam', 'HEDH_Taborek', 'Bier', 'Cooper', 'Gorenflo', 
-'h_nucleic', 'Zuber', 'Serth_HEDH', 'HEDH_Montinsky', 'qmax_boiling', 
+'h_nucleic', 'h_nucleic_methods', 
+'Zuber', 'Serth_HEDH', 'HEDH_Montinsky', 'qmax_boiling', 
 'h0_VDI_2e', 'h0_Gorenflow_1993', 'qmax_boiling_all_methods', 'h_nucleic_all_methods']
 
 
@@ -879,29 +880,83 @@ h_nucleic_all_methods = ['Stephan-Abdelsalam', 'Stephan-Abdelsalam water',
 def h_nucleic_methods(Te=None, Tsat=None, P=None, dPsat=None, Cpl=None, 
           kl=None, mul=None, rhol=None, sigma=None, Hvap=None, rhog=None, 
           MW=None, Pc=None, CAS=None, check_ranges=False):
+    r'''This function returns the names of correlations for nucleate boiling
+    heat flux.
+
+    Parameters
+    ----------
+    Te : float, optional
+        Excess wall temperature, [K]
+    Tsat : float, optional
+        Saturation temperature at operating pressure [Pa]
+    P : float, optional
+        Saturation pressure of fluid, [Pa]
+    dPsat : float, optional
+        Difference in saturation pressure of the fluid at Te and T, [Pa]
+    Cpl : float, optional
+        Heat capacity of liquid [J/kg/K]
+    kl : float, optional
+        Thermal conductivity of liquid [W/m/K]
+    mul : float, optional
+        Viscosity of liquid [Pa*s]
+    rhol : float, optional
+        Density of the liquid [kg/m^3]
+    sigma : float, optional
+        Surface tension of liquid [N/m]
+    Hvap : float, optional
+        Heat of vaporization of the fluid at P, [J/kg]
+    rhog : float, optional
+        Density of the produced gas [kg/m^3]
+    MW : float, optional
+        Molecular weight of fluid, [g/mol]
+    Pc : float, optional
+        Critical pressure of fluid, [Pa]
+    CAS : str, optional
+        CAS of fluid
+    check_ranges : bool, optional
+        Whether or not to return only correlations suitable for the provided
+        data, [-]
+
+    Returns
+    -------
+    methods : list[str]
+        List of methods which can be used to calculate `h` with the given inputs
+
+    Examples
+    --------
+    >>> h_nucleic_methods(P=3E5, Pc=22048320., Te=4.0, CAS='7732-18-5')
+    ['Gorenflo (1993)', 'HEDH-Taborek', 'Bier', 'Montinsky']
+    '''
     methods = []
     if P is not None and Pc is not None:
-        if CAS is not None and CAS in h0_Gorenflow_1993:
+        if CAS is not None and CAS in h0_Gorenflow_1993: # numba: delete
+#        if CAS is not None and CAS in h0_Gorenflow_1993_keys: # numba: uncomment
             methods.append('Gorenflo (1993)')
-    if all((Te, Tsat, Cpl, kl, mul, sigma, Hvap, rhol, rhog)):
+    if (Te is not None and Tsat is not None and Cpl is not None and kl is not None
+        and mul is not None and sigma is not None and Hvap is not None 
+        and rhol is not None and rhog is not None):
         if CAS is not None and CAS == '7732-18-5':
             methods.append('Stephan-Abdelsalam water')
         if CAS is not None and CAS in cryogenics:
             methods.append('Stephan-Abdelsalam cryogenic')
         methods.append('Stephan-Abdelsalam')
-    if all((Te, P, Pc)):
+    if Te is not None and P is not None and Pc is not None:
         methods.append('HEDH-Taborek')
-    if all((Te, dPsat, Cpl, kl, mul, sigma, Hvap, rhol, rhog)):
+    if (Te is not None and dPsat is not None and Cpl is not None and kl is not None
+        and mul is not None and sigma is not None and Hvap is not None 
+        and rhol is not None and rhog is not None):
         methods.append('Forster-Zuber')
-    if all((Te, Cpl, kl, mul, sigma, Hvap, rhol, rhog)):
+    if (Te is not None and Cpl is not None and kl is not None and mul is not None
+        and sigma is not None and Hvap is not None and rhol is not None 
+        and rhog is not None):
         methods.append('Rohsenow')
-    if all((Te, P, Pc, MW)):
+    if MW is not None and Te is not None and P is not None and Pc is not None:
         methods.append('Cooper')
-    if all((Te, P, Pc)):
-        methods.append('Bier')
-    if all((Te, P, Pc)):
-        methods.append('Montinsky')
-    if all((Te, P, Cpl, kl, sigma, Hvap, rhol, rhog)):
+    if Te is not None and P is not None and Pc is not None:
+        methods.extend(['Bier', 'Montinsky'])
+    if (Te is not None and P is not None and Cpl is not None and kl is not None
+        and sigma is not None and Hvap is not None and rhol is not None
+        and rhog is not None):
         methods.append('McNelly')
     return methods
 
@@ -910,8 +965,7 @@ def h_nucleic(Te=None, q=None, Tsat=None, P=None, dPsat=None, Cpl=None,
               kl=None, mul=None, rhol=None, sigma=None, Hvap=None, rhog=None, 
               MW=None, Pc=None, Csf=0.013, n=1.7, kw=401, rhow=8.96, Cpw=384,
               angle=35.0, Rp=1e-6, Ra=0.4e-6, h0=None,
-              CAS=None, Method=None, AvailableMethods=False, 
-              ):
+              CAS=None, Method=None):
     r'''This function handles the calculation of nucleate boiling
     heat flux and chooses the best method for performing the calculation
     based on the provided information.
@@ -975,8 +1029,6 @@ def h_nucleic(Te=None, q=None, Tsat=None, P=None, dPsat=None, Cpl=None,
     -------
     h : float
         Nucleate boiling heat flux [W/m^2]
-    methods : list, only returned if AvailableMethods == True
-        List of methods which can be used to calculate `h` with the given inputs
 
     Other Parameters
     ----------------
@@ -985,9 +1037,6 @@ def h_nucleic(Te=None, q=None, Tsat=None, P=None, dPsat=None, Cpl=None,
         'Stephan-Abdelsalam water', 'Stephan-Abdelsalam cryogenic', 
         'Stephan-Abdelsalam', 'HEDH-Taborek', 'Forster-Zuber', 'Rohsenow', 
         'Cooper', 'Bier', 'Montinsky', 'McNelly']
-    AvailableMethods : bool, optional
-        If True, function will consider which methods which can be used to
-        calculate `h` with the given inputs
         
     Notes
     -----
@@ -1013,50 +1062,47 @@ def h_nucleic(Te=None, q=None, Tsat=None, P=None, dPsat=None, Cpl=None,
     ... Method='Rohsenow')
     3723.655267067467
     '''
-    kwargs = {}
-    if AvailableMethods or Method is None:
+    if Method is None:
         methods = h_nucleic_methods(Te=Te, Tsat=Tsat, P=P, dPsat=dPsat, Cpl=Cpl, 
               kl=kl, mul=mul, rhol=rhol, sigma=sigma, Hvap=Hvap, rhog=rhog, 
               MW=MW, Pc=Pc, CAS=CAS)
-        if AvailableMethods:
-            return methods
-        else:
-            if not methods:
-                raise Exception('Insufficient property data for any method.')
-            Method = methods[0]
+        if not methods:
+            raise ValueError('Insufficient property data for any method.')
+        Method = methods[0]
 
-    if Method == 'Stephan-Abdelsalam':
+    if Method == 'Stephan-Abdelsalam'and Tsat is not None:
         return Stephan_Abdelsalam(Te=Te, q=q, Tsat=Tsat, Cpl=Cpl, kl=kl, mul=mul,
                                sigma=sigma, Hvap=Hvap, rhol=rhol, rhog=rhog,
                                correlation='general', 
                                kw=kw, rhow=rhow, Cpw=Cpw, angle=angle)
-    elif Method == 'Stephan-Abdelsalam water':
+    elif Method == 'Stephan-Abdelsalam water' and Tsat is not None:
         return Stephan_Abdelsalam(Te=Te, q=q, Tsat=Tsat, Cpl=Cpl, kl=kl, mul=mul,
                                sigma=sigma, Hvap=Hvap, rhol=rhol, rhog=rhog,
                                correlation='water',
                                kw=kw, rhow=rhow, Cpw=Cpw, angle=angle)
-    elif Method == 'Stephan-Abdelsalam cryogenic':
+    elif Method == 'Stephan-Abdelsalam cryogenic' and Tsat is not None:
         return Stephan_Abdelsalam(Te=Te, q=q, Tsat=Tsat, Cpl=Cpl, kl=kl, mul=mul,
                                sigma=sigma, Hvap=Hvap, rhol=rhol, rhog=rhog,
                                correlation='cryogenic', 
                                kw=kw, rhow=rhow, Cpw=Cpw, angle=angle)
-    elif Method == 'HEDH-Taborek':
+    elif Method == 'HEDH-Taborek' and P is not None and Pc is not None:
         return HEDH_Taborek(Te=Te, q=q, P=P, Pc=Pc)
-    elif Method == 'Forster-Zuber':
+    elif Method == 'Forster-Zuber' and dPsat is not None:
         return Forster_Zuber(Te=Te, q=q, dPsat=dPsat, Cpl=Cpl, kl=kl, mul=mul,
-                          sigma=sigma, Hvap=Hvap, rhol=rhol, rhog=rhog, **kwargs)
+                          sigma=sigma, Hvap=Hvap, rhol=rhol, rhog=rhog)
     elif Method == 'Rohsenow':
         return Rohsenow(Te=Te, q=q, Cpl=Cpl, kl=kl, mul=mul, sigma=sigma, Hvap=Hvap,
                      rhol=rhol, rhog=rhog, Csf=Csf, n=n)
     elif Method == 'Cooper':
         return Cooper(Te=Te, q=q, P=P, Pc=Pc, MW=MW, Rp=Rp)
-    elif Method == 'Bier':
-        return Bier(Te=Te, q=q, P=P, Pc=Pc, **kwargs)
-    elif Method == 'Montinsky':
-        return Montinsky(Te=Te, q=q, P=P, Pc=Pc, **kwargs)
+    elif Method == 'Bier' and P is not None and Pc is not None:
+        return Bier(Te=Te, q=q, P=P, Pc=Pc)
+    elif Method == 'Montinsky' and P is not None and Pc is not None:
+        return Montinsky(Te=Te, q=q, P=P, Pc=Pc)
     elif Method == 'McNelly':
         return McNelly(Te=Te, q=q, P=P, Cpl=Cpl, kl=kl, sigma=sigma, Hvap=Hvap,
-                    rhol=rhol, rhog=rhog, **kwargs)
+                    rhol=rhol, rhog=rhog)
+
     elif Method == 'Gorenflo (1993)':
         return Gorenflo(P=P, q=q, Pc=Pc, Te=Te, CASRN=CAS, h0=h0, Ra=Ra)
     else:

@@ -25,13 +25,17 @@ import sys
 import importlib.util
 import types
 import numpy as np
+
+import fluids
+import fluids.numba
 import ht as normal_ht
 import ht.numba
 orig_file = __file__
 normal = normal_ht
 __all__ = []
 __funcs = {}
-replaced = {}
+numerics = fluids.numba.numerics
+replaced = fluids.numba.numerics_dict.copy()
 
 ht.numba.transform_complete_ht(replaced, __funcs, __all__, normal, vec=True)
 

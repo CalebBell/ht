@@ -228,10 +228,10 @@ def test_h_nucleic():
 
 
     # methods
-    methods = h_nucleic(P=101325., Pc=22048321.0, MW=18.02, dPsat=3906*4.3, Tsat=437.5, CAS='7732-18-5', rhol=957.854, rhog=0.595593, mul=2.79E-4, kl=0.680, Cpl=4217, Hvap=2.257E6, sigma=0.0589, Te=4.9, AvailableMethods=True)
+    methods = h_nucleic_methods(P=101325., Pc=22048321.0, MW=18.02, dPsat=3906*4.3, Tsat=437.5, CAS='7732-18-5', rhol=957.854, rhog=0.595593, mul=2.79E-4, kl=0.680, Cpl=4217, Hvap=2.257E6, sigma=0.0589, Te=4.9)
     assert len(methods) == 10
     
-    methods = h_nucleic(Te=16.2, Tsat=437.5, Cpl=2730., kl=0.086, mul=156E-6, sigma=0.0082, Hvap=272E3, rhol=567, rhog=18.09, CAS='1333-74-0', AvailableMethods=True)
+    methods = h_nucleic_methods(Te=16.2, Tsat=437.5, Cpl=2730., kl=0.086, mul=156E-6, sigma=0.0082, Hvap=272E3, rhol=567, rhog=18.09, CAS='1333-74-0')
     assert len(methods) == 3
     
     with pytest.raises(Exception):

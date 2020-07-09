@@ -25,6 +25,7 @@ from ht import *
 import numpy as np
 from numpy.testing import assert_allclose
 import pytest
+from ht.conv_external import conv_horizontal_plate_laminar_methods, conv_horizontal_plate_turbulent_methods
 
 ### Conv external
 
@@ -89,7 +90,7 @@ def test_Nu_external_cylinder():
     Nu = Nu_external_cylinder(6071, 0.7, Method='Zukauskas')
     assert_allclose(Nu, 42.4244052368103)
     
-    methods = Nu_external_cylinder(6071, 0.7, AvailableMethods=True)
+    methods = Nu_external_cylinder_methods(6071, 0.7)
     
     with pytest.raises(Exception):
         Nu_external_cylinder(6071, 0.7, Method='BADMETHOD')
@@ -146,37 +147,11 @@ def test_Nu_external_horizontal_plate():
                     Nu_external_horizontal_plate(5e6, .7, Re_transition=1e7))
     
     # Check the AvailableMethods
-    assert (set(Nu_external_horizontal_plate(1e5, .7, AvailableMethods=True)) 
+    assert (set(Nu_external_horizontal_plate_methods(1e5, .7)) 
             == set(conv_horizontal_plate_laminar_methods.keys()) )
     
-    assert (set(Nu_external_horizontal_plate(1e7, .7, AvailableMethods=True)) 
+    assert (set(Nu_external_horizontal_plate_methods(1e7, .7)) 
             == set(conv_horizontal_plate_turbulent_methods.keys()) )
     
     
-    
-def test_Nu_horizontal_plate_VDI():
-    Nu = Nu_horizontal_plate_VDI(5.54, 3.21e8, buoyancy=True)
-    assert_allclose(Nu, 203.89681224927565)
-    Nu = Nu_horizontal_plate_VDI(5.54, 3.21e8, buoyancy=False)
-    assert_allclose(Nu, 39.16864971535617)
-    
-    Nu = Nu_horizontal_plate_VDI(5.54, 3.21e3, buoyancy=True)
-    assert_allclose(Nu, 5.810590581487902)
-    
-def test_Nu_horizontal_plate_Rohsenow():
-    Nu = Nu_horizontal_plate_Rohsenow(5.54, 3.21e8, buoyancy=True)
-    assert_allclose(Nu, 175.91054716322836)
-    
-    Nu = Nu_horizontal_plate_Rohsenow(5.54, 3.21e8, buoyancy=False)
-    assert_allclose(Nu, 35.95799244863986)
-    
-    
-def test_Nu_free_horizontal_plate():
-    Nu = Nu_free_horizontal_plate(5.54, 3.21e8, buoyancy=True)
-    assert_allclose(Nu, 203.89681224927565)
-    
-    Nu = Nu_free_horizontal_plate(5.54, 3.21e8, buoyancy=True, Method='McAdams')
-    assert_allclose(Nu, 181.73121274384457)
-    
-    assert Nu_free_horizontal_plate(5.54, 3.21e8, buoyancy=True, AvailableMethods=True) == ['VDI', 'McAdams', 'Rohsenow']
     

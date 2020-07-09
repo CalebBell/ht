@@ -22,6 +22,7 @@ SOFTWARE.'''
 
 from __future__ import division
 from ht import *
+from fluids.numerics import linspace
 from ht.boiling_nucleic import _angles_Stephan_Abdelsalam
 import numpy as np
 
@@ -59,8 +60,8 @@ def test_turbulent_complicated():
     Nu2 = turbulent_Sieder_Tate(1E5, 1.2, 0.01, 0.067)
     assert_allclose([Nu1, Nu2], [286.9178136793052, 219.84016455766044])
 
-    Nus = [turbulent_entry_Hausen(1E5, 1.2, 0.154, i) for i in np.linspace(0,1,11)]
-    Nus_values = [np.inf, 507.39810608575436, 400.1002551153033, 356.83464396632377, 332.50684459222612, 316.60088883614151, 305.25121748064328, 296.67481510644825, 289.92566421612082, 284.45128111774227, 279.90553997822707]
+    Nus = [turbulent_entry_Hausen(1E5, 1.2, 0.154, i) for i in linspace(1e-3,1,11)]
+    Nus_values = [6464.503822124652, 505.67127136455525, 399.6147653094695, 356.6182206114823, 332.39191624636305, 316.53483318707475, 305.21220965431286, 296.6521831991236, 289.91358493027764, 284.4463173972796, 279.90553997822707]
     assert_allclose(Nus, Nus_values)
 
 def test_turbulent_simple():
@@ -222,7 +223,7 @@ def test_Nu_conv_internal():
     with pytest.raises(Exception):
         Nu_conv_internal(1E5, .7, Method='NOTAMETHOD')
 
-    l = Nu_conv_internal(1E5, .7, AvailableMethods=True)
+    l = Nu_conv_internal_methods(1E5, .7)
     assert len(l) == 21
         
 test_Nu_conv_internal()

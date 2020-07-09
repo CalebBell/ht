@@ -28,14 +28,14 @@ __all__ = ['Nu_cylinder_Zukauskas', 'Nu_cylinder_Churchill_Bernstein',
            'Nu_cylinder_Perkins_Leppert_1964',
            'Nu_cylinder_Perkins_Leppert_1962', 'Nu_cylinder_Whitaker',
            'Nu_cylinder_McAdams',
-           'conv_external_cylinder_methods', 'Nu_external_cylinder',
+           'Nu_external_cylinder',
+           'Nu_external_cylinder_methods',
            'Nu_horizontal_plate_laminar_Baehr', 
            'Nu_horizontal_plate_laminar_Churchill_Ozoe',
            'Nu_horizontal_plate_turbulent_Schlichting',
            'Nu_horizontal_plate_turbulent_Kreith',
            'Nu_external_horizontal_plate',
-           
-           'conv_horizontal_plate_laminar_methods', 'conv_horizontal_plate_turbulent_methods',
+           'Nu_external_horizontal_plate_methods',
            'LAMINAR_TRANSITION_HORIZONTAL_PLATE', 'conv_horizontal_plate_methods',
            ]
 
@@ -498,9 +498,52 @@ conv_external_cylinder_turbulent_methods_ranked = ['Sanitjai-Goldstein',
 
 conv_external_cylinder_methods = conv_external_cylinder_turbulent_methods.copy()
 
+_missing_external_cylinder_method = "Correlation name not recognized; the availble methods are %s." %(list(conv_external_cylinder_methods.keys()))
+        
+        
+def Nu_external_cylinder_methods(Re, Pr, Prw=None, mu=None, muw=None, check_ranges=True):
+    r'''This function returns a list of correlation names for forced convection 
+    over an external cylinder.
+    
+    The preferred method 'Sanitjai-Goldstein'.
 
-def Nu_external_cylinder(Re, Pr, Prw=None, mu=None, muw=None, Method=None, 
-                         AvailableMethods=False):
+    Parameters
+    ----------
+    Re : float
+        Reynolds number of fluid with respect to cylinder diameter, [-]
+    Pr : float
+        Prandtl number at either the free stream or wall temperature 
+        depending on the method, [-]
+    Prw : float, optional
+        Prandtl number at wall temperature, [-]
+    mu : float, optional
+        Viscosity of fluid at the free stream temperature [Pa*s]
+    muw : float, optional
+        Viscosity of fluid at the wall temperature [Pa*s]
+    check_ranges : bool, optional
+        Whether or not to return only correlations suitable for the provided
+        data, [-]
+
+    Returns
+    -------
+    methods : list[str]
+        List of methods which can be used to calculate `Nu` with the given 
+        inputs
+        
+    Examples
+    --------
+    >>> Nu_external_cylinder_methods(0.72, 1E7)[0]
+    'Sanitjai-Goldstein'
+    '''
+    methods = ['Sanitjai-Goldstein', 'Churchill-Bernstein', 'Fand', 'McAdams']
+    if Prw is not None:
+        methods.append('Zukauskas')
+    if mu is not None and muw is not None:
+        methods.extend(['Whitaker', 'Perkins-Leppert 1964', 'Perkins-Leppert 1962'])
+    return methods
+
+
+def Nu_external_cylinder(Re, Pr, Prw=None, mu=None, muw=None, Method=None):
     r'''Calculates Nusselt number for crossflow across a single tube at a 
     specified `Re` and `Pr` according to the specified method. Optional
     parameters are `Prw`, `mu`, and `muw`. This function has eight methods
@@ -536,10 +579,6 @@ def Nu_external_cylinder(Re, Pr, Prw=None, mu=None, muw=None, Method=None,
     Method : string, optional
         A string of the function name to use, as in the dictionary
         conv_external_cylinder_methods.
-    AvailableMethods : bool, optional
-        If True, function will consider which methods which can be used to
-        calculate the Nusselt number with the given inputs and return
-        them as a list instead of performing a calculation.
 
     Notes
     -----
@@ -553,28 +592,25 @@ def Nu_external_cylinder(Re, Pr, Prw=None, mu=None, muw=None, Method=None,
     >>> Nu_external_cylinder(6071, 0.7)
     40.38327083519522
     '''
-    def list_methods():
-        methods = []
-        methods.extend(conv_external_cylinder_turbulent_methods_ranked)
-        return methods
+    Method2 = 'Sanitjai-Goldstein' if Method is None else Method
     
-    if AvailableMethods:
-        return list_methods()
-    if not Method:
-        Method = list_methods()[0]
+    if Method2 == 'Sanitjai-Goldstein':
+        return Nu_cylinder_Sanitjai_Goldstein(Re=Re, Pr=Pr)
+    elif Method2 == 'Churchill-Bernstein':
+        return Nu_cylinder_Sanitjai_Goldstein(Re=Re, Pr=Pr)
+    elif Method2 == 'Fand':
+        return Nu_cylinder_Fand(Re=Re, Pr=Pr)
+    elif Method2 == 'McAdams':
+        return Nu_cylinder_McAdams(Re=Re, Pr=Pr)
 
-    if Method in conv_external_cylinder_methods:
-        f, args = conv_external_cylinder_methods[Method]
-        
-        kwargs = {}
-        for arg in args:
-            kwargs[arg] = locals()[arg]
-        return f(**kwargs)
+    elif Method2 == 'Zukauskas':
+        return Nu_cylinder_Zukauskas(Re=Re, Pr=Pr, Prw=Prw)
+    elif Method2 == 'Whitaker':
+        return Nu_cylinder_Whitaker(Re=Re, Pr=Pr, mu=mu, muw=muw)
+    elif Method2 == 'Perkins-Leppert 1964':
+        return Nu_cylinder_Perkins_Leppert_1964(Re=Re, Pr=Pr, mu=mu, muw=muw)
     else:
-        raise Exception("Correlation name not recognized; the availble methods "
-                        "are %s." %(list(conv_external_cylinder_methods.keys())))
-    return Nu
-
+        raise ValueError(_missing_external_cylinder_method)
 
 # Horizontal Plate in crossflow
 
@@ -799,12 +835,50 @@ conv_horizontal_plate_methods.update(conv_horizontal_plate_turbulent_methods)
 
 LAMINAR_TRANSITION_HORIZONTAL_PLATE = 5E5
 
+def Nu_external_horizontal_plate_methods(Re, Pr, L=None, x=None,
+                                   check_ranges=True):
+    r'''Returns a list of correlation names for calculating Nusselt number for 
+    forced convection across a horizontal plate, supporting both laminar
+    and turbulent regimes.
+    
+    Parameters
+    ----------
+    Re : float
+        Reynolds number with respect to bulk properties and plate length, [-]
+    Pr : float
+        Prandtl number with respect to bulk properties, [-]
+    L : float, optional
+        Length of horizontal plate, [m]
+    x : float, optional
+        Length of horizontal plate for specific calculation distance, [m]
+    check_ranges : bool, optional
+        Whether or not to return only correlations suitable for the provided
+        data, [-]
+    
+    Returns
+    -------
+    methods : list[str]
+        List of methods which can be used to calculate `Nu` with the given 
+        inputs
+
+    Examples
+    --------
+    >>> Nu_external_horizontal_plate_methods(Re=1e7, Pr=.7)[0]
+    'Schlichting'
+    '''
+    turbulent = Re >= LAMINAR_TRANSITION_HORIZONTAL_PLATE
+    if check_ranges:
+        if turbulent:
+            return ['Schlichting', 'Kreith']
+        else:
+            return ['Baehr', 'Churchill Ozoe']
+    else:
+        return ['Baehr', 'Churchill Ozoe', 'Schlichting', 'Kreith']
 
 def Nu_external_horizontal_plate(Re, Pr, L=None, x=None, Method=None, 
                                  laminar_method='Baehr',
                                  turbulent_method='Schlichting', 
-                                 Re_transition=LAMINAR_TRANSITION_HORIZONTAL_PLATE,
-                                 AvailableMethods=False):
+                                 Re_transition=LAMINAR_TRANSITION_HORIZONTAL_PLATE):
     r'''This function calculates the heat transfer coefficient for external
     forced convection along a horizontal plate. 
     
@@ -830,8 +904,6 @@ def Nu_external_horizontal_plate(Re, Pr, L=None, x=None, Method=None,
     -------
     Nu : float
         Nusselt number with respect to plate length, [-]
-    methods : list, only returned if AvailableMethods == True
-        List of methods which can be used to calculate `Nu` with the given inputs
 
     Other Parameters
     ----------------
@@ -845,9 +917,6 @@ def Nu_external_horizontal_plate(Re, Pr, L=None, x=None, Method=None,
     Re_transition : float, optional
         The transition Reynolds number for laminar changing to turbulent flow,
         [-]
-    AvailableMethods : bool, optional
-        If True, function will consider which methods which can be used to
-        calculate `Nu` with the given inputs
         
     Examples
     --------
@@ -857,27 +926,19 @@ def Nu_external_horizontal_plate(Re, Pr, L=None, x=None, Method=None,
     11496.952599969829
     '''
     turbulent = False if Re < Re_transition else True
-
     if Method is None:
-        methods = []
-        if turbulent:
-            methods.extend(['Schlichting', 'Kreith'])
-        else:
-            methods.extend(['Baehr', 'Churchill Ozoe'])
-        
-    if AvailableMethods:
-        return methods
-    if Method is None:
-        Method = turbulent_method if turbulent else laminar_method
-
-
-    if Method in conv_horizontal_plate_methods:
-        f, args = conv_horizontal_plate_methods[Method]
-        
-        kwargs = {}
-        for arg in args:
-            kwargs[arg] = locals()[arg]
-        return f(**kwargs)
+        Method2 = turbulent_method if turbulent else laminar_method
     else:
-        raise Exception("Correlation name not recognized; see the "
+        Method2 = Method
+
+    if Method2 == 'Baehr':
+        return Nu_horizontal_plate_laminar_Baehr(Re=Re, Pr=Pr)
+    elif Method2 == 'Churchill Ozoe':
+        return Nu_horizontal_plate_laminar_Churchill_Ozoe(Re=Re, Pr=Pr)
+    elif Method2 == 'Schlichting':
+        return Nu_horizontal_plate_turbulent_Schlichting(Re=Re, Pr=Pr)
+    elif Method2 == 'Kreith':
+        return Nu_horizontal_plate_turbulent_Kreith(Re=Re, Pr=Pr)
+    else:
+        raise ValueError("Correlation name not recognized; see the "
                         "documentation for the available options.")

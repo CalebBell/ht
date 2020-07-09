@@ -247,7 +247,7 @@ def test_Ntubes_VDI():
 
 
 def test_Ntubes():
-    methods = Ntubes(DBundle=1.2, Do=0.025, pitch=.025*1.25, AvailableMethods=True)
+    methods = ['Phadkeb', 'HEDH', 'VDI', 'Perry']
     Ntubes_calc = [Ntubes(DBundle=1.2, Do=0.025, pitch=.025*1.25, Method=i) for i in methods]
     assert Ntubes_calc == [1285, 1272, 1340, 1297]
 
@@ -269,8 +269,6 @@ def test_Ntubes():
     with pytest.raises(Exception):
         size_bundle_from_tubecount(N=1285, Do=0.025, pitch=0.03125, Method='BADMETHOD')
 
-    l = size_bundle_from_tubecount(N=1285, Do=0.025, pitch=0.03125, AvailableMethods=True)
-    assert len(l) == 4
 
 def test_effectiveness_NTU():
     # Counterflow

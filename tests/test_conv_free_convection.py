@@ -37,12 +37,38 @@ def test_Nu_free_vertical_plate():
     Nu = Nu_free_vertical_plate(0.69, 2.63E9)
     assert_close(147.16185223770603, Nu)
     
-    methods = Nu_free_vertical_plate(0.69, 2.63E9, AvailableMethods=True)
+    methods = Nu_free_vertical_plate_methods(0.69, 2.63E9, True)
     assert methods[0] == 'Churchill'
     assert len(methods) == 1
     
     with pytest.raises(Exception):
         Nu_free_vertical_plate(0.69, 2.63E9, Method='BADMETHOD')
+
+def test_Nu_horizontal_plate_VDI():
+    Nu = Nu_horizontal_plate_VDI(5.54, 3.21e8, buoyancy=True)
+    assert_allclose(Nu, 203.89681224927565)
+    Nu = Nu_horizontal_plate_VDI(5.54, 3.21e8, buoyancy=False)
+    assert_allclose(Nu, 39.16864971535617)
+    
+    Nu = Nu_horizontal_plate_VDI(5.54, 3.21e3, buoyancy=True)
+    assert_allclose(Nu, 5.810590581487902)
+    
+def test_Nu_horizontal_plate_Rohsenow():
+    Nu = Nu_horizontal_plate_Rohsenow(5.54, 3.21e8, buoyancy=True)
+    assert_allclose(Nu, 175.91054716322836)
+    
+    Nu = Nu_horizontal_plate_Rohsenow(5.54, 3.21e8, buoyancy=False)
+    assert_allclose(Nu, 35.95799244863986)
+    
+    
+def test_Nu_free_horizontal_plate():
+    Nu = Nu_free_horizontal_plate(5.54, 3.21e8, buoyancy=True)
+    assert_allclose(Nu, 203.89681224927565)
+    
+    Nu = Nu_free_horizontal_plate(5.54, 3.21e8, buoyancy=True, Method='McAdams')
+    assert_allclose(Nu, 181.73121274384457)
+    
+    assert Nu_free_horizontal_plate_methods(5.54, 3.21e8, True) == ['VDI', 'McAdams', 'Rohsenow']
     
 def test_Nu_horizontal_plate_McAdams():
     Nu = Nu_horizontal_plate_McAdams(5.54, 3.21e8, buoyancy=True)
@@ -142,7 +168,7 @@ def test_Nu_horizontal_cylinder():
     Nu = Nu_horizontal_cylinder(Pr=0.72, Gr=1E7)
     assert_allclose(Nu, 24.864192615468973)
     
-    l = Nu_horizontal_cylinder(0.72, 1E7, AvailableMethods=True)
+    l = Nu_horizontal_cylinder_methods(0.72, 1E7)
     assert len(l) == 3
     
     with pytest.raises(Exception):
@@ -159,7 +185,7 @@ def test_Nu_vertical_cylinder():
     with pytest.raises(Exception):
         Nu_vertical_cylinder(0.72, 1E7, Method='BADMETHOD')
     
-    l = Nu_vertical_cylinder(0.72, 1E7, L=1, D=.1, AvailableMethods=True)
+    l = Nu_vertical_cylinder_methods(0.72, 1E7, L=1, D=.1)
     assert len(l) == 11
     
 

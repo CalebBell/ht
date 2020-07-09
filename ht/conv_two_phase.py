@@ -27,8 +27,8 @@ from ht.conv_internal import laminar_entry_Seider_Tate
 
 __all__ = ['Davis_David', 'Elamvaluthi_Srinivas', 'Groothuis_Hendal',
            'Hughmark', 'Knott', 'Kudirka_Grosh_McFadden', 'Martin_Sims',
-           'Ravipudi_Godbold', 'Aggour', 'conv_two_phase_methods',
-           'h_two_phase']
+           'Ravipudi_Godbold', 'Aggour', 
+           'h_two_phase', 'h_two_phase_methods']
 
 
 def Davis_David(m, x, D, rhol, rhog, Cpl, kl, mul):
@@ -765,10 +765,108 @@ conv_two_phase_methods = {
 conv_two_phase_methods_ranked = ['Knott', 'Martin_Sims', 'Kudirka_Grosh_McFadden', 'Groothuis_Hendal', 
                                  'Aggour', 'Hughmark', 'Elamvaluthi_Srinivas', 'Davis-David', 'Ravipudi_Godbold']
 
+conv_two_phase_bad_method = "Correlation name not recognized; the availble methods are %s." %(list(conv_two_phase_methods.keys()))
+'''Generating code:
+for m in conv_two_phase_methods_ranked:
+    (f_obj, args) = conv_two_phase_methods[m]
+    print('elif method2 == "%s":' %(m))
+    t = '    return %s(' %f_obj.__name__
+    for ar in args:
+        t += '%s=%s, ' %(ar, ar)
+    t = t[:-2] + ')'
+    print(t)
+
+for m in conv_two_phase_methods_ranked:
+    (f_obj, args) = conv_two_phase_methods[m]
+    t = 'if '
+    for ar in args:
+        if ar not in ('m', 'x', 'D', 'Cpl', 'kl'):
+            t += '%s is not None and ' %(ar)
+    t = t[:-5] + ':'
+    
+    print(t)
+    print('    methods.append("%s")' %m)
+'''
+
+def h_two_phase_methods(m, x, D, Cpl, kl, rhol=None, rhog=None, mul=None, 
+                        mu_b=None, mu_w=None, mug=None, L=None, alpha=None,
+                        check_ranges=True):
+    r'''Returns a list of correlation names for the case of two-phase
+    non-boiling liquid-gas laminar flow heat transfer inside a tube.
+
+    Parameters
+    ----------
+    m : float
+        Mass flow rate [kg/s]
+    x : float
+        Quality at the specific tube interval [-]
+    D : float
+        Diameter of the tube [m]
+    Cpl : float
+        Constant-pressure heat capacity of liquid [J/kg/K]
+    kl : float
+        Thermal conductivity of liquid [W/m/K]
+    rhol : float, optional
+        Density of the liquid [kg/m^3]
+    rhog : float, optional
+        Density of the gas [kg/m^3]
+    mul : float, optional
+        Viscosity of liquid [Pa*s]
+    mu_b : float, optional
+        Viscosity of liquid at bulk conditions (average of inlet/outlet 
+        temperature) [Pa*s]
+    mu_w : float, optional
+        Viscosity of liquid at wall temperature [Pa*s]
+    mug : float, optional
+        Viscosity of gas [Pa*s]
+    L : float, optional
+        Length of the tube, [m]
+    alpha : float, optional
+        Void fraction in the tube, [-]
+    check_ranges : bool, optional
+        Whether or not to return only correlations suitable for the provided
+        data, [-]
+
+    Returns
+    -------
+    h : float
+        Heat transfer coefficient [W/m^2/K]
+
+    Notes
+    -----
+    A review of the correlations for which has the best performance has not
+    been performed.
+
+    Examples
+    --------
+    >>> h_two_phase_methods(m=1, x=.9, D=.3, alpha=.9, rhol=1000, Cpl=2300, kl=.6, mu_b=1E-3, mu_w=1.2E-3, L=5)[0]
+    'Aggour'
+    '''
+    methods = []
+    if rhol is not None and rhog is not None and mu_b is not None and mu_w is not None and L is not None:
+        methods.append("Knott")
+    if rhol is not None and rhog is not None and mu_b is not None and mu_w is not None and L is not None:
+        methods.append("Martin_Sims")
+    if rhol is not None and rhog is not None and mug is not None and mu_b is not None and mu_w is not None:
+        methods.append("Kudirka_Grosh_McFadden")
+    if rhol is not None and rhog is not None and mug is not None and mu_b is not None and mu_w is not None:
+        methods.append("Groothuis_Hendal")
+    if alpha is not None and rhol is not None and mu_b is not None and mu_w is not None and L is not None:
+        methods.append("Aggour")
+    if alpha is not None and L is not None and mu_b is not None and mu_w is not None:
+        methods.append("Hughmark")
+    if rhol is not None and rhog is not None and mug is not None and mu_b is not None and mu_w is not None:
+        methods.append("Elamvaluthi_Srinivas")
+    if rhol is not None and rhog is not None and mul is not None:
+        methods.append("Davis-David")
+    if rhol is not None and rhog is not None and mug is not None and mu_b is not None and mu_w is not None:
+        methods.append("Ravipudi_Godbold")
+    return methods
+
 
 def h_two_phase(m, x, D, Cpl, kl, rhol=None, rhog=None, mul=None, 
                 mu_b=None, mu_w=None, mug=None, L=None, alpha=None,
-                method=None, available_methods=False):
+                method=None):
     r'''Calculates the two-phase non-boiling laminar heat transfer coefficient  
     of a liquid and gas flowing inside a tube according to the specified
     method. Nine methods are available.
@@ -786,22 +884,22 @@ def h_two_phase(m, x, D, Cpl, kl, rhol=None, rhog=None, mul=None,
         Constant-pressure heat capacity of liquid [J/kg/K]
     kl : float
         Thermal conductivity of liquid [W/m/K]
-    rhol : float
+    rhol : float, optional
         Density of the liquid [kg/m^3]
-    rhog : float
+    rhog : float, optional
         Density of the gas [kg/m^3]
-    mul : float
+    mul : float, optional
         Viscosity of liquid [Pa*s]
-    mu_b : float
+    mu_b : float, optional
         Viscosity of liquid at bulk conditions (average of inlet/outlet 
         temperature) [Pa*s]
     mu_w : float, optional
         Viscosity of liquid at wall temperature [Pa*s]
-    mug : float
+    mug : float, optional
         Viscosity of gas [Pa*s]
     L : float, optional
         Length of the tube, [m]
-    alpha : float
+    alpha : float, optional
         Void fraction in the tube, [-]
 
     Returns
@@ -814,10 +912,6 @@ def h_two_phase(m, x, D, Cpl, kl, rhol=None, rhog=None, mul=None,
     method : string, optional
         A string of the function name to use, as in the dictionary
         conv_two_phase_methods.
-    available_methods : bool, optional
-        If True, function will consider which methods which can be used to
-        calculate the Nusselt number with the given inputs and return
-        them as a list instead of performing a calculation.
 
     Notes
     -----
@@ -827,27 +921,29 @@ def h_two_phase(m, x, D, Cpl, kl, rhol=None, rhog=None, mul=None,
     --------
     >>> h_two_phase(m=1, x=.9, D=.3, alpha=.9, rhol=1000, Cpl=2300, kl=.6, mu_b=1E-3, mu_w=1.2E-3, L=5, method='Aggour')
     420.9347146885667
-    '''
-    def list_methods(variables):
-        methods = []
-        for method in conv_two_phase_methods_ranked:
-            args = conv_two_phase_methods[method][1]
-            if all(variables[i] is not None for i in args):
-                methods.append(method)
-        return methods
-    
-    if available_methods:
-        return list_methods(dict(locals()))
-    if not method:
-        method = list_methods(dict(locals()))[0]
-
-    if method in conv_two_phase_methods:
-        f, args = conv_two_phase_methods[method]
-        
-        kwargs = {}
-        for arg in args:
-            kwargs[arg] = locals()[arg]
-        return f(**kwargs)
+    '''    
+    if method is None:
+        method2 = list_methods(m=m, x=x, D=D, Cpl=Cpl, kl=kl, rhol=rhol, rhog=rhog, mul=mul, mu_b=mu_b, mu_w=mu_w, mug=mug, L=L, alpha=alpha, check_ranges=True)[0]
     else:
-        raise Exception("Correlation name not recognized; the availble methods "
-                        "are %s." %(list(conv_two_phase_methods.keys())))
+        method2 = method
+        
+    if method2 == "Knott":
+        return Knott(m=m, x=x, D=D, rhol=rhol, rhog=rhog, Cpl=Cpl, kl=kl, mu_b=mu_b, mu_w=mu_w, L=L)
+    elif method2 == "Martin_Sims":
+        return Martin_Sims(m=m, x=x, D=D, rhol=rhol, rhog=rhog, Cpl=Cpl, kl=kl, mu_b=mu_b, mu_w=mu_w, L=L)
+    elif method2 == "Kudirka_Grosh_McFadden":
+        return Kudirka_Grosh_McFadden(m=m, x=x, D=D, rhol=rhol, rhog=rhog, Cpl=Cpl, kl=kl, mug=mug, mu_b=mu_b, mu_w=mu_w)
+    elif method2 == "Groothuis_Hendal":
+        return Groothuis_Hendal(m=m, x=x, D=D, rhol=rhol, rhog=rhog, Cpl=Cpl, kl=kl, mug=mug, mu_b=mu_b, mu_w=mu_w)
+    elif method2 == "Aggour":
+        return Aggour(m=m, x=x, alpha=alpha, D=D, rhol=rhol, Cpl=Cpl, kl=kl, mu_b=mu_b, mu_w=mu_w, L=L)
+    elif method2 == "Hughmark":
+        return Hughmark(m=m, x=x, alpha=alpha, D=D, L=L, Cpl=Cpl, kl=kl, mu_b=mu_b, mu_w=mu_w)
+    elif method2 == "Elamvaluthi_Srinivas":
+        return Elamvaluthi_Srinivas(m=m, x=x, D=D, rhol=rhol, rhog=rhog, Cpl=Cpl, kl=kl, mug=mug, mu_b=mu_b, mu_w=mu_w)
+    elif method2 == "Davis-David":
+        return Davis_David(m=m, x=x, D=D, rhol=rhol, rhog=rhog, Cpl=Cpl, kl=kl, mul=mul)
+    elif method2 == "Ravipudi_Godbold":
+        return Ravipudi_Godbold(m=m, x=x, D=D, rhol=rhol, rhog=rhog, Cpl=Cpl, kl=kl, mug=mug, mu_b=mu_b, mu_w=mu_w)
+    else:
+        raise ValueError(conv_two_phase_bad_method)
