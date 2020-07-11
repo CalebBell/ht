@@ -193,8 +193,10 @@ def Nu_free_vertical_plate(Pr, Gr, buoyancy=None, H=None, W=None, Method=None):
     147.16185223770603
     '''        
     if Method is None:
-        Method = 'Churchill'
-    if Method == 'Churchill':
+        Method2 = 'Churchill'
+    else:
+        Method2 = Method
+    if Method2 == 'Churchill':
         return Nu_vertical_plate_Churchill(Pr, Gr)
     else:
         raise ValueError("Correlation name not recognized; see the "
@@ -507,13 +509,15 @@ def Nu_free_horizontal_plate(Pr, Gr, buoyancy, L=None, W=None,
     181.73121274384457
     '''
     if Method is None:
-        Method = "VDI"
+        Method2 = "VDI"
+    else:
+        Method2 = Method
         
-    if Method == 'VDI':
+    if Method2 == 'VDI':
         return Nu_horizontal_plate_VDI(Pr=Pr, Gr=Gr, buoyancy=buoyancy)
-    if Method == 'McAdams':
+    if Method2 == 'McAdams':
         return Nu_horizontal_plate_McAdams(Pr=Pr, Gr=Gr, buoyancy=buoyancy)
-    if Method == 'Rohsenow':
+    if Method2 == 'Rohsenow':
         return Nu_horizontal_plate_Rohsenow(Pr=Pr, Gr=Gr, buoyancy=buoyancy)
     else:
         raise ValueError("Correlation name not recognized; see the "
@@ -1125,8 +1129,7 @@ def Nu_vertical_cylinder_Al_Arabi_Khamis(Pr, Gr, L, D, turbulent=None):
         return 2.9*Ra**0.25*Gr_D**(-1/12.)
 
 
-def Nu_vertical_cylinder_Popiel_Churchill(Pr, Gr, L, D,
-                     Nu_vertical_plate_correlation=Nu_vertical_plate_Churchill):
+def Nu_vertical_cylinder_Popiel_Churchill(Pr, Gr, L, D):
     r'''Calculates Nusselt number for natural convection around a vertical
     isothermal cylinder according to [1]_, also  presented in [2]_.
 
@@ -1149,8 +1152,6 @@ def Nu_vertical_cylinder_Popiel_Churchill(Pr, Gr, L, D,
         Length of vertical cylinder, [m]
     D : float
         Diameter of cylinder, [m]
-    Nu_vertical_plate_correlation : function, optional
-        Correlation for vertical plate heat transfer
 
     Returns
     -------
@@ -1183,7 +1184,7 @@ def Nu_vertical_cylinder_Popiel_Churchill(Pr, Gr, L, D,
     '''
     B = 0.0571322 + 0.20305*Pr**-0.43
     C = 0.9165 - 0.0043*Pr**0.5 + 0.01333*log(Pr) + 0.0004809/Pr
-    Nu_fp = Nu_vertical_plate_correlation(Pr, Gr)
+    Nu_fp = Nu_vertical_plate_Churchill(Pr, Gr)
     return Nu_fp*(1 + B*(32**0.5*Gr**-0.25*L/D)**C)
 
 

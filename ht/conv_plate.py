@@ -218,7 +218,7 @@ def Nu_plate_Martin(Re, Pr, plate_enlargement_factor, variant='1999'):
     try:
         fd_correlation = _Nu_plate_Martin_correlations[variant]
     except KeyError:
-        raise Exception("Supported friction factor correlations are Martin's"
+        raise ValueError("Supported friction factor correlations are Martin's"
                         " '1999' correlation or his 'VDI' correlation only")
     fd = fd_correlation(Re, plate_enlargement_factor)
     # VDI, original, and Björn Palm and Joachim Claesson recommend 0.122 leading coeff

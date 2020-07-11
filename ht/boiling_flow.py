@@ -105,10 +105,10 @@ def Lazarek_Black(m, D, mul, kl, Hvap, q=None, Te=None):
     '''
     G = m/(pi/4*D**2)
     Relo = G*D/mul
-    if q:
+    if q is not None:
         Bg = Boiling(G=G, q=q, Hvap=Hvap)
         return 30*Relo**0.857*Bg**0.714*kl/D
-    elif Te:
+    elif Te is not None:
         # Solved with sympy
         return 27000*30**(71/143)*(1./(G*Hvap))**(357/143)*Relo**(857/286)*Te**(357/143)*kl**(500/143)/D**(500/143)
     else:
@@ -191,10 +191,10 @@ def Li_Wu(m, x, D, rhol, rhog, mul, kl, Hvap, sigma, q=None, Te=None):
     G = m/(pi/4*D**2)
     Rel = G*D*(1-x)/mul
     Bo = Bond(rhol=rhol, rhog=rhog, sigma=sigma, L=D)
-    if q:
+    if q is not None:
         Bg = Boiling(G=G, q=q, Hvap=Hvap)
         return 334*Bg**0.3*(Bo*Rel**0.36)**0.4*kl/D
-    elif Te:
+    elif Te is not None:
         A = 334*(Bo*Rel**0.36)**0.4*kl/D
         return A**(10/7.)*Te**(3/7.)/(G**(3/7.)*Hvap**(3/7.))
     else:
@@ -274,10 +274,10 @@ def Sun_Mishima(m, D, rhol, rhog, mul, kl, Hvap, sigma, q=None, Te=None):
     V = G/rhol
     Relo = G*D/mul
     We = Weber(V=V, L=D, rho=rhol, sigma=sigma)
-    if q:
+    if q is not None:
         Bg = Boiling(G=G, q=q, Hvap=Hvap)
         return 6*Relo**1.05*Bg**0.54/(We**0.191*(rhol/rhog)**0.142)*kl/D
-    elif Te:
+    elif Te is not None:
         A = 6*Relo**1.05/(We**0.191*(rhol/rhog)**0.142)*kl/D
         return A**(50/23.)*Te**(27/23.)/(G**(27/23.)*Hvap**(27/23.))
     else:
@@ -592,10 +592,10 @@ def Yun_Heo_Kim(m, x, D, rhol, mul, Hvap, sigma, q=None, Te=None):
     V = G/rhol
     Rel = G*D*(1-x)/mul
     We = Weber(V=V, L=D, rho=rhol, sigma=sigma)
-    if q:
+    if q is not None:
         Bg = Boiling(G=G, q=q, Hvap=Hvap)
         return 136876*(Bg*We)**0.1993*Rel**-0.1626
-    elif Te:
+    elif Te is not None:
         A = 136876*(We)**0.1993*Rel**-0.1626*(Te/G/Hvap)**0.1993
         return A**(10000/8007.)
     else:

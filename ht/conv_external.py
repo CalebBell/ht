@@ -115,7 +115,7 @@ def Nu_cylinder_Zukauskas(Re, Pr, Prw=None):
     else:
         n = 0.36
     Nu = c*Re**m*Pr**n
-    if Prw:
+    if Prw is not None:
         Nu = Nu*(Pr/Prw)**0.25
     return Nu
 
@@ -363,7 +363,7 @@ def Nu_cylinder_Whitaker(Re, Pr, mu=None, muw=None):
        doi:10.1016/j.ijheatmasstransfer.2004.05.012.
     '''
     Nu = (0.4*Re**0.5 + 0.06*Re**(2/3.))*Pr**0.3
-    if mu and muw:
+    if mu is not None and muw is not None:
         Nu *= (mu/muw)**0.25
     return Nu
 
@@ -417,7 +417,7 @@ def Nu_cylinder_Perkins_Leppert_1962(Re, Pr, mu=None, muw=None):
        doi:10.1016/j.ijheatmasstransfer.2004.05.012.
     '''
     Nu = (0.30*Re**0.5 + 0.10*Re**0.67)*Pr**0.4
-    if mu and muw:
+    if mu is not None and muw is not None:
         Nu *= (mu/muw)**0.25
     return Nu
 
@@ -473,7 +473,7 @@ def Nu_cylinder_Perkins_Leppert_1964(Re, Pr, mu=None, muw=None):
        doi:10.1016/j.ijheatmasstransfer.2004.05.012.
     '''
     Nu = (0.31*Re**0.5 + 0.11*Re**0.67)*Pr**0.4
-    if mu and muw:
+    if mu is not None and muw is not None:
         Nu *= (mu/muw)**0.25
     return Nu
 

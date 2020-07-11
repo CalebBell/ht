@@ -27,7 +27,7 @@ from fluids.constants import g
 __all__ = ['Rohsenow', 'McNelly', 'Forster_Zuber', 'Montinsky',
 'Stephan_Abdelsalam', 'HEDH_Taborek', 'Bier', 'Cooper', 'Gorenflo', 
 'h_nucleic', 'h_nucleic_methods', 
-'Zuber', 'Serth_HEDH', 'HEDH_Montinsky', 'qmax_boiling', 
+'Zuber', 'Serth_HEDH', 'HEDH_Montinsky', 'qmax_boiling', 'qmax_boiling_methods',
 'h0_VDI_2e', 'h0_Gorenflow_1993', 'qmax_boiling_all_methods', 'h_nucleic_all_methods']
 
 
@@ -182,7 +182,7 @@ def McNelly(rhol, rhog, kl, Cpl, Hvap, sigma, P, Te=None, q=None):
     elif q is not None:
         return 0.225*(q*Cpl/Hvap)**0.69*(P*kl/sigma)**0.31*(rhol/rhog-1.)**0.33
     else:
-        raise Exception('Either q or Te is needed for this correlation')
+        raise ValueError('Either q or Te is needed for this correlation')
 
 
 def Forster_Zuber(rhol, rhog, mul, kl, Cpl, Hvap, sigma, dPsat, Te=None, q=None):
@@ -260,7 +260,7 @@ def Forster_Zuber(rhol, rhog, mul, kl, Cpl, Hvap, sigma, dPsat, Te=None, q=None)
     elif q is not None:
         return (0.00122*(kl**0.79*Cpl**0.45*rhol**0.49/sigma**0.5/mul**0.29/Hvap**0.24/rhog**0.24)*q**0.24*dPsat**0.75)**(1/1.24)
     else:
-        raise Exception('Either q or Te is needed for this correlation')
+        raise ValueError('Either q or Te is needed for this correlation')
 
 
 def Montinsky(P, Pc, Te=None, q=None):
@@ -332,7 +332,7 @@ def Montinsky(P, Pc, Te=None, q=None):
         return (0.00417*(Pc/1000.)**0.69*q**0.7*(1.8*(P/Pc)**0.17 + 4*(P/Pc)**1.2
         +10*(P/Pc)**10))
     else:
-        raise Exception('Either q or Te is needed for this correlation')
+        raise ValueError('Either q or Te is needed for this correlation')
 
 
 _angles_Stephan_Abdelsalam = {'general': 35, 'water': 45, 'hydrocarbon': 35,
@@ -637,7 +637,7 @@ def Bier(P, Pc, Te=None, q=None):
     elif q is not None:
         return 0.00417*(Pc/1000.)**0.69*q**0.7*(0.7 + 2.*Pr*(4. + 1./(1. - Pr)))
     else:
-        raise Exception('Either q or Te is needed for this correlation')
+        raise ValueError('Either q or Te is needed for this correlation')
 
 
 def Cooper(P, Pc, MW, Te=None, q=None, Rp=1E-6):
@@ -1284,7 +1284,7 @@ def HEDH_Montinsky(P, Pc):
 qmax_boiling_all_methods = ['Serth-HEDH', 'Zuber', 'HEDH-Montinsky']
 
 def qmax_boiling_methods(rhol=None, rhog=None, sigma=None, Hvap=None, D=None,
-                          P=None, Pc=None, check_ranges=False):
+                         P=None, Pc=None, check_ranges=False):
     r'''This function returns a list of methods names which can be used to
     calculate nucleate boiling critical heat flux.
     Preferred methods are 'Serth-HEDH' when a tube diameter is specified,
@@ -1320,17 +1320,19 @@ def qmax_boiling_methods(rhol=None, rhog=None, sigma=None, Hvap=None, D=None,
     ['Serth-HEDH', 'Zuber']
     '''
     methods = []
-    if all((sigma, Hvap, rhol, rhog, D)):
+    if (sigma is not None and Hvap is not None and rhol is not None 
+        and rhog is not None and D is not None):
         methods.append('Serth-HEDH')
-    if all((sigma, Hvap, rhol, rhog)):
+    if (sigma is not None and Hvap is not None and rhol is not None 
+        and rhog is not None):
         methods.append('Zuber')
-    if all((P, Pc)):
+    if P is not None and Pc is not None:
         methods.append('HEDH-Montinsky')
     return methods
 
 
 def qmax_boiling(rhol=None, rhog=None, sigma=None, Hvap=None, D=None, P=None, 
-                 Pc=None, Method=None, AvailableMethods=False):
+                 Pc=None, Method=None):
     r'''This function handles the calculation of nucleate boiling critical
     heat flux and chooses the best method for performing the calculation.
     
@@ -1358,43 +1360,37 @@ def qmax_boiling(rhol=None, rhog=None, sigma=None, Hvap=None, D=None, P=None,
     -------
     q : float
         Nucleate boiling critical heat flux [W/m^2]
-    methods : list, only returned if AvailableMethods == True
-        List of methods which can be used to calculate qmax with the given inputs
 
     Other Parameters
     ----------------
     Method : string, optional
         A string of the function name to use; one of ('Serth-HEDH', 'Zuber', 
         or 'HEDH-Montinsky')
-    AvailableMethods : bool, optional
-        If True, function will consider which methods which can be used to
-        calculate `qmax` with the given inputs
         
     Examples
     --------
     >>> qmax_boiling(D=0.0127, sigma=8.2E-3, Hvap=272E3, rhol=567, rhog=18.09)
     351867.46522901946
     '''
-    if AvailableMethods:
-        return qmax_boiling_methods(sigma=sigma, Hvap=Hvap, rhol=rhol, rhog=rhog, P=P, Pc=Pc, D=D, check_ranges=True)
     if Method is None:
         if (sigma is not None and Hvap is not None and rhol is not None
             and rhog is not None and D is not None):
-            Method = 'Serth-HEDH'
+            Method2 = 'Serth-HEDH'
         elif (sigma is not None and Hvap is not None and rhol is not None
             and rhog is not None):
-            Method = 'Zuber'
+            Method2 = 'Zuber'
         elif P is not None and Pc is not None:
-            Method = 'HEDH-Montinsky'
+            Method2 = 'HEDH-Montinsky'
         else:
             raise ValueError('Insufficient property or geometry data for any '
                             'method.')
-
-    if Method == 'Serth-HEDH':
+    else:
+        Method2 = Method
+    if Method2 == 'Serth-HEDH':
         return Serth_HEDH(D=D, sigma=sigma, Hvap=Hvap, rhol=rhol, rhog=rhog)
-    elif Method == 'Zuber':
+    elif Method2 == 'Zuber':
         return Zuber(sigma=sigma, Hvap=Hvap, rhol=rhol, rhog=rhog)
-    elif Method == 'HEDH-Montinsky':
+    elif Method2 == 'HEDH-Montinsky':
         return HEDH_Montinsky(P=P, Pc=Pc)
     else:
         raise ValueError("Correlation name not recognized; options are "

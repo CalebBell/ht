@@ -21,6 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.'''
 
 from __future__ import division
+import ht
 from ht import *
 from ht.boiling_nucleic import _angles_Stephan_Abdelsalam
 import numpy as np
@@ -148,6 +149,23 @@ def test_Nu_vertical_cylinder_Popiel_Churchill():
     assert_allclose(Nu, 228.8979005514989)
 
 
+def test_Nu_vertical_cylinder():
+    Nu = Nu_vertical_cylinder(0.72, 1E7)
+    assert_allclose(Nu, 30.562236756513943)
+    
+    Nu = Nu_vertical_cylinder(0.72, 1E7, L=1, D=.1)
+    assert_allclose(Nu, 36.82833881084525)
+    
+    with pytest.raises(Exception):
+        Nu_vertical_cylinder(0.72, 1E7, Method='BADMETHOD')
+    
+    l = Nu_vertical_cylinder_methods(0.72, 1E7, L=1, D=.1)
+    assert len(l) == 11
+    
+    assert_close(ht.numba.Nu_vertical_cylinder(0.72, 1E7, L=1, D=3),
+                 ht.Nu_vertical_cylinder(0.72, 1E7, L=1, D=3))
+
+
 def test_Nu_horizontal_cylinder_Churchill_Chu():
     Nu = Nu_horizontal_cylinder_Churchill_Chu(0.69, 2.63E9)
     assert_allclose(Nu, 139.13493970073597)
@@ -174,19 +192,6 @@ def test_Nu_horizontal_cylinder():
     with pytest.raises(Exception):
         Nu_horizontal_cylinder(Pr=0.72, Gr=1E7, Method='BADMETHOD')
 
-    
-def test_Nu_vertical_cylinder():
-    Nu = Nu_vertical_cylinder(0.72, 1E7)
-    assert_allclose(Nu, 30.562236756513943)
-    
-    Nu = Nu_vertical_cylinder(0.72, 1E7, L=1, D=.1)
-    assert_allclose(Nu, 36.82833881084525)
-    
-    with pytest.raises(Exception):
-        Nu_vertical_cylinder(0.72, 1E7, Method='BADMETHOD')
-    
-    l = Nu_vertical_cylinder_methods(0.72, 1E7, L=1, D=.1)
-    assert len(l) == 11
     
 
 def test_Nu_coil_Xin_Ebadian():

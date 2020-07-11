@@ -291,7 +291,7 @@ def effectiveness_from_NTU(NTU, Cr, subtype='counterflow'):
        doi:10.1016/j.icheatmasstransfer.2008.10.012.
     '''
     if Cr > 1:
-        raise Exception('Heat capacity rate must be less than 1 by definition.')
+        raise ValueError('Heat capacity rate must be less than 1 by definition.')
         
     if subtype == 'counterflow':
         if Cr < 1:
@@ -329,7 +329,7 @@ def effectiveness_from_NTU(NTU, Cr, subtype='counterflow'):
     elif subtype in ['boiler', 'condenser']:
         return  1. - exp(-NTU)
     else:
-        raise Exception('Input heat exchanger type not recognized')
+        raise ValueError('Input heat exchanger type not recognized')
         
 
 def NTU_from_effectiveness(effectiveness, Cr, subtype='counterflow'):
@@ -505,7 +505,7 @@ def NTU_from_effectiveness(effectiveness, Cr, subtype='counterflow'):
        Education, 2009.
     '''
     if Cr > 1:
-        raise Exception('Heat capacity rate must be less than 1 by definition.')
+        raise ValueError('Heat capacity rate must be less than 1 by definition.')
 
     if subtype == 'counterflow':
         # [2]_ gives the expression 1./(1-Cr)*log((1-Cr*eff)/(1-eff)), but
@@ -516,7 +516,7 @@ def NTU_from_effectiveness(effectiveness, Cr, subtype='counterflow'):
             return effectiveness/(1. - effectiveness)
     elif subtype == 'parallel':
         if effectiveness*(1. + Cr) > 1:
-            raise Exception('The specified effectiveness is not physically \
+            raise ValueError('The specified effectiveness is not physically \
 possible for this configuration; the maximum effectiveness possible is %s.' % (1./(Cr + 1.)))
         return -log(1. - effectiveness*(1. + Cr))/(1. + Cr)
     elif 'S&T' in subtype:
@@ -535,7 +535,7 @@ possible for this configuration; the maximum effectiveness possible is %s.' % (1
         if (E - 1.)/(E + 1.) <= 0:
             # Derived with SymPy
             max_effectiveness = (-((-Cr + sqrt(Cr**2 + 1) + 1)/(Cr + sqrt(Cr**2 + 1) - 1))**shells + 1)/(Cr - ((-Cr + sqrt(Cr**2 + 1) + 1)/(Cr + sqrt(Cr**2 + 1) - 1))**shells)
-            raise Exception('The specified effectiveness is not physically \
+            raise ValueError('The specified effectiveness is not physically \
 possible for this configuration; the maximum effectiveness possible is %s.' % (max_effectiveness))
         
         NTU = -(1. + Cr*Cr)**-0.5*log((E - 1.)/(E + 1.))
@@ -560,20 +560,20 @@ possible for this configuration; the maximum effectiveness possible is %s.' % (m
     
     elif subtype == 'crossflow, mixed Cmin':
         if Cr*log(1. - effectiveness) < -1:
-            raise Exception('The specified effectiveness is not physically \
+            raise ValueError('The specified effectiveness is not physically \
 possible for this configuration; the maximum effectiveness possible is %s.' % (1. - exp(-1./Cr)))
         return -1./Cr*log(Cr*log(1. - effectiveness) + 1.)
     
     elif subtype ==  'crossflow, mixed Cmax':
         if 1./Cr*log(1. - effectiveness*Cr) < -1:
-            raise Exception('The specified effectiveness is not physically \
+            raise ValueError('The specified effectiveness is not physically \
 possible for this configuration; the maximum effectiveness possible is %s.' % (((exp(Cr) - 1.0)*exp(-Cr)/Cr)))
         return -log(1. + 1./Cr*log(1. - effectiveness*Cr))
     
     elif subtype in ['boiler', 'condenser']:
         return -log(1. - effectiveness)
     else:
-        raise Exception('Input heat exchanger type not recognized')
+        raise ValueError('Input heat exchanger type not recognized')
 
 
 def calc_Cmin(mh, mc, Cph, Cpc):
@@ -1005,7 +1005,7 @@ def effectiveness_NTU_method(mh, mc, Cph, Cpc, subtype='counterflow', Thi=None,
         
         possible_inputs = [(Tci, Thi), (Tci, Tho), (Tco, Thi), (Tco, Tho)]
         if not any([i for i in possible_inputs if None not in i]):
-            raise Exception('One set of (Tci, Thi), (Tci, Tho), (Tco, Thi), or (Tco, Tho) are required along with UA.')
+            raise ValueError('One set of (Tci, Thi), (Tci, Tho), (Tco, Thi), or (Tco, Tho) are required along with UA.')
         
         if Thi and Tci:
             Q = eff*Cmin*(Thi - Tci)
@@ -1043,9 +1043,9 @@ def effectiveness_NTU_method(mh, mc, Cph, Cpc, subtype='counterflow', Thi=None,
             elif Tco is not None and Tci is not None:
                 Q2 = mc*Cpc*(Tco-Tci)
                 if abs((Q-Q2)/Q) > 0.01:
-                    raise Exception('The specified heat capacities, mass flows, and temperatures are inconsistent')
+                    raise ValueError('The specified heat capacities, mass flows, and temperatures are inconsistent')
             else:
-                raise Exception('At least one temperature is required to be specified on the cold side.')
+                raise ValueError('At least one temperature is required to be specified on the cold side.')
                 
         elif Tci is not None and Tco is not None:
             Q = mc*Cpc*(Tco-Tci)
@@ -1054,9 +1054,9 @@ def effectiveness_NTU_method(mh, mc, Cph, Cpc, subtype='counterflow', Thi=None,
             elif Tho is not None and Thi is None:
                 Thi = Tho + Q/(mh*Cph)
             else:
-                raise Exception('At least one temperature is required to be specified on the cold side.')
+                raise ValueError('At least one temperature is required to be specified on the cold side.')
         else:
-            raise Exception('Three temperatures are required to be specified '
+            raise ValueError('Three temperatures are required to be specified '
                             'when solving for UA')
 
         effectiveness = Q/Cmin/(Thi-Tci)
@@ -1562,7 +1562,7 @@ def temperature_effectiveness_TEMA_J(R1, NTU1, Ntp):
         B = (A**lambda1 + 1.)/(A**lambda1-1)
         P1 = 1./(1. + R1/4.*(1. + 3.*E)/(1. + E) + lambda1*B - 2.*lambda1*C*D)
     else:
-        raise Exception('Supported numbers of tube passes are 1, 2, and 4.')
+        raise ValueError('Supported numbers of tube passes are 1, 2, and 4.')
     return P1
 
 
@@ -2520,7 +2520,7 @@ def temperature_effectiveness_plate(R1, NTU1, Np1, Np2, counterflow=True,
         P1 = P2*R2
         return P1
     
-    raise Exception('Supported number of passes does not have a formula available')
+    raise ValueError('Supported number of passes does not have a formula available')
 
     
 NTU_from_plate_2_3_parallel = {
@@ -3127,7 +3127,7 @@ def _NTU_from_P_objective(NTU1, R1, P1, function, **kwargs):
         try:
             import mpmath
         except ImportError:  # pragma: no cover
-            raise Exception('For some reverse P-NTU numerical solutions, the \
+            raise ValueError('For some reverse P-NTU numerical solutions, the \
 intermediary results are ill-conditioned and do not fit in a float; mpmath must \
 be installed for this calculation to proceed.')
         globals()['exp'] = mpmath.exp
@@ -3271,7 +3271,7 @@ def NTU_from_P_basic(P1, R1, subtype='crossflow'):
         to_solve = lambda NTU1 : _NTU_from_P_objective(NTU1, R1, P1, function, subtype='crossflow')
         return secant(to_solve, guess)
     else:
-        raise Exception('Subtype not recognized.')
+        raise ValueError('Subtype not recognized.')
     return _NTU_from_P_solver(P1, R1, NTU_min, NTU_max, function, subtype=subtype)
 
 
@@ -3347,7 +3347,7 @@ def NTU_from_P_G(P1, R1, Ntp, optimal=True):
     elif Ntp == 2 and not optimal:
         NTU_max = _NTU_max_for_P_solver(NTU_from_G_2_unoptimal, R1)
     else:
-        raise Exception('Supported numbers of tube passes are 1 or 2.')
+        raise ValueError('Supported numbers of tube passes are 1 or 2.')
     return _NTU_from_P_solver(P1, R1, NTU_min, NTU_max, function, Ntp=Ntp, optimal=optimal)
 
 
@@ -3422,7 +3422,7 @@ def NTU_from_P_J(P1, R1, Ntp):
     elif Ntp == 4:
         NTU_max = _NTU_max_for_P_solver(NTU_from_P_J_4, R1)
     else:
-        raise Exception('Supported numbers of tube passes are 1, 2, and 4.')
+        raise ValueError('Supported numbers of tube passes are 1, 2, and 4.')
     return _NTU_from_P_solver(P1, R1, NTU_min, NTU_max, function, Ntp=Ntp)
 
 
@@ -3533,7 +3533,7 @@ def NTU_from_P_E(P1, R1, Ntp, optimal=True):
     elif Ntp == 4 or Ntp %2 == 0:
         NTU_max = 1E3
     else:
-        raise Exception('For TEMA E shells with an odd number of tube passes more than 3, no solution is implemented.')
+        raise ValueError('For TEMA E shells with an odd number of tube passes more than 3, no solution is implemented.')
     return _NTU_from_P_solver(P1, R1, NTU_min, NTU_max, function, Ntp=Ntp, optimal=optimal)
 
 
@@ -3600,7 +3600,7 @@ def NTU_from_P_H(P1, R1, Ntp, optimal=True):
     elif Ntp == 2 and not optimal:
         NTU_max = _NTU_max_for_P_solver(NTU_from_H_2_unoptimal, R1)
     else:
-        raise Exception('Supported numbers of tube passes are 1 and 2.')
+        raise ValueError('Supported numbers of tube passes are 1 and 2.')
     return _NTU_from_P_solver(P1, R1, NTU_min, NTU_max, function, Ntp=Ntp, optimal=optimal)
 
 
@@ -3748,7 +3748,7 @@ def NTU_from_P_plate(P1, R1, Np1, Np2, counterflow=True,
         NTU1 = NTU2/R1
         return NTU1
     else:
-        raise Exception('Supported number of passes does not have a formula available')
+        raise ValueError('Supported number of passes does not have a formula available')
     return _NTU_from_P_solver(P1, R1, NTU_min, NTU_max, function, Np1=Np1, 
                               Np2=Np2, counterflow=counterflow, 
                               passes_counterflow=passes_counterflow)
@@ -4053,13 +4053,13 @@ def P_NTU_method(m1, m2, Cp1, Cp2, UA=None, T1i=None, T1o=None,
             Np1, Np2 = int(Np1), int(end)
             P1 = temperature_effectiveness_plate(R1=R1, NTU1=NTU1, Np1=Np1, Np2=Np2, counterflow=optimal, passes_counterflow=passes_counterflow)
         else:
-            raise Exception("Supported types are 'E', 'G', 'H', 'J', 'counterflow',\
+            raise ValueError("Supported types are 'E', 'G', 'H', 'J', 'counterflow',\
     'parallel', 'crossflow', 'crossflow, mixed 1', 'crossflow, mixed 2', \
     'crossflow, mixed 1&2', or 'Np1/Np2' for plate exchangers")
         
         possible_inputs = [(T1i, T2i), (T1o, T2o), (T1i, T2o), (T1o, T2i), (T1i, T1o), (T2i, T2o)]
         if not any([i for i in possible_inputs if None not in i]):
-            raise Exception('One set of (T1i, T2i), (T1o, T2o), (T1i, T2o), (T1o, T2i), (T1i, T1o), or (T2i, T2o) is required along with UA.')
+            raise ValueError('One set of (T1i, T2i), (T1o, T2o), (T1i, T2o), (T1o, T2i), (T1i, T1o), or (T2i, T2o) is required along with UA.')
         
         # Deal with different temperature inputs, generated with SymPy
         if T1i and T2i:
@@ -4093,10 +4093,10 @@ def P_NTU_method(m1, m2, Cp1, Cp2, UA=None, T1i=None, T1o=None,
             elif T2o is not None and T2i is not None:
                 Q2 = m2*Cp2*(T2o-T2i)
                 if abs((Q-Q2)/Q) > 0.01:
-                    raise Exception('The specified heat capacities, mass flows,'
+                    raise ValueError('The specified heat capacities, mass flows,'
                                     ' and temperatures are inconsistent')
             else:
-                raise Exception('At least one temperature is required to be '
+                raise ValueError('At least one temperature is required to be '
                                 'specified on side 2.')
                 
         elif T2i is not None and T2o is not None:
@@ -4106,10 +4106,10 @@ def P_NTU_method(m1, m2, Cp1, Cp2, UA=None, T1i=None, T1o=None,
             elif T1o is not None and T1i is None:
                 T1i = T1o + Q/(m1*Cp1)
             else:
-                raise Exception('At least one temperature is required to be '
+                raise ValueError('At least one temperature is required to be '
                                 'specified on side 2.')
         else:
-            raise Exception('Three temperatures are required to be specified '
+            raise ValueError('Three temperatures are required to be specified '
                             'when solving for UA')
                 
         P1 = Q/(C1*abs(T2i-T1i))
@@ -4132,7 +4132,7 @@ def P_NTU_method(m1, m2, Cp1, Cp2, UA=None, T1i=None, T1o=None,
             Np1, Np2 = int(Np1), int(end)
             NTU1 = NTU_from_P_plate(P1=P1, R1=R1, Np1=Np1, Np2=Np2, counterflow=optimal, passes_counterflow=passes_counterflow)
         else:
-            raise Exception("Supported types are 'E', 'G', 'H', 'J', 'counterflow',\
+            raise ValueError("Supported types are 'E', 'G', 'H', 'J', 'counterflow',\
     'parallel', 'crossflow', 'crossflow, mixed 1', 'crossflow, mixed 2', \
     'crossflow, mixed 1&2', or 'Np1/Np2' for plate exchangers")
         UA = NTU1*C1
@@ -4267,14 +4267,14 @@ def get_tube_TEMA(NPS=None, BWG=None, Do=None, Di=None, tmin=None):
     if NPS and BWG:
         # Fully defined, guaranteed
         if not check_tubing_TEMA(NPS, BWG):
-            raise Exception('NPS and BWG Specified are not listed in TEMA')
+            raise ValueError('NPS and BWG Specified are not listed in TEMA')
         Do = 0.0254*NPS
         t = BWG_SI[BWG_integers.index(BWG)]
         Di = Do-2*t
     elif Do and BWG:
         NPS = Do/.0254
         if not check_tubing_TEMA(NPS, BWG):
-            raise Exception('NPS and BWG Specified are not listed in TEMA')
+            raise ValueError('NPS and BWG Specified are not listed in TEMA')
         t = BWG_SI[BWG_integers.index(BWG)]
         Di = Do-2*t
     elif BWG and Di:
@@ -4282,26 +4282,26 @@ def get_tube_TEMA(NPS=None, BWG=None, Do=None, Di=None, tmin=None):
         Do = t*2 + Di
         NPS = Do/.0254
         if not check_tubing_TEMA(NPS, BWG):
-            raise Exception('NPS and BWG Specified are not listed in TEMA')
+            raise ValueError('NPS and BWG Specified are not listed in TEMA')
     elif NPS and Di:
         Do = 0.0254*NPS
         t = (Do - Di)/2
         BWG = [BWG_integers[BWG_SI.index(t)]]
         if not check_tubing_TEMA(NPS, BWG):
-            raise Exception('NPS and BWG Specified are not listed in TEMA')
+            raise ValueError('NPS and BWG Specified are not listed in TEMA')
     elif Di and Do:
         NPS = Do/.0254
         t = (Do - Di)/2
         BWG = [BWG_integers[BWG_SI.index(t)]]
         if not check_tubing_TEMA(NPS, BWG):
-            raise Exception('NPS and BWG Specified are not listed in TEMA')
+            raise ValueError('NPS and BWG Specified are not listed in TEMA')
     # Begin Fuzzy matching
     elif NPS and tmin:
         Do = 0.0254*NPS
         ts = [BWG_SI[BWG_integers.index(BWG)] for BWG in TEMA_tubing[NPS]]
         ts.reverse() # Small to large
         if tmin > ts[-1]:
-            raise Exception('Specified minimum thickness is larger than available in TEMA')
+            raise ValueError('Specified minimum thickness is larger than available in TEMA')
         for t in ts: # Runs if at least 1 of the thicknesses are the right size.
             if tmin <= t:
                 break
@@ -4311,14 +4311,14 @@ def get_tube_TEMA(NPS=None, BWG=None, Do=None, Di=None, tmin=None):
         NPS = Do/.0254
         NPS, BWG, Do, Di, t = get_tube_TEMA(NPS=NPS, tmin=tmin)
     elif Di and tmin:
-        raise Exception('Not funny defined input for TEMA Schedule; multiple solutions')
+        raise ValueError('Not funny defined input for TEMA Schedule; multiple solutions')
     elif NPS:
         BWG = TEMA_tubing[NPS][0] # Pick the first listed size
         Do = 0.0254*NPS
         t = BWG_SI[BWG_integers.index(BWG)]
         Di = Do-2*t
     else:
-        raise Exception('Insufficient information provided')
+        raise ValueError('Insufficient information provided')
     return NPS, BWG, Do, Di, t
 
 TEMA_Ls_imperial = [96., 120., 144., 192., 240.] # inches
@@ -4425,7 +4425,7 @@ def shell_clearance(DBundle=None, DShell=None):
                 return c
         return 0.011
     else:
-        raise Exception('Either DShell or DBundle must be specified')
+        raise ValueError('Either DShell or DBundle must be specified')
 
 
 _TEMA_baffles_refinery = [[0.0032, 0.0048, 0.0064, 0.0095, 0.0095],
@@ -4618,7 +4618,7 @@ def L_unsupported_max(Do, material='CS'):
     elif material == 'aluminium':
         return _L_unsupported_aluminium[i]
     else:
-        raise Exception('Material argument should be one of "CS" or "aluminium"')
+        raise ValueError('Material argument should be one of "CS" or "aluminium"')
 
 
 ### Tube bundle count functions
@@ -4845,7 +4845,7 @@ def Ntubes_Phadkeb(DBundle, Do, pitch, Ntp, angle=30):
     elif Ntp == 8:
         ans = C8
     else:
-        raise Exception('Only 1, 2, 4, 6, or 8 tube passes are supported')
+        raise ValueError('Only 1, 2, 4, 6, or 8 tube passes are supported')
     ans = int(ans)
     # In some cases, a negative number would be returned by these formulas
     if ans < 0:
@@ -4959,7 +4959,7 @@ def Ntubes_Perrys(DBundle, Do, Ntp, angle=30):
         elif Ntp == 6:
             Nt = 1166. + 70.72*C + 1.269*C**2 - .0074*C**3 - .0006*C**4
         else:
-            raise Exception('N passes not 1, 2, 4 or 6')
+            raise ValueError('N passes not 1, 2, 4 or 6')
     elif angle == 45 or angle == 90:
         C = DBundle/Do - 36.
         if Ntp == 1:
@@ -4971,7 +4971,7 @@ def Ntubes_Perrys(DBundle, Do, Ntp, angle=30):
         elif Ntp == 6:
             Nt = 550.4 + 32.49*C + .3873*C**2 - .0013*C**3 + .0001*C**4
         else:
-            raise Exception('N passes not 1, 2, 4 or 6')
+            raise ValueError('N passes not 1, 2, 4 or 6')
     return int(Nt)
 
 
@@ -5026,13 +5026,13 @@ def Ntubes_VDI(DBundle=None, Ntp=None, Do=None, pitch=None, angle=30.):
     elif Ntp == 6:
         f2 = 90. # Estimated!
     else:
-        raise Exception('Only 1, 2, 4 and 8 passes are supported')
+        raise ValueError('Only 1, 2, 4 and 8 passes are supported')
     if angle == 30 or angle == 60:
         f1 = 1.1
     elif angle == 45 or angle == 90:
         f1 = 1.3
     else:
-        raise Exception('Only 30, 60, 45 and 90 degree layouts are supported')
+        raise ValueError('Only 30, 60, 45 and 90 degree layouts are supported')
 
     DBundle, Do, pitch = DBundle*1000, Do*1000, pitch*1000 # convert to mm, equation is dimensional.
     t = pitch
@@ -5097,13 +5097,13 @@ def D_for_Ntubes_VDI(N, Ntp, Do, pitch, angle=30):
     elif Ntp == 8:
         f2 = 105.
     else:
-        raise Exception('Only 1, 2, 4 and 8 passes are supported')
+        raise ValueError('Only 1, 2, 4 and 8 passes are supported')
     if angle == 30 or angle == 60:
         f1 = 1.1
     elif angle == 45 or angle == 90:
         f1 = 1.3
     else:
-        raise Exception('Only 30, 60, 45 and 90 degree layouts are supported')
+        raise ValueError('Only 30, 60, 45 and 90 degree layouts are supported')
     Do, pitch = Do*1000, pitch*1000 # convert to mm, equation is dimensional.
     Dshell = (f1*N*pitch**2 + f2*N**0.5*pitch +Do)**0.5
     return Dshell/1000.
@@ -5155,9 +5155,9 @@ def Ntubes_HEDH(DBundle=None, Do=None, pitch=None, angle=30):
     elif angle == 45 or angle == 90:
         C1 = 1.
     else:
-        raise Exception('Only 30, 60, 45 and 90 degree layouts are supported')
+        raise ValueError('Only 30, 60, 45 and 90 degree layouts are supported')
     Dctl = DBundle - Do
-    N = 0.78*Dctl**2/C1/pitch**2
+    N = 0.78*Dctl*Dctl/(C1*pitch*pitch)
     return int(N)
 
 

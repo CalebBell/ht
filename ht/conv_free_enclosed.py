@@ -31,6 +31,13 @@ __all__ = ['Nu_Nusselt_Rayleigh_Holling_Herwig', 'Nu_Nusselt_Rayleigh_Probert',
            'Nu_vertical_helical_coil_Prabhanjan_Rennie_Raghavan'
            ]
 
+__numba_additional_funcs__ = ['Nu_Nusselt_Rayleigh_Holling_Herwig_err']
+
+
+def Nu_Nusselt_Rayleigh_Holling_Herwig_err(Nu, Ra, Ra_third, D2):
+    err = Ra_third*(0.1/2.0*log(1.0/16.0*Ra*Nu) + D2)**(-4.0/3.0) - Nu
+    return err
+
 
 def Nu_Nusselt_Rayleigh_Holling_Herwig(Pr, Gr, buoyancy=True):
     r'''Calculates the Nusselt number for natural convection between two 
@@ -71,7 +78,12 @@ def Nu_Nusselt_Rayleigh_Holling_Herwig(Pr, Gr, buoyancy=True):
     
     For :math:`Ra < 1708`, `Nu` = 1; for cases not assited by `buoyancy`,
     `Nu` is also 1.
-
+    
+    No success has been found finding an analytical solution in the major CAS
+    packages, but the nonlinear function is in fact a function of one variable;
+    this means a pade or chebyshev expansion could be performed.
+    
+    
     Examples
     --------
     >>> Nu_Nusselt_Rayleigh_Holling_Herwig(5.54, 3.21e8, buoyancy=True)
@@ -96,13 +108,8 @@ def Nu_Nusselt_Rayleigh_Holling_Herwig(Pr, Gr, buoyancy=True):
     
     Ra_third = Ra**(1.0/3.0)
     D2 = 2.0*(-14.94*Ra**-0.25 + 3.43)
-    
-    def to_solve(Nu):
-        err = Ra_third*(0.1/2.0*log(1.0/16.0*Ra*Nu) + D2)**(-4.0/3.0) - Nu
-        return err
-    
     Nu_guess = Ra_third*(0.1/2.0*log(.078/16.0*Ra**1.323) + D2)**(-4.0/3.0) 
-    return secant(to_solve, Nu_guess)
+    return secant(Nu_Nusselt_Rayleigh_Holling_Herwig_err, Nu_guess, args=(Ra, Ra_third, D2))
 
 
 def Nu_Nusselt_Rayleigh_Probert(Pr, Gr, buoyancy=True):

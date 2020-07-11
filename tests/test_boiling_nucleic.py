@@ -280,5 +280,5 @@ def test_qmax_nucleic():
         qmax_boiling(D=0.0127, sigma=8.2E-3, Hvap=272E3, rhol=567, rhog=18.09, Method='BADMETHOD')
 
 
-    methods = qmax_boiling(P=310.3E3, Pc=2550E3, D=0.0127, sigma=8.2E-3, Hvap=272E3, rhol=567, rhog=18.09, AvailableMethods=True)
+    methods = qmax_boiling_methods(P=310.3E3, Pc=2550E3, D=0.0127, sigma=8.2E-3, Hvap=272E3, rhol=567, rhog=18.09)
     assert len(methods) == 3

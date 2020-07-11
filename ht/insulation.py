@@ -719,7 +719,7 @@ def rho_material(ID):
     else:
         rho = ASHRAE[ID][0]
         if rho is None:
-            raise Exception('Density is not available for this material')
+            raise ValueError('Density is not available for this material')
         else:
             rho = float(rho)
     return rho
@@ -772,7 +772,7 @@ def Cp_material(ID, T=298.15):
     else:
         Cp = ASHRAE[ID][1]
         if Cp is None:
-            raise Exception('Heat capacity is not available for this material')
+            raise ValueError('Heat capacity is not available for this material')
         else:
             Cp = float(Cp)
     return Cp

@@ -44,11 +44,14 @@ __funcs = {}
 
 numerics = fluids.numba.numerics
 replaced = fluids.numba.numerics_dict.copy()
-cache_blacklist = []
+
 
 def transform_complete_ht(replaced, __funcs, __all__, normal, vec=False):
+    cache_blacklist = set(['h_Ganguli_VDI', 'fin_efficiency_Kern_Kraus', 'h_Briggs_Young', 
+                           'h_ESDU_high_fin', 'h_ESDU_low_fin', 'Nu_Nusselt_Rayleigh_Holling_Herwig'])
     __funcs.update(normal_fluids.numba.__dict__.copy())
-    new_mods = normal_fluids.numba.transform_module(normal, __funcs, replaced, vec=vec, cache_blacklist=cache_blacklist)
+    new_mods = normal_fluids.numba.transform_module(normal, __funcs, replaced, vec=vec,
+                                                    cache_blacklist=cache_blacklist)
     if vec:
         conv_fun = numba.vectorize
     else:

@@ -38,6 +38,48 @@ import numpy as np
 
 @pytest.mark.numba
 @pytest.mark.skipif(numba is None, reason="Numba is missing")
+def test_conv_free_enclosed():
+    assert_close(ht.numba.Nu_Nusselt_Rayleigh_Holling_Herwig(5.54, 3.21e8, buoyancy=True),
+                 ht.Nu_Nusselt_Rayleigh_Holling_Herwig(5.54, 3.21e8, buoyancy=True))
+
+    assert_close(ht.numba.Rac_Nusselt_Rayleigh(1, .5, 2, False),
+                 ht.Rac_Nusselt_Rayleigh(1, .5, 2, False))
+    assert_close(ht.numba.Rac_Nusselt_Rayleigh(1, .5, 2, True),
+                 ht.Rac_Nusselt_Rayleigh(1, .5, 2, True))
+
+    assert_close(ht.numba.Rac_Nusselt_Rayleigh_disk(H=1, D=4, insulated=False),
+                 ht.Rac_Nusselt_Rayleigh_disk(H=1, D=4, insulated=False))
+    assert_close(ht.numba.Rac_Nusselt_Rayleigh_disk(H=1, D=4, insulated=True),
+                 ht.Rac_Nusselt_Rayleigh_disk(H=1, D=4, insulated=True))
+
+    assert_close(ht.numba.Nu_free_vertical_plate(0.69, 2.63E9, False),
+                 ht.Nu_free_vertical_plate(0.69, 2.63E9, False))
+
+    assert_close(ht.numba.Nu_free_horizontal_plate(5.54, 3.21e8, buoyancy=True),
+                 ht.Nu_free_horizontal_plate(5.54, 3.21e8, buoyancy=True))
+
+
+
+@pytest.mark.numba
+@pytest.mark.skipif(numba is None, reason="Numba is missing")
+def test_conv_external():
+    assert_close(ht.numba.Nu_cylinder_Whitaker(6071.0, 0.7), ht.Nu_cylinder_Whitaker(6071.0, 0.7))
+    assert_close(ht.numba.Nu_cylinder_Perkins_Leppert_1962(6071.0, 0.7), 
+                 ht.Nu_cylinder_Perkins_Leppert_1962(6071.0, 0.7))
+    assert_close(ht.numba.Nu_cylinder_Perkins_Leppert_1964(6071.0, 0.7), 
+                 ht.Nu_cylinder_Perkins_Leppert_1964(6071.0, 0.7))
+    
+    assert ht.numba.Nu_external_cylinder_methods(0.72, 1E7) == ht.Nu_external_cylinder_methods(0.72, 1E7)
+    
+    assert_close(ht.numba.Nu_external_cylinder(6071, 0.7), ht.Nu_external_cylinder(6071, 0.7))
+    
+    assert Nu_external_horizontal_plate_methods(Re=1e7, Pr=.7) == ht.numba.Nu_external_horizontal_plate_methods(Re=1e7, Pr=.7)
+    
+    assert_close(ht.numba.Nu_external_horizontal_plate(Re=1E7, Pr=.7), 
+                 ht.Nu_external_horizontal_plate(Re=1E7, Pr=.7))
+
+@pytest.mark.numba
+@pytest.mark.skipif(numba is None, reason="Numba is missing")
 def test_core_misc():
     assert_close(ht.numba.LMTD(100., 60., 20., 60, counterflow=False),
                  ht.LMTD(100., 60., 20., 60, counterflow=False))
@@ -74,14 +116,51 @@ def test_air_cooler():
     assert_close(ht.numba.h_ESDU_low_fin(m=0.914, A=AC.A, A_min=AC.A_min, A_increase=AC.A_increase, A_fin=AC.A_fin, A_tube_showing=AC.A_tube_showing, tube_diameter=AC.tube_diameter, fin_diameter=AC.fin_diameter, bare_length=AC.bare_length, fin_thickness=AC.fin_thickness, tube_rows=AC.tube_rows, pitch_normal=AC.pitch_normal, pitch_parallel=AC.pitch_parallel, rho=1.217, Cp=1007., mu=1.8E-5, k=0.0253, k_fin=15),
                  ht.h_ESDU_low_fin(m=0.914, A=AC.A, A_min=AC.A_min, A_increase=AC.A_increase, A_fin=AC.A_fin, A_tube_showing=AC.A_tube_showing, tube_diameter=AC.tube_diameter, fin_diameter=AC.fin_diameter, bare_length=AC.bare_length, fin_thickness=AC.fin_thickness, tube_rows=AC.tube_rows, pitch_normal=AC.pitch_normal, pitch_parallel=AC.pitch_parallel, rho=1.217, Cp=1007., mu=1.8E-5, k=0.0253, k_fin=15))
 
+    AC = AirCooledExchanger(tube_rows=4, tube_passes=4, tubes_per_row=56, tube_length=36*foot, 
+    tube_diameter=1*inch, fin_thickness=0.013*inch, fin_density=10/inch,
+    angle=30, pitch_normal=2.5*inch, fin_height=0.625*inch, corbels=True)
+    
+    kwargs = dict(m=130.70315, A=AC.A, A_min=AC.A_min, A_increase=AC.A_increase, A_fin=AC.A_fin,
+        A_tube_showing=AC.A_tube_showing, tube_diameter=AC.tube_diameter,
+        fin_diameter=AC.fin_diameter, bare_length=AC.bare_length,
+        fin_thickness=AC.fin_thickness, tube_rows=AC.tube_rows,
+        pitch_parallel=AC.pitch_parallel, pitch_normal=AC.pitch_normal,
+        rho=1.2013848, Cp=1009.0188, mu=1.9304793e-05, k=0.027864828, k_fin=238)
+    h_numba = ht.numba.h_Ganguli_VDI(**kwargs)
+    h_normal = h_Ganguli_VDI(**kwargs)
+    assert_close(h_numba, h_normal, rtol=1e-11)
+
+
+
 @pytest.mark.numba
 @pytest.mark.skipif(numba is None, reason="Numba is missing")
-def test_flow_boiling():
+def test_boiling_flow():
     assert_close(ht.numba.Thome(m=1, x=0.4, D=0.3, rhol=567., rhog=18.09, kl=0.086, kg=0.2, mul=156E-6, mug=1E-5, Cpl=2300, Cpg=1400, sigma=0.02, Hvap=9E5, Psat=1E5, Pc=22E6, q=1E5),
                  ht.Thome(m=1, x=0.4, D=0.3, rhol=567., rhog=18.09, kl=0.086, kg=0.2, mul=156E-6, mug=1E-5, Cpl=2300, Cpg=1400, sigma=0.02, Hvap=9E5, Psat=1E5, Pc=22E6, q=1E5))
     Te = 32.04944566414243
     assert_close(ht.numba.Thome(m=10, x=0.5, D=0.3, rhol=567., rhog=18.09, kl=0.086, kg=0.2, mul=156E-6, mug=1E-5, Cpl=2300, Cpg=1400, sigma=0.02, Hvap=9E5, Psat=1E5, Pc=22E6, Te=Te),
                        ht.Thome(m=10, x=0.5, D=0.3, rhol=567., rhog=18.09, kl=0.086, kg=0.2, mul=156E-6, mug=1E-5, Cpl=2300, Cpg=1400, sigma=0.02, Hvap=9E5, Psat=1E5, Pc=22E6, Te=Te))
+
+    assert_close(ht.numba.Lazarek_Black(m=10, D=0.3, mul=1E-3, kl=0.6, Hvap=2E6, Te=100),
+                 ht.Lazarek_Black(m=10, D=0.3, mul=1E-3, kl=0.6, Hvap=2E6, Te=100))
+
+    assert_close(ht.numba.Li_Wu(m=1, x=0.2, D=0.3, rhol=567., rhog=18.09, kl=0.086, mul=156E-6, sigma=0.02, Hvap=9E5, q=1E5),
+                 ht.Li_Wu(m=1, x=0.2, D=0.3, rhol=567., rhog=18.09, kl=0.086, mul=156E-6, sigma=0.02, Hvap=9E5, q=1E5))
+    
+    kwargs = dict(m=1.0, D=0.3, rhol=567., rhog=18.09, kl=0.086, mul=156E-6, sigma=0.02, Hvap=9E5, Te=10.0)
+    assert_close(ht.numba.Sun_Mishima(**kwargs), ht.Sun_Mishima(**kwargs))
+
+    kwargs = dict(m=1.0, x=0.4, D=0.3, rhol=567., mul=156E-6, sigma=0.02, Hvap=9E5, q=1E4)
+    assert_close(ht.numba.Yun_Heo_Kim(**kwargs), ht.Yun_Heo_Kim(**kwargs))
+
+    kwargs = dict(m=0.106, x=0.2, D=0.0212, rhol=567, rhog=18.09, mul=156E-6, mug=7.11E-6, kl=0.086, Cpl=2730, Hvap=2E5, sigma=0.02, dPsat=1E5, Te=3)
+    assert_close(ht.numba.Chen_Edelstein(**kwargs), ht.Chen_Edelstein(**kwargs))
+
+    kwargs = dict(m=0.106, x=0.2, D=0.0212, rhol=567.0, rhog=18.09, mul=156E-6, mug=7.11E-6, kl=0.086, Cpl=2730.0, Hvap=2E5, sigma=0.02, dPsat=1E5, Te=3.0)
+    assert_close(ht.numba.Chen_Bennett(**kwargs), ht.Chen_Bennett(**kwargs))
+
+    kwargs = dict(m=1.0, x=0.4, D=0.3, rhol=567., rhog=18.09, kl=0.086, mul=156E-6, Cpl=2300.0, P=1E6, Pc=22E6, MW=44.02, Te=7.0)
+    assert_closze(ht.numba.Liu_Winterton(**kwargs), ht.Liu_Winterton(**kwargs))
 
 @pytest.mark.numba
 @pytest.mark.skipif(numba is None, reason="Numba is missing")
@@ -168,6 +247,13 @@ def test_boiling_nucleic():
     # Has a TON of arguments, and numba wants them all to not be Nones.
     assert_close(ht.numba.h_nucleic(rhol=957.854, rhog=0.595593, mul=2.79E-4, kl=0.680, Cpl=4217, Hvap=2.257E6, sigma=0.0589, Te=4.9, Csf=0.011, n=1.26, P=1e4, Pc=1e6, Tsat=10, MW=33.0, Method='Rohsenow'),
                  ht.h_nucleic(rhol=957.854, rhog=0.595593, mul=2.79E-4, kl=0.680, Cpl=4217, Hvap=2.257E6, sigma=0.0589, Te=4.9, Csf=0.011, n=1.26, P=1e4, Pc=1e6, Tsat=10, MW=33.0, Method='Rohsenow'))
+
+    kwargs = dict(D=0.0127, sigma=8.2E-3, Hvap=272E3, rhol=567.0, rhog=18.09, P=1e6, Pc=1e7)
+    assert_close(ht.numba.qmax_boiling(**kwargs), ht.qmax_boiling(**kwargs))
+
+    kwargs = dict(D=0.0127, sigma=8.2E-3, Hvap=272E3, rhol=567, rhog=18.09)
+    assert ht.qmax_boiling_methods(**kwargs) == ht.numba.qmax_boiling_methods(**kwargs)
+
 
 @pytest.mark.numba
 @pytest.mark.skipif(numba is None, reason="Numba is missing")

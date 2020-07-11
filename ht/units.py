@@ -68,10 +68,10 @@ wrapped_k_to_R = k_to_R
 def R_to_k(R, t, A=1*u.m**2):
     if R.dimensionality == (u.K/u.W).dimensionality:
         if A.to_base_units().magnitude != 1:
-            raise Exception('The conversion with R in units of K/W is only permissible if A = 1 length**2')
+            raise ValueError('The conversion with R in units of K/W is only permissible if A = 1 length**2')
         R = R*u.m**2
     elif R.dimensionality != (u.K*u.m**2/u.W).dimensionality:
-        raise Exception('Units of R must be either K/W  if A = 1 length**2 or m^2*K/W otherwise')
+        raise ValueError('Units of R must be either K/W  if A = 1 length**2 or m^2*K/W otherwise')
     return wrapped_R_to_k(R, t, A)
 
 # k_to_R(k=0.5*u.W/u.m/u.K, t=0.025*u.m)
