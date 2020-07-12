@@ -25,16 +25,11 @@ from math import exp, log, floor, sqrt, factorial, tanh  # tanh= 1/coth
 import math
 import os
 from fluids.constants import inch, foot, degree_Fahrenheit, hour, Btu
-from fluids.numerics import horner, newton, ridder, quad, secant
+from fluids.numerics import horner, newton, ridder, quad, secant, quad, bisect
 from fluids.numerics import iv
 from fluids.piping import BWG_integers, BWG_inch, BWG_SI
 from fluids.numerics import numpy as np
 
-try:
-    from bisect import bisect, bisect_left, bisect_right
-    from fluids.numerics import bisect as sp_bisect
-except:
-    pass
 __all__ = ['effectiveness_from_NTU', 'NTU_from_effectiveness', 'calc_Cmin',
 'calc_Cmax', 'calc_Cr',
 'NTU_from_UA', 'UA_from_NTU', 'effectiveness_NTU_method', 'F_LMTD_Fakheri', 
@@ -56,7 +51,8 @@ __all__ = ['effectiveness_from_NTU', 'NTU_from_effectiveness', 'calc_Cmin',
 
 R_value = foot*foot*degree_Fahrenheit*hour/Btu
 
-__numba_additional_funcs__ = []
+__numba_additional_funcs__ = ['crossflow_effectiveness_to_int', 'to_solve_Ntubes_Phadkeb',
+                              '_tubecount_objf_Perry', '_NTU_max_for_P_solver']
 try:
     if IS_NUMBA:
         from scipy.special import gamma
@@ -68,6 +64,8 @@ except:
     pass
 
 
+def crossflow_effectiveness_to_int(v, NTU, Cr):
+    return (1. + NTU - v*v/(4.*Cr*NTU))*exp(-v*v/(4.*Cr*NTU))*v*float(iv(0, v))
 
 def effectiveness_from_NTU(NTU, Cr, subtype='counterflow'):
     r'''Returns the effectiveness of a heat exchanger at a specified heat 
@@ -316,9 +314,7 @@ def effectiveness_from_NTU(NTU, Cr, subtype='counterflow'):
             effectiveness = (term - 1.)/(term - Cr)
         return effectiveness
     elif subtype == 'crossflow':
-        def to_int(v, NTU, Cr):
-            return (1. + NTU - v*v/(4.*Cr*NTU))*exp(-v*v/(4.*Cr*NTU))*v*float(iv(0, v))
-        int_term = quad(to_int, 0, 2.*NTU*Cr**0.5, args=(NTU, Cr))[0]
+        int_term = quad(crossflow_effectiveness_to_int, 0, 2.*NTU*Cr**0.5, args=(NTU, Cr))[0]
         return 1./Cr - exp(-Cr*NTU)/(2.*(Cr*NTU)**2)*int_term
     elif subtype == 'crossflow approximate':
         return 1. - exp(1./Cr*NTU**0.22*(exp(-Cr*NTU**0.78) - 1.))
@@ -326,7 +322,7 @@ def effectiveness_from_NTU(NTU, Cr, subtype='counterflow'):
         return 1. -exp(-Cr**-1*(1. - exp(-Cr*NTU)))
     elif subtype ==  'crossflow, mixed Cmax':
         return (1./Cr)*(1. - exp(-Cr*(1. - exp(-NTU))))
-    elif subtype in ['boiler', 'condenser']:
+    elif subtype == 'boiler' or subtype == 'condenser':
         return  1. - exp(-NTU)
     else:
         raise ValueError('Input heat exchanger type not recognized')
@@ -4034,7 +4030,7 @@ def P_NTU_method(m1, m2, Cp1, Cp2, UA=None, T1i=None, T1o=None,
         NTU1 = UA/C1
         NTU2 = UA/C2
         
-        if subtype in ['counterflow', 'parallel', 'crossflow', 'crossflow, mixed 1', 'crossflow, mixed 2', 'crossflow, mixed 1&2']:
+        if subtype in ('counterflow', 'parallel', 'crossflow', 'crossflow, mixed 1', 'crossflow, mixed 2', 'crossflow, mixed 1&2'):
             P1 = temperature_effectiveness_basic(R1, NTU1, subtype=subtype)
         elif subtype == 'E':
             P1 = temperature_effectiveness_TEMA_E(R1=R1, NTU1=NTU1, Ntp=Ntp, optimal=optimal)
@@ -4113,7 +4109,7 @@ def P_NTU_method(m1, m2, Cp1, Cp2, UA=None, T1i=None, T1o=None,
                             'when solving for UA')
                 
         P1 = Q/(C1*abs(T2i-T1i))
-        if subtype in ['counterflow', 'parallel', 'crossflow', 'crossflow, mixed 1', 'crossflow, mixed 2', 'crossflow, mixed 1&2']:
+        if subtype in ('counterflow', 'parallel', 'crossflow', 'crossflow, mixed 1', 'crossflow, mixed 2', 'crossflow, mixed 1&2'):
             NTU1 = NTU_from_P_basic(P1=P1, R1=R1, subtype=subtype)
         elif subtype == 'E':
             NTU1 = NTU_from_P_E(P1=P1, R1=R1, Ntp=Ntp, optimal=optimal)
@@ -4560,10 +4556,8 @@ def D_baffle_holes(do, L_unsupported):
 
 
 
-_L_unsupported_Do = [0.25, 0.375, 0.5, 0.628, 0.75, 0.875, 1., 1.25, 1.5,
-                          2., 2.5, 3.]
-_L_unsupported_steel = [0.66, 0.889, 1.118, 1.321, 1.524, 1.753, 1.88, 2.235,
-                        2.54, 3.175, 3.175, 3.175]
+_L_unsupported_Do =   [0.25,  0.375, 0.5,  0.628,  0.75,  0.875, 1.,   1.25,  1.5,  2.,    2.5,   3.]
+_L_unsupported_steel = [0.66, 0.889, 1.118, 1.321, 1.524, 1.753, 1.88, 2.235, 2.54, 3.175, 3.175, 3.175]
 _L_unsupported_aluminium = [0.559, 0.762, 0.965, 1.143, 1.321, 1.524, 1.626, 
                             1.93, 2.21, 2.794, 2.794, 2.794]
 
@@ -4610,8 +4604,13 @@ def L_unsupported_max(Do, material='CS'):
        Ninth edition, 2007, TEMA, New York, p 5.4-5.
     '''
     Do = Do/inch # convert diameter to inches
-    i = bisect(_L_unsupported_Do, Do)-1
-    i = i if i < 11 else 11 # bisect returns 1+ if above the index
+    for i in range(12):
+        if _L_unsupported_Do[i] == Do:
+            break # perfect
+        elif _L_unsupported_Do[i] > Do:
+            i -= 1 # too big, go down a length
+            break
+    i = i if i < 11 else 11
     i = 0 if i == -1 else i
     if material == 'CS':
         return _L_unsupported_steel[i]
@@ -4701,7 +4700,7 @@ def Ntubes_Phadkeb(DBundle, Do, pitch, Ntp, angle=30):
     .. [1] Phadke, P. S., Determining tube counts for shell and tube
        exchangers, Chem. Eng., September, 91, 65-68 (1984).
     '''
-    if square_C1s is None: _load_coeffs_Phadkeb()
+    if square_C1s is None: _load_coeffs_Phadkeb() # numba: delete
     if DBundle <= Do*Ntp:
         return 0
     
@@ -4852,6 +4851,9 @@ def Ntubes_Phadkeb(DBundle, Do, pitch, Ntp, angle=30):
         ans = 0 # pragma: no cover
     return ans
 
+def to_solve_Ntubes_Phadkeb(DBundle, Do, pitch, Ntp, angle, Ntubes):
+    ans = Ntubes_Phadkeb(DBundle=DBundle, Do=Do, pitch=pitch, Ntp=Ntp, angle=angle) - Ntubes
+    return ans
 
 def DBundle_for_Ntubes_Phadkeb(Ntubes, Do, pitch, Ntp, angle=30):
     r'''Determine the bundle diameter required to fit a specified number of
@@ -4895,7 +4897,7 @@ def DBundle_for_Ntubes_Phadkeb(Ntubes, Do, pitch, Ntp, angle=30):
     .. [1] Phadke, P. S., Determining tube counts for shell and tube
        exchangers, Chem. Eng., September, 91, 65-68 (1984).
     '''
-    if square_C1s is None: _load_coeffs_Phadkeb()
+    if square_C1s is None: _load_coeffs_Phadkeb() # numba: delete
     if angle == 30 or angle == 60:
         Ns = triangular_Ns[-1]
     elif angle == 45 or angle == 90:
@@ -4903,10 +4905,7 @@ def DBundle_for_Ntubes_Phadkeb(Ntubes, Do, pitch, Ntp, angle=30):
     s = Ns + 1
     r = s**0.5
     DBundle_max = (Do + 2.*pitch*r)*(1. - 1E-8) # Cannot be exact or floor(s) will give an int too high
-    def to_solve(DBundle):
-        ans = Ntubes_Phadkeb(DBundle=DBundle, Do=Do, pitch=pitch, Ntp=Ntp, angle=angle) - Ntubes
-        return ans
-    return sp_bisect(to_solve, 0, DBundle_max)
+    return bisect(to_solve_Ntubes_Phadkeb, 0, DBundle_max, args=(Do, pitch, Ntp, angle, Ntubes))
 
 
 def Ntubes_Perrys(DBundle, Do, Ntp, angle=30):
@@ -5281,6 +5280,8 @@ def Ntubes(DBundle, Do, pitch, Ntp=1, angle=30, Method=None):
         raise ValueError('Method not recognized; allowable methods are '
                         '"Phadkeb", "HEDH", "VDI", and "Perry"')
 
+def _tubecount_objf_Perry(D, Do, Ntp, angle, N):
+    return Ntubes_Perrys(DBundle=D, Do=Do, Ntp=Ntp, angle=angle) - N
 
 def size_bundle_from_tubecount(N, Do, pitch, Ntp=1, angle=30, Method=None):
     r'''Calculates the outer diameter of a tube bundle containing a specified
@@ -5331,16 +5332,17 @@ def size_bundle_from_tubecount(N, Do, pitch, Ntp=1, angle=30, Method=None):
     1.1985676402390355
     '''
     if Method is None:
-        Method = 'Phadkeb'
-    if Method == 'Phadkeb':
+        Method2 = 'Phadkeb'
+    else:
+        Method2 = Method
+    if Method2 == 'Phadkeb':
         return DBundle_for_Ntubes_Phadkeb(Ntubes=N, Ntp=Ntp, Do=Do, pitch=pitch, angle=angle)
-    elif Method == 'VDI':
+    elif Method2 == 'VDI':
         return D_for_Ntubes_VDI(N=N, Ntp=Ntp, Do=Do, pitch=pitch, angle=angle)
-    elif Method == 'HEDH':
+    elif Method2 == 'HEDH':
         return DBundle_for_Ntubes_HEDH(N=N, Do=Do, pitch=pitch, angle=angle)
-    elif Method == 'Perry':
-        to_solve = lambda D : Ntubes_Perrys(DBundle=D, Do=Do, Ntp=Ntp, angle=angle) - N
-        return ridder(to_solve, Do*5, 1000*Do)
+    elif Method2 == 'Perry':
+        return ridder(_tubecount_objf_Perry, Do*5, 1000*Do, args=(Do, Ntp, angle, N))
     else:
         raise ValueError('Method not recognized; allowable methods are '
                         '"Phadkeb", "HEDH", "VDI", and "Perry"')

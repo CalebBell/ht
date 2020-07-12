@@ -201,7 +201,7 @@ def test_boiling_flow():
     assert_close(ht.numba.Chen_Bennett(**kwargs), ht.Chen_Bennett(**kwargs))
 
     kwargs = dict(m=1.0, x=0.4, D=0.3, rhol=567., rhog=18.09, kl=0.086, mul=156E-6, Cpl=2300.0, P=1E6, Pc=22E6, MW=44.02, Te=7.0)
-    assert_closze(ht.numba.Liu_Winterton(**kwargs), ht.Liu_Winterton(**kwargs))
+    assert_close(ht.numba.Liu_Winterton(**kwargs), ht.Liu_Winterton(**kwargs))
 
 @pytest.mark.numba
 @pytest.mark.skipif(numba is None, reason="Numba is missing")
@@ -359,6 +359,30 @@ def test_conduction():
 def test_hx():
     assert_close(ht.numba.temperature_effectiveness_air_cooler(.5, 2, rows=10, passes=10),
                  ht.temperature_effectiveness_air_cooler(.5, 2, rows=10, passes=10))
+    
+    assert_close(ht.L_unsupported_max(Do=.0254, material='CS'),
+                 ht.numba.L_unsupported_max(Do=.0254, material='CS'))
+
+    kwargs = dict(Ntubes=782, Do=.028, pitch=.036, Ntp=2, angle=45.)
+    assert_close(ht.numba.DBundle_for_Ntubes_Phadkeb(**kwargs),
+                 ht.DBundle_for_Ntubes_Phadkeb(**kwargs))
+    
+    kwargs = dict(DBundle=1.184, Do=.028, Ntp=2, angle=45)
+    assert_close(ht.numba.Ntubes_Perrys(**kwargs), ht.Ntubes_Perrys(**kwargs))
+
+    assert_close(ht.numba.Ntubes_VDI(DBundle=1.184, Ntp=2, Do=.028, pitch=.036, angle=30),
+                 ht.Ntubes_VDI(DBundle=1.184, Ntp=2, Do=.028, pitch=.036, angle=30) )
+
+    kwargs = dict(DBundle=1.2, Do=0.025, pitch=0.03125, Method='Phadkeb')
+    assert ht.numba.Ntubes(**kwargs) == ht.Ntubes(**kwargs)
+
+    kwargs = dict(N=1285, Do=0.025, pitch=0.03125)
+    assert_close(ht.numba.size_bundle_from_tubecount(**kwargs),
+                 ht.size_bundle_from_tubecount(**kwargs))
+
+    assert_close(ht.numba.baffle_thickness(Dshell=.3, L_unsupported=50, service='R'),
+                 ht.baffle_thickness(Dshell=.3, L_unsupported=50, service='R'))
+
 
 @pytest.mark.numba
 @pytest.mark.skipif(numba is None, reason="Numba is missing")

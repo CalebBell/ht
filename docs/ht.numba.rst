@@ -46,9 +46,11 @@ Today, the list of things known not to work is as follows:
 - :py:func:`~.dP_Zukauskas` (needs some spline work)
 - :py:func:`~.cylindrical_heat_transfer` (returns dictionaries)
 - :py:func:`~.effectiveness_NTU_method` (returns dictionaries)
+- :py:func:`~.P_NTU_method` (returns dictionaries)
 - :py:func:`~.wall_factor_Nu` and :py:func:`~.wall_factor_fd` (dictionary lookups)
 - :py:func:`~.solar_spectrum` (external file reading)
 - Everything in :py:mod:`ht.insulation`
+
 
 Numpy Support
 -------------
