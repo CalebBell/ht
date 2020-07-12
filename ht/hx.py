@@ -3586,7 +3586,6 @@ def NTU_from_P_H(P1, R1, Ntp, optimal=True):
     0.9997628696886166
     '''
     NTU_min = 1E-11
-    function = temperature_effectiveness_TEMA_H
     if Ntp == 1:
         NTU_max = 100
     elif Ntp == 2 and optimal:
@@ -3595,7 +3594,8 @@ def NTU_from_P_H(P1, R1, Ntp, optimal=True):
         NTU_max = _NTU_max_for_P_solver(NTU_from_H_2_unoptimal, R1)
     else:
         raise ValueError('Supported numbers of tube passes are 1 and 2.')
-    return _NTU_from_P_solver(P1, R1, NTU_min, NTU_max, function, Ntp=Ntp, optimal=optimal)
+    return _NTU_from_P_solver(P1, R1, NTU_min, NTU_max, temperature_effectiveness_TEMA_H,
+                              Ntp=Ntp, optimal=optimal)
 
 
 def NTU_from_P_plate(P1, R1, Np1, Np2, counterflow=True, 

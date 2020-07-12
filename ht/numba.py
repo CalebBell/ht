@@ -50,7 +50,7 @@ def transform_complete_ht(replaced, __funcs, __all__, normal, vec=False):
     cache_blacklist = set(['h_Ganguli_VDI', 'fin_efficiency_Kern_Kraus', 'h_Briggs_Young', 
                            'h_ESDU_high_fin', 'h_ESDU_low_fin', 'Nu_Nusselt_Rayleigh_Holling_Herwig',
                            'DBundle_for_Ntubes_Phadkeb', 'Thome', 'to_solve_q_Thome',
-                           'temperature_effectiveness_air_cooler', 'factorial', 'size_bundle_from_tubecount'])
+                       'temperature_effectiveness_air_cooler', 'factorial', 'size_bundle_from_tubecount'])
     __funcs.update(normal_fluids.numba.numbafied_fluids_functions.copy())
     new_mods = normal_fluids.numba.transform_module(normal, __funcs, replaced, vec=vec,
                                                     cache_blacklist=cache_blacklist)

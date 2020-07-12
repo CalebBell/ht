@@ -383,6 +383,8 @@ def test_hx():
     assert_close(ht.numba.baffle_thickness(Dshell=.3, L_unsupported=50, service='R'),
                  ht.baffle_thickness(Dshell=.3, L_unsupported=50, service='R'))
 
+    assert_close(ht.numba.hx.Pp(5, .4),  ht.hx.Pp(5, .4))
+    assert_close(ht.numba.hx.Pc(5, .4),  ht.hx.Pc(5, .4))
 
 @pytest.mark.numba
 @pytest.mark.skipif(numba is None, reason="Numba is missing")
