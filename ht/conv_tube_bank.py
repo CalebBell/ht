@@ -36,8 +36,15 @@ __all__ = ['dP_Kern', 'dP_Zukauskas',
            'bundle_bypassing_Bell', 'unequal_baffle_spacing_Bell',
            'laminar_correction_Bell']
 
-__numba_additional_funcs__ = ['Grimison_C1_aligned_interp', 'Grimison_m_aligned_interp',]
+__numba_additional_funcs__ = ['Grimison_C1_aligned_interp', 'Grimison_m_aligned_interp',
+                              'Grimson_C1_staggered_interp', 'Grimson_m_staggered_interp',
+                              'Kern_f_Re', 'Bell_baffle_configuration_obj', 'Bell_baffle_leakage_obj',
+                              'Bell_bundle_bypass_low_obj', 'Bell_bundle_bypass_high_obj']
 
+try:
+    IS_NUMBA
+except:
+    IS_NUMBA = False
 # Applies for row 1-9.
 Grimson_Nl_aligned = [0.64, 0.8, 0.87, 0.9, 0.92, 0.94, 0.96, 0.98, 0.99]
 Grimson_Nl_staggered = [0.68, 0.75, 0.83, 0.89, 0.92, 0.95, 0.97, 0.98, 0.99]
@@ -54,26 +61,26 @@ Grimison_m_aligned = [[0.592, 0.608, 0.704, 0.752],
                                [0.57, 0.602, 0.632, 0.648],
                                [0.601, 0.584, 0.581, 0.608]]
 
-Grimison_C1_aligned_tck = [[1.25, 1.25, 1.25, 1.25, 3.0, 3.0, 3.0, 3.0],
+Grimison_C1_aligned_tck = implementation_optimize_tck([[1.25, 1.25, 1.25, 1.25, 3.0, 3.0, 3.0, 3.0],
                            [1.25, 1.25, 1.25, 1.25, 3.0, 3.0, 3.0, 3.0], 
                            [0.34800000000000003, 0.20683194444444492, -0.18023055555555617,
                             0.06330000000000001, 0.3755277777777776, -0.28351037808642043,
                             0.24365763888889008, -0.0007166666666667326, 0.5481111111111114, 
                             0.2925767746913588, 0.8622214506172828, 0.5207777777777779, 0.29, 
                             0.5062500000000002, 0.26944444444444426, 0.286],
-                            3, 3]
+                            3, 3], force_numpy=IS_NUMBA)
                            
 Grimison_C1_aligned_interp = lambda x, y : float(bisplev(x, y, Grimison_C1_aligned_tck))
 
 
-Grimison_m_aligned_tck = [[1.25, 1.25, 1.25, 1.25, 3.0, 3.0, 3.0, 3.0], 
+Grimison_m_aligned_tck = implementation_optimize_tck([[1.25, 1.25, 1.25, 1.25, 3.0, 3.0, 3.0, 3.0], 
                           [1.25, 1.25, 1.25, 1.25, 3.0, 3.0, 3.0, 3.0], 
                           [0.5920000000000001, 0.5877777777777775, 0.9133333333333344,
                            0.752, 0.5828472222222219, 0.7998613040123475,
                            0.7413584104938251, 0.7841111111111112, 0.5320833333333332, 
                            0.5504147376543196, 0.30315663580247154, 0.4148888888888891,
                            0.601, 0.5454861111111109, 0.6097500000000002, 0.608],
-                           3, 3]
+                           3, 3], force_numpy=IS_NUMBA)
 Grimison_m_aligned_interp = lambda x, y : float(bisplev(x, y, Grimison_m_aligned_tck))
 
 
@@ -103,7 +110,7 @@ tck_Grimson_m_staggered = implementation_optimize_tck([[1.25, 1.25, 1.8667584356
                0.7874995409316767, 0.4622370503994375, 0.562004066622535, 0.5623955950882191, 0.5680620929528815, 0.5720626262793304, 
                0.5510099520872309, 0.5641771077227365, 0.5597975310692721, 0.0, 0.0, 0.0, 0.0, 0.0, 0.6361653765016168, 
                0.5601991640778442, 0.5621224100266599, 0.5684014375982079, 0.573932491076899],
-    1, 1])
+    1, 1], force_numpy=IS_NUMBA)
 
 tck_Grimson_C1_staggered = implementation_optimize_tck([[1.25, 1.25, 1.936293121624252, 2.0, 2.094408820089069, 3.0, 3.0], 
     [0.6, 0.6, 1.1841422334268308, 1.3897531616318943, 1.6483901017748916, 3.0, 3.0],
@@ -111,7 +118,7 @@ tck_Grimson_C1_staggered = implementation_optimize_tck([[1.25, 1.25, 1.936293121
               0.4719357486311919, 0.5043332405690643, 0.4371755864391464, 0.4362779343788622, 0.364660449991649, 0.5144234623651529, 
               0.4513822953351327, 0.4852710459180796, 0.4420724694173403, 0.0, 0.0, 0.0, 0.0, 0.0, 0.21898644381978172,
               0.5500312131715677, 0.4969529176876636, 0.46150347905703587, 0.4270770845430577],
-    1, 1])
+    1, 1], force_numpy=IS_NUMBA)
 
 Grimson_m_staggered_interp = lambda x, y: float(bisplev(x, y, tck_Grimson_m_staggered))
 Grimson_C1_staggered_interp = lambda x, y: float(bisplev(x, y, tck_Grimson_C1_staggered))
@@ -174,11 +181,11 @@ def Nu_Grimison_tube_bank(Re, Pr, Do, tube_rows, pitch_parallel, pitch_normal):
     a = pitch_normal/Do # sT
     b = pitch_parallel/Do
     if not staggered:
-        C1 = float(Grimison_C1_aligned_interp(b, a))
-        m = float(Grimison_m_aligned_interp(b, a))
+        C1 = float(bisplev(b, a, Grimison_C1_aligned_tck))
+        m = float(bisplev(b, a, Grimison_m_aligned_tck))
     else:
-        C1 = float(Grimson_C1_staggered_interp(b, a))
-        m = float(Grimson_m_staggered_interp(b, a))
+        C1 = float(bisplev(b, a, tck_Grimson_C1_staggered))
+        m = float(bisplev(b, a, tck_Grimson_m_staggered))
         
     tube_rows = int(tube_rows)
     if tube_rows < 10:
@@ -636,7 +643,7 @@ def Nu_HEDH_tube_bank(Re, Pr, Do, tube_rows, pitch_parallel, pitch_normal):
     Design Handbook (HEDH) methodology, presented in [1]_.
 
     .. math::
-        Nu = Nu_m f_A f_N
+        Nu = Nu_m   f_N
 
     .. math::
         Nu_m = 0.3 + \sqrt{Nu_{m,lam}^2 + Nu_{m,turb}^2}
@@ -660,7 +667,7 @@ def Nu_HEDH_tube_bank(Re, Pr, Do, tube_rows, pitch_parallel, pitch_normal):
         f_A = 1 + \frac{2}{3b} \text{elif partly staggered}
 
     .. math::
-        f_N = \frac{1 + (n-1)}{n}
+        f_N = \frac{1 + (n-1)f_A}{n}
 
     Parameters
     ----------
@@ -732,10 +739,10 @@ def Nu_HEDH_tube_bank(Re, Pr, Do, tube_rows, pitch_parallel, pitch_normal):
         fA = 1.0 + 2./(3.0*b)
         # a further partly staggered tube bank correlation exists, using another pitch
     if tube_rows < 10:
-        fn = (1.0 + (n - 1.0))/tube_rows
+        fn = (1.0 + (tube_rows - 1.0)*fA)/tube_rows
     else:
-        fn = 1.0
-    Nu = Nu*fn*fA
+        fn = fA
+    Nu = Nu*fn
     return Nu
 
 
@@ -751,8 +758,8 @@ Kern_f_Re_tck = implementation_optimize_tck([[9.9524, 9.9524, 9.9524, 9.9524, 17
                  [6.040435949178239, 4.64973456285782, 2.95274850806163, 1.9569061885042,
                            1.1663069946420412, 0.6830549536215098, 0.4588680265447762, 0.22387792331971723, 
                            0.12721190975530583, 0.1395456548881242, 0.12888895743468684, 0.0, 0.0, 0.0, 0.0],
-                 3])
-Kern_f_Re = lambda x: splev(x, Kern_f_Re_tck)
+                 3], force_numpy=IS_NUMBA)
+Kern_f_Re = lambda x: float(splev(x, Kern_f_Re_tck))
 
 
 def dP_Kern(m, rho, mu, DShell, LSpacing, pitch, Do, NBaffles, mu_w=None):
@@ -815,10 +822,10 @@ def dP_Kern(m, rho, mu, DShell, LSpacing, pitch, Do, NBaffles, mu_w=None):
     '''
     # Adjustment for viscosity performed if given
     Ss = DShell*(pitch-Do)*LSpacing/pitch
-    De = 4*(pitch**2 - pi*Do**2/4.)/pi/Do
+    De = 4*(pitch*pitch - pi*Do*Do/4.)/pi/Do
     Vs = m/Ss/rho
     Re = rho*De*Vs/mu
-    f = float(Kern_f_Re(Re))
+    f = Kern_f_Re(Re)
     if mu_w:
         return f*(Vs*rho)**2*DShell*(NBaffles+1)/(2*rho*De*(mu/mu_w)**0.14)
     else:
@@ -1157,9 +1164,9 @@ Bell_baffle_configuration_tck = implementation_optimize_tck([[0.0, 0.0, 0.0, 0.0
                                            1.0828783604984582, 1.1485665329698214, 1.1612486065399008, 
                                            1.1216591944456349, 1.0762015137576528, 1.0314244120288227,
                                            0.0, 0.0, 0.0, 0.0],
-                                3])
+                                3], force_numpy=IS_NUMBA)
 
-Bell_baffle_configuration_obj = lambda x : splev(x, Bell_baffle_configuration_tck)
+Bell_baffle_configuration_obj = lambda x : float(splev(x, Bell_baffle_configuration_tck))
 
 '''Derived with:
 
@@ -1224,8 +1231,8 @@ def baffle_correction_Bell(crossflow_tube_fraction, method='spline'):
     min: ~0.5328 at 0
     value at 1: ~1.0314
     
-    For the 'spline' method, this function takes ~13 us per call, and 40 us to 
-    construct the spline. The other two methods are approximately 10x faster.
+    For the 'spline' method, this function takes ~13 us per call.
+    The other two methods are approximately 10x faster.
              
     Examples
     --------
@@ -1254,7 +1261,7 @@ def baffle_correction_Bell(crossflow_tube_fraction, method='spline'):
        Applications and Rules of Thumb. 2E. Amsterdam: Academic Press, 2014.
     '''
     if method == 'spline':
-        Jc = float(Bell_baffle_configuration_obj(crossflow_tube_fraction))
+        Jc = Bell_baffle_configuration_obj(crossflow_tube_fraction)
     elif method == 'chebyshev':
         return horner(Bell_baffle_configuration_coeffs, 2.0*crossflow_tube_fraction - 1.0)
     elif method == 'HEDH':
@@ -1281,8 +1288,8 @@ Bell_baffle_leakage_tck = implementation_optimize_tck([[0.0, 0.0, 0.0, 0.0, 0.02
                                      0.504889627280836, 0.440579886434288, 0.6239736474980684, 0.5273646894226224, 
                                      0.43995388722059986, 0.34359277007615313, 0.26986439252143746, 0.5640689738382749, 
                                      0.4540959882735219, 0.35278120580740957, 0.24364672351604122, 0.1606942128340308],
-                           3, 1])
-Bell_baffle_leakage_obj = lambda x, z : bisplev(x, z, Bell_baffle_leakage_tck)
+                           3, 1], force_numpy=IS_NUMBA)
+Bell_baffle_leakage_obj = lambda x, z : float(bisplev(x, z, Bell_baffle_leakage_tck))
             
     
 def baffle_leakage_Bell(Ssb, Stb, Sm, method='spline'):
@@ -1312,7 +1319,6 @@ def baffle_leakage_Bell(Ssb, Stb, Sm, method='spline'):
         Total baffle leakage area, [m^2]
     Sm : float
         Crossflow area, [m^2]
-
     method : str, optional
         One of 'spline', or 'HEDH'
     
@@ -1323,7 +1329,7 @@ def baffle_leakage_Bell(Ssb, Stb, Sm, method='spline'):
 
     Notes
     -----
-    Takes ~5 us per call, and 600 us to construct the spline.
+    Takes ~5 us per call.
     If the `x` parameter is larger than 0.743614, it is clipped to it.
     
     The HEDH curve fits are rather poor and only 6x faster to evaluate. 
@@ -1359,7 +1365,7 @@ def baffle_leakage_Bell(Ssb, Stb, Sm, method='spline'):
     if x > Bell_baffle_leakage_x_max:
         x = Bell_baffle_leakage_x_max
     z = Ssb/(Ssb + Stb)
-    if z > 1 or z < 0:
+    if z > 1.0 or z < 0.0:
         raise ValueError('Ssb/(Ssb + Stb) must be between 0 and 1')
     if method == 'spline':
         Jl = Bell_baffle_leakage_obj(x, z)
@@ -1381,8 +1387,8 @@ Bell_bundle_bypass_high_spl = implementation_optimize_tck([[0.0, 0.0, 0.0, 0.0, 
                                          0.7244471950409509, 0.8599376452211228, 0.9622021460141503, 0.9999989177211911,
                                          0.42206076955873406, 0.6230810793228677, 0.6903177740858685, 0.8544752061829647, 
                                          0.9373953303873518, 0.9999983130568033],
-                               3, 3])
-Bell_bundle_bypass_high_obj = lambda x, y: bisplev(x, y, Bell_bundle_bypass_high_spl)
+                               3, 3], force_numpy=IS_NUMBA)
+Bell_bundle_bypass_high_obj = lambda x, y: float(bisplev(x, y, Bell_bundle_bypass_high_spl))
 
 
 Bell_bundle_bypass_low_spl = implementation_optimize_tck([[0.0, 0.0, 0.0, 0.0, 0.434967, 0.69532, 0.69532, 0.69532, 0.69532],
@@ -1395,8 +1401,8 @@ Bell_bundle_bypass_low_spl = implementation_optimize_tck([[0.0, 0.0, 0.0, 0.0, 0
                                         0.6961255921403956, 0.861432071791341, 0.9243020549338703, 0.999997894037133,
                                         0.39110224578093694, 0.606829928454368, 0.6600680810505178, 0.8482579667665061,
                                         0.9223728343461776, 0.9999978298360785],
-                                   3, 3])
-Bell_bundle_bypass_low_obj = lambda x, y : bisplev(x, y, Bell_bundle_bypass_low_spl)
+                                   3, 3], force_numpy=IS_NUMBA)
+Bell_bundle_bypass_low_obj = lambda x, y : float(bisplev(x, y, Bell_bundle_bypass_low_spl))
 
 
 def bundle_bypassing_Bell(bypass_area_fraction, seal_strips, crossflow_rows,
@@ -1439,8 +1445,7 @@ def bundle_bypassing_Bell(bypass_area_fraction, seal_strips, crossflow_rows,
 
     Notes
     -----
-    Takes ~5 us per call, and 1.2 ms to construct both the turbulent and
-    laminar splines.
+    Takes ~5 us per call.
     If the `bypass_area_fraction` parameter is larger than 0.695, it is clipped
     to it.
 
@@ -1466,11 +1471,14 @@ def bundle_bypassing_Bell(bypass_area_fraction, seal_strips, crossflow_rows,
     z = seal_strips/crossflow_rows
     x = bypass_area_fraction
     if method == 'spline':
-        obj = Bell_bundle_bypass_low_obj if laminar else Bell_bundle_bypass_high_obj
         if x > Bell_bundle_bypass_x_max:
             x = Bell_bundle_bypass_x_max
-        Jb = obj(x, z)
-        Jb = min(float(Jb), 1.0)
+            
+        if laminar:
+            Jb = Bell_bundle_bypass_low_obj(x, z)
+        else:
+            Jb = Bell_bundle_bypass_high_obj(x, z)
+        Jb = min(Jb, 1.0)
     elif method == 'HEDH':
         c = 1.35 if laminar else 1.25
         Jb = exp(-c*x*(1.0 - (2.0*z)**(1/3.)))

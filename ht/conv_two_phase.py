@@ -923,7 +923,7 @@ def h_two_phase(m, x, D, Cpl, kl, rhol=None, rhog=None, mul=None,
     420.9347146885667
     '''    
     if method is None:
-        method2 = list_methods(m=m, x=x, D=D, Cpl=Cpl, kl=kl, rhol=rhol, rhog=rhog, mul=mul, mu_b=mu_b, mu_w=mu_w, mug=mug, L=L, alpha=alpha, check_ranges=True)[0]
+        method2 = h_two_phase_methods(m=m, x=x, D=D, Cpl=Cpl, kl=kl, rhol=rhol, rhog=rhog, mul=mul, mu_b=mu_b, mu_w=mu_w, mug=mug, L=L, alpha=alpha, check_ranges=True)[0]
     else:
         method2 = method
         

@@ -41,7 +41,7 @@ __all__ = ['laminar_T_const', 'laminar_Q_const',
 'conv_tube_methods', 'conv_tube_laminar_methods', 'conv_tube_turbulent_methods']
 
 from math import log, log10, exp, tanh
-from fluids.friction import friction_factor, LAMINAR_TRANSITION_PIPE
+from fluids.friction import friction_factor, Clamond, LAMINAR_TRANSITION_PIPE
 
 ### Laminar
 
@@ -210,7 +210,7 @@ def laminar_entry_Seider_Tate(Re, Pr, L, Di, mu=None, mu_w=None):
        Applications and Rules of Thumb. 2E. Amsterdam: Academic Press, 2014.
     '''
     Nu = 1.86*(Di/L*Re*Pr)**(1/3.0)
-    if mu_w and mu:
+    if mu_w is not None and mu is not None:
         Nu *= (mu/mu_w)**0.14
     return Nu
 
@@ -381,7 +381,7 @@ def turbulent_Sieder_Tate(Re, Pr, mu=None, mu_w=None):
        (December 1, 1936): 1429-35. doi:10.1021/ie50324a027.
     '''
     Nu = 0.027*Re**0.8*Pr**(1/3.)
-    if mu_w and mu:
+    if mu_w is not None and mu is not None:
         Nu *= (mu/mu_w)**0.14
     return Nu
 
@@ -1372,25 +1372,23 @@ def Nu_conv_internal_methods(Re, Pr, eD=0, Di=None, x=None, fd=None,
     >>>  Nu_conv_internal_methods(Re=1E2, Pr=.7, x=.01, Di=.1)[0]
     'Baehr-Stephan laminar thermal/velocity entry'
     '''
-    if not check_ranges:
-        return conv_tube_methods_list
     methods = []
-    if Re < LAMINAR_TRANSITION_PIPE:
+    if Re < LAMINAR_TRANSITION_PIPE or not check_ranges:
         # Laminar!
-        if Re is not None and Pr is not None and x is not None and Di is not None:
+        if (Re is not None and Pr is not None and x is not None and Di is not None):
             methods.append('Baehr-Stephan laminar thermal/velocity entry')
             methods.append('Hausen laminar thermal entry')
             methods.append('Seider-Tate laminar thermal entry')
 
         methods.append('Laminar - constant T')
         methods.append('Laminar - constant Q')
-    else:
-        if Re is not None and Pr is not None and Pr < 0.03:
+    if Re >= LAMINAR_TRANSITION_PIPE or not check_ranges:
+        if (Re is not None and Pr is not None and Pr < 0.03) or not check_ranges:
             # Liquid metals
             methods.append('Martinelli')
-        if Re is not None and Pr is not None and x is not None and Di is not None:
+        if (Re is not None and Pr is not None and x is not None and Di is not None) or not check_ranges:
             methods.append('Hausen')
-        if Re is not None and Pr is not None and (eD is not None or fd is not None):
+        if (Re is not None and Pr is not None and (eD is not None or fd is not None)) or not check_ranges:
             # handle correlations with roughness
             methods.append('Churchill-Zajic')
             methods.append('Petukhov-Kirillov-Popov')
@@ -1406,7 +1404,7 @@ def Nu_conv_internal_methods(Re, Pr, eD=0, Di=None, x=None, fd=None,
             methods.append('Kawase-Ulbrecht')
             methods.append('Kawase-De')
             methods.append('Nunner')
-        if Re is not None and Pr is not None:
+        if (Re is not None and Pr is not None) or not check_ranges:
             methods.append('Dittus-Boelter')
             methods.append('Sieder-Tate')
             methods.append('Drexel-McAdams')
@@ -1481,7 +1479,7 @@ def Nu_conv_internal(Re, Pr, eD=0, Di=None, x=None, fd=None, Method=None):
         
     L = x
     if eD is not None and fd is None:
-        fd = friction_factor(Re=Re, eD=eD)
+        fd = Clamond(Re=Re, eD=eD)
 
     if Method2 == "Laminar - constant T":
         return laminar_T_const()
@@ -1538,7 +1536,7 @@ def Nu_conv_internal(Re, Pr, eD=0, Di=None, x=None, fd=None, Method=None):
     elif Method2 == "Dipprey-Sabersky":
         return turbulent_Dipprey_Sabersky(Re=Re, Pr=Pr, fd=fd, eD=eD)
     elif Method2 == "Nunner":
-        fd_smooth = friction_factor(Re, eD=0)
+        fd_smooth = Clamond(Re, eD=0.0)
         return turbulent_Nunner(Re=Re, Pr=Pr, fd=fd, fd_smooth=fd_smooth)
     else:
         raise ValueError("Correlation name not recognized; see the "

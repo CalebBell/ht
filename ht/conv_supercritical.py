@@ -204,15 +204,15 @@ def Nu_Griem(Re, Pr, H=None):
        Process Monitoring, 241, no. 6 (June 2011): 2184-2203. 
        doi:10.1016/j.nucengdes.2011.03.022. 
     '''
-    if H:
+    if H is not None:
         if H < 1.54E6:
             w = 0.82
         elif H > 1.74E6:
-            w = 1
+            w = 1.0
         else:
             w = 0.82 + 9E-7*(H - 1.54E6)
     else:
-        w = 1
+        w = 1.0
     Nu = 0.0169*Re**0.8356*Pr**0.432*w
     return Nu
 
@@ -307,7 +307,7 @@ def Nu_Jackson(Re, Pr, rho_w=None, rho_b=None, Cp_avg=None, Cp_b=None, T_b=None,
        Process Monitoring, 241, no. 6 (June 2011): 2184-2203. 
        doi:10.1016/j.nucengdes.2011.03.022. 
     '''
-    if all([T_b, T_w, T_pc]):
+    if T_b is not None and T_w is not None and T_pc is not None:
         if T_b < T_w < T_pc or 1.2*T_pc < T_b < T_w:      
             n = 0.4
         elif T_b < T_pc < T_w:
@@ -317,9 +317,9 @@ def Nu_Jackson(Re, Pr, rho_w=None, rho_b=None, Cp_avg=None, Cp_b=None, T_b=None,
     else:
         n = 0.4
     Nu = 0.0183*Re**0.82*Pr**0.5
-    if rho_w and rho_b:
+    if rho_w is not None and rho_b is not None:
         Nu *= (rho_w/rho_b)**0.3
-    if Cp_avg and Cp_b:
+    if Cp_avg is not None and Cp_b is not None:
         Nu *= (Cp_avg/Cp_b)**n
     return Nu
 
@@ -389,9 +389,9 @@ def Nu_Gupta(Re, Pr, rho_w=None, rho_b=None, mu_w=None, mu_b=None):
        451-60. doi:10.1016/j.anucene.2014.10.027.
     '''
     Nu = 0.004*Re**0.923*Pr**0.773
-    if rho_w and rho_b:
+    if rho_w is not None and rho_b is not None:
         Nu *= (rho_w/rho_b)**0.186
-    if mu_w and mu_b:
+    if mu_w is not None and mu_b is not None:
         Nu *= (mu_w/mu_b)**0.366
     return Nu
 
@@ -468,7 +468,7 @@ def Nu_Swenson(Re, Pr, rho_w=None, rho_b=None):
        doi:10.1016/j.nucengdes.2011.03.022. 
     '''
     Nu = 0.00459*Re**0.923*Pr**0.613
-    if rho_w and rho_b:
+    if rho_w is not None and rho_b is not None:
         Nu *= (rho_w/rho_b)**0.231
     return Nu
 
@@ -538,9 +538,9 @@ def Nu_Xu(Re, Pr, rho_w=None, rho_b=None, mu_w=None, mu_b=None):
        451-60. doi:10.1016/j.anucene.2014.10.027.
     '''
     Nu = 0.02269*Re**0.8079*Pr**0.9213
-    if rho_w and rho_b:
+    if rho_w is not None and rho_b is not None:
         Nu *= (rho_w/rho_b)**0.6638
-    if mu_w and mu_b:
+    if mu_w is not None and mu_b is not None:
         Nu *= (mu_w/mu_b)**0.8687
     return Nu
 
@@ -731,7 +731,7 @@ def Nu_Ornatsky(Re, Pr_b, Pr_w, rho_w=None, rho_b=None):
        757-66. doi:10.1007/s00231-008-0475-4.
     '''
     Nu = 0.023*Re**0.8*min(Pr_b, Pr_w)**0.8
-    if rho_w and rho_b:
+    if rho_w is not None and rho_b is not None:
         Nu *= (rho_w/rho_b)**0.3
     return Nu
 
@@ -848,9 +848,9 @@ def Nu_Zhu(Re, Pr, rho_w=None, rho_b=None, k_w=None, k_b=None):
        451-60. doi:10.1016/j.anucene.2014.10.027.
     '''
     Nu = 0.0068*Re**0.9*Pr**0.63
-    if rho_w and rho_b:
+    if rho_w is not None and rho_b is not None:
         Nu *= (rho_w/rho_b)**0.17
-    if k_w and k_b:
+    if k_w is not None and k_b is not None:
         Nu *= (k_w/k_b)**0.29
     return Nu
 
@@ -935,9 +935,9 @@ def Nu_Bishop(Re, Pr, rho_w=None, rho_b=None, D=None, x=None):
        doi:10.1016/j.nucengdes.2011.03.022. 
     '''
     Nu = 0.0069*Re**0.9*Pr**0.66
-    if rho_w and rho_b:
+    if rho_w is not None and rho_b is not None:
         Nu *= (rho_w/rho_b)**0.43
-    if D and x:
+    if D is not None and x is not None:
         Nu *= (1 + 2.4*D/x)
     return Nu
 
@@ -1014,6 +1014,8 @@ def Nu_Yamagata(Re, Pr, Pr_pc=None, Cp_avg=None, Cp_b=None, T_b=None,
 
     Examples
     --------
+    >>> Nu_Yamagata(Re=1E5, Pr=1.2, Pr_pc=1.5, Cp_avg=2080.845, Cp_b=2048.621, T_b=650, T_w=700, T_pc=600.0)
+    292.3473428004679
 
     References
     ----------
@@ -1037,13 +1039,14 @@ def Nu_Yamagata(Re, Pr, Pr_pc=None, Cp_avg=None, Cp_b=None, T_b=None,
        Process Monitoring, 241, no. 6 (June 2011): 2184-2203. 
        doi:10.1016/j.nucengdes.2011.03.022. 
     '''
-    F = 1
-    if all([T_b, T_w, T_pc, Pr_pc, Cp_avg, Cp_b]):
+    F = 1.0
+    if (T_b is not None and T_w is not None and T_pc is not None
+        and Pr_pc is not None and Cp_avg is not None and Cp_b is not None):
         E = (T_pc - T_b)/(T_w - T_b)
-        if E < 0:
+        if E < 0.0:
             n2 = 1.44*(1 + 1/Pr_pc) - 0.53
             F = (Cp_avg/Cp_b)**n2
-        elif 0 < E < 1:
+        elif E < 1.0:
             n1 = -0.77*(1 + 1/Pr_pc) + 1.49
             F = 0.67*Pr_pc**-0.05*(Cp_avg/Cp_b)**n1
     return 0.0138*Re**0.85*Pr**0.8*F
@@ -1140,7 +1143,7 @@ def Nu_Kitoh(Re, Pr, H=None, G=None, q=None):
        Process Monitoring, 241, no. 6 (June 2011): 2184-2203. 
        doi:10.1016/j.nucengdes.2011.03.022. 
     '''
-    if H and G and q:
+    if H is not None and G is not None and q is not None:
         qht = 200.*G**1.2
         if H < 1.5E6:
             fc = 2.9E-8 + 0.11/qht
@@ -1235,11 +1238,11 @@ def Nu_Krasnoshchekov_Protopopov(Re, Pr, Cp_avg=None, Cp_b=None, k_w=None,
     '''
     fd = (1.82*log10(Re) - 1.64)**-2
     Nu = (fd/8.)*Re*Pr/(1.07 + 12.7*(fd/8.)**0.5*(Pr**(2/3.)-1))
-    if mu_w and mu_b:
+    if mu_w is not None and mu_b is not None:
         Nu *= (mu_w/mu_b)**0.11
-    if k_w and k_b:
+    if k_w is not None and k_b is not None:
         Nu *= (k_w/k_b)**-0.33
-    if Cp_avg and Cp_b:
+    if Cp_avg is not None and Cp_b is not None:
         Nu *= (Cp_avg/Cp_b)**0.35
     return Nu
 
@@ -1305,9 +1308,9 @@ def Nu_Petukhov(Re, Pr, rho_w=None, rho_b=None, mu_w=None, mu_b=None):
        451-60. doi:10.1016/j.anucene.2014.10.027.
     '''
     fd = (1.82*log10(Re) - 1.64)**-2
-    if rho_w and rho_b:
+    if rho_w is not None and rho_b is not None:
         fd *= (rho_w/rho_b)**0.4
-    if mu_w and mu_b:
+    if mu_w is not None and mu_b is not None:
         fd *= (mu_w/mu_b)**0.2
     return (fd/8.)*Re*Pr/(1 + 900./Re + 12.7*(fd/8.)**0.5*(Pr**(2/3.)-1))
 
@@ -1391,20 +1394,20 @@ def Nu_Krasnoshchekov(Re, Pr, rho_w=None, rho_b=None, Cp_avg=None, Cp_b=None,
        Supercritical Pressure." Annals of Nuclear Energy 76 (February 2015): 
        451-60. doi:10.1016/j.anucene.2014.10.027.
     '''
-    if all([T_b, T_w, T_pc]):
+    if T_b is not None and T_w is not None and T_pc is not None:
         n1 = 0.22 + 0.18*T_w/T_pc
         if T_b < T_w < T_pc or 1.2*T_pc < T_b < T_w:      
             n = 0.4
-        elif 1 < T_w/T_pc < 2.5:
+        elif 1.0 < T_w/T_pc < 2.5:
             n = n1
         else:
-            n = n1 + (5*n1 - 2)*(1 - T_b/T_pc)
+            n = n1 + (5.0*n1 - 2.0)*(1.0 - T_b/T_pc)
     else:
         n = 0.4
     fd = (1.82*log10(Re) - 1.64)**-2
-    Nu = (fd/8.)*Re*Pr/(1.07 + 12.7*(fd/8.)**0.5*(Pr**(2/3.)-1))
-    if rho_w and rho_b:
+    Nu = (fd/8.)*Re*Pr/(1.07 + 12.7*(fd/8.)**0.5*(Pr**(2/3.)-1.0))
+    if rho_w is not None and rho_b is not None:
         Nu *= (rho_w/rho_b)**0.3
-    if Cp_avg and Cp_b:
+    if Cp_avg is not None and Cp_b is not None:
         Nu *= (Cp_avg/Cp_b)**n
     return Nu

@@ -32,7 +32,14 @@ import pytest
  
 def test_Nu_plate_Kumar():
     from fluids.friction import Kumar_beta_list
-    from ht.conv_plate import Kumar_Nu_Res
+
+    Kumar_Nu_Res = [[10.0],
+              [10.0, 100.0],
+              [20.0, 300.0],
+              [20.0, 400.0],
+              [20.0, 500.0]]
+
+
     Nu = Nu_plate_Kumar(2000, 0.7, 30)
     assert_allclose(Nu, 47.757818892853955)
     

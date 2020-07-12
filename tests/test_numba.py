@@ -36,6 +36,47 @@ except:
     numba = None
 import numpy as np
 
+
+@pytest.mark.numba
+@pytest.mark.skipif(numba is None, reason="Numba is missing")
+def test_tube_bank():
+    # not implemented - dP_Zukauskas
+    
+    kwargs = dict(Re=10263.37, Pr=.708, tube_rows=11, pitch_normal=.05, pitch_parallel=.05, Do=.025)
+    assert_close(ht.numba.Nu_Grimison_tube_bank(**kwargs), ht.Nu_Grimison_tube_bank(**kwargs))
+    
+    assert_close(ht.numba.Zukauskas_tube_row_correction(4, staggered=True), 
+                 ht.Zukauskas_tube_row_correction(4, staggered=True))
+
+    kwargs = dict(Re=1E4, Pr=7., tube_rows=10, pitch_parallel=.05, pitch_normal=.05)
+    assert_close(ht.numba.Nu_Zukauskas_Bejan(**kwargs), ht.Nu_Zukauskas_Bejan(**kwargs))
+
+    kwargs = dict(Re=1.32E4, Pr=0.71, tube_rows=8, pitch_parallel=.09, pitch_normal=.05)
+    assert_close(ht.numba.Nu_ESDU_73031(**kwargs), ht.Nu_ESDU_73031(**kwargs))
+
+    kwargs = dict(Re=10263.37, Pr=.708, tube_rows=11, pitch_normal=.05, pitch_parallel=.05, Do=.025)
+    assert_close(ht.numba.Nu_HEDH_tube_bank(**kwargs), ht.Nu_HEDH_tube_bank(**kwargs))
+    kwargs = dict(Re=10263.37, Pr=.708, tube_rows=5, pitch_normal=.05, pitch_parallel=.05, Do=.025)
+    assert_close(ht.numba.Nu_HEDH_tube_bank(**kwargs), ht.Nu_HEDH_tube_bank(**kwargs))
+
+    kwargs = dict(m=11., rho=995., mu=0.000803, mu_w=0.000657, DShell=0.584, LSpacing=0.1524, pitch=0.0254, Do=.019, NBaffles=22)
+    assert_close(ht.numba.dP_Kern(**kwargs), ht.dP_Kern(**kwargs))
+
+    assert_close(ht.numba.baffle_correction_Bell(0.82, 'Chebyshev'), ht.numba.baffle_correction_Bell(0.82, 'Chebyshev'))
+    assert_close(ht.numba.baffle_correction_Bell(0.82), ht.numba.baffle_correction_Bell(0.82))
+
+    assert_close(ht.numba.baffle_leakage_Bell(1, 3, 8), ht.baffle_leakage_Bell(1, 3, 8))
+    assert_close(ht.numba.baffle_leakage_Bell(1, 3, 8, 'HEDH'), ht.baffle_leakage_Bell(1, 3, 8, 'HEDH'))
+    
+    assert_close(ht.numba.bundle_bypassing_Bell(0.5, 5, 25), ht.bundle_bypassing_Bell(0.5, 5, 25))
+    assert_close(ht.numba.unequal_baffle_spacing_Bell(16, .1, .15, 0.15), ht.unequal_baffle_spacing_Bell(16, .1, .15, 0.15))
+
+@pytest.mark.numba
+@pytest.mark.skipif(numba is None, reason="Numba is missing")
+def test_conv_internal():
+    assert_close(ht.numba.Nu_conv_internal(Re=1E2, Pr=.7, x=.01, Di=.1),
+                 ht.Nu_conv_internal(Re=1E2, Pr=.7, x=.01, Di=.1))
+
 @pytest.mark.numba
 @pytest.mark.skipif(numba is None, reason="Numba is missing")
 def test_conv_free_enclosed():
@@ -262,6 +303,47 @@ def test_packed_bed():
     assert_close(ht.numba.Nu_packed_bed_Gnielinski(dp=8E-4, voidage=0.4, vs=1, rho=1E3, mu=1E-3, Pr=0.7),
                  ht.Nu_packed_bed_Gnielinski(dp=8E-4, voidage=0.4, vs=1, rho=1E3, mu=1E-3, Pr=0.7))
     
+
+@pytest.mark.numba
+@pytest.mark.skipif(numba is None, reason="Numba is missing")
+def test_two_phase():
+    kwargs = dict(m=1.0, x=.9, D=.3, alpha=.9, rhol=1000.0, rhog=2.2, mug=1e-5, Cpl=2300.0, kl=.6, mul=1e-3, mu_b=1E-3, mu_w=1.2E-3, L=5)
+    assert_close(ht.numba.h_two_phase(**kwargs), ht.h_two_phase(**kwargs))
+
+@pytest.mark.numba
+@pytest.mark.skipif(numba is None, reason="Numba is missing")
+def test_supercritical():
+    assert_close(ht.numba.Nu_Griem(1E5, 1.2), ht.Nu_Griem(1E5, 1.2))
+    
+    kwargs = dict(Re=1E5, Pr=1.2, rho_w=125.8, rho_b=249.0233, 
+              Cp_avg=2080.845, Cp_b=2048.621, T_b=650, T_w=700, T_pc=300.0)
+    assert_close(ht.numba.Nu_Jackson(**kwargs), ht.Nu_Jackson(**kwargs))
+    assert_close(ht.numba.Nu_Jackson(1E5, 1.2), ht.Nu_Jackson(1E5, 1.2))
+    
+    assert_close(ht.numba.Nu_Gupta(1E5, 1.2), ht.Nu_Gupta(1E5, 1.2))
+    assert_close(ht.numba.Nu_Swenson(1E5, 1.2), ht.Nu_Swenson(1E5, 1.2))
+    assert_close(ht.numba.Nu_Xu(1E5, 1.2), ht.Nu_Xu(1E5, 1.2))
+
+    assert_close(ht.numba.Nu_Mokry(1E5, 1.2), ht.Nu_Mokry(1E5, 1.2))
+    assert_close(ht.numba.Nu_Ornatsky(1E5, 1.2, 1.5), ht.Nu_Ornatsky(1E5, 1.2, 1.5))
+    assert_close(ht.numba.Nu_Zhu(1E5, 1.2), ht.Nu_Zhu(1E5, 1.2))
+
+    kwargs = dict(Re=1E5, Pr=1.2, Pr_pc=1.5, Cp_avg=2080.845, Cp_b=2048.621, T_b=650, T_w=700, T_pc=600.0)
+    assert_close(ht.numba.Nu_Yamagata(**kwargs), ht.Nu_Yamagata(**kwargs))
+
+    assert_close(ht.numba.Nu_Kitoh(1E5, 1.2), ht.Nu_Kitoh(1E5, 1.2))
+
+    assert_close(ht.numba.Nu_Krasnoshchekov_Protopopov(1E5, 1.2),
+                 ht.Nu_Krasnoshchekov_Protopopov(1E5, 1.2))
+
+    assert_close(ht.numba.Nu_Petukhov(1E5, 1.2),
+                 ht.Nu_Petukhov(1E5, 1.2))
+
+    assert_close(ht.numba.Nu_Krasnoshchekov(1E5, 1.2),
+                 ht.Nu_Krasnoshchekov(1E5, 1.2))
+    
+
+
 @pytest.mark.numba
 @pytest.mark.skipif(numba is None, reason="Numba is missing")
 def test_conduction():
@@ -277,3 +359,12 @@ def test_conduction():
 def test_hx():
     assert_close(ht.numba.temperature_effectiveness_air_cooler(.5, 2, rows=10, passes=10),
                  ht.temperature_effectiveness_air_cooler(.5, 2, rows=10, passes=10))
+
+@pytest.mark.numba
+@pytest.mark.skipif(numba is None, reason="Numba is missing")
+def test_conv_plate():
+    kwargs = dict(Re=2000, Pr=0.7, chevron_angle=30, mu=1E-3, mu_wall=8E-4)
+    assert_close(ht.numba.Nu_plate_Kumar(**kwargs), ht.Nu_plate_Kumar(**kwargs))
+    
+    kwargs = dict(Re=2000, Pr=.7, plate_enlargement_factor=1.18)
+    assert_close(ht.numba.Nu_plate_Martin(**kwargs), ht.Nu_plate_Martin(**kwargs))

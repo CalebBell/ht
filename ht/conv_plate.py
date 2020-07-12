@@ -29,19 +29,19 @@ __all__ = ['Nu_plate_Kumar', 'Nu_plate_Martin', 'Nu_plate_Muley_Manglik',
            'Nu_plate_Khan_Khan']
 
 
-Kumar_ms = [[0.349, 0.663],
+Kumar_ms = [[0.349, 0.663, 0.663],
       [0.349, 0.598, 0.663],
       [0.333, 0.591, 0.732],
       [0.326, 0.529, 0.703],
       [0.326, 0.503, 0.718]]
 
-Kumar_C1s = [[0.718, 0.348],
+Kumar_C1s = [[0.718, 0.348, 0.348],
        [0.718, 0.400, 0.300],
        [0.630, 0.291, 0.130],
        [0.562, 0.306, 0.108],
        [0.562, 0.331, 0.087]]
 
-Kumar_Nu_Res = [[10.0],
+Kumar_Nu_Res = [[10.0, 10.0],
           [10.0, 100.0],
           [20.0, 300.0],
           [20.0, 400.0],
@@ -147,9 +147,6 @@ def Nu_plate_Kumar(Re, Pr, chevron_angle, mu=None, mu_wall=None):
     return Nu
 
 
-_Nu_plate_Martin_correlations = {'1999': friction_plate_Martin_1999,
-                                 'VDI': friction_plate_Martin_VDI}
-
 def Nu_plate_Martin(Re, Pr, plate_enlargement_factor, variant='1999'):
     r'''Calculates Nusselt number for single-phase flow in a 
     Chevron-style plate heat exchanger according to [1]_, also shown in [2]_
@@ -215,12 +212,14 @@ def Nu_plate_Martin(Re, Pr, plate_enlargement_factor, variant='1999'):
     .. [3] Gesellschaft, V. D. I., ed. VDI Heat Atlas. 2nd edition.
        Berlin; New York:: Springer, 2010.
     '''
-    try:
-        fd_correlation = _Nu_plate_Martin_correlations[variant]
-    except KeyError:
+    if variant == '1999':
+        fd = friction_plate_Martin_1999(Re, plate_enlargement_factor)
+    elif variant == 'VDI':
+        fd = friction_plate_Martin_VDI(Re, plate_enlargement_factor)
+    else:
         raise ValueError("Supported friction factor correlations are Martin's"
                         " '1999' correlation or his 'VDI' correlation only")
-    fd = fd_correlation(Re, plate_enlargement_factor)
+    
     # VDI, original, and Björn Palm and Joachim Claesson recommend 0.122 leading coeff
     # The 0.205 in some publications is what happens when the friction factor
     # is in a fanning basis; = 4^0.374*1.22 = 2.048944

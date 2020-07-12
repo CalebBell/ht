@@ -26,7 +26,7 @@ import numpy as np
 
 from numpy.testing import assert_allclose
 from scipy.interpolate import interp1d, bisplrep, splrep, splev, UnivariateSpline, RectBivariateSpline
-
+from fluids.numerics import assert_close, assert_close1d
 
 def test_Nu_Grimison_tube_bank_tcks():
     from ht.conv_tube_bank import Grimison_ST_aligned, Grimison_SL_aligned, Grimison_C1_aligned, Grimison_C1_aligned_tck
@@ -264,11 +264,13 @@ def test_Nu_HEDH_tube_bank():
     Nu = Nu_HEDH_tube_bank(Re=10263.37, Pr=.708, tube_rows=11, pitch_normal=.05, pitch_parallel=.05, Do=.025)
     assert_allclose(Nu, 149.18735251017594)
 
+    Nu =  Nu_HEDH_tube_bank(Re=1E4, Pr=7., tube_rows=5, pitch_normal=.05, pitch_parallel=.05, Do=.03)
+    assert_close(Nu, 359.0551204831393)
 
 
 def test_dP_Kern():
     from ht.conv_tube_bank import Kern_f_Re
-    f = Kern_f_Re(np.linspace(10, 1E6, 10))
+    f = [Kern_f_Re(v) for v in np.linspace(10, 1E6, 10)]
     f_values = [6.0155491322862771, 0.19881943524161752, 0.1765198121811164, 0.16032260681398205, 0.14912064432650635, 0.14180674990498099, 0.13727374873569789, 0.13441446600494875, 0.13212172689902535, 0.12928835660421958]
     assert_allclose(f, f_values)
 
