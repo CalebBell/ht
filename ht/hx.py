@@ -838,10 +838,9 @@ def Pp(x, y):
     .. [2] Rohsenow, Warren and James Hartnett and Young Cho. Handbook of Heat
        Transfer, 3E. New York: McGraw-Hill, 1998.
     '''
-    try:
-        return (1. - exp(-x*(1. + y)))/(1. + y)
-    except ZeroDivisionError:
+    if y == -1.0:
         return x
+    return (1. - exp(-x*(1. + y)))/(1. + y)
 
 
 def Pc(x, y):
@@ -885,11 +884,10 @@ def Pc(x, y):
     .. [2] Rohsenow, Warren and James Hartnett and Young Cho. Handbook of Heat
        Transfer, 3E. New York: McGraw-Hill, 1998.
     '''
-    try:
-        term = exp(-x*(1. - y))
-        return (1. - term)/(1. - y*term)
-    except ZeroDivisionError:
+    term = exp(-x*(1. - y))
+    if (1. - y*term) == 0.0:
         return x/(1. + x)
+    return (1. - term)/(1. - y*term)
 
 
 def effectiveness_NTU_method(mh, mc, Cph, Cpc, subtype='counterflow', Thi=None, 
@@ -3696,14 +3694,16 @@ def NTU_from_P_plate(P1, R1, Np1, Np2, counterflow=True,
     if Np1 == 1 and Np2 == 1 and counterflow:
         try:
             return -log((P1*R1 - 1.)/(P1 - 1.))/(R1 - 1.)
-        except ValueError:
-            raise ValueError('The maximum P1 obtainable at the specified R1 is %f at the limit of NTU1=inf.' %(1./R1))
+        except:
+#            raise ValueError("impossible") # numba: uncomment
+            raise ValueError('The maximum P1 obtainable at the specified R1 is %f at the limit of NTU1=inf.' %(1./R1)) # numba: delete
         
     elif Np1 == 1 and Np2 == 1 and not counterflow:
         try:
             return log(-1./(P1*(R1 + 1.) - 1.))/(R1 + 1.)
-        except ValueError:
-            raise ValueError('The maximum P1 obtainable at the specified R1 is %f at the limit of NTU1=inf.' %Pp(1E10, R1))
+        except:
+#            raise ValueError("impossible") # numba: uncomment
+            raise ValueError('The maximum P1 obtainable at the specified R1 is %f at the limit of NTU1=inf.' %Pp(1E10, R1)) # numba: delete
     elif Np1 == 1 and Np2 == 2:
         NTU_max = 100.
     elif Np1 == 1 and Np2 == 3 and counterflow:

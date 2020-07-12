@@ -1532,7 +1532,7 @@ def test_NTU_from_P_plate():
             P1 = temperature_effectiveness_plate(R1=R1, NTU1=NTU1, Np1=2, Np2=2, counterflow=False, passes_counterflow=False)
             NTU1_calc = NTU_from_P_plate(P1, R1, Np1=2, Np2=2, counterflow=False, passes_counterflow=False)
             P1_calc = temperature_effectiveness_plate(R1=R1, NTU1=NTU1_calc, Np1=2, Np2=2, counterflow=False, passes_counterflow=False)
-        except ZeroDivisionError:
+        except (ZeroDivisionError, ValueError):
             continue
         assert_allclose(P1, P1_calc)
         tot +=1
