@@ -52,7 +52,8 @@ __all__ = ['effectiveness_from_NTU', 'NTU_from_effectiveness', 'calc_Cmin',
 R_value = foot*foot*degree_Fahrenheit*hour/Btu
 
 __numba_additional_funcs__ = ['crossflow_effectiveness_to_int', 'to_solve_Ntubes_Phadkeb',
-                              '_tubecount_objf_Perry', '_NTU_max_for_P_solver']
+                              '_tubecount_objf_Perry', '_NTU_max_for_P_solver',
+                              '_NTU_from_P_solver', '_NTU_from_P_objective']
 try:
     if IS_NUMBA:
         from scipy.special import gamma
