@@ -1414,7 +1414,7 @@ def Nu_conv_internal_methods(Re, Pr, eD=0, Di=None, x=None, fd=None,
             methods.append('Gnielinski smooth high Pr') # 2
     return methods
 
-def Nu_conv_internal(Re, Pr, eD=0, Di=None, x=None, fd=None, Method=None):
+def Nu_conv_internal(Re, Pr, eD=0.0, Di=None, x=None, fd=None, Method=None):
     r'''This function calculates the heat transfer coefficient for internal
     convection inside a circular pipe. 
     

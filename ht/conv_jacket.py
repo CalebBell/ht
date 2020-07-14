@@ -155,7 +155,7 @@ def Lehrer(m, Dtank, Djacket, H, Dinlet, rho, Cp, k, mu, muw=None,
 
 def Stein_Schmidt(m, Dtank, Djacket, H, Dinlet,
                   rho, Cp, k, mu, muw=None, rhow=None,
-                  inlettype='tangential', inletlocation='auto', roughness=0):
+                  inlettype='tangential', inletlocation='auto', roughness=0.0):
     r'''Calculates average heat transfer coefficient for a jacket around a
     vessel according to [1]_ as described in [2]_.
 

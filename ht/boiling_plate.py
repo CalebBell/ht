@@ -32,7 +32,7 @@ __all__ = ['h_boiling_Amalfi', 'h_boiling_Lee_Kang_Kim',
            'h_boiling_Yan_Lin']
 
 def h_boiling_Amalfi(m, x, Dh, rhol, rhog, mul, mug, kl, Hvap, sigma, q, 
-                     A_channel_flow, chevron_angle=45):
+                     A_channel_flow, chevron_angle=45.0):
     r'''Calculates the two-phase boiling heat transfer coefficient of a 
     liquid and gas flowing inside a plate and frame heat exchanger, as
     developed in [1]_ from a wide range of existing correlations and data sets. 
@@ -234,7 +234,7 @@ def h_boiling_Lee_Kang_Kim(m, x, D_eq, rhol, rhog, mul, mug, kl, Hvap, q,
 
 
 def h_boiling_Han_Lee_Kim(m, x, Dh, rhol, rhog, mul, kl, Hvap, Cpl, q, 
-                          A_channel_flow, wavelength, chevron_angle=45):
+                          A_channel_flow, wavelength, chevron_angle=45.0):
     r'''Calculates the two-phase boiling heat transfer coefficient of a 
     liquid and gas flowing inside a plate and frame heat exchanger, as
     developed in [1]_ from experiments with three plate exchangers and the

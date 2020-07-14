@@ -100,7 +100,7 @@ def test_boiling_nucleic_Montinsky():
 
 def test_boiling_nucleic_Stephan_Abdelsalam():
     # Stephan Abdelsalam function; allow bad function method
-    Stephan_Abdelsalam(Te=16.2, Tsat=437.5, Cpl=2730., kl=0.086, mul=156E-6,  sigma=0.0082, Hvap=272E3, rhol=567, rhog=18.09, angle=35, correlation='fail')
+    Stephan_Abdelsalam(Te=16.2, Tsat=437.5, Cpl=2730., kl=0.086, mul=156E-6,  sigma=0.0082, Hvap=272E3, rhol=567.0, rhog=18.09, angle=35.0, correlation='fail')
 
     cs = ['general', 'water', 'hydrocarbon', 'cryogenic', 'refrigerant']
     h_SA = [Stephan_Abdelsalam(Te=16.2, Tsat=437.5, Cpl=2730., kl=0.086, mul=156E-6, sigma=0.0082, Hvap=272E3, rhol=567, rhog=18.09, correlation=i) for i in cs]
@@ -109,11 +109,11 @@ def test_boiling_nucleic_Stephan_Abdelsalam():
     
     h_qs = []
     for h, c in zip(h_values, cs):
-        h_qs.append(Stephan_Abdelsalam(q=16.2*h, Tsat=437.5, Cpl=2730., kl=0.086, mul=156E-6, sigma=0.0082, Hvap=272E3, rhol=567, rhog=18.09, correlation=c))
+        h_qs.append(Stephan_Abdelsalam(q=16.2*h, Tsat=437.5, Cpl=2730., kl=0.086, mul=156E-6, sigma=0.0082, Hvap=272E3, rhol=567.0, rhog=18.09, correlation=c))
     assert_allclose(h_qs, h_values)
 
     with pytest.raises(Exception):
-        Stephan_Abdelsalam(Tsat=437.5, Cpl=2730., kl=0.086, mul=156E-6,  sigma=0.0082, Hvap=272E3, rhol=567, rhog=18.09)
+        Stephan_Abdelsalam(Tsat=437.5, Cpl=2730., kl=0.086, mul=156E-6,  sigma=0.0082, Hvap=272E3, rhol=567.0, rhog=18.09)
 
 
 def test_boiling_nucleic_HEDH_Taborek():
@@ -177,7 +177,7 @@ def test_Gorenflo():
     assert_allclose(h1, h2)
     
     # Custom h0 case
-    h = Gorenflo(3E5, 6137000., q=2E4, h0=3700)
+    h = Gorenflo(3E5, 6137000., q=2E4, h0=3700.0)
     assert_allclose(h, 2607.771397342676)
     
     with pytest.raises(Exception):
@@ -192,7 +192,7 @@ def test_h_nucleic():
     h = h_nucleic(rhol=957.854, rhog=0.595593, mul=2.79E-4, kl=0.680, Cpl=4217, Hvap=2.257E6, sigma=0.0589, Te=4.9, Method='Rohsenow')
     assert_allclose(h, 1094.0242011089285)
         
-    h = h_nucleic(Te=4.3, P=101325, Cpl=4180., kl=0.688, sigma=0.0588, Hvap=2.25E6, rhol=958., rhog=0.597, Method='McNelly')
+    h = h_nucleic(Te=4.3, P=101325.0, Cpl=4180., kl=0.688, sigma=0.0588, Hvap=2.25E6, rhol=958., rhog=0.597, Method='McNelly')
     assert_allclose(h, 533.8056972951352)
     
     h = h_nucleic(Te=4.3, dPsat=3906*4.3, Cpl=4180., kl=0.688, mul=0.275E-3, sigma=0.0588, Hvap=2.25E6, rhol=958., rhog=0.597, Method='Forster-Zuber')
@@ -246,14 +246,14 @@ def test_h_nucleic():
     
     
 def test_qmax_Zuber():
-    q_calc_ex = Zuber(sigma=8.2E-3, Hvap=272E3, rhol=567, rhog=18.09, K=0.149)
+    q_calc_ex = Zuber(sigma=8.2E-3, Hvap=272E3, rhol=567.0, rhog=18.09, K=0.149)
     assert_allclose(q_calc_ex, 444307.22304342285)
     q_max = Zuber(8.2E-3, 272E3, 567, 18.09, 0.18)
     assert_allclose(q_max, 536746.9808578263)
 
 
 def test_qmax_Serth_HEDH():
-    qmax = Serth_HEDH(D=0.0127, sigma=8.2E-3, Hvap=272E3, rhol=567, rhog=18.09)
+    qmax = Serth_HEDH(D=0.0127, sigma=8.2E-3, Hvap=272E3, rhol=567.0, rhog=18.09)
     assert_allclose(qmax, 351867.46522901946)
     # Test K calculated as a function of R
     qmax = Serth_HEDH(0.00127, 8.2E-3, 272E3, 567, 18.09)

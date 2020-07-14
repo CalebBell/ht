@@ -119,6 +119,8 @@ def test_wall_factor():
 
 def test_fin_efficiency_Kern_Kraus():
     
+    assert type(fin_efficiency_Kern_Kraus(0.0254, 0.05715, 3.8E-4, 200, 58)) is float
+    
     eta = fin_efficiency_Kern_Kraus(0.0254, 0.05715, 3.8E-4, 200, 58)
     assert_allclose(eta, 0.8412588620231153)
     '''Code for comparing against several formulas:

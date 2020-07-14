@@ -228,7 +228,7 @@ def test_Nu_Zukauskas_Bejan():
     Nu = Nu_Zukauskas_Bejan(Re=1E4, Pr=7., tube_rows=10, pitch_parallel=.05, pitch_normal=.05)
     assert_allclose(Nu, 175.9202277145248)
     
-    Nu = Nu_Zukauskas_Bejan(Re=1E4, Pr=7., tube_rows=10, pitch_parallel=.05, pitch_normal=.05, Pr_wall=9)
+    Nu = Nu_Zukauskas_Bejan(Re=1E4, Pr=7., tube_rows=10, pitch_parallel=.05, pitch_normal=.05, Pr_wall=9.0)
     assert_allclose(Nu, 165.2074626671159)
     
     Nus = [Nu_Zukauskas_Bejan(Re=Re, Pr=7., tube_rows=30, pitch_parallel=.05, pitch_normal=.05) for Re in (10, 2000, 1E5, 1E7)]
@@ -347,7 +347,7 @@ def test_baffle_correction_Bell():
     assert_allclose(Jc, 1.1258554691854046, 5e-4)
     
     # Check the match is reasonably good
-    errs = np.array([(baffle_correction_Bell(Fc)-Jc)/Jc for Fc, Jc in zip(Bell_baffle_configuration_Fcs, Bell_baffle_configuration_Jcs)])
+    errs = np.array([(baffle_correction_Bell(float(Fc))-Jc)/Jc for Fc, Jc in zip(Bell_baffle_configuration_Fcs, Bell_baffle_configuration_Jcs)])
     assert np.abs(errs).sum()/len(errs) < 1e-3
     
     Jc = baffle_correction_Bell(0.1, 'chebyshev')   
@@ -685,7 +685,7 @@ def test_unequal_baffle_spacing_Bell():
     assert_allclose(Js, 0.9640087802805195)
 
 def test_laminar_correction_Bell():
-    Jr = laminar_correction_Bell(30, 80)
+    Jr = laminar_correction_Bell(30.0, 80)
     assert_allclose(Jr, 0.7267995454361379)
     
     assert_allclose(0.4, laminar_correction_Bell(30, 80000))

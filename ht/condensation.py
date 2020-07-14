@@ -229,7 +229,7 @@ def Akers_Deans_Crosser(m, rhog, rhol, kl, mul, Cpl, D, x):
 #print([Akers_Deans_Crosser(m=0.01, rhog=6.36, rhol=582.9, kl=0.098, mul=159E-6, Cpl=2520., D=0.03, x=0.85)])
 
 
-def h_kinetic(T, P, MW, Hvap, f=1):
+def h_kinetic(T, P, MW, Hvap, f=1.0):
     r'''Calculates heat transfer coefficient for condensation
     of a pure chemical inside a vertical tube or tube bundle, as presented in
     [2]_ according to [1]_.

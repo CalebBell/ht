@@ -512,8 +512,8 @@ def fin_efficiency_Kern_Kraus(Do, D_fin, t_fin, k_fin, h):
     .. [4] Kraus, Allan D., Abdul Aziz, and James Welty. Extended Surface Heat
        Transfer. 1st edition. New York: Wiley-Interscience, 2001.
     '''
-    re = D_fin/2.
-    ro = Do/2.
+    re = 0.5*D_fin
+    ro = 0.5*Do
     m = (2.0*h/(k_fin*t_fin))**0.5
 
     mre = m*re
@@ -522,7 +522,7 @@ def fin_efficiency_Kern_Kraus(Do, D_fin, t_fin, k_fin, h):
     x1 = k1(mre)
     num = x0*k1(mro) - x1*i1(mro)
     den = i0(mro)*x1 + x0*k0(mro)
-    return 2.0*ro/(m*(re*re - ro*ro))*num/den
+    return float(2.0*ro/(m*(re*re - ro*ro))*num/den)
 
 
 

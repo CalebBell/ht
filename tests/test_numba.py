@@ -79,6 +79,12 @@ def test_conv_internal():
 
 @pytest.mark.numba
 @pytest.mark.skipif(numba is None, reason="Numba is missing")
+def test_conv_free_immersed():
+    assert_close(ht.numba.Nu_vertical_cylinder(0.72, 1E7, L=1.0, D=3.),
+                 ht.Nu_vertical_cylinder(0.72, 1E7, L=1.0, D=3.0))
+
+@pytest.mark.numba
+@pytest.mark.skipif(numba is None, reason="Numba is missing")
 def test_conv_free_enclosed():
     assert_close(ht.numba.Nu_Nusselt_Rayleigh_Holling_Herwig(5.54, 3.21e8, buoyancy=True),
                  ht.Nu_Nusselt_Rayleigh_Holling_Herwig(5.54, 3.21e8, buoyancy=True))

@@ -13,7 +13,7 @@ def Morimoto_Hotta(Re: float, Pr: float, Dh: float, Rm: float) -> float: ...
 def Nu_conv_internal(
     Re: float,
     Pr: float,
-    eD: int = ...,
+    eD: float = ...,
     Di: Optional[float] = ...,
     x: Optional[float] = ...,
     fd: Optional[float] = ...,
@@ -24,7 +24,7 @@ def Nu_conv_internal(
 def Nu_conv_internal_methods(
     Re: float,
     Pr: float,
-    eD: int = ...,
+    eD: float = ...,
     Di: Optional[float] = ...,
     x: Optional[float] = ...,
     fd: None = ...,

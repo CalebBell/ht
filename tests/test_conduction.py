@@ -32,7 +32,7 @@ def test_conduction():
     assert_allclose(R_to_k(R=0.05, t=0.025), 0.5)
     assert_allclose(k_to_R(k=0.5, t=0.025), 0.05)
     assert_allclose(k_to_thermal_resistivity(0.25), 4.0)
-    assert_allclose(thermal_resistivity_to_k(4), 0.25)
+    assert_allclose(thermal_resistivity_to_k(4.), 0.25)
 
     Rs = [R_value_to_k(0.12), R_value_to_k(0.71, SI=False)]
     assert_allclose(Rs, [0.2116666666666667, 0.20313787163983468])
@@ -42,16 +42,16 @@ def test_conduction():
     values =  k_to_R_value(R_value_to_k(0.12)), k_to_R_value(R_value_to_k(0.71, SI=False), SI=False)
     assert_allclose(values, [0.11999999999999998, 0.7099999999999999])
 
-    assert_allclose(R_cylinder(0.9, 1., 20, 10), 8.38432343682705e-05)
+    assert_allclose(R_cylinder(0.9, 1., 20., 10.), 8.38432343682705e-05)
 
     ### Shape Factors
 
-    assert_allclose(S_isothermal_sphere_to_plane(1, 100), 6.298932638776527)
-    assert_allclose(S_isothermal_pipe_to_plane(1, 100, 3), 3.146071454894645)
-    assert_allclose(S_isothermal_pipe_normal_to_plane(1, 100), 104.86893910124888)
-    assert_allclose(S_isothermal_pipe_to_isothermal_pipe(.1, .2, 1, 1), 1.188711034982268)
-    assert_allclose(S_isothermal_pipe_to_two_planes(.1, 5, 1), 1.2963749299921428)
-    assert_allclose(S_isothermal_pipe_eccentric_to_isothermal_pipe(.1, .4, .05, 10), 47.709841915608976)
+    assert_allclose(S_isothermal_sphere_to_plane(1., 100.), 6.298932638776527)
+    assert_allclose(S_isothermal_pipe_to_plane(1., 100., 3.), 3.146071454894645)
+    assert_allclose(S_isothermal_pipe_normal_to_plane(1., 100.), 104.86893910124888)
+    assert_allclose(S_isothermal_pipe_to_isothermal_pipe(.1, .2, 1., 1.), 1.188711034982268)
+    assert_allclose(S_isothermal_pipe_to_two_planes(.1, 5., 1.), 1.2963749299921428)
+    assert_allclose(S_isothermal_pipe_eccentric_to_isothermal_pipe(.1, .4, .05, 10.), 47.709841915608976)
 
 
 def test_cylindrical_heat_transfer():

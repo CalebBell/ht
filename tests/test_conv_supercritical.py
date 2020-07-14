@@ -110,7 +110,7 @@ def test_Nu_Zhu():
 
 
 def test_Nu_Bishop():
-    Nu = Nu_Bishop(1E5, 1.2, 330, 290., .01, 1.2)
+    Nu = Nu_Bishop(1E5, 1.2, 330.0, 290., .01, 1.2)
     assert_allclose(Nu, 265.3620050072533)
     Nu = Nu_Bishop(1E5, 1.2)
     assert_allclose(Nu, 246.09835634820243)
@@ -121,7 +121,7 @@ def test_Nu_Yamagata():
     assert_allclose(Nu, 283.9383689412967)
 
     Nu_calc = [Nu_Yamagata(1E5, 1.2, 1.5, Cp_avg=2080.845, Cp_b=2048.621, 
-                           T_b=650, T_w=700, T_pc=T) for T in [750, 675, 600]]
+                           T_b=650, T_w=700, T_pc=T) for T in [750.0, 675.0, 600.0]]
     Nu_exp = [283.9383689412967, 187.02304885276828, 292.3473428004679]
     assert_allclose(Nu_calc, Nu_exp)
 
@@ -141,19 +141,19 @@ def test_Nu_Krasnoshchekov_Protopopov():
 
 
 def test_Nu_Petukhov():
-    Nu = Nu_Petukhov(1E5, 1.2, 330, 290., 8e-4, 9e-4)
+    Nu = Nu_Petukhov(1E5, 1.2, 330.0, 290., 8e-4, 9e-4)
     assert_allclose(Nu, 254.8258598466738)
 
 
 def test_Nu_Krasnoshchekov():
     Nu_calc = [Nu_Krasnoshchekov(1E5, 1.2, rho_w=125.8, rho_b=249.0233, 
                           Cp_avg=2080.845, Cp_b=2048.621, T_b=650, T_w=700, 
-                          T_pc=T) for T in [750, 675]]
+                          T_pc=T) for T in [750.0, 675.0]]
     Nu_exp = [192.52819597784372, 192.54822916468785]
     assert_allclose(Nu_calc, Nu_exp)
     
     Nu_3 = Nu_Krasnoshchekov(1E5, 1.2, rho_w=125.8, rho_b=249.0233, 
-                      Cp_avg=2080.845, Cp_b=2048.621, T_b=400, T_w=200, T_pc=400)
+                      Cp_avg=2080.845, Cp_b=2048.621, T_b=400.0, T_w=200.0, T_pc=400.0)
     assert_allclose(Nu_3, 192.2579518680533)
     
     Nu = Nu_Krasnoshchekov(1E5, 1.2)

@@ -25,6 +25,7 @@ from ht import *
 import numpy as np
 from numpy.testing import assert_allclose
 import pytest
+from fluids.numerics import linspace, logspace, assert_close
 from ht.conv_external import conv_horizontal_plate_laminar_methods, conv_horizontal_plate_turbulent_methods
 
 ### Conv external
@@ -33,7 +34,7 @@ def test_Nu_cylinder_Zukauskas():
     Nu = Nu_cylinder_Zukauskas(7992, 0.707, 0.69)
     assert_allclose(Nu, 50.523612661934386)
 
-    Nus_allRe = [Nu_cylinder_Zukauskas(Re, 0.707, 0.69) for Re in np.logspace(0, 6, 8)]
+    Nus_allRe = [Nu_cylinder_Zukauskas(Re, 0.707, 0.69) for Re in logspace(0, 6, 8)]
     Nus_allRe_values = [0.66372630070423799, 1.4616593536687801, 3.2481853039940831, 8.7138930573143227, 26.244842388228189, 85.768869004450067, 280.29503021904566, 1065.9610995854582]
     assert_allclose(Nus_allRe, Nus_allRe_values)
 
@@ -43,57 +44,63 @@ def test_Nu_cylinder_Zukauskas():
 
 
 def test_Nu_cylinder_Churchill_Bernstein():
-    Nu = Nu_cylinder_Churchill_Bernstein(6071, 0.7)
+    Nu = Nu_cylinder_Churchill_Bernstein(6071.0, 0.7)
     assert_allclose(Nu, 40.63708594124974)
 
 
 def test_Nu_cylinder_Sanitjai_Goldstein():
-    Nu = Nu_cylinder_Sanitjai_Goldstein(6071, 0.7)
+    Nu = Nu_cylinder_Sanitjai_Goldstein(6071.0, 0.7)
     assert_allclose(Nu, 40.38327083519522)
 
 
 def test_Nu_cylinder_Fand():
-    Nu = Nu_cylinder_Fand(6071, 0.7)
+    Nu = Nu_cylinder_Fand(6071.0, 0.7)
     assert_allclose(Nu, 45.19984325481126)
 
 
 def test_Nu_cylinder_McAdams():
-    Nu = Nu_cylinder_McAdams(6071, 0.7)
+    Nu = Nu_cylinder_McAdams(6071.0, 0.7)
     assert_allclose(Nu, 46.98179235867934)
 
 
 def test_Nu_cylinder_Whitaker():
-    Nu = Nu_cylinder_Whitaker(6071, 0.7)
+    Nu = Nu_cylinder_Whitaker(6071.0, 0.7)
     assert_allclose(Nu, 45.94527461589126)
-    Nu = Nu_cylinder_Whitaker(6071, 0.7, 1E-3, 1.2E-3)
+    Nu = Nu_cylinder_Whitaker(6071.0, 0.7, 1E-3, 1.2E-3)
     assert_allclose(Nu, 43.89808146760356)
 
 
 def test_Nu_cylinder_Perkins_Leppert_1962():
-    Nu = Nu_cylinder_Perkins_Leppert_1962(6071, 0.7)
+    Nu = Nu_cylinder_Perkins_Leppert_1962(6071.0, 0.7)
     assert_allclose(Nu, 49.97164291175499)
-    Nu = Nu_cylinder_Perkins_Leppert_1962(6071, 0.7, 1E-3, 1.2E-3)
+    Nu = Nu_cylinder_Perkins_Leppert_1962(6071.0, 0.7, 1E-3, 1.2E-3)
     assert_allclose(Nu, 47.74504603464674)
 
 
 def test_Nu_cylinder_Perkins_Leppert_1964():
-    Nu = Nu_cylinder_Perkins_Leppert_1964(6071, 0.7)
+    Nu = Nu_cylinder_Perkins_Leppert_1964(6071.0, 0.7)
     assert_allclose(Nu, 53.61767038619986)
-    Nu = Nu_cylinder_Perkins_Leppert_1964(6071, 0.7, 1E-3, 1.2E-3)
+    Nu = Nu_cylinder_Perkins_Leppert_1964(6071.0, 0.7, 1E-3, 1.2E-3)
     assert_allclose(Nu, 51.22861670528418)
 
 
 def test_Nu_external_cylinder():
-    Nu = Nu_external_cylinder(6071, 0.7)
+    Nu = Nu_external_cylinder(6071.0, 0.7)
     assert_allclose(Nu, 40.38327083519522)
     
-    Nu = Nu_external_cylinder(6071, 0.7, Method='Zukauskas')
+    Nu = Nu_external_cylinder(6071.0, 0.7, Method='Zukauskas')
     assert_allclose(Nu, 42.4244052368103)
     
-    methods = Nu_external_cylinder_methods(6071, 0.7)
+    methods = Nu_external_cylinder_methods(6071.0, 0.7, Prw=.8, mu=1e-4, muw=2e-4)
     
     with pytest.raises(Exception):
-        Nu_external_cylinder(6071, 0.7, Method='BADMETHOD')
+        Nu_external_cylinder(6071.0, 0.7, Method='BADMETHOD')
+        
+    Nu = Nu_external_cylinder(6071.0, 0.7, Prw=.8, Method='Zukauskas')
+    assert_close(Nu, 41.0315360788783)
+
+    Nu = Nu_external_cylinder(6071.0, 0.7, mu=1e-4, muw=2e-4, Method='Whitaker')
+    assert_close(Nu, 38.63521672235044)
 
 
 def test_Nu_horizontal_plate_laminar_Baehr():
@@ -147,7 +154,7 @@ def test_Nu_external_horizontal_plate():
                     Nu_external_horizontal_plate(5e6, .7, Re_transition=1e7))
     
     # Check the AvailableMethods
-    assert (set(Nu_external_horizontal_plate_methods(1e5, .7)) 
+    assert (set(Nu_external_horizontal_plate_methods(1e5, .7, L=1.0, x=0.5, check_ranges=True)) 
             == set(conv_horizontal_plate_laminar_methods.keys()) )
     
     assert (set(Nu_external_horizontal_plate_methods(1e7, .7)) 

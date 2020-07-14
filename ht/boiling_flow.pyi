@@ -10,16 +10,16 @@ def Chen_Bennett(
     m: float,
     x: float,
     D: float,
-    rhol: int,
+    rhol: float,
     rhog: float,
     mul: float,
     mug: float,
     kl: float,
-    Cpl: int,
+    Cpl: float,
     Hvap: float,
     sigma: float,
     dPsat: float,
-    Te: int
+    Te: float
 ) -> float: ...
 
 
@@ -27,21 +27,21 @@ def Chen_Edelstein(
     m: float,
     x: float,
     D: float,
-    rhol: int,
+    rhol: float,
     rhog: float,
     mul: float,
     mug: float,
     kl: float,
-    Cpl: int,
+    Cpl: float,
     Hvap: float,
     sigma: float,
     dPsat: float,
-    Te: int
+    Te: float
 ) -> float: ...
 
 
 def Lazarek_Black(
-    m: int,
+    m: float,
     D: float,
     mul: float,
     kl: float,
@@ -52,7 +52,7 @@ def Lazarek_Black(
 
 
 def Li_Wu(
-    m: int,
+    m: float,
     x: float,
     D: float,
     rhol: float,
@@ -67,23 +67,23 @@ def Li_Wu(
 
 
 def Liu_Winterton(
-    m: int,
+    m: float,
     x: float,
     D: float,
     rhol: float,
     rhog: float,
     mul: float,
     kl: float,
-    Cpl: int,
+    Cpl: float,
     MW: float,
     P: float,
     Pc: float,
-    Te: int
+    Te: float
 ) -> float: ...
 
 
 def Sun_Mishima(
-    m: int,
+    m: float,
     D: float,
     rhol: float,
     rhog: float,
@@ -97,7 +97,7 @@ def Sun_Mishima(
 
 
 def Thome(
-    m: int,
+    m: float,
     x: float,
     D: float,
     rhol: float,
@@ -106,8 +106,8 @@ def Thome(
     mug: float,
     kl: float,
     kg: float,
-    Cpl: int,
-    Cpg: int,
+    Cpl: float,
+    Cpg: float,
     Hvap: float,
     sigma: float,
     Psat: float,
@@ -118,7 +118,7 @@ def Thome(
 
 
 def Yun_Heo_Kim(
-    m: int,
+    m: float,
     x: float,
     D: float,
     rhol: float,
@@ -132,7 +132,7 @@ def Yun_Heo_Kim(
 
 def to_solve_q_Thome(
     q: float,
-    m: int,
+    m: float,
     x: float,
     D: float,
     rhol: float,
@@ -141,8 +141,8 @@ def to_solve_q_Thome(
     kg: float,
     mul: float,
     mug: float,
-    Cpl: int,
-    Cpg: int,
+    Cpl: float,
+    Cpg: float,
     sigma: float,
     Hvap: float,
     Psat: float,

@@ -13,7 +13,7 @@ def h_boiling_Amalfi(
     sigma: float,
     q: float,
     A_channel_flow: float,
-    chevron_angle: int = ...
+    chevron_angle: float = ...
 ) -> float: ...
 
 
@@ -26,7 +26,7 @@ def h_boiling_Han_Lee_Kim(
     mul: float,
     kl: float,
     Hvap: float,
-    Cpl: int,
+    Cpl: float,
     q: float,
     A_channel_flow: float,
     wavelength: float,
@@ -41,7 +41,7 @@ def h_boiling_Huang_Sheer(
     kl: float,
     Hvap: float,
     sigma: float,
-    Cpl: int,
+    Cpl: float,
     q: float,
     Tsat: float,
     angle: float = ...
@@ -72,7 +72,7 @@ def h_boiling_Yan_Lin(
     mul: float,
     kl: float,
     Hvap: float,
-    Cpl: int,
+    Cpl: float,
     q: float,
     A_channel_flow: float
 ) -> float: ...

@@ -25,7 +25,7 @@ from fluids import *
 from ht import *
 from ht.boiling_nucleic import _angles_Stephan_Abdelsalam
 import numpy as np
-
+from fluids.numerics import linspace
 from numpy.testing import assert_allclose
 import pytest
 
@@ -43,7 +43,7 @@ def test_h_Nusselt_laminar():
 
 def test_h_Boyko_Kruzhilin():
     h_xs = [Boyko_Kruzhilin(m=0.35, rhog=6.36, rhol=582.9, kl=0.098,
-	    mul=159E-6, Cpl=2520., D=0.03, x=i) for i in np.linspace(0,1,11)]
+	    mul=159E-6, Cpl=2520., D=0.03, x=i) for i in linspace(0,1,11)]
     h_xs_values = [1190.3309510899785, 3776.3883678904836, 5206.2779830848758, 6320.5657791981021, 7265.9323628276288, 8101.7278671405438, 8859.0188940546595, 9556.4866502932564, 10206.402815353165, 10817.34162173243, 11395.573750069829]
     assert_allclose(h_xs, h_xs_values)
 
@@ -55,16 +55,16 @@ def test_Akers_Deans_Crosser():
     assert_allclose(h, 737.5654803081094)
 
 def test_h_kinetic():
-    h = h_kinetic(300, 1E5, 18.02, 2441674)
+    h = h_kinetic(300.0, 1E5, 18.02, 2441674.0)
     assert_allclose(h, 30788845.562480535, rtol=1e-5)
 
 
 def test_Cavallini_Smith_Zecchin():
-    assert_allclose(Cavallini_Smith_Zecchin(m=1, x=0.4, D=.3, rhol=800, rhog=2.5, mul=1E-5, mug=1E-3, kl=0.6, Cpl=2300), 5578.218369177804)
+    assert_allclose(Cavallini_Smith_Zecchin(m=1.0, x=0.4, D=.3, rhol=800.0, rhog=2.5, mul=1E-5, mug=1E-3, kl=0.6, Cpl=2300.0), 5578.218369177804)
 
 
 def test_Shah():
-    assert_allclose(Shah(m=1, x=0.4, D=.3, rhol=800, mul=1E-5, kl=0.6, Cpl=2300, P=1E6, Pc=2E7), 2561.2593415479214)
+    assert_allclose(Shah(m=1.0, x=0.4, D=.3, rhol=800.0, mul=1E-5, kl=0.6, Cpl=2300.0, P=1E6, Pc=2E7), 2561.2593415479214)
     # In Shaw's second paper, they used the following definition. However, it
     # is just rearanged differently. It was coded to verify this, and is left
     # in case further sources list it in different forms.

@@ -37,7 +37,7 @@ def test_Nu_const():
 
 
 def test_laminar_entry_region():
-    Nu = laminar_entry_thermal_Hausen(100000, 1.1, 5, .5)
+    Nu = laminar_entry_thermal_Hausen(100000.0, 1.1, 5.0, .5)
     assert_allclose(Nu, 39.01352358988535)
 
     Nu = laminar_entry_Seider_Tate(Re=100000, Pr=1.1, L=5, Di=.5)
@@ -138,12 +138,12 @@ def test_helical_turbulent_Nu_Mori_Nakayama():
     Nu = helical_turbulent_Nu_Mori_Nakayama(2E5, 0.7, 0.01, .2)
     assert_allclose(Nu, 496.2522480663327)
     # High Pr
-    Nu = helical_turbulent_Nu_Mori_Nakayama(2E5, 4, 0.01, .2)
+    Nu = helical_turbulent_Nu_Mori_Nakayama(2E5, 4.0, 0.01, .2)
     assert_allclose(Nu, 889.3060078437253)
     
     # Bad behavior!
     # 1 sun power output per m^2 per K
-    assert 4E24 < helical_turbulent_Nu_Mori_Nakayama(2E6, 0.7, 1, 1E80)
+    assert 4E24 < helical_turbulent_Nu_Mori_Nakayama(2E6, 0.7, 1.0, 1E80)
     
     # .[3]_ specified that the high-Pr formula is calculated using Dean number, 
     # but the actual article says it is not. We use the 2.5 power specified 
@@ -191,7 +191,7 @@ def test_Nu_conv_internal():
     assert_allclose(Nu, 21.054212255270848)
     
     # martinili
-    Nu = Nu_conv_internal(1E5, .02, eD=0)
+    Nu = Nu_conv_internal(1E5, .02, eD=0.0)
     assert_allclose(Nu, 8.246171632616187)
     
     Nu = Nu_conv_internal(1E5, .7, x=.01, Di=.1)

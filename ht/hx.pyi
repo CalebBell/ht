@@ -149,12 +149,17 @@ def _NTU_from_P_solver(
 
 
 def _NTU_max_for_P_solver(
-    data: Dict[str, Union[List[float], List[List[float]]]],
+    ps: List[List[float]],
+    qs: List[List[float]],
+    offsets: List[float],
     R1: Union[float64, float]
 ) -> Union[float64, float]: ...
 
 
 def _load_coeffs_Phadkeb() -> None: ...
+
+
+def _tubecount_objf_Perry(D: float, Do: float, Ntp: int, angle: int, N: int) -> int: ...
 
 
 def calc_Cmax(mh: float, mc: float, Cph: float, Cpc: int) -> float: ...
@@ -164,6 +169,9 @@ def calc_Cmin(mh: float, mc: float, Cph: float, Cpc: int) -> float: ...
 
 
 def calc_Cr(mh: float, mc: float, Cph: float, Cpc: int) -> float: ...
+
+
+def crossflow_effectiveness_to_int(v: float, NTU: float, Cr: float) -> float: ...
 
 
 def effectiveness_NTU_method(
@@ -252,5 +260,15 @@ def temperature_effectiveness_plate(
     passes_counterflow: bool = ...,
     reverse: bool = ...
 ) -> float: ...
+
+
+def to_solve_Ntubes_Phadkeb(
+    DBundle: Union[int, float64],
+    Do: float,
+    pitch: float,
+    Ntp: int,
+    angle: int,
+    Ntubes: int
+) -> int: ...
 
 __all__: List[str]

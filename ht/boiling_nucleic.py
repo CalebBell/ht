@@ -339,7 +339,7 @@ _angles_Stephan_Abdelsalam = {'general': 35, 'water': 45, 'hydrocarbon': 35,
 'cryogenic': 1, 'refrigerant': 35}
 
 def Stephan_Abdelsalam(rhol, rhog, mul, kl, Cpl, Hvap, sigma, Tsat, Te=None, 
-                       q=None, kw=401, rhow=8.96, Cpw=384, angle=None, 
+                       q=None, kw=401.0, rhow=8.96, Cpw=384.0, angle=None, 
                        correlation='general'):
     r'''Calculates heat transfer coefficient for a evaporator operating
     in the nucleate boiling regime according to [2]_ as presented in [1]_.
@@ -963,7 +963,7 @@ def h_nucleic_methods(Te=None, Tsat=None, P=None, dPsat=None, Cpl=None,
 
 def h_nucleic(Te=None, q=None, Tsat=None, P=None, dPsat=None, Cpl=None, 
               kl=None, mul=None, rhol=None, sigma=None, Hvap=None, rhog=None, 
-              MW=None, Pc=None, Csf=0.013, n=1.7, kw=401, rhow=8.96, Cpw=384,
+              MW=None, Pc=None, Csf=0.013, n=1.7, kw=401.0, rhow=8.96, Cpw=384.0,
               angle=35.0, Rp=1e-6, Ra=0.4e-6, h0=None,
               CAS=None, Method=None):
     r'''This function handles the calculation of nucleate boiling

@@ -401,7 +401,7 @@ def Nu_Zukauskas_Bejan(Re, Pr, tube_rows, pitch_parallel, pitch_normal,
 ESDU_73031_F2_inline = [0.8479, 0.8957, 0.9306, 0.9551, 0.9724, 0.9839, 0.9902]
 ESDU_73031_F2_staggered = [0.8593, 0.8984, 0.9268, 0.9482, 0.965, 0.9777, 0.9868]
 
-def ESDU_tube_row_correction(tube_rows, staggered=True, Re=3000, method='Hewitt'):
+def ESDU_tube_row_correction(tube_rows, staggered=True, Re=3000.0, method='Hewitt'):
     r'''Calculates the tube row correction factor according to [1]_ as shown in
     [2]_ for heat transfer across a tube bundle. This is also used for finned 
     bundles. The correction factors are slightly different for staggered vs. 

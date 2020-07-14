@@ -42,7 +42,7 @@ def test_h_boiling_Lee_Kang_Kim():
     assert_allclose(h, 4211.51881493242)
     
 def test_h_boiling_Han_Lee_Kim():
-    h = h_boiling_Han_Lee_Kim(m=3E-5, x=.4, Dh=0.002, rhol=567., rhog=18.09, kl=0.086, mul=156E-6,  Hvap=9E5, Cpl=2200, q=1E5, A_channel_flow=0.0003, wavelength=3.7E-3, chevron_angle=45)
+    h = h_boiling_Han_Lee_Kim(m=3E-5, x=.4, Dh=0.002, rhol=567., rhog=18.09, kl=0.086, mul=156E-6,  Hvap=9E5, Cpl=2200.0, q=1E5, A_channel_flow=0.0003, wavelength=3.7E-3, chevron_angle=45)
     assert_allclose(h, 675.7322255419421)
     
     # Eldeeb said in the Ge1, Ge2 terms it should be b/Dh but the original and
@@ -53,9 +53,9 @@ def test_h_boiling_Han_Lee_Kim():
     
     
 def test_h_boiling_Huang_Sheer():
-    h = h_boiling_Huang_Sheer(rhol=567., rhog=18.09, kl=0.086, mul=156E-6, Hvap=9E5, sigma=0.02, Cpl=2200, q=1E4, Tsat=279.15)
+    h = h_boiling_Huang_Sheer(rhol=567., rhog=18.09, kl=0.086, mul=156E-6, Hvap=9E5, sigma=0.02, Cpl=2200.0, q=1E4, Tsat=279.15)
     assert_allclose(h, 4401.055635078054)
     
 def test_h_boiling_Yan_Lin():
-    h = h_boiling_Yan_Lin(m=3E-5, x=.4, Dh=0.002, rhol=567., rhog=18.09,  kl=0.086, Cpl=2200, mul=156E-6, Hvap=9E5, q=1E5, A_channel_flow=0.0003)
+    h = h_boiling_Yan_Lin(m=3E-5, x=.4, Dh=0.002, rhol=567., rhog=18.09,  kl=0.086, Cpl=2200.0, mul=156E-6, Hvap=9E5, q=1E5, A_channel_flow=0.0003)
     assert_allclose(h, 318.7228565961241)

@@ -33,11 +33,11 @@ from scipy.interpolate import bisplrep, UnivariateSpline
 def test_Nu_Nusselt_Rayleigh_Holling_Herwig():
     Ras = [10.0**n for n in range(5, 16)]
     Nus_expect = [4.566, 8.123, 15.689, 31.526, 64.668, 134.135, 279.957, 586.404, 1230.938, 2587.421, 5443.761]
-    Nus_calc = [round(Nu_Nusselt_Rayleigh_Holling_Herwig(1, Gr), 3) for Gr in Ras]
+    Nus_calc = [round(Nu_Nusselt_Rayleigh_Holling_Herwig(1., Gr), 3) for Gr in Ras]
     assert_allclose(Nus_expect, Nus_calc)
 
-    assert 1 == Nu_Nusselt_Rayleigh_Holling_Herwig(1, 100, buoyancy=True)
-    assert 1 == Nu_Nusselt_Rayleigh_Holling_Herwig(1, 100, buoyancy=False)
+    assert 1 == Nu_Nusselt_Rayleigh_Holling_Herwig(1., 100., buoyancy=True)
+    assert 1 == Nu_Nusselt_Rayleigh_Holling_Herwig(1., 100., buoyancy=False)
     
 
 def test_Nu_Nusselt_Rayleigh_Probert():
@@ -46,36 +46,36 @@ def test_Nu_Nusselt_Rayleigh_Probert():
     
     
     # Test the boundary
-    Nu = Nu_Nusselt_Rayleigh_Probert(1, 2.19999999999999e4, buoyancy=True)
+    Nu = Nu_Nusselt_Rayleigh_Probert(1., 2.19999999999999e4, buoyancy=True)
     assert_allclose(Nu, 2.5331972341122833)
     
-    Nu = Nu_Nusselt_Rayleigh_Probert(1, 2.2e4, buoyancy=True)
+    Nu = Nu_Nusselt_Rayleigh_Probert(1., 2.2e4, buoyancy=True)
     assert_allclose(Nu, 2.577876184202956)
     
-    assert 1 == Nu_Nusselt_Rayleigh_Probert(1, 100, buoyancy=True)
-    assert 1 == Nu_Nusselt_Rayleigh_Probert(1, 100, buoyancy=False)
+    assert 1 == Nu_Nusselt_Rayleigh_Probert(1., 100., buoyancy=True)
+    assert 1 == Nu_Nusselt_Rayleigh_Probert(1., 100., buoyancy=False)
     
     
 def test_Rac_Nusselt_Rayleigh():
-    for Rac_expect, insulation in zip([3011480.513694726, 9802960], [True, False]):
-        for L in (8, 9, 100):
+    for Rac_expect, insulation in zip([3011480.513694726, 9802960.0], [True, False]):
+        for L in (8.0, 9.0, 100.0):
             W_L = .125
-            Rac = Rac_Nusselt_Rayleigh(1, L, W_L*L, insulation)
+            Rac = Rac_Nusselt_Rayleigh(1., L, W_L*L, insulation)
             assert_allclose(Rac, Rac_expect)
             
 
 def test_Rac_Nusselt_Rayleigh_disk():
-    assert_allclose(Rac_Nusselt_Rayleigh_disk(4, 1, True), 51800)
+    assert_allclose(Rac_Nusselt_Rayleigh_disk(4., 1., True), 51800)
     assert_allclose(Rac_Nusselt_Rayleigh_disk(H=1, D=.4, insulated=True), 51800)
     assert_allclose(Rac_Nusselt_Rayleigh_disk(H=1, D=.4, insulated=False), 151200)
     
     for r in (4,10, 100):
-        assert_allclose(Rac_Nusselt_Rayleigh_disk(r, 1, False), 151200)
+        assert_allclose(Rac_Nusselt_Rayleigh_disk(r, 1., False), 151200)
     
     
     for D in (5.9999999999, 6, 7, 50):
-        assert_allclose(Rac_Nusselt_Rayleigh_disk(H=1, D=D, insulated=False), 1708.)
-        assert_allclose(Rac_Nusselt_Rayleigh_disk(H=1, D=D, insulated=True), 1708.)
+        assert_allclose(Rac_Nusselt_Rayleigh_disk(H=1., D=D, insulated=False), 1708.)
+        assert_allclose(Rac_Nusselt_Rayleigh_disk(H=1., D=D, insulated=True), 1708.)
 
 def test_Nu_Nusselt_Rayleigh_Hollands():
     assert_allclose(Nu_Nusselt_Rayleigh_Hollands(5.54, 3.21e8, buoyancy=True), 69.02668649510164)

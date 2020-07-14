@@ -40,7 +40,7 @@ def Gorenflo(
     q: Optional[float] = ...,
     Te: Optional[float] = ...,
     CASRN: Optional[str] = ...,
-    h0: Optional[int] = ...,
+    h0: Optional[float] = ...,
     Ra: float = ...
 ) -> float: ...
 
@@ -58,7 +58,7 @@ def McNelly(
     Cpl: float,
     Hvap: float,
     sigma: float,
-    P: int,
+    P: float,
     Te: Optional[float] = ...,
     q: Optional[float] = ...
 ) -> float: ...
@@ -87,11 +87,11 @@ def Rohsenow(
 ) -> float: ...
 
 
-def Serth_HEDH(D: float, sigma: float, Hvap: float, rhol: int, rhog: float) -> float: ...
+def Serth_HEDH(D: float, sigma: float, Hvap: float, rhol: float, rhog: float) -> float: ...
 
 
 def Stephan_Abdelsalam(
-    rhol: int,
+    rhol: float,
     rhog: float,
     mul: float,
     kl: float,
@@ -101,15 +101,15 @@ def Stephan_Abdelsalam(
     Tsat: float,
     Te: Optional[float] = ...,
     q: Optional[float] = ...,
-    kw: int = ...,
+    kw: float = ...,
     rhow: float = ...,
-    Cpw: int = ...,
+    Cpw: float = ...,
     angle: Optional[float] = ...,
     correlation: str = ...
 ) -> float: ...
 
 
-def Zuber(sigma: float, Hvap: float, rhol: int, rhog: float, K: float = ...) -> float: ...
+def Zuber(sigma: float, Hvap: float, rhol: float, rhog: float, K: float = ...) -> float: ...
 
 
 def h_nucleic(
@@ -129,9 +129,9 @@ def h_nucleic(
     Pc: Optional[float] = ...,
     Csf: float = ...,
     n: float = ...,
-    kw: int = ...,
+    kw: float = ...,
     rhow: float = ...,
-    Cpw: int = ...,
+    Cpw: float = ...,
     angle: float = ...,
     Rp: float = ...,
     Ra: float = ...,
@@ -168,9 +168,8 @@ def qmax_boiling(
     D: Optional[float] = ...,
     P: Optional[float] = ...,
     Pc: Optional[float] = ...,
-    Method: Optional[str] = ...,
-    AvailableMethods: bool = ...
-) -> Union[List[str], float]: ...
+    Method: Optional[str] = ...
+) -> float: ...
 
 
 def qmax_boiling_methods(

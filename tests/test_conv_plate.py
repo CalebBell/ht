@@ -40,10 +40,10 @@ def test_Nu_plate_Kumar():
               [20.0, 500.0]]
 
 
-    Nu = Nu_plate_Kumar(2000, 0.7, 30)
+    Nu = Nu_plate_Kumar(2000.0, 0.7, 30.0)
     assert_allclose(Nu, 47.757818892853955)
     
-    Nu = Nu_plate_Kumar(Re=2000, Pr=0.7, chevron_angle=30, mu=1E-3, mu_wall=8E-4)
+    Nu = Nu_plate_Kumar(Re=2000.0, Pr=0.7, chevron_angle=30.0, mu=1E-3, mu_wall=8E-4)
     assert_allclose(Nu, 49.604284135097544)
     
     all_ans_expected = [[[1.3741604132237337, 1.5167183720237427], [1.3741604132237337, 1.4917469901578877]],
@@ -76,12 +76,12 @@ def test_Nu_plate_Martin():
     Nu = Nu_plate_Martin(2000, .7, 1.18)
     assert_allclose(Nu, 43.5794551998615)
     
-    Nu = Nu_plate_Martin(2000, .7, 1.18, variant='VDI')
+    Nu = Nu_plate_Martin(2000.0, .7, 1.18, variant='VDI')
     assert_allclose(Nu, 46.42246468447807)
     
     
 def test_Nu_plate_Muley_Manglik():
-    Nu = Nu_plate_Muley_Manglik(Re=2000, Pr=.7, chevron_angle=45, plate_enlargement_factor=1.18)
+    Nu = Nu_plate_Muley_Manglik(Re=2000.0, Pr=.7, chevron_angle=45.0, plate_enlargement_factor=1.18)
     assert_allclose(Nu, 36.49087100602062)
     
     
@@ -89,7 +89,7 @@ def test_Nu_plate_Khan_Khan():
     # The author presented three correlations; all of them are well matched by
     # the fourth correlation. beta max is not the largest angle in *your*
     # PHE, but of the ones they tested.
-    Nu = Nu_plate_Khan_Khan(Re=1000, Pr=4.5, chevron_angle=30)
+    Nu = Nu_plate_Khan_Khan(Re=1000.0, Pr=4.5, chevron_angle=30.0)
     assert_allclose(Nu,38.40883639103741 )
 
 

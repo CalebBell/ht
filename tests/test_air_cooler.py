@@ -75,7 +75,7 @@ def test_h_ESDU_high_fin():
                          fin_diameter=AC.fin_diameter, bare_length=AC.bare_length,
                          fin_thickness=AC.fin_thickness, tube_rows=AC.tube_rows,
                          pitch_normal=AC.pitch_normal, pitch_parallel=AC.pitch_parallel, 
-                         rho=1.161, Cp=1007., mu=1.85E-5, k=0.0263, k_fin=205)
+                         rho=1.161, Cp=1007., mu=1.85E-5, k=0.0263, k_fin=205.0)
     assert_allclose(h_bare_tube_basis, 1390.888918049757)
 
 
@@ -94,7 +94,7 @@ def test_h_ESDU_low_fin():
          fin_diameter=AC.fin_diameter, bare_length=AC.bare_length,
          fin_thickness=AC.fin_thickness, tube_rows=AC.tube_rows,
          pitch_normal=AC.pitch_normal, pitch_parallel=AC.pitch_parallel, 
-         rho=1.217, Cp=1007., mu=1.8E-5, k=0.0253, k_fin=15)
+         rho=1.217, Cp=1007., mu=1.8E-5, k=0.0253, k_fin=15.0)
 
     assert_allclose(h, 553.853836470948)
     
@@ -103,7 +103,7 @@ def test_h_ESDU_low_fin():
          fin_diameter=AC.fin_diameter, bare_length=AC.bare_length,
          fin_thickness=AC.fin_thickness, tube_rows=AC.tube_rows,
          pitch_normal=AC.pitch_normal, pitch_parallel=AC.pitch_parallel, 
-         rho=1.217, Cp=1007., mu=1.8E-5, k=0.0253, k_fin=15, Pr_wall=0.68)
+         rho=1.217, Cp=1007., mu=1.8E-5, k=0.0253, k_fin=15.0, Pr_wall=0.68)
 
     assert_allclose(h, 560.74807767957759)
 
@@ -118,7 +118,7 @@ def test_h_Briggs_Young():
                              A_tube_showing=AC.A_tube_showing, tube_diameter=AC.tube_diameter,
                              fin_diameter=AC.fin_diameter, bare_length=AC.bare_length,
                              fin_thickness=AC.fin_thickness,
-                             rho=1.161, Cp=1007., mu=1.85E-5, k=0.0263, k_fin=205)
+                             rho=1.161, Cp=1007., mu=1.85E-5, k=0.0263, k_fin=205.)
     assert_allclose(h_bare_tube_basis, 1422.8722403237716)
     
     # Serth Process Heat Transfer Principles, Applications and Rules of Thumb 
@@ -151,7 +151,7 @@ def test_h_Ganguli_VDI():
                  fin_diameter=AC.fin_diameter, bare_length=AC.bare_length,
                  fin_thickness=AC.fin_thickness, tube_rows=AC.tube_rows,
                 pitch_parallel=AC.pitch_parallel, pitch_normal=AC.pitch_normal,
-                 rho=1.2013848, Cp=1009.0188, mu=1.9304793e-05, k=0.027864828, k_fin=238)
+                 rho=1.2013848, Cp=1009.0188, mu=1.9304793e-05, k=0.027864828, k_fin=238.0)
     assert_allclose(h, 969.2850818578595)
     
     # Example in VDI
@@ -167,7 +167,7 @@ def test_h_Ganguli_VDI():
                  fin_diameter=AC.fin_diameter, bare_length=AC.bare_length,
                  fin_thickness=AC.fin_thickness, tube_rows=AC.tube_rows,
                 pitch_parallel=AC.pitch_parallel, pitch_normal=AC.pitch_normal,
-                 rho=0.909, Cp=1009.0188, mu=2.237e-05, k=0.03197131806799132, k_fin=209)
+                 rho=0.909, Cp=1009.0188, mu=2.237e-05, k=0.03197131806799132, k_fin=209.0)
     # 22.49 goal, but there was a correction for velocity due to temperature increase
     # in the vdi answer
     assert_allclose(h/AC.A_increase, 22.49, rtol=2e-2)

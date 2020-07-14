@@ -26,22 +26,22 @@ from numpy.testing import assert_allclose
 
 
 def test_Nu_packed_bed_Gnielinski():
-    Nu = Nu_packed_bed_Gnielinski(8E-4, 0.4, 1, 1E3, 1E-3, 0.7)
+    Nu = Nu_packed_bed_Gnielinski(8E-4, 0.4, 1.0, 1E3, 1E-3, 0.7)
     assert_allclose(Nu, 61.37823202546954)
 
     # fa=2 test
-    Nu = Nu_packed_bed_Gnielinski(8E-4, 0.4, 1, 1E3, 1E-3, 0.7, 2)
+    Nu = Nu_packed_bed_Gnielinski(8E-4, 0.4, 1.0, 1E3, 1E-3, 0.7, 2.0)
     assert_allclose(Nu, 64.60866528996795)
 
 
 def test_Nu_Wakao_Kagei():
-    Nu = Nu_Wakao_Kagei(2000, 0.7)
+    Nu = Nu_Wakao_Kagei(2000., 0.7)
     assert_allclose(Nu, 95.40641328041248)
 
 def test_Nu_Achenbach():
-    Nu = Nu_Achenbach(2000, 0.7, 0.4)
+    Nu = Nu_Achenbach(2000., 0.7, 0.4)
     assert_allclose(Nu, 117.70343608599121)
 
 def test_Nu_KTA():
-    Nu = Nu_KTA(2000, 0.7, 0.4)
+    Nu = Nu_KTA(2000., 0.7, 0.4)
     assert_allclose(Nu, 102.08516480718129)
