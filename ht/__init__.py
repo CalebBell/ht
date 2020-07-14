@@ -19,7 +19,96 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.'''
+#'''
 
+import gc
+def mem():
+    gc.collect()
+    return gc.mem_free()
+base_mem = mem()
+
+from . import core
+print(base_mem - mem(), 'core')
+base_mem = mem()
+
+from . import conv_internal
+print(base_mem - mem(), 'conv_internal')
+base_mem = mem()
+
+from . import boiling_nucleic
+print(base_mem - mem(), 'boiling_nucleic')
+base_mem = mem()
+
+from . import boiling_flow
+print(base_mem - mem(), 'boiling_flow')
+base_mem = mem()
+
+from . import conv_tube_bank
+print(base_mem - mem(), 'conv_tube_bank')
+base_mem = mem()
+
+from . import air_cooler
+print(base_mem - mem(), 'air_cooler')
+base_mem = mem()
+
+from . import radiation
+print(base_mem - mem(), 'radiation')
+base_mem = mem()
+
+from . import condensation
+print(base_mem - mem(), 'condensation')
+base_mem = mem()
+
+from . import conduction
+print(base_mem - mem(), 'conduction')
+base_mem = mem()
+
+from . import conv_jacket
+print(base_mem - mem(), 'conv_jacket')
+base_mem = mem()
+
+from . import insulation
+print(base_mem - mem(), 'insulation')
+base_mem = mem()
+
+from . import conv_free_immersed
+print(base_mem - mem(), 'conv_free_immersed')
+base_mem = mem()
+
+from . import conv_free_enclosed
+print(base_mem - mem(), 'conv_free_enclosed')
+base_mem = mem()
+
+from . import conv_packed_bed
+print(base_mem - mem(), 'conv_packed_bed')
+base_mem = mem()
+
+from . import conv_external
+print(base_mem - mem(), 'conv_external')
+base_mem = mem()
+
+from . import conv_supercritical
+print(base_mem - mem(), 'conv_supercritical')
+base_mem = mem()
+
+from . import conv_two_phase
+print(base_mem - mem(), 'conv_two_phase')
+base_mem = mem()
+
+from . import conv_plate
+print(base_mem - mem(), 'conv_plate')
+base_mem = mem()
+
+from . import boiling_plate
+print(base_mem - mem(), 'boiling_plate')
+base_mem = mem()
+
+from . import hx
+print(base_mem - mem(), 'hx')
+base_mem = mem()
+
+
+#'''
 
 from . import core
 from . import hx
