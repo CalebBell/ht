@@ -391,6 +391,32 @@ def test_hx():
 
     assert_close(ht.numba.hx.Pp(5, .4),  ht.hx.Pp(5, .4))
     assert_close(ht.numba.hx.Pc(5, .4),  ht.hx.Pc(5, .4))
+        
+    # Quite literally 20x faster than CPython; Pypy is unfortunately slow as there is a scipy function
+    R1 = 3.811315897216142e-05
+    NTU1 = 0.31156549511556475
+    assert_close(ht.numba.temperature_effectiveness_basic(R1=R1, NTU1=NTU1, subtype='crossflow'),
+                 ht.temperature_effectiveness_basic(R1=R1, NTU1=NTU1, subtype='crossflow'))
+
+    P1 = ht.numba.temperature_effectiveness_basic(R1=R1, NTU1=NTU1, 
+                                    subtype='crossflow')
+    NTU1_calc = ht.numba.NTU_from_P_basic(P1, R1, subtype='crossflow')
+    assert_close(NTU1, NTU1_calc)
+
+    assert_close(ht.numba.NTU_from_P_J(P1=.99, R1=.01, Ntp=2),
+                 ht.NTU_from_P_J(P1=.99, R1=.01, Ntp=2))
+
+    assert_close(ht.numba.NTU_from_P_G(P1=.573, R1=1/3., Ntp=1),
+                 ht.NTU_from_P_G(P1=.573, R1=1/3., Ntp=1))
+
+    assert_close(ht.numba.NTU_from_P_E(P1=.58, R1=1/3., Ntp=2),
+                 ht.NTU_from_P_E(P1=.58, R1=1/3., Ntp=2))
+
+    assert_close(ht.numba.NTU_from_P_H(P1=0.573, R1=1/3., Ntp=1),
+                 ht.NTU_from_P_H(P1=0.573, R1=1/3., Ntp=1))
+
+    assert_close(ht.numba.NTU_from_P_plate(P1=0.5743, R1=1/3., Np1=3, Np2=1),
+                 ht.NTU_from_P_plate(P1=0.5743, R1=1/3., Np1=3, Np2=1))
 
 @pytest.mark.numba
 @pytest.mark.skipif(numba is None, reason="Numba is missing")
