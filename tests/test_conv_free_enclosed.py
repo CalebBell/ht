@@ -24,7 +24,7 @@ from __future__ import division
 from ht import *
 from ht.conv_free_enclosed import Nu_Nusselt_Rayleigh_Holling_Herwig
 import numpy as np
-
+from fluids.numerics import assert_close
 from numpy.testing import assert_allclose
 import pytest
 from scipy.interpolate import bisplrep, UnivariateSpline
@@ -76,6 +76,18 @@ def test_Rac_Nusselt_Rayleigh_disk():
     for D in (5.9999999999, 6, 7, 50):
         assert_allclose(Rac_Nusselt_Rayleigh_disk(H=1., D=D, insulated=False), 1708.)
         assert_allclose(Rac_Nusselt_Rayleigh_disk(H=1., D=D, insulated=True), 1708.)
+        
+        
+def test_Nu_Nusselt_vertical_Thess():
+    Nu =  Nu_Nusselt_vertical_Thess(.7, 3.21e6)
+    assert_close(Nu, 6.112587569602785)
+    
+    Nu = Nu_Nusselt_vertical_Thess(.7, 3.21e6, L=10, H=1)
+    assert_close(Nu, 28.79328626041646)
+    
+    Nu = Nu_Nusselt_vertical_Thess(.7, 2e7)
+    assert_close(Nu, 11.179395785432854)
+    
 
 def test_Nu_Nusselt_Rayleigh_Hollands():
     assert_allclose(Nu_Nusselt_Rayleigh_Hollands(5.54, 3.21e8, buoyancy=True), 69.02668649510164)
