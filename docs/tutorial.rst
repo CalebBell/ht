@@ -4,14 +4,14 @@ Tutorial
 Introduction
 ------------
 
-Log mean temperature are available for both counterflow (by default) and 
-co-current flow. This calculation does not depend on the units of temperature
-provided.
+ht is the heat transfer component of the Chemical Engineering Design Library (ChEDL). 
+Functions are provided to calculate heat transfer in a variety of situations, generally using
+dimensionsless factors such as Reynolds and Prandtl number, and giving results in terms of dimensionless
+heat transfer coefficient, the Nusselt number. The 'dimensional' heat transfer coefficient may then be determined 
 
->>> LMTD(Thi=100, Tho=60, Tci=30, Tco=40.2)
-43.200409294131525
->>> LMTD(100, 60, 30, 40.2, counterflow=False)
-39.75251118049003
+.. math::
+    h = Nu k \ L
+    
 
 Design philosophy
 -----------------
@@ -170,6 +170,16 @@ No other expressions are available to calculate `Ft` for different heat exchange
 geometries; only the TEMA F and E exchanger types are really covered by this 
 expression. However, with results from the other methods, `Ft` can always
 be back-calculated.
+
+Log mean temperature are available for both counterflow (by default) and 
+co-current flow. This calculation does not depend on the units of temperature
+provided.
+
+>>> LMTD(Thi=100, Tho=60, Tci=30, Tco=40.2)
+43.200409294131525
+>>> LMTD(100, 60, 30, 40.2, counterflow=False)
+39.75251118049003
+
 
 Effectiveness-NTU method
 ------------------------
