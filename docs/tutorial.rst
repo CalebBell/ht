@@ -10,7 +10,7 @@ dimensionless factors such as Reynolds and Prandtl number, and giving results in
 heat transfer coefficient, the Nusselt number. The 'dimensional' heat transfer coefficient may then be determined 
 
 .. math::
-    h = {k\cdot \text{Nu}}{L}
+    h = \frac{k\cdot \text{Nu}}{L}
 
 Design philosophy
 -----------------
