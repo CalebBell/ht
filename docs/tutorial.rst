@@ -6,11 +6,11 @@ Introduction
 
 ht is the heat transfer component of the Chemical Engineering Design Library (ChEDL). 
 Functions are provided to calculate heat transfer in a variety of situations, generally using
-dimensionsless factors such as Reynolds and Prandtl number, and giving results in terms of dimensionless
+dimensionless factors such as Reynolds and Prandtl number, and giving results in terms of dimensionless
 heat transfer coefficient, the Nusselt number. The 'dimensional' heat transfer coefficient may then be determined 
 
 .. math::
-    h = Nu k \ L
+    h = {k\cdot \text{Nu}}{L}
 
 Design philosophy
 -----------------
