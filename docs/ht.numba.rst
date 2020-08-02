@@ -22,9 +22,9 @@ cached to save time in future loadings.
 
 It is easy to compare the speed of a function with and without Numba.
 
->>> %timeit ht.numba.Ft_aircooler(Thi=125., Tho=45., Tci=25., Tco=95., Ntp=1, rows=4)
+>>> %timeit ht.numba.Ft_aircooler(Thi=125., Tho=45., Tci=25., Tco=95., Ntp=1, rows=4) # doctest: +SKIP
 1.22 µs ± 41.2 ns per loop (mean ± std. dev. of 7 runs, 1000000 loops each)
->>> %timeit ht.Ft_aircooler(Thi=125., Tho=45., Tci=25., Tco=95., Ntp=1, rows=4)
+>>> %timeit ht.Ft_aircooler(Thi=125., Tho=45., Tci=25., Tco=95., Ntp=1, rows=4) # doctest: +SKIP
 5.89 µs ± 274 ns per loop (mean ± std. dev. of 7 runs, 100000 loops each)
 
 Not everything is faster in the numba interface. It is advisable to check 
@@ -33,9 +33,9 @@ that numba is indeed faster for your use case.
 Functions which take strings as inputs are also known to normally get slower;
 the numerical stuff is still being sped up but the string handling is slow:
 
->>> %timeit ht.numba.baffle_correction_Bell(0.82, method='spline')
+>>> %timeit ht.numba.baffle_correction_Bell(0.82, method='spline') # doctest: +SKIP
 16.5 µs ± 538 ns per loop (mean ± std. dev. of 7 runs, 100000 loops each)
->>> %timeit ht.baffle_correction_Bell(0.82, method='spline')
+>>> %timeit ht.baffle_correction_Bell(0.82, method='spline') # doctest: +SKIP
 15.6 µs ± 457 ns per loop (mean ± std. dev. of 7 runs, 100000 loops each)
 
 Nevertheless, using the function from the numba interface may be preferably,

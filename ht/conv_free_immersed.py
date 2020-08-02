@@ -454,7 +454,7 @@ def Nu_free_horizontal_plate_methods(Pr, Gr, buoyancy, L=None, W=None,
     Examples
     --------
     >>> Nu_free_horizontal_plate_methods(0.69, 2.63E9, True)
-    ["VDI", "McAdams", "Rohsenow"]
+    ['VDI', 'McAdams', 'Rohsenow']
     '''        
     return Nu_free_horizontal_plate_all_methods
 

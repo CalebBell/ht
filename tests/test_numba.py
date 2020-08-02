@@ -365,15 +365,8 @@ def test_conduction():
 
     # cylindrical_heat_transfer returns a dictionary, not supported by numba
 
-
 @mark_as_numba
-def test_hx():
-    assert_close(ht.numba.temperature_effectiveness_air_cooler(.5, 2, rows=10, passes=10),
-                 ht.temperature_effectiveness_air_cooler(.5, 2, rows=10, passes=10))
-    
-    assert_close(ht.L_unsupported_max(Do=.0254, material='CS'),
-                 ht.numba.L_unsupported_max(Do=.0254, material='CS'))
-
+def test_hx_tube_bundles():
     kwargs = dict(Ntubes=782, Do=.028, pitch=.036, Ntp=2, angle=45.)
     assert_close(ht.numba.DBundle_for_Ntubes_Phadkeb(**kwargs),
                  ht.DBundle_for_Ntubes_Phadkeb(**kwargs))
@@ -391,13 +384,16 @@ def test_hx():
     assert_close(ht.numba.size_bundle_from_tubecount(**kwargs),
                  ht.size_bundle_from_tubecount(**kwargs))
 
+@mark_as_numba
+def test_hx_data():
+    assert_close(ht.L_unsupported_max(Do=.0254, material='CS'),
+                 ht.numba.L_unsupported_max(Do=.0254, material='CS'))
+
     assert_close(ht.numba.baffle_thickness(Dshell=.3, L_unsupported=50, service='R'),
                  ht.baffle_thickness(Dshell=.3, L_unsupported=50, service='R'))
 
-    assert_close(ht.numba.hx.Pp(5, .4),  ht.hx.Pp(5, .4))
-    assert_close(ht.numba.hx.Pc(5, .4),  ht.hx.Pc(5, .4))
-        
-    # Quite literally 20x faster than CPython; Pypy is unfortunately slow as there is a scipy function
+@mark_as_numba
+def test_hx_effectiveness_basic():
     R1 = 3.811315897216142e-05
     NTU1 = 0.31156549511556475
     assert_close(ht.numba.temperature_effectiveness_basic(R1=R1, NTU1=NTU1, subtype='crossflow'),
@@ -407,6 +403,16 @@ def test_hx():
                                     subtype='crossflow')
     NTU1_calc = ht.numba.NTU_from_P_basic(P1, R1, subtype='crossflow')
     assert_close(NTU1, NTU1_calc)
+
+@mark_as_numba
+def test_hx_effectiveness():
+    assert_close(ht.numba.temperature_effectiveness_air_cooler(.5, 2, rows=10, passes=10),
+                 ht.temperature_effectiveness_air_cooler(.5, 2, rows=10, passes=10))
+    
+    assert_close(ht.numba.hx.Pp(5, .4),  ht.hx.Pp(5, .4))
+    assert_close(ht.numba.hx.Pc(5, .4),  ht.hx.Pc(5, .4))
+        
+    # Quite literally 20x faster than CPython; Pypy is unfortunately slow as there is a scipy function
 
     assert_close(ht.numba.NTU_from_P_J(P1=.99, R1=.01, Ntp=2),
                  ht.NTU_from_P_J(P1=.99, R1=.01, Ntp=2))

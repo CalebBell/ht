@@ -55,7 +55,9 @@ def transform_complete_ht(replaced, __funcs, __all__, normal, vec=False):
                        'temperature_effectiveness_basic', '_NTU_from_P_solver',
                        'NTU_from_P_basic', '_NTU_from_P_erf',
                        'NTU_from_P_G', 'NTU_from_P_J', 'NTU_from_P_E', 
-                       'NTU_from_P_H', 'NTU_from_P_plate'])
+                       'NTU_from_P_H', 'NTU_from_P_plate',
+                       'temperature_effectiveness_plate', # dies on recursion
+                       ])
     __funcs.update(normal_fluids.numba.numbafied_fluids_functions.copy())
     new_mods = normal_fluids.numba.transform_module(normal, __funcs, replaced, vec=vec,
                                                     cache_blacklist=cache_blacklist)

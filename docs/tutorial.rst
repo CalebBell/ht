@@ -50,8 +50,7 @@ from ht, the user can import from ht.vectorized:
 
 >>> from ht.vectorized import *
 >>> LMTD([100, 101], 60., 30., 40.2)
-array([ 43.20040929,  43.60182765])
-
+array([43.20040929, 43.60182765])
 
 Insulation
 ----------
@@ -71,6 +70,7 @@ more convenient.
 To determine the correct string to look up a material by, one can use the
 function nearest_material:
 
+>>> from ht import *
 >>> nearest_material('stainless steel')
 'Metals, stainless steel'
 >>> nearest_material('mineral fibre')
@@ -122,7 +122,7 @@ W/steradian/square metre/metre. This calculation requires the temperature
 of the object and the wavelength to be considered.
 
 >>> blackbody_spectral_radiance(T=800., wavelength=4E-6)
-1311692056.2430143
+1311694129.7430933
 
 Heat exchanger sizing
 ---------------------
@@ -245,19 +245,20 @@ Solve a heat exchanger to determine UA and effectiveness given the
 configuration, flows, subtype, the cold inlet/outlet temperatures, and the
 hot stream inlet temperature.
 
+>>> from pprint import pprint
 >>> pprint(effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, 
 ... subtype='crossflow, mixed Cmax', Tci=15, Tco=85, Thi=130))
 {'Cmax': 9672.0,
-'Cmin': 2755.0,
-'Cr': 0.2848428453267163,
-'NTU': 1.1040839095588,
-'Q': 192850.0,
-'Tci': 15,
-'Tco': 85,
-'Thi': 130,
-'Tho': 110.06100082712986,
-'UA': 3041.751170834494,
-'effectiveness': 0.6086956521739131}
+ 'Cmin': 2755.0,
+ 'Cr': 0.2848428453267163,
+ 'NTU': 1.1040839095588,
+ 'Q': 192850.0,
+ 'Tci': 15,
+ 'Tco': 85,
+ 'Thi': 130,
+ 'Tho': 110.06100082712986,
+ 'UA': 3041.751170834494,
+ 'effectiveness': 0.6086956521739131}
 
 Solve the same heat exchanger with the UA specified, and known inlet
 temperatures:
@@ -265,14 +266,14 @@ temperatures:
 >>> pprint(effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, 
 ... subtype='crossflow, mixed Cmax', Tci=15, Thi=130, UA=3041.75))
 {'Cmax': 9672.0,
-'Cmin': 2755.0,
-'Cr': 0.2848428453267163,
-'NTU': 1.1040834845735028,
-'Q': 192849.96310220254,
-'Tci': 15,
-'Tco': 84.99998660697007,
-'Thi': 130,
-'Tho': 110.06100464203861,
-'UA': 3041.75,
-'effectiveness': 0.6086955357127832}
+ 'Cmin': 2755.0,
+ 'Cr': 0.2848428453267163,
+ 'NTU': 1.1040834845735028,
+ 'Q': 192849.96310220254,
+ 'Tci': 15,
+ 'Tco': 84.99998660697007,
+ 'Thi': 130,
+ 'Tho': 110.06100464203861,
+ 'UA': 3041.75,
+ 'effectiveness': 0.6086955357127832}
 
