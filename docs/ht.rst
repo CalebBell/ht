@@ -19,6 +19,7 @@
    ht.core
    ht.hx
    ht.insulation
+   ht.numba
    ht.radiation
    ht.vectorized
 

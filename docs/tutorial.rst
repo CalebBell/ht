@@ -11,7 +11,6 @@ heat transfer coefficient, the Nusselt number. The 'dimensional' heat transfer c
 
 .. math::
     h = Nu k \ L
-    
 
 Design philosophy
 -----------------
@@ -44,13 +43,26 @@ mathematical functions not present in the standard math library. The only other
 required library is the `fluids` library, a sister library for fluid dynamics.
 No other libraries will become required dependencies; anything else is optional.
 
-To allow use of numpy arrays with ht, a `vectorized` module is implemented,
+There are two ways to use numpy arrays with ht. Easiest to use is a `vectorized` module,
 which wraps all of the ht functions with np.vectorize. Instead of importing
-from ht, the user can import from ht.vectorized:
+from ht, the user can import from :doc:`ht.vectorized <ht.vectorized>`:
 
 >>> from ht.vectorized import *
 >>> LMTD([100, 101], 60., 30., 40.2)
 array([43.20040929, 43.60182765])
+
+It is possible to switch back and forth between the namespaces with a subsequent
+import:
+
+>>> from ht import * 
+
+The second way is `Numba <https://github.com/numba/numba>`_. This
+optional dependency provides the speed you expect from NumPy arrays -
+or better. In some cases, much better. The tutorial for using it
+is at :doc:`ht.numba <ht.numba>`, but in general use it the same way but
+with a different import.
+
+>>> from ht.numba_vectorized import *
 
 Insulation
 ----------
