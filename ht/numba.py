@@ -91,6 +91,10 @@ def transform_complete_ht(replaced, __funcs, __all__, normal, vec=False):
 
     for mod in new_mods:
         mod.__dict__.update(__funcs)
+        try:
+            __all__.extend(mod.__all__)
+        except AttributeError:
+            pass
 
     __funcs['hx']._load_coeffs_Phadkeb() # Run after everything is done
 

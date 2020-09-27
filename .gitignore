@@ -9,6 +9,7 @@ __pycache__
 *kate-swp
 .spyproject
 ht.egg-info 
+.idea
  
 # Compiled source #
 ###################
