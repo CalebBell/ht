@@ -98,5 +98,5 @@ submodules = (core, hx, conv_internal, boiling_flow, boiling_nucleic, conv_tube_
               conv_free_immersed, conv_free_enclosed, conv_packed_bed, conv_external, 
               conv_supercritical, conv_two_phase, conv_plate, boiling_plate)
 
-__version__ = '0.1.56'
+__version__ = '0.1.57'
 
