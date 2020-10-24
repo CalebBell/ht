@@ -1369,7 +1369,7 @@ def Nu_conv_internal_methods(Re, Pr, eD=0, Di=None, x=None, fd=None,
 
     Entry length - laminar example
     
-    >>>  Nu_conv_internal_methods(Re=1E2, Pr=.7, x=.01, Di=.1)[0]
+    >>> Nu_conv_internal_methods(Re=1E2, Pr=.7, x=.01, Di=.1)[0]
     'Baehr-Stephan laminar thermal/velocity entry'
     '''
     methods = []

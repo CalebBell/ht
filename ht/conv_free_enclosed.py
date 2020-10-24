@@ -27,8 +27,9 @@ from fluids.numerics import secant, implementation_optimize_tck, bisplev, horner
 __all__ = ['Nu_Nusselt_Rayleigh_Holling_Herwig', 'Nu_Nusselt_Rayleigh_Probert',
            'Nu_Nusselt_Rayleigh_Hollands',
            'Rac_Nusselt_Rayleigh', 'Rac_Nusselt_Rayleigh_disk',
+           'Nu_Nusselt_vertical_Thess',
            'Nu_vertical_helical_coil_Ali', 
-           'Nu_vertical_helical_coil_Prabhanjan_Rennie_Raghavan'
+           'Nu_vertical_helical_coil_Prabhanjan_Rennie_Raghavan',
            ]
 
 __numba_additional_funcs__ = ['Nu_Nusselt_Rayleigh_Holling_Herwig_err']
@@ -41,8 +42,11 @@ def Nu_Nusselt_Rayleigh_Holling_Herwig_err(Nu, Ra, Ra_third, D2):
 
 def Nu_Nusselt_Rayleigh_Holling_Herwig(Pr, Gr, buoyancy=True):
     r'''Calculates the Nusselt number for natural convection between two 
-    theoretical flat plates. The height between the plates is infinite, and
+    theoretical flat horizontal plates. The height between the plates is infinite, and
     one of the other dimensions of the plates is much larger than the other.
+    
+    This correlation is for the horizontal plate Rayleigh-Benard classic heat
+    transfer problem, not for real finite geometry plates.
     
     This model is a non-linear equation which is solved numerically.
     The model can calculate `Nu` for `Ra` ranges between 350 and larger
@@ -116,6 +120,9 @@ def Nu_Nusselt_Rayleigh_Probert(Pr, Gr, buoyancy=True):
     r'''Calculates the Nusselt number for natural convection between two 
     theoretical flat plates. The height between the plates is infinite, and
     one of the other dimensions of the plates is much larger than the other.
+
+    This correlation is for the horizontal plate Rayleigh-Benard classic heat
+    transfer problem, not for real finite geometry plates.
     
     Two sets of equations are used.
     
@@ -179,7 +186,7 @@ def Nu_Nusselt_Rayleigh_Probert(Pr, Gr, buoyancy=True):
 
 def Nu_Nusselt_Rayleigh_Hollands(Pr, Gr, buoyancy=True, Rac=1708):
     r'''Calculates the Nusselt number for natural convection between two 
-    theoretical flat plates using the Hollands [1]_ correlation recommended 
+    theoretical flat horizontal plates using the Hollands [1]_ correlation recommended 
     in [2]_. This correlation supports different aspect ratios,
     so the plates can be real, finite objects and have their heat transfer
     accurately modeled. The influence comes from the `Rac` term, which should
@@ -264,6 +271,62 @@ def Nu_Nusselt_Rayleigh_Hollands(Pr, Gr, buoyancy=True, Rac=1708):
     
     Nu = 1.0 + max(0.0, t1)*max(0.0, t2) + max(0.0, t3)*t5
     return Nu
+
+
+def Nu_Nusselt_vertical_Thess(Pr, Gr, H=None, L=None):
+    r'''Calculates the Nusselt number for natural convection between two 
+    theoretical vertical flat plates using the correlation by Thess [1]
+    in [1]_. This is a variant on the horizontal Rayleigh-Benard classic heat
+    transfer problem.
+    This correlation supports different aspect ratios,
+    so the plates can be real, finite objects and have their heat transfer
+    accurately modeled. The recommended range of the correlation is H/L < 80.
+    
+    For 1e4 < Ra < 1e7:
+        
+    .. math::
+        \text{Nu} = 0.42{Pr}^{0.012} {Ra}^{0.25} \left(\frac{H}{L}\right)^{-0.25}
+    
+    For 1e7 < Ra > 1e9 (or when geometry is unknown):
+        
+    .. math::
+         \text{Nu} = 0.049{Ra}^{0.33}
+        
+    Parameters
+    ----------
+    Pr : float
+        Prandtl number with respect to fluid properties [-]
+    Gr : float
+        Grashof number with respect to fluid properties and plate - plate
+        temperature difference [-]
+    H : float, optional
+        Height of vertical plate, [m]
+    L : float, optional
+        Length of vertical plate, [m]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number with respect to distance between the two plates, [-]
+
+    Examples
+    --------
+    >>> Nu_Nusselt_vertical_Thess(.7, 3.21e6)
+    6.112587569602785
+    
+    >>> Nu_Nusselt_vertical_Thess(.7, 3.21e6, L=10, H=1)
+    28.79328626041646
+    
+    References
+    ----------
+    .. [1] Gesellschaft, V. D. I., ed. VDI Heat Atlas. 2nd ed. 2010 edition.
+       Berlin ; New York: Springer, 2010.
+    '''
+    Ra = Gr*Pr
+    if Ra < 1e7 and H is not None and L is not None:
+        return 0.42*Pr**0.012*Ra**0.25*(L/H)**0.25
+    return 0.049*Ra**0.33
+
 
 
 ratios_uninsulated_Catton = [0.125, 0.25, 0.5, 1, 2, 3, 4, 5, 6]

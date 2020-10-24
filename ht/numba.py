@@ -50,7 +50,14 @@ def transform_complete_ht(replaced, __funcs, __all__, normal, vec=False):
     cache_blacklist = set(['h_Ganguli_VDI', 'fin_efficiency_Kern_Kraus', 'h_Briggs_Young', 
                            'h_ESDU_high_fin', 'h_ESDU_low_fin', 'Nu_Nusselt_Rayleigh_Holling_Herwig',
                            'DBundle_for_Ntubes_Phadkeb', 'Thome', 'to_solve_q_Thome',
-                       'temperature_effectiveness_air_cooler', 'factorial', 'size_bundle_from_tubecount'])
+                       'temperature_effectiveness_air_cooler', 'factorial', 
+                       'size_bundle_from_tubecount', 'crossflow_effectiveness_to_int', 
+                       'temperature_effectiveness_basic', '_NTU_from_P_solver',
+                       'NTU_from_P_basic', '_NTU_from_P_erf',
+                       'NTU_from_P_G', 'NTU_from_P_J', 'NTU_from_P_E', 
+                       'NTU_from_P_H', 'NTU_from_P_plate',
+                       'temperature_effectiveness_plate', # dies on recursion
+                       ])
     __funcs.update(normal_fluids.numba.numbafied_fluids_functions.copy())
     new_mods = normal_fluids.numba.transform_module(normal, __funcs, replaced, vec=vec,
                                                     cache_blacklist=cache_blacklist)
@@ -78,11 +85,16 @@ def transform_complete_ht(replaced, __funcs, __all__, normal, vec=False):
         globals()[func] = obj
         obj.__doc__ = ''
     to_change = ['air_cooler.Ft_aircooler', 'hx.Ntubes_Phadkeb',
-                 'hx.DBundle_for_Ntubes_Phadkeb', 'boiling_nucleic.h_nucleic_methods']
+                 'hx.DBundle_for_Ntubes_Phadkeb', 'boiling_nucleic.h_nucleic_methods',
+                 'hx._NTU_from_P_solver', 'hx.NTU_from_P_plate']
     normal_fluids.numba.transform_lists_to_arrays(normal, to_change, __funcs, cache_blacklist=cache_blacklist)
 
     for mod in new_mods:
         mod.__dict__.update(__funcs)
+        try:
+            __all__.extend(mod.__all__)
+        except AttributeError:
+            pass
 
     __funcs['hx']._load_coeffs_Phadkeb() # Run after everything is done
 

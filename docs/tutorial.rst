@@ -4,14 +4,13 @@ Tutorial
 Introduction
 ------------
 
-Log mean temperature are available for both counterflow (by default) and 
-co-current flow. This calculation does not depend on the units of temperature
-provided.
+ht is the heat transfer component of the Chemical Engineering Design Library (ChEDL). 
+Functions are provided to calculate heat transfer in a variety of situations, generally using
+dimensionless factors such as Reynolds and Prandtl number, and giving results in terms of dimensionless
+heat transfer coefficient, the Nusselt number. The 'dimensional' heat transfer coefficient may then be determined 
 
->>> LMTD(Thi=100, Tho=60, Tci=30, Tco=40.2)
-43.200409294131525
->>> LMTD(100, 60, 30, 40.2, counterflow=False)
-39.75251118049003
+.. math::
+    h = \frac{k\cdot \text{Nu}}{L}
 
 Design philosophy
 -----------------
@@ -44,14 +43,26 @@ mathematical functions not present in the standard math library. The only other
 required library is the `fluids` library, a sister library for fluid dynamics.
 No other libraries will become required dependencies; anything else is optional.
 
-To allow use of numpy arrays with ht, a `vectorized` module is implemented,
+There are two ways to use numpy arrays with ht. Easiest to use is a `vectorized` module,
 which wraps all of the ht functions with np.vectorize. Instead of importing
-from ht, the user can import from ht.vectorized:
+from ht, the user can import from :doc:`ht.vectorized <ht.vectorized>`:
 
 >>> from ht.vectorized import *
 >>> LMTD([100, 101], 60., 30., 40.2)
-array([ 43.20040929,  43.60182765])
+array([43.20040929, 43.60182765])
 
+It is possible to switch back and forth between the namespaces with a subsequent
+import:
+
+>>> from ht import * 
+
+The second way is `Numba <https://github.com/numba/numba>`_. This
+optional dependency provides the speed you expect from NumPy arrays -
+or better. In some cases, much better. The tutorial for using it
+is at :doc:`ht.numba <ht.numba>`, but in general use it the same way but
+with a different import.
+
+>>> from ht.numba_vectorized import *
 
 Insulation
 ----------
@@ -71,6 +82,7 @@ more convenient.
 To determine the correct string to look up a material by, one can use the
 function nearest_material:
 
+>>> from ht import *
 >>> nearest_material('stainless steel')
 'Metals, stainless steel'
 >>> nearest_material('mineral fibre')
@@ -122,7 +134,7 @@ W/steradian/square metre/metre. This calculation requires the temperature
 of the object and the wavelength to be considered.
 
 >>> blackbody_spectral_radiance(T=800., wavelength=4E-6)
-1311692056.2430143
+1311694129.7430933
 
 Heat exchanger sizing
 ---------------------
@@ -170,6 +182,16 @@ No other expressions are available to calculate `Ft` for different heat exchange
 geometries; only the TEMA F and E exchanger types are really covered by this 
 expression. However, with results from the other methods, `Ft` can always
 be back-calculated.
+
+Log mean temperature are available for both counterflow (by default) and 
+co-current flow. This calculation does not depend on the units of temperature
+provided.
+
+>>> LMTD(Thi=100, Tho=60, Tci=30, Tco=40.2)
+43.200409294131525
+>>> LMTD(100, 60, 30, 40.2, counterflow=False)
+39.75251118049003
+
 
 Effectiveness-NTU method
 ------------------------
@@ -235,19 +257,20 @@ Solve a heat exchanger to determine UA and effectiveness given the
 configuration, flows, subtype, the cold inlet/outlet temperatures, and the
 hot stream inlet temperature.
 
+>>> from pprint import pprint
 >>> pprint(effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, 
 ... subtype='crossflow, mixed Cmax', Tci=15, Tco=85, Thi=130))
 {'Cmax': 9672.0,
-'Cmin': 2755.0,
-'Cr': 0.2848428453267163,
-'NTU': 1.1040839095588,
-'Q': 192850.0,
-'Tci': 15,
-'Tco': 85,
-'Thi': 130,
-'Tho': 110.06100082712986,
-'UA': 3041.751170834494,
-'effectiveness': 0.6086956521739131}
+ 'Cmin': 2755.0,
+ 'Cr': 0.2848428453267163,
+ 'NTU': 1.1040839095588,
+ 'Q': 192850.0,
+ 'Tci': 15,
+ 'Tco': 85,
+ 'Thi': 130,
+ 'Tho': 110.06100082712986,
+ 'UA': 3041.751170834494,
+ 'effectiveness': 0.6086956521739131}
 
 Solve the same heat exchanger with the UA specified, and known inlet
 temperatures:
@@ -255,14 +278,14 @@ temperatures:
 >>> pprint(effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, 
 ... subtype='crossflow, mixed Cmax', Tci=15, Thi=130, UA=3041.75))
 {'Cmax': 9672.0,
-'Cmin': 2755.0,
-'Cr': 0.2848428453267163,
-'NTU': 1.1040834845735028,
-'Q': 192849.96310220254,
-'Tci': 15,
-'Tco': 84.99998660697007,
-'Thi': 130,
-'Tho': 110.06100464203861,
-'UA': 3041.75,
-'effectiveness': 0.6086955357127832}
+ 'Cmin': 2755.0,
+ 'Cr': 0.2848428453267163,
+ 'NTU': 1.1040834845735028,
+ 'Q': 192849.96310220254,
+ 'Tci': 15,
+ 'Tco': 84.99998660697007,
+ 'Thi': 130,
+ 'Tho': 110.06100464203861,
+ 'UA': 3041.75,
+ 'effectiveness': 0.6086955357127832}
 

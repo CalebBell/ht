@@ -31,7 +31,7 @@ from fluids.piping import BWG_integers, BWG_inch, BWG_SI
 from fluids.numerics import numpy as np
 
 __all__ = ['effectiveness_from_NTU', 'NTU_from_effectiveness', 'calc_Cmin',
-'calc_Cmax', 'calc_Cr',
+'calc_Cmax', 'calc_Cr', 'Pp', 'Pc',
 'NTU_from_UA', 'UA_from_NTU', 'effectiveness_NTU_method', 'F_LMTD_Fakheri', 
 'temperature_effectiveness_basic', 'temperature_effectiveness_TEMA_J',
 'temperature_effectiveness_TEMA_H', 'temperature_effectiveness_TEMA_G',
@@ -53,7 +53,7 @@ R_value = foot*foot*degree_Fahrenheit*hour/Btu
 
 __numba_additional_funcs__ = ['crossflow_effectiveness_to_int', 'to_solve_Ntubes_Phadkeb',
                               '_tubecount_objf_Perry', '_NTU_max_for_P_solver',
-                              '_NTU_from_P_solver', '_NTU_from_P_objective']
+                              '_NTU_from_P_solver', '_NTU_from_P_objective', '_NTU_from_P_erf']
 try:
     if IS_NUMBA:
         from scipy.special import gamma
@@ -65,8 +65,9 @@ except:
     pass
 
 
-def crossflow_effectiveness_to_int(v, NTU, Cr):
-    return (1. + NTU - v*v/(4.*Cr*NTU))*exp(-v*v/(4.*Cr*NTU))*v*float(iv(0, v))
+def crossflow_effectiveness_to_int(v, NTU, t0):
+    x0 = v*v*t0
+    return (1. + NTU - x0)*exp(-x0)*v*float(iv(0.0, v))
 
 def effectiveness_from_NTU(NTU, Cr, subtype='counterflow'):
     r'''Returns the effectiveness of a heat exchanger at a specified heat 
@@ -219,7 +220,7 @@ def effectiveness_from_NTU(NTU, Cr, subtype='counterflow'):
     Crossflow, somewhat higher effectiveness:
         
     >>> effectiveness_from_NTU(NTU=5, Cr=0.7, subtype='crossflow')
-    0.8444821799748551
+    0.844482179974855
 
     Counterflow, better than either crossflow or parallel flow:
 
@@ -315,7 +316,8 @@ def effectiveness_from_NTU(NTU, Cr, subtype='counterflow'):
             effectiveness = (term - 1.)/(term - Cr)
         return effectiveness
     elif subtype == 'crossflow':
-        int_term = quad(crossflow_effectiveness_to_int, 0, 2.*NTU*Cr**0.5, args=(NTU, Cr))[0]
+        t0 = 1.0/(4.*Cr*NTU)
+        int_term = quad(crossflow_effectiveness_to_int, 0, 2.*NTU*Cr**0.5, args=(NTU, t0,))[0]
         return 1./Cr - exp(-Cr*NTU)/(2.*(Cr*NTU)**2)*int_term
     elif subtype == 'crossflow approximate':
         return 1. - exp(1./Cr*NTU**0.22*(exp(-Cr*NTU**0.78) - 1.))
@@ -434,7 +436,7 @@ def NTU_from_effectiveness(effectiveness, Cr, subtype='counterflow'):
     heat exchangers. If an impossible input is given, an error will be raised
     and the maximum possible effectiveness will be printed.
     
-    >>> NTU_from_effectiveness(.99, Cr=.7, subtype='5S&T')
+    >>> NTU_from_effectiveness(.99, Cr=.7, subtype='5S&T') # doctest: +SKIP
     Traceback (most recent call last):
     Exception: The specified effectiveness is not physically possible for this configuration; the maximum effectiveness possible is 0.974122977755.
 
@@ -448,7 +450,7 @@ def NTU_from_effectiveness(effectiveness, Cr, subtype='counterflow'):
     Crossflow, somewhat higher effectiveness:
         
     >>> NTU_from_effectiveness(effectiveness=0.8444821799748551, Cr=0.7, subtype='crossflow')
-    5.000000000000859
+    5.000000000000007
 
     Counterflow, better than either crossflow or parallel flow:
 
@@ -513,8 +515,10 @@ def NTU_from_effectiveness(effectiveness, Cr, subtype='counterflow'):
             return effectiveness/(1. - effectiveness)
     elif subtype == 'parallel':
         if effectiveness*(1. + Cr) > 1:
-            raise ValueError('The specified effectiveness is not physically \
-possible for this configuration; the maximum effectiveness possible is %s.' % (1./(Cr + 1.)))
+            raise ValueError('The specified effectiveness is not physically '
+                             'possible for this configuration; the maximum effectiveness '
+                             'possible is %s.' % (1./(Cr + 1.))) # numba: delete
+#                             ) # numba: uncomment
         return -log(1. - effectiveness*(1. + Cr))/(1. + Cr)
     elif 'S&T' in subtype:
         # [2]_ gives the expression
@@ -532,8 +536,9 @@ possible for this configuration; the maximum effectiveness possible is %s.' % (1
         if (E - 1.)/(E + 1.) <= 0:
             # Derived with SymPy
             max_effectiveness = (-((-Cr + sqrt(Cr**2 + 1) + 1)/(Cr + sqrt(Cr**2 + 1) - 1))**shells + 1)/(Cr - ((-Cr + sqrt(Cr**2 + 1) + 1)/(Cr + sqrt(Cr**2 + 1) - 1))**shells)
-            raise ValueError('The specified effectiveness is not physically \
-possible for this configuration; the maximum effectiveness possible is %s.' % (max_effectiveness))
+            raise ValueError('The specified effectiveness is not physically ' # numba: delete
+'possible for this configuration; the maximum effectiveness possible is %s.' % (max_effectiveness)) # numba: delete
+#            raise ValueError("Fail") # numba: uncomment
         
         NTU = -(1. + Cr*Cr)**-0.5*log((E - 1.)/(E + 1.))
         return shells*NTU
@@ -1411,11 +1416,7 @@ def temperature_effectiveness_basic(R1, NTU1, subtype='crossflow'):
     elif subtype == 'crossflow':
         # TODO attempt chebyshev approximation of P1 as a function of R1, NTU1 (for stability)
         R1_NTU1_4_inv = 1.0/(4.*R1*NTU1)
-        def to_int(v):
-            v2 = v*v
-            return (1. + NTU1 - v2*R1_NTU1_4_inv)*exp(-v2*R1_NTU1_4_inv)*v*float(iv(0, v))
-        from scipy.integrate import quad
-        int_term = quad(to_int, 0.0, 2.*NTU1*R1**0.5)[0]# args=(NTU1, R1)
+        int_term = quad(crossflow_effectiveness_to_int, 0.0, 2.*NTU1*R1**0.5, args=(NTU1, R1_NTU1_4_inv))[0]
         P1 = 1./R1 - exp(-R1*NTU1)/(2.*(R1*NTU1)**2)*int_term
     elif subtype == 'crossflow, mixed 1':
         # Not symmetric
@@ -2463,7 +2464,9 @@ def temperature_effectiveness_plate(R1, NTU1, Np1, Np2, counterflow=True,
             return B*(2. - B*(1. + R1))
         elif not counterflow and not passes_counterflow:
             return temperature_effectiveness_plate(R1, NTU1, Np1=1, Np2=1, 
-                                                   counterflow=False)
+                                                   passes_counterflow=True,
+                                                   counterflow=False,
+                                                   reverse=False)
     elif Np1 == 2 and Np2 == 3:
         # One place says there are four configurations; no other discussion is
         # presented
@@ -2506,6 +2509,8 @@ def temperature_effectiveness_plate(R1, NTU1, Np1, Np2, counterflow=True,
         # so if they want to do a 3-1 instead of a 1-3 as is implemented here
         # They give R1 and NTU1 for "3 pass" side instead of the "1 pass" side 
         # and will get back P1 for the "3 pass" side.
+        
+        # numba is dying on this recursion when caching is on, disable caching for now
         R2 = 1./R1
         NTU2 = NTU1*R1
         P2 = temperature_effectiveness_plate(R1=R2, NTU1=NTU2, Np1=Np2, Np2=Np1,
@@ -3094,42 +3099,72 @@ NTU_from_P_basic_crossflow_mixed_12_q = [
 
 
 
-def _NTU_from_P_objective(NTU1, R1, P1, function, **kwargs):
+def _NTU_from_P_objective(NTU1, R1, P1, function, *args):
     '''Private function to hold the common objective function used by 
     all backwards solvers for the P-NTU method.
     These methods are really hard on on floating points (overflows and divide
     by zeroes due to numbers really close to 1), so if the function fails,
     mpmath is imported and tried.
     '''
-    try:
-        P1_calc = function(R1, NTU1, **kwargs)
-    except :
-        try:
-            import mpmath
-        except ImportError:  # pragma: no cover
-            raise ValueError('For some reverse P-NTU numerical solutions, the \
-intermediary results are ill-conditioned and do not fit in a float; mpmath must \
-be installed for this calculation to proceed.')
-        globals()['exp'] = mpmath.exp
-        P1_calc = float(function(R1, NTU1, **kwargs))
-        globals()['exp'] = math.exp
+    P1_calc = function(R1, NTU1, *args)
+    # Handled a larger range, not worth it
+#    try:
+#        P1_calc = function(R1, NTU1, **kwargs)
+#    except :
+#        try:
+#            import mpmath
+#        except ImportError:  # pragma: no cover
+#            raise ValueError('For some reverse P-NTU numerical solutions, the \
+#intermediary results are ill-conditioned and do not fit in a float; mpmath must \
+#be installed for this calculation to proceed.')
+#        globals()['exp'] = mpmath.exp
+#        P1_calc = float(function(R1, NTU1, **kwargs))
+#        globals()['exp'] = math.exp
     return P1_calc - P1
 
 
-def _NTU_from_P_solver(P1, R1, NTU_min, NTU_max, function, **kwargs):
+def _NTU_from_P_erf(NTU1, *args):
+    '''Private function to hold the common objective function used by 
+    all backwards solvers for the P-NTU method.
+    These methods are really hard on on floating points (overflows and divide
+    by zeroes due to numbers really close to 1), so if the function fails,
+    mpmath is imported and tried.
+    '''
+    R1, P1, function = args[0], args[1], args[2]
+    return function(R1, NTU1, *args[3:]) - P1
+
+def _NTU_from_P_solver(P1, R1, NTU_min, NTU_max, function, guess, *args):
     '''Private function to solve the P-NTU method backwards, given the
     function to use, the upper and lower NTU bounds for consideration,
     and the desired P1 and R1 values.
     '''
-    P1_max = _NTU_from_P_objective(NTU_max, R1, 0, function, **kwargs)
-    P1_min = _NTU_from_P_objective(NTU_min, R1, 0, function, **kwargs)
+    args2 = (R1, P1, function) + args
+    try:
+        if guess is not None:
+            guess2 = guess
+        elif NTU_min < 2.0 < NTU_max:
+            guess2 = 2.0
+        else:
+            guess2 = NTU_min + 0.001*NTU_max
+        if (NTU_min is not None and NTU_max is not None) and (guess2 < NTU_min or guess2 > NTU_max):
+            guess2 = 0.5*(NTU_min + NTU_max)
+        return secant(_NTU_from_P_erf, guess2, low=NTU_min, high=NTU_max, bisection=False, xtol=1e-13, args=args2)
+    except:
+        # secant failed. For some reason, the bisection in secant is going to wrong wrong value
+        # floating point really sucks
+        pass
+    
+    # Better for numerical stability if we don't need to evaluate these
+    P1_max = _NTU_from_P_erf(NTU_max, *(R1, 0.0, function) + args)
+    P1_min = _NTU_from_P_erf(NTU_min, *(R1, 0.0, function) + args)
     if P1 > P1_max:
-        raise ValueError('No solution possible gives such a high P1; maximum P1=%f at NTU1=%f' %(P1_max, NTU_max))
+        raise ValueError('No solution possible gives such a high P1; maximum P1=%f at NTU1=%f' %(P1_max, NTU_max)) # numba: delete
+        # raise ValueError("No solution") # numba: uncomment
     if P1 < P1_min:
-        raise ValueError('No solution possible gives such a low P1; minimum P1=%f at NTU1=%f' %(P1_min, NTU_min))
+        # raise ValueError("No solution") # numba: uncomment
+        raise ValueError('No solution possible gives such a low P1; minimum P1=%f at NTU1=%f' %(P1_min, NTU_min)) # numba: delete
     # Construct the function as a lambda expression as solvers don't support kwargs
-    to_solve = lambda NTU1: _NTU_from_P_objective(NTU1, R1, P1, function, **kwargs)
-    return ridder(to_solve, NTU_min, NTU_max)
+    return ridder(_NTU_from_P_erf, NTU_min, NTU_max, args=args2)
 
 
 def _NTU_max_for_P_solver(ps, qs, offsets, R1):
@@ -3232,6 +3267,7 @@ def NTU_from_P_basic(P1, R1, subtype='crossflow'):
     3.984769850376482
     '''
     NTU_min = 1E-11
+    guess = None
     function = temperature_effectiveness_basic
     if subtype == 'counterflow':
         return -log((P1*R1 - 1.)/(P1 - 1.))/(R1 - 1.)
@@ -3250,11 +3286,12 @@ def NTU_from_P_basic(P1, R1, subtype='crossflow'):
         NTU_max = 1E5
     elif subtype == 'crossflow':
         guess = NTU_from_P_basic(P1, R1, subtype='crossflow approximate')
-        to_solve = lambda NTU1 : _NTU_from_P_objective(NTU1, R1, P1, function, subtype='crossflow')
-        return secant(to_solve, guess)
+        NTU_min, NTU_max = None, None
+#        to_solve = lambda NTU1 : _NTU_from_P_objective(NTU1, R1, P1, function, 'crossflow')
+#        return secant(to_solve, guess)
     else:
         raise ValueError('Subtype not recognized.')
-    return _NTU_from_P_solver(P1, R1, NTU_min, NTU_max, function, subtype=subtype)
+    return _NTU_from_P_solver(P1, R1, NTU_min, NTU_max, function, guess, subtype)
 
 
 def NTU_from_P_G(P1, R1, Ntp, optimal=True):
@@ -3317,7 +3354,7 @@ def NTU_from_P_G(P1, R1, Ntp, optimal=True):
     Examples
     --------
     >>> NTU_from_P_G(P1=.573, R1=1/3., Ntp=1)
-    0.9999513707764522
+    0.9999513707759524
     '''
     NTU_min = 1E-11
     function = temperature_effectiveness_TEMA_G
@@ -3331,7 +3368,7 @@ def NTU_from_P_G(P1, R1, Ntp, optimal=True):
                                         NTU_from_G_2_unoptimal_offset, R1)
     else:
         raise ValueError('Supported numbers of tube passes are 1 or 2.')
-    return _NTU_from_P_solver(P1, R1, NTU_min, NTU_max, function, Ntp=Ntp, optimal=optimal)
+    return _NTU_from_P_solver(P1, R1, NTU_min, NTU_max, function, None, Ntp, optimal)
 
 
 def NTU_from_P_J(P1, R1, Ntp):
@@ -3373,10 +3410,8 @@ def NTU_from_P_J(P1, R1, Ntp):
     an exception is raised).
         
     >>> NTU_from_P_J(P1=.995024, R1=.01, Ntp=1)
-    13.94075876069712
-    >>> NTU_from_P_J(P1=.99502487562188, R1=.01, Ntp=1)
-    536.4817955951684
-    >>> NTU_from_P_J(P1=.99502487562189, R1=.01, Ntp=1)
+    13.940758768266656
+    >>> NTU_from_P_J(P1=.99502487562189, R1=.01, Ntp=1)  # doctest: +SKIP
     Traceback (most recent call last):
     ValueError: No solution possible gives such a high P1; maximum P1=0.995025 at NTU1=1000.000000
     
@@ -3388,7 +3423,7 @@ def NTU_from_P_J(P1, R1, Ntp):
     Examples
     --------
     >>> NTU_from_P_J(P1=.57, R1=1/3., Ntp=1)
-    1.0003070138879648
+    1.0003070138879664
     '''
     NTU_min = 1E-11
     function = temperature_effectiveness_TEMA_J
@@ -3406,7 +3441,7 @@ def NTU_from_P_J(P1, R1, Ntp):
         NTU_max = _NTU_max_for_P_solver(NTU_from_P_J_4_p, NTU_from_P_J_4_q, NTU_from_P_J_4_offset, R1)
     else:
         raise ValueError('Supported numbers of tube passes are 1, 2, and 4.')
-    return _NTU_from_P_solver(P1, R1, NTU_min, NTU_max, function, Ntp=Ntp)
+    return _NTU_from_P_solver(P1, R1, NTU_min, NTU_max, function, None, Ntp)
 
 
 def NTU_from_P_E(P1, R1, Ntp, optimal=True):
@@ -3517,7 +3552,7 @@ def NTU_from_P_E(P1, R1, Ntp, optimal=True):
         NTU_max = 1E3
     else:
         raise ValueError('For TEMA E shells with an odd number of tube passes more than 3, no solution is implemented.')
-    return _NTU_from_P_solver(P1, R1, NTU_min, NTU_max, function, Ntp=Ntp, optimal=optimal)
+    return _NTU_from_P_solver(P1, R1, NTU_min, NTU_max, function, None, Ntp, optimal)
 
 
 def NTU_from_P_H(P1, R1, Ntp, optimal=True):
@@ -3572,7 +3607,7 @@ def NTU_from_P_H(P1, R1, Ntp, optimal=True):
     Examples
     --------
     >>> NTU_from_P_H(P1=0.573, R1=1/3., Ntp=1)
-    0.9997628696886166
+    0.9997628696891168
     '''
     NTU_min = 1E-11
     if Ntp == 1:
@@ -3585,7 +3620,7 @@ def NTU_from_P_H(P1, R1, Ntp, optimal=True):
     else:
         raise ValueError('Supported numbers of tube passes are 1 and 2.')
     return _NTU_from_P_solver(P1, R1, NTU_min, NTU_max, temperature_effectiveness_TEMA_H,
-                              Ntp=Ntp, optimal=optimal)
+                              None, Ntp, optimal)
 
 
 def NTU_from_P_plate(P1, R1, Np1, Np2, counterflow=True, 
@@ -3677,10 +3712,9 @@ def NTU_from_P_plate(P1, R1, Np1, Np2, counterflow=True,
     orientation.
     
     >>> NTU_from_P_plate(P1=0.5743, R1=1/3., Np1=3, Np2=1)
-    0.9998336056060733
+    0.9998336056090733
     '''
     NTU_min = 1E-11
-    function = temperature_effectiveness_plate
     if Np1 == 1 and Np2 == 1 and counterflow:
         try:
             return -log((P1*R1 - 1.)/(P1 - 1.))/(R1 - 1.)
@@ -3707,7 +3741,7 @@ def NTU_from_P_plate(P1, R1, Np1, Np2, counterflow=True,
             return NTU_from_P_plate(P1, R1, Np1=1, Np2=1, counterflow=True, 
                                     passes_counterflow=True)
         elif counterflow and not passes_counterflow:
-            NTU_max = 100
+            NTU_max = 100.0
         elif not counterflow and passes_counterflow:
             NTU_max = _NTU_max_for_P_solver(NTU_from_plate_2_2_parallel_counterflow_p,
                                             NTU_from_plate_2_2_parallel_counterflow_q,
@@ -3717,14 +3751,14 @@ def NTU_from_P_plate(P1, R1, Np1, Np2, counterflow=True,
                                     passes_counterflow=False)
     elif Np1 == 2 and Np2 == 3:
         if counterflow:
-            NTU_max = 100
+            NTU_max = 100.0
         elif not counterflow:
             NTU_max = _NTU_max_for_P_solver(NTU_from_plate_2_3_parallel_p,
                                             NTU_from_plate_2_3_parallel_q,
                                             NTU_from_plate_2_3_parallel_offset, R1)
     elif Np1 == 2 and Np2 == 4:
         if counterflow:
-            NTU_max = 100
+            NTU_max = 100.0
         elif not counterflow:
             NTU_max = _NTU_max_for_P_solver(NTU_from_plate_2_4_parallel_p, 
                                             NTU_from_plate_2_4_parallel_q, 
@@ -3741,9 +3775,8 @@ def NTU_from_P_plate(P1, R1, Np1, Np2, counterflow=True,
         return NTU1
     else:
         raise ValueError('Supported number of passes does not have a formula available')
-    return _NTU_from_P_solver(P1, R1, NTU_min, NTU_max, function, Np1=Np1, 
-                              Np2=Np2, counterflow=counterflow, 
-                              passes_counterflow=passes_counterflow)
+    return _NTU_from_P_solver(P1, R1, NTU_min, NTU_max, temperature_effectiveness_plate, None, Np1, 
+                              Np2, counterflow, passes_counterflow)
 
 
 def P_NTU_method(m1, m2, Cp1, Cp2, UA=None, T1i=None, T1o=None, 
@@ -3969,8 +4002,8 @@ def P_NTU_method(m1, m2, Cp1, Cp2, UA=None, T1i=None, T1o=None,
     ... Ntp=4, T1i=130, T2i=15, T2o=84.87829918042112))
     {'C1': 9672.0,
      'C2': 2755.0,
-     'NTU1': 0.31449028122515194,
-     'NTU2': 1.1040834845770124,
+     'NTU1': 0.3144902812236521,
+     'NTU2': 1.1040834845717469,
      'P1': 0.17308116143602348,
      'P2': 0.607637384177575,
      'Q': 192514.7142420602,
@@ -3980,7 +4013,7 @@ def P_NTU_method(m1, m2, Cp1, Cp2, UA=None, T1i=None, T1o=None,
      'T1o': 110.09566643485729,
      'T2i': 15,
      'T2o': 84.87829918042112,
-     'UA': 3041.7500000096693}
+     'UA': 3041.749999995163}
 
     Solve a 2 pass/2 pass plate heat exchanger with overall parallel flow and
     its individual passes operating in parallel and known outlet temperatures.
