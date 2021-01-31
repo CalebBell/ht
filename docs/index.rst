@@ -1,13 +1,22 @@
-.. ht documentation master file, created by
-   sphinx-quickstart on Sat Jan  2 17:15:23 2016.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
 Welcome to ht's documentation!
 ==============================
 ht is open-source software for engineers and technicians working in the
 fields of chemical or mechanical engineering. It includes modules
 for various heat transfer functions.
+
+Among the tasks this library can be used for are:
+
+* Sizing a Shell & Tube heat exchanger using any of the Zukauskas, ESDU 73031, or Bell methods
+* Calculating pressure drop in a Hairpin heat exchanger
+* Calculating heat loss of objects, including insulated objects
+* Calculating heat loss from buried pipe
+* Performing radiative heat transfer calculations
+* Conderser and Reboiler rating
+* Detailed heat exchanger evaluation; finding fouling factors
+* Heat transfer in packed beds
+* Sizing a Plate and Frame heat exchanger
+* Modeling an Air Cooler
+* Supercritical CO2 or water heat transfer
 
 .. image:: http://img.shields.io/pypi/v/ht.svg?style=flat
    :target: https://pypi.python.org/pypi/ht
@@ -15,8 +24,8 @@ for various heat transfer functions.
 .. image:: http://img.shields.io/badge/docs-latest-brightgreen.svg?style=flat
    :target: https://ht.readthedocs.io/en/latest/
    :alt: Documentation
-.. image:: http://img.shields.io/travis/CalebBell/ht/master.svg?style=flat
-   :target: https://travis-ci.org/CalebBell/ht
+.. image:: https://github.com/CalebBell/ht/workflows/Build/badge.svg
+   :target: https://github.com/CalebBell/ht/actions
    :alt: Build_status
 .. image:: http://img.shields.io/badge/license-MIT-blue.svg?style=flat 
    :target: https://github.com/CalebBell/ht/blob/master/LICENSE.txt
@@ -88,7 +97,7 @@ Citation
 
 To cite ht in publications use::
 
-    Caleb Bell (2016-2020). ht: Heat transfer component of Chemical Engineering Design Library (ChEDL)
+    Caleb Bell (2016-2021). ht: Heat transfer component of Chemical Engineering Design Library (ChEDL)
     https://github.com/CalebBell/ht.
 
 

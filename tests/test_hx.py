@@ -21,7 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.'''
 
 from __future__ import division
-from math import log, exp, sqrt, tanh, factorial
+from math import log, exp, sqrt, tanh, factorial, isnan
 from ht import *
 import ht
 import numpy as np
@@ -181,6 +181,8 @@ def test_Phadkeb_numbers():
     squares = [i*i for i in range(max_range+1)]
     seq = [i+j for i in squares for j in squares]
     seq = [i for i in set(seq) if i < up_to] # optional
+    seq.sort() # on PyPy, the  [i+j for i in squares for j in squares] look yields results in a different order
+    # so we need to sort the result
     nums = seq[0:len(square_Ns)]
     assert_allclose(nums, square_Ns)
 
@@ -1338,6 +1340,8 @@ def test_NTU_from_P_G():
                 NTU1_calc = NTU_from_P_G(P1, R1, Ntp=Ntp, optimal=optimal)
                 P1_calc = temperature_effectiveness_TEMA_G(R1=R1, NTU1=NTU1_calc, Ntp=Ntp, optimal=optimal)
             except (ValueError, OverflowError, ZeroDivisionError, RuntimeError) as e:
+                continue
+            if isnan(P1) or isnan(P1_calc):
                 continue
             assert_allclose(P1, P1_calc)
             tot +=1
