@@ -220,12 +220,12 @@ def effectiveness_from_NTU(NTU, Cr, subtype='counterflow'):
     Crossflow, somewhat higher effectiveness:
 
     >>> effectiveness_from_NTU(NTU=5, Cr=0.7, subtype='crossflow')
-    0.844482179974855
+    0.84448217997
 
     Counterflow, better than either crossflow or parallel flow:
 
     >>> effectiveness_from_NTU(NTU=5, Cr=0.7, subtype='counterflow')
-    0.9206703686051108
+    0.920670368605
 
     One shell and tube heat exchanger gives worse performance than counterflow,
     but they are designed to be economical and compact which a counterflow
@@ -233,9 +233,9 @@ def effectiveness_from_NTU(NTU, Cr, subtype='counterflow'):
     the counterflow result is obtained exactly.
 
     >>> effectiveness_from_NTU(NTU=5, Cr=0.7, subtype='S&T')
-    0.6834977044311439
+    0.683497704431
     >>> effectiveness_from_NTU(NTU=5, Cr=0.7, subtype='50S&T')
-    0.9205058702789254
+    0.920505870278
 
 
     Overall case of rating an existing heat exchanger where a known flowrate
@@ -259,11 +259,11 @@ def effectiveness_from_NTU(NTU, Cr, subtype='counterflow'):
     >>> Tco = Tci + Q/(m_oil*Cp_oil)
     >>> Tho = Thi - Q/(m_steam*Cp_steam)
     >>> Cmin, Cmax, Cr
-    (1377.5, 9672.0, 0.14242142266335814)
+    (1377.5, 9672.0, 0.1424214226633)
     >>> NTU, eff, Q
-    (2.160072595281307, 0.8312180361425988, 131675.32715043944)
+    (2.16007259528, 0.831218036142, 131675.3271504)
     >>> Tco, Tho
-    (110.59007415639887, 116.38592564614977)
+    (110.5900741563, 116.3859256461)
 
     Alternatively, if only the outlet temperatures had been known:
 
@@ -274,7 +274,7 @@ def effectiveness_from_NTU(NTU, Cr, subtype='counterflow'):
     >>> Thi = Tho + Q/Ch
     >>> Tci = Tco - Q/Cc
     >>> Q, Tci, Thi
-    (131675.32715043964, 14.999999999999858, 130.00000000000003)
+    (131675.3271504, 14.99999999999, 130.0000000000)
 
     References
     ----------
@@ -491,7 +491,7 @@ def NTU_from_effectiveness(effectiveness, Cr, subtype='counterflow'):
     >>> Tho, Cmin, Cmax, Cr
     (110.06100082712986, 2755.0, 9672.0, 0.2848428453267163)
     >>> effectiveness, NTU, UA, A
-    (0.6086956521739131, 1.1040839095588, 3041.751170834494, 15.208755854172471)
+    (0.608695652173, 1.1040839095, 3041.75117083, 15.2087558541)
 
     References
     ----------
@@ -835,7 +835,7 @@ def Pp(x, y):
     Examples
     --------
     >>> Pp(5, .4)
-    0.713634370024604
+    0.713634370024
 
     References
     ----------
@@ -881,7 +881,7 @@ def Pc(x, y):
     Examples
     --------
     >>> Pc(5, .7)
-    0.9206703686051108
+    0.920670368605
 
     References
     ----------
@@ -967,15 +967,15 @@ def effectiveness_NTU_method(mh, mc, Cph, Cpc, subtype='counterflow', Thi=None,
     ... subtype='crossflow, mixed Cmax', Tci=15, Tco=85, Thi=130))
     {'Cmax': 9672.0,
      'Cmin': 2755.0,
-     'Cr': 0.2848428453267163,
-     'NTU': 1.1040839095588,
+     'Cr': 0.284842845326,
+     'NTU': 1.104083909,
      'Q': 192850.0,
      'Tci': 15,
      'Tco': 85,
      'Thi': 130,
-     'Tho': 110.06100082712986,
-     'UA': 3041.751170834494,
-     'effectiveness': 0.6086956521739131}
+     'Tho': 110.0610008271,
+     'UA': 3041.75117083,
+     'effectiveness': 0.608695652173}
 
     Solve the same heat exchanger with the UA specified, and known inlet
     temperatures:
@@ -984,15 +984,15 @@ def effectiveness_NTU_method(mh, mc, Cph, Cpc, subtype='counterflow', Thi=None,
     ... subtype='crossflow, mixed Cmax', Tci=15, Thi=130, UA=3041.75))
     {'Cmax': 9672.0,
      'Cmin': 2755.0,
-     'Cr': 0.2848428453267163,
-     'NTU': 1.1040834845735028,
-     'Q': 192849.96310220254,
+     'Cr': 0.284842845326,
+     'NTU': 1.104083484573,
+     'Q': 192849.9631022,
      'Tci': 15,
-     'Tco': 84.99998660697007,
+     'Tco': 84.9999866069,
      'Thi': 130,
-     'Tho': 110.06100464203861,
+     'Tho': 110.0610046420,
      'UA': 3041.75,
-     'effectiveness': 0.6086955357127832}
+     'effectiveness': 0.608695535712}
     '''
     Cmin = calc_Cmin(mh=mh, mc=mc, Cph=Cph, Cpc=Cpc)
     Cmax = calc_Cmax(mh=mh, mc=mc, Cph=Cph, Cpc=Cpc)
@@ -5224,7 +5224,7 @@ def DBundle_for_Ntubes_HEDH(N, Do, pitch, angle=30):
     Examples
     --------
     >>> DBundle_for_Ntubes_HEDH(N=928, Do=.028, pitch=.036, angle=30)
-    1.1839930795640605
+    1.183993079564
 
     References
     ----------

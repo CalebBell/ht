@@ -159,7 +159,7 @@ def Ft_aircooler(Thi, Tho, Tci, Tco, Ntp=1, rows=1):
     Examples
     --------
     >>> Ft_aircooler(Thi=125., Tho=45., Tci=25., Tco=95., Ntp=1, rows=4)
-    0.5505093604092706
+    0.550509360409
 
     References
     ----------
@@ -244,7 +244,7 @@ def air_cooler_noise_GPSA(tip_speed, power):
     Example problem from GPSA [1]_.
 
     >>> air_cooler_noise_GPSA(tip_speed=3177/minute, power=25.1*hp)
-    100.53680477959792
+    100.5368047795
 
     References
     ----------
@@ -289,7 +289,7 @@ def air_cooler_noise_Mukherjee(tip_speed, power, fan_diameter, induced=False):
     Examples
     --------
     >>> air_cooler_noise_Mukherjee(tip_speed=3177/minute, power=25.1*hp, fan_diameter=4.267)
-    99.11026329092925
+    99.1102632909
 
     References
     ----------
@@ -378,7 +378,7 @@ def h_Briggs_Young(m, A, A_min, A_increase, A_fin, A_tube_showing,
     ... fin_diameter=AC.fin_diameter, bare_length=AC.bare_length,
     ... fin_thickness=AC.fin_thickness,
     ... rho=1.161, Cp=1007., mu=1.85E-5, k=0.0263, k_fin=205)
-    1422.8722403237716
+    1422.872240323
 
     References
     ----------
@@ -508,7 +508,7 @@ def h_ESDU_high_fin(m, A, A_min, A_increase, A_fin, A_tube_showing,
     ... fin_thickness=AC.fin_thickness, tube_rows=AC.tube_rows,
     ... pitch_normal=AC.pitch_normal, pitch_parallel=AC.pitch_parallel,
     ... rho=1.161, Cp=1007., mu=1.85E-5, k=0.0263, k_fin=205)
-    1390.888918049757
+    1390.88891804
 
     References
     ----------
@@ -656,7 +656,7 @@ def h_ESDU_low_fin(m, A, A_min, A_increase, A_fin,
     ... fin_thickness=AC.fin_thickness, tube_rows=AC.tube_rows,
     ... pitch_normal=AC.pitch_normal, pitch_parallel=AC.pitch_parallel,
     ... rho=1.217, Cp=1007., mu=1.8E-5, k=0.0253, k_fin=15)
-    553.853836470948
+    553.85383647
 
     References
     ----------
@@ -794,7 +794,7 @@ def h_Ganguli_VDI(m, A, A_min, A_increase, A_fin,
     ... fin_thickness=AC.fin_thickness, tube_rows=AC.tube_rows,
     ... pitch_parallel=AC.pitch_parallel, pitch_normal=AC.pitch_normal,
     ... rho=1.2013848, Cp=1009.0188, mu=1.9304793e-05, k=0.027864828, k_fin=238)
-    969.2850818578595
+    969.285081857
 
     References
     ----------
@@ -911,7 +911,7 @@ def dP_ESDU_high_fin(m, A_min, A_increase, flow_area_contraction_ratio,
     ... pitch_normal=0.0313, pitch_parallel=0.0271, fin_height=0.0041, corbels=True)
 
     >>> dP_ESDU_high_fin(m=0.914, A_min=AC.A_min, A_increase=AC.A_increase, flow_area_contraction_ratio=AC.flow_area_contraction_ratio, tube_diameter=AC.tube_diameter, pitch_parallel=AC.pitch_parallel, pitch_normal=AC.pitch_normal, tube_rows=AC.tube_rows, rho=1.217,  mu=0.000018)
-    485.6307687791502
+    485.630768779
 
     References
     ----------
@@ -1012,7 +1012,7 @@ def dP_ESDU_low_fin(m, A_min, A_increase, flow_area_contraction_ratio,
     ... bare_length=AC.bare_length, pitch_parallel=AC.pitch_parallel,
     ... pitch_normal=AC.pitch_normal, tube_rows=AC.tube_rows, rho=1.217,
     ... mu=0.000018)
-    464.54331418655914
+    464.5433141865
 
     References
     ----------

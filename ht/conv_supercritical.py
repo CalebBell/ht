@@ -594,7 +594,7 @@ def Nu_Mokry(Re, Pr, rho_w=None, rho_b=None):
     Examples
     --------
     >>> Nu_Mokry(1E5, 1.2, 330, 290.)
-    246.11563191569923
+    246.1156319156
 
     References
     ----------
@@ -655,7 +655,7 @@ def Nu_Bringer_Smith(Re, Pr):
     Examples
     --------
     >>> Nu_Bringer_Smith(1E5, 1.2)
-    208.17631753279107
+    208.1763175327
 
     References
     ----------
@@ -712,7 +712,7 @@ def Nu_Ornatsky(Re, Pr_b, Pr_w, rho_w=None, rho_b=None):
     Examples
     --------
     >>> Nu_Ornatsky(1E5, 1.2, 1.5, 330, 290.)
-    276.63531150832307
+    276.6353115083
 
     References
     ----------
@@ -764,7 +764,7 @@ def Nu_Gorban(Re, Pr):
     Examples
     --------
     >>> Nu_Gorban(1E5, 1.2)
-    182.5367282733999
+    182.536728273
 
     References
     ----------
@@ -834,7 +834,7 @@ def Nu_Zhu(Re, Pr, rho_w=None, rho_b=None, k_w=None, k_b=None):
     Examples
     --------
     >>> Nu_Zhu(1E5, 1.2, 330, 290., 0.63, 0.69)
-    240.1459854494706
+    240.145985449
 
     References
     ----------
@@ -910,7 +910,7 @@ def Nu_Bishop(Re, Pr, rho_w=None, rho_b=None, D=None, x=None):
     Examples
     --------
     >>> Nu_Bishop(1E5, 1.2, 330, 290., .01, 1.2)
-    265.3620050072533
+    265.362005007
 
     References
     ----------
@@ -1015,7 +1015,7 @@ def Nu_Yamagata(Re, Pr, Pr_pc=None, Cp_avg=None, Cp_b=None, T_b=None,
     Examples
     --------
     >>> Nu_Yamagata(Re=1E5, Pr=1.2, Pr_pc=1.5, Cp_avg=2080.845, Cp_b=2048.621, T_b=650, T_w=700, T_pc=600.0)
-    292.3473428004679
+    292.347342800
 
     References
     ----------
@@ -1119,7 +1119,7 @@ def Nu_Kitoh(Re, Pr, H=None, G=None, q=None):
     Examples
     --------
     >>> Nu_Kitoh(1E5, 1.2, 1.3E6, 1500, 5E6)
-    331.80234139591306
+    331.8023413959
 
     References
     ----------
@@ -1213,7 +1213,7 @@ def Nu_Krasnoshchekov_Protopopov(Re, Pr, Cp_avg=None, Cp_b=None, k_w=None,
     Examples
     --------
     >>> Nu_Krasnoshchekov_Protopopov(1E5, 1.2, 330, 290., 0.62, 0.52, 8e-4, 9e-4)
-    228.85296737400222
+    228.8529673740
 
     References
     ----------
@@ -1294,7 +1294,7 @@ def Nu_Petukhov(Re, Pr, rho_w=None, rho_b=None, mu_w=None, mu_b=None):
     Examples
     --------
     >>> Nu_Petukhov(1E5, 1.2, 330, 290., 8e-4, 9e-4)
-    254.8258598466738
+    254.825859846
 
     References
     ----------
@@ -1381,7 +1381,7 @@ def Nu_Krasnoshchekov(Re, Pr, rho_w=None, rho_b=None, Cp_avg=None, Cp_b=None,
     Examples
     --------
     >>> Nu_Krasnoshchekov(1E5, 1.2)
-    234.82855185610364
+    234.8285518561
 
     References
     ----------
