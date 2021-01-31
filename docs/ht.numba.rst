@@ -14,7 +14,7 @@ imported separately; it is not loaded automatically as part of ht.
 >>> import ht
 >>> import ht.numba
 >>> ht.numba.Ft_aircooler(Thi=125., Tho=45., Tci=25., Tco=95., Ntp=1, rows=4)
-0.5505093604092706
+0.55050936040
 
 There is a delay while the code is compiled when using Numba;
 the speed is not quite free. Most, but not all compilations can be
