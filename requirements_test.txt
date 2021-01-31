@@ -1,7 +1,15 @@
-fluids>=0.1.64
 scipy
 pytest
 pytest-cov
 coveralls
-mpmath
+sympy
+fuzzywuzzy
 pint
+pytz
+numpy
+pandas
+IPython
+sphinx
+wheel
+mpmath
+fluids>=1.0.0
