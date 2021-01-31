@@ -47,14 +47,14 @@ replaced = fluids.numba.numerics_dict.copy()
 
 
 def transform_complete_ht(replaced, __funcs, __all__, normal, vec=False):
-    cache_blacklist = set(['h_Ganguli_VDI', 'fin_efficiency_Kern_Kraus', 'h_Briggs_Young', 
+    cache_blacklist = set(['h_Ganguli_VDI', 'fin_efficiency_Kern_Kraus', 'h_Briggs_Young',
                            'h_ESDU_high_fin', 'h_ESDU_low_fin', 'Nu_Nusselt_Rayleigh_Holling_Herwig',
                            'DBundle_for_Ntubes_Phadkeb', 'Thome', 'to_solve_q_Thome',
-                       'temperature_effectiveness_air_cooler', 'factorial', 
-                       'size_bundle_from_tubecount', 'crossflow_effectiveness_to_int', 
+                       'temperature_effectiveness_air_cooler', 'factorial',
+                       'size_bundle_from_tubecount', 'crossflow_effectiveness_to_int',
                        'temperature_effectiveness_basic', '_NTU_from_P_solver',
                        'NTU_from_P_basic', '_NTU_from_P_erf',
-                       'NTU_from_P_G', 'NTU_from_P_J', 'NTU_from_P_E', 
+                       'NTU_from_P_G', 'NTU_from_P_J', 'NTU_from_P_E',
                        'NTU_from_P_H', 'NTU_from_P_plate',
                        'temperature_effectiveness_plate', # dies on recursion
                        ])
@@ -65,9 +65,9 @@ def transform_complete_ht(replaced, __funcs, __all__, normal, vec=False):
         conv_fun = numba.vectorize
     else:
         conv_fun = numba.jit
-    
+
     to_change_full_output = []
-    
+
     to_change = {}
     to_change.update({k: 'full_output' for k in to_change_full_output})
 #    to_change['hx.Ntubes_Phadkeb'] = 'square_C1s is None'

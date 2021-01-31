@@ -26,7 +26,7 @@ from fluids.constants import g, R
 from fluids.core import Reynolds, Prandtl
 from ht.conv_internal import turbulent_Dittus_Boelter
 
-__all__ = ['Boyko_Kruzhilin', 'Nusselt_laminar', 'h_kinetic', 
+__all__ = ['Boyko_Kruzhilin', 'Nusselt_laminar', 'h_kinetic',
            'Akers_Deans_Crosser', 'Cavallini_Smith_Zecchin', 'Shah']
 
 
@@ -69,7 +69,7 @@ def Nusselt_laminar(Tsat, Tw, rhog, rhol, kl, mul, Hvap, L, angle=90.):
     -----
     Optionally, the plate may be inclined.
     The constant 0.943 is actually:
-    
+
     .. math::
         2\sqrt{2}/3
 
@@ -161,19 +161,19 @@ def Akers_Deans_Crosser(m, rhog, rhol, kl, mul, Cpl, D, x):
 
     .. math::
         Nu = \frac{hD_i}{k_l} = C Re_e^n Pr_l^{1/3}
-        
+
     .. math::
         C = 0.0265, n=0.8 \text{ for } Re_e > 5\times10^4
-        
+
     .. math::
         C = 5.03, n=\frac{1}{3} \text{ for } Re_e < 5\times10^4
 
     .. math::
         Re_e = \frac{D_i G_e}{\mu_l}
-        
+
     .. math::
         G_e = G\left[(1-x)+x(\rho_l/\rho_g)^{0.5}\right]
-        
+
     Parameters
     ----------
     m : float
@@ -203,16 +203,16 @@ def Akers_Deans_Crosser(m, rhog, rhol, kl, mul, Cpl, D, x):
 
     Examples
     --------
-    >>> Akers_Deans_Crosser(m=0.35, rhog=6.36, rhol=582.9, kl=0.098, 
+    >>> Akers_Deans_Crosser(m=0.35, rhog=6.36, rhol=582.9, kl=0.098,
     ... mul=159E-6, Cpl=2520., D=0.03, x=0.85)
     7117.24177265201
 
     References
     ----------
-    .. [1] Akers, W. W., H. A. Deans, and O. K. Crosser. "Condensing Heat 
-       Transfer Within Horizontal Tubes." Chem. Eng. Progr. Vol: 55, Symposium 
+    .. [1] Akers, W. W., H. A. Deans, and O. K. Crosser. "Condensing Heat
+       Transfer Within Horizontal Tubes." Chem. Eng. Progr. Vol: 55, Symposium
        Ser. No. 29 (January 1, 1959).
-    .. [2] Kakaç, Sadik, ed. Boilers, Evaporators, and Condensers. 1st. 
+    .. [2] Kakaç, Sadik, ed. Boilers, Evaporators, and Condensers. 1st.
        Wiley-Interscience, 1991.
     '''
     G = m/(pi/4*D**2)
@@ -237,7 +237,7 @@ def h_kinetic(T, P, MW, Hvap, f=1.0):
     .. math::
         h = \left(\frac{2f}{2-f}\right)\left(\frac{MW}{1000\cdot 2\pi R T}
         \right)^{0.5}\left(\frac{H_{vap}^2 P \cdot MW}{1000\cdot RT^2}\right)
-        
+
     Parameters
     ----------
     T : float
@@ -258,7 +258,7 @@ def h_kinetic(T, P, MW, Hvap, f=1.0):
 
     Notes
     -----
-    f is a correction factor for how the removal of gas particles affects the 
+    f is a correction factor for how the removal of gas particles affects the
     behavior of the ideal gas in diffusing to the condensing surface. It is
     quite close to one, and has not been well explored in the literature due
     to the rarity of the importance of the kinetic resistance.
@@ -266,24 +266,24 @@ def h_kinetic(T, P, MW, Hvap, f=1.0):
     Examples
     --------
     Water at 1 bar and 300 K:
-    
+
     >>> h_kinetic(300, 1E5, 18.02, 2441674)
     30788829.908851154
-    
+
     References
     ----------
-    .. [1] Berman, L. D. "On the Effect of Molecular-Kinetic Resistance upon 
+    .. [1] Berman, L. D. "On the Effect of Molecular-Kinetic Resistance upon
        Heat Transfer with Condensation." International Journal of Heat and Mass
-       Transfer 10, no. 10 (October 1, 1967): 1463. 
+       Transfer 10, no. 10 (October 1, 1967): 1463.
        doi:10.1016/0017-9310(67)90033-6.
-    .. [2] Kakaç, Sadik, ed. Boilers, Evaporators, and Condensers. 1 edition. 
+    .. [2] Kakaç, Sadik, ed. Boilers, Evaporators, and Condensers. 1 edition.
        Wiley-Interscience, 1991.
     .. [3] Stephan, Karl. Heat Transfer in Condensation and Boiling. Translated
-       by C. V. Green. Softcover reprint of the original 1st ed. 1992 edition. 
+       by C. V. Green. Softcover reprint of the original 1st ed. 1992 edition.
        Berlin; New York: Springer, 2013.
     '''
     return (2*f)/(2-f)*(MW/(1000*2*pi*R*T))**0.5*(Hvap**2*P*MW)/(1000*R*T**2)
-    
+
 
 def Cavallini_Smith_Zecchin(m, x, D, rhol, rhog, mul, mug, kl, Cpl):
     r'''Calculates heat transfer coefficient for condensation
@@ -292,7 +292,7 @@ def Cavallini_Smith_Zecchin(m, x, D, rhol, rhog, mul, mug, kl, Cpl):
 
     .. math::
         Nu = \frac{hD_i}{k_l} = 0.05 Re_e^{0.8} Pr_l^{0.33}
-        
+
     .. math::
         Re_{eq} = Re_g(\mu_g/\mu_l)(\rho_l/\rho_g)^{0.5} + Re_l
 
@@ -335,25 +335,25 @@ def Cavallini_Smith_Zecchin(m, x, D, rhol, rhog, mul, mug, kl, Cpl):
     --------
     >>> Cavallini_Smith_Zecchin(m=1, x=0.4, D=.3, rhol=800, rhog=2.5, mul=1E-5, mug=1E-3, kl=0.6, Cpl=2300)
     5578.218369177804
-    
+
     References
     ----------
     .. [1] A. Cavallini, J. R. Smith and R. Zecchin, A dimensionless correlation
-       for heat transfer in forced convection condensation, 6th International 
-       Heat Transfer Conference., Tokyo, Japan (1974) 309-313. 
-    .. [2] Kakaç, Sadik, ed. Boilers, Evaporators, and Condensers. 1st. 
+       for heat transfer in forced convection condensation, 6th International
+       Heat Transfer Conference., Tokyo, Japan (1974) 309-313.
+    .. [2] Kakaç, Sadik, ed. Boilers, Evaporators, and Condensers. 1st.
        Wiley-Interscience, 1991.
-    .. [3] Balcılar, Muhammet, Ahmet Selim Dalkılıç, Berna Bolat, and Somchai 
+    .. [3] Balcılar, Muhammet, Ahmet Selim Dalkılıç, Berna Bolat, and Somchai
        Wongwises. "Investigation of Empirical Correlations on the Determination
-       of Condensation Heat Transfer Characteristics during Downward Annular 
-       Flow of R134a inside a Vertical Smooth Tube Using Artificial 
-       Intelligence Algorithms." Journal of Mechanical Science and Technology 
+       of Condensation Heat Transfer Characteristics during Downward Annular
+       Flow of R134a inside a Vertical Smooth Tube Using Artificial
+       Intelligence Algorithms." Journal of Mechanical Science and Technology
        25, no. 10 (October 12, 2011): 2683-2701. doi:10.1007/s12206-011-0618-2.
     '''
     Prl = Prandtl(Cp=Cpl, mu=mul, k=kl)
     Vl = m*(1-x)/(rhol*pi/4*D**2)
     Vg = m*x/(rhog*pi/4*D**2)
-    Rel = Reynolds(V=Vl, D=D, rho=rhol, mu=mul)    
+    Rel = Reynolds(V=Vl, D=D, rho=rhol, mu=mul)
     Reg = Reynolds(V=Vg, D=D, rho=rhog, mu=mug)
     '''The following was coded, and may be used instead of the above lines,
     to check that the definitions of parameters here provide the same results
@@ -369,15 +369,15 @@ def Cavallini_Smith_Zecchin(m, x, D, rhol, rhog, mul, mug, kl, Cpl):
 
 def Shah(m, x, D, rhol, mul, kl, Cpl, P, Pc):
     r'''Calculates heat transfer coefficient for condensation
-    of a fluid inside a tube, as presented in [1]_ and again by the same 
+    of a fluid inside a tube, as presented in [1]_ and again by the same
     author in [2]_; also given in [3]_. Requires no properties of the gas.
-    Uses the Dittus-Boelter correlation for single phase heat transfer 
+    Uses the Dittus-Boelter correlation for single phase heat transfer
     coefficient, with a Reynolds number assuming all the flow is liquid.
 
     .. math::
         h_{TP} = h_L\left[(1-x)^{0.8} +\frac{3.8x^{0.76}(1-x)^{0.04}}
         {P_r^{0.38}}\right]
-    
+
     Parameters
     ----------
     m : float
@@ -415,14 +415,14 @@ def Shah(m, x, D, rhol, mul, kl, Cpl, P, Pc):
 
     References
     ----------
-    .. [1] Shah, M. M. "A General Correlation for Heat Transfer during Film 
-       Condensation inside Pipes." International Journal of Heat and Mass 
-       Transfer 22, no. 4 (April 1, 1979): 547-56. 
-       doi:10.1016/0017-9310(79)90058-9. 
-    .. [2] Shah, M. M., Heat Transfer During Film Condensation in Tubes and 
-       Annuli: A Review of the Literature, ASHRAE Transactions, vol. 87, no. 
+    .. [1] Shah, M. M. "A General Correlation for Heat Transfer during Film
+       Condensation inside Pipes." International Journal of Heat and Mass
+       Transfer 22, no. 4 (April 1, 1979): 547-56.
+       doi:10.1016/0017-9310(79)90058-9.
+    .. [2] Shah, M. M., Heat Transfer During Film Condensation in Tubes and
+       Annuli: A Review of the Literature, ASHRAE Transactions, vol. 87, no.
        3, pp. 1086-1100, 1981.
-    .. [3] Kakaç, Sadik, ed. Boilers, Evaporators, and Condensers. 1st. 
+    .. [3] Kakaç, Sadik, ed. Boilers, Evaporators, and Condensers. 1st.
        Wiley-Interscience, 1991.
     '''
     VL = m/(rhol*pi/4*D**2)

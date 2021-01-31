@@ -110,7 +110,7 @@ def Nu_Wakao_Kagei(Re, Pr):
     r'''Calculates Nusselt number of a fluid passing over a bed of particles
     using a correlation shown in [1]_ and also cited in the review of [2]_.
     Relatively rough, as it has no dependence on voidage.
-    
+
     .. math::
         Nu = 2 + 1.1Pr^{1/3}Re^{0.6}
 
@@ -129,7 +129,7 @@ def Nu_Wakao_Kagei(Re, Pr):
     Notes
     -----
     Fit for Re from 3 to 3000; claimed reasonableness of fit to to 1E6.
-    
+
     Examples
     --------
     >>> Nu_Wakao_Kagei(2000, 0.7)
@@ -137,11 +137,11 @@ def Nu_Wakao_Kagei(Re, Pr):
 
     References
     ----------
-    .. [1] Wakao, Noriaki, and Seiichirō Kagei. Heat and Mass Transfer in 
+    .. [1] Wakao, Noriaki, and Seiichirō Kagei. Heat and Mass Transfer in
        Packed Beds. Taylor & Francis, 1982.
-    .. [2] Abdulmohsin, Rahman S., and Muthanna H. Al-Dahhan. "Characteristics 
+    .. [2] Abdulmohsin, Rahman S., and Muthanna H. Al-Dahhan. "Characteristics
        of Convective Heat Transport in a Packed Pebble-Bed Reactor." Nuclear
-       Engineering and Design 284 (April 1, 2015): 143-52. 
+       Engineering and Design 284 (April 1, 2015): 143-52.
        doi:10.1016/j.nucengdes.2014.11.041.
     '''
     return 2 + 1.1*Pr**(1/3.)*Re**0.6
@@ -150,7 +150,7 @@ def Nu_Wakao_Kagei(Re, Pr):
 def Nu_Achenbach(Re, Pr, voidage):
     r'''Calculates Nusselt number of a fluid passing over a bed of particles
     using a correlation shown in [1]_ and also cited in the review of [2]_.
-    
+
     .. math::
         Nu = [(1.18Re^{0.58})^4 + (0.23\left(\frac{Re}{1-\epsilon}
         \right)^{0.75})^4]^{0.25}
@@ -173,7 +173,7 @@ def Nu_Achenbach(Re, Pr, voidage):
     -----
     Claimed value for Re/ε < 7.7E5
     Developed with tests performed in a wind tunnel at conditions up to 30 bar.
-    
+
     Examples
     --------
     >>> Nu_Achenbach(2000, 0.7, 0.4)
@@ -181,12 +181,12 @@ def Nu_Achenbach(Re, Pr, voidage):
 
     References
     ----------
-    .. [1] Achenbach, E. "Heat and Flow Characteristics of Packed Beds." 
-       Experimental Thermal and Fluid Science 10, no. 1 (January 1, 1995): 
+    .. [1] Achenbach, E. "Heat and Flow Characteristics of Packed Beds."
+       Experimental Thermal and Fluid Science 10, no. 1 (January 1, 1995):
        17-27. doi:10.1016/0894-1777(94)00077-L.
-    .. [2] Abdulmohsin, Rahman S., and Muthanna H. Al-Dahhan. "Characteristics 
+    .. [2] Abdulmohsin, Rahman S., and Muthanna H. Al-Dahhan. "Characteristics
        of Convective Heat Transport in a Packed Pebble-Bed Reactor." Nuclear
-       Engineering and Design 284 (April 1, 2015): 143-52. 
+       Engineering and Design 284 (April 1, 2015): 143-52.
        doi:10.1016/j.nucengdes.2014.11.041.
     '''
     return ((1.18*Re**0.58)**4 + (0.23*(Re/(1-voidage))**0.75)**4)**0.25
@@ -195,7 +195,7 @@ def Nu_Achenbach(Re, Pr, voidage):
 def Nu_KTA(Re, Pr, voidage):
     r'''Calculates Nusselt number of a fluid passing over a bed of particles
     using a correlation shown in [1]_ and also cited in the review of [2]_.
-    
+
     .. math::
         Nu = 1.27\frac{Pr^{1/3}}{\epsilon^{1.18}}Re^{0.36}
         + 0.033\frac{Pr^{0.5}}{\epsilon^{1.07}}Re^{0.86}
@@ -220,7 +220,7 @@ def Nu_KTA(Re, Pr, voidage):
     0.36 < ε < 0.42;
     D/d > 20 with D as bed diameter, d as particle diameter;
     H > 4d with H as bed height.
-    
+
     Examples
     --------
     >>> Nu_KTA(2000, 0.7, 0.4)
@@ -228,13 +228,13 @@ def Nu_KTA(Re, Pr, voidage):
 
     References
     ----------
-    .. [1] Reactor Core Design of High-Temperature Gas-Cooled Reactors Part 2: 
+    .. [1] Reactor Core Design of High-Temperature Gas-Cooled Reactors Part 2:
        Heat Transfer in Spherical Fuel Elements (June 1983).
        http://www.kta-gs.de/e/standards/3100/3102_2_engl_1983_06.pdf
-    .. [2] Abdulmohsin, Rahman S., and Muthanna H. Al-Dahhan. "Characteristics 
+    .. [2] Abdulmohsin, Rahman S., and Muthanna H. Al-Dahhan. "Characteristics
        of Convective Heat Transport in a Packed Pebble-Bed Reactor." Nuclear
-       Engineering and Design 284 (April 1, 2015): 143-52. 
+       Engineering and Design 284 (April 1, 2015): 143-52.
        doi:10.1016/j.nucengdes.2014.11.041.
     '''
-    return (1.27*Pr**(1/3.)*Re**0.36/voidage**1.18 
+    return (1.27*Pr**(1/3.)*Re**0.36/voidage**1.18
             + 0.033*Pr**0.5/voidage**1.07*Re**0.86)

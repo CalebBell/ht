@@ -42,15 +42,15 @@ def mark_as_numba(func):
 #    func = pytest.mark.slow(func)
     func = pytest.mark.skipif(numba is None, reason="Numba is missing")(func)
     return func
-    
+
 @mark_as_numba
 def test_tube_bank():
     # not implemented - dP_Zukauskas
-    
+
     kwargs = dict(Re=10263.37, Pr=.708, tube_rows=11, pitch_normal=.05, pitch_parallel=.05, Do=.025)
     assert_close(ht.numba.Nu_Grimison_tube_bank(**kwargs), ht.Nu_Grimison_tube_bank(**kwargs))
-    
-    assert_close(ht.numba.Zukauskas_tube_row_correction(4, staggered=True), 
+
+    assert_close(ht.numba.Zukauskas_tube_row_correction(4, staggered=True),
                  ht.Zukauskas_tube_row_correction(4, staggered=True))
 
     kwargs = dict(Re=1E4, Pr=7., tube_rows=10, pitch_parallel=.05, pitch_normal=.05)
@@ -72,7 +72,7 @@ def test_tube_bank():
 
     assert_close(ht.numba.baffle_leakage_Bell(1, 3, 8), ht.baffle_leakage_Bell(1, 3, 8))
     assert_close(ht.numba.baffle_leakage_Bell(1, 3, 8, 'HEDH'), ht.baffle_leakage_Bell(1, 3, 8, 'HEDH'))
-    
+
     assert_close(ht.numba.bundle_bypassing_Bell(0.5, 5, 25), ht.bundle_bypassing_Bell(0.5, 5, 25))
     assert_close(ht.numba.unequal_baffle_spacing_Bell(16, .1, .15, 0.15), ht.unequal_baffle_spacing_Bell(16, .1, .15, 0.15))
 
@@ -116,18 +116,18 @@ def test_conv_free_enclosed():
 @mark_as_numba
 def test_conv_external():
     assert_close(ht.numba.Nu_cylinder_Whitaker(6071.0, 0.7), ht.Nu_cylinder_Whitaker(6071.0, 0.7))
-    assert_close(ht.numba.Nu_cylinder_Perkins_Leppert_1962(6071.0, 0.7), 
+    assert_close(ht.numba.Nu_cylinder_Perkins_Leppert_1962(6071.0, 0.7),
                  ht.Nu_cylinder_Perkins_Leppert_1962(6071.0, 0.7))
-    assert_close(ht.numba.Nu_cylinder_Perkins_Leppert_1964(6071.0, 0.7), 
+    assert_close(ht.numba.Nu_cylinder_Perkins_Leppert_1964(6071.0, 0.7),
                  ht.Nu_cylinder_Perkins_Leppert_1964(6071.0, 0.7))
-    
+
     assert ht.numba.Nu_external_cylinder_methods(0.72, 1E7) == ht.Nu_external_cylinder_methods(0.72, 1E7)
-    
+
     assert_close(ht.numba.Nu_external_cylinder(6071, 0.7), ht.Nu_external_cylinder(6071, 0.7))
-    
+
     assert Nu_external_horizontal_plate_methods(Re=1e7, Pr=.7) == ht.numba.Nu_external_horizontal_plate_methods(Re=1e7, Pr=.7)
-    
-    assert_close(ht.numba.Nu_external_horizontal_plate(Re=1E7, Pr=.7), 
+
+    assert_close(ht.numba.Nu_external_horizontal_plate(Re=1E7, Pr=.7),
                  ht.Nu_external_horizontal_plate(Re=1E7, Pr=.7))
 
 
@@ -135,7 +135,7 @@ def test_conv_external():
 def test_core_misc():
     assert_close(ht.numba.LMTD(100., 60., 20., 60, counterflow=False),
                  ht.LMTD(100., 60., 20., 60, counterflow=False))
-    
+
     assert_close(ht.numba.fin_efficiency_Kern_Kraus(0.0254, 0.05715, 3.8E-4, 200, 58),
                  ht.fin_efficiency_Kern_Kraus(0.0254, 0.05715, 3.8E-4, 200, 58),)
 
@@ -152,26 +152,26 @@ def test_air_cooler():
                  ht.air_cooler_noise_GPSA(tip_speed=3177/60, power=25.1*750))
 
 
-    AC = AirCooledExchanger(tube_rows=4, tube_passes=4, tubes_per_row=20, tube_length=3, 
+    AC = AirCooledExchanger(tube_rows=4, tube_passes=4, tubes_per_row=20, tube_length=3,
     tube_diameter=1*inch, fin_thickness=0.000406, fin_density=1/0.002309,
     pitch_normal=.06033, pitch_parallel=.05207,
     fin_height=0.0159, tube_thickness=(.0254-.0186)/2,
     bundles_per_bay=1, parallel_bays=1, corbels=True)
-    
+
     # 2.5 us numba, 30 us CPython, 100 us PyPy
     assert_close(ht.numba.h_Briggs_Young(m=21.56, A=AC.A, A_min=AC.A_min, A_increase=AC.A_increase, A_fin=AC.A_fin, A_tube_showing=AC.A_tube_showing, tube_diameter=AC.tube_diameter, fin_diameter=AC.fin_diameter, bare_length=AC.bare_length, fin_thickness=AC.fin_thickness, rho=1.161, Cp=1007., mu=1.85E-5, k=0.0263, k_fin=205),
                 ht.h_Briggs_Young(m=21.56, A=AC.A, A_min=AC.A_min, A_increase=AC.A_increase, A_fin=AC.A_fin, A_tube_showing=AC.A_tube_showing, tube_diameter=AC.tube_diameter, fin_diameter=AC.fin_diameter, bare_length=AC.bare_length, fin_thickness=AC.fin_thickness, rho=1.161, Cp=1007., mu=1.85E-5, k=0.0263, k_fin=205),)
-    
+
     assert_close(ht.numba.h_ESDU_high_fin(m=21.56, A=AC.A, A_min=AC.A_min, A_increase=AC.A_increase, A_fin=AC.A_fin, A_tube_showing=AC.A_tube_showing, tube_diameter=AC.tube_diameter, fin_diameter=AC.fin_diameter, bare_length=AC.bare_length, fin_thickness=AC.fin_thickness, tube_rows=AC.tube_rows, pitch_normal=AC.pitch_normal, pitch_parallel=AC.pitch_parallel, rho=1.161, Cp=1007., mu=1.85E-5, k=0.0263, k_fin=205, Pr_wall=7.0),
                 ht.h_ESDU_high_fin(m=21.56, A=AC.A, A_min=AC.A_min, A_increase=AC.A_increase, A_fin=AC.A_fin, A_tube_showing=AC.A_tube_showing, tube_diameter=AC.tube_diameter, fin_diameter=AC.fin_diameter, bare_length=AC.bare_length, fin_thickness=AC.fin_thickness, tube_rows=AC.tube_rows, pitch_normal=AC.pitch_normal, pitch_parallel=AC.pitch_parallel, rho=1.161, Cp=1007., mu=1.85E-5, k=0.0263, k_fin=205, Pr_wall=7.0))
 
     assert_close(ht.numba.h_ESDU_low_fin(m=0.914, A=AC.A, A_min=AC.A_min, A_increase=AC.A_increase, A_fin=AC.A_fin, A_tube_showing=AC.A_tube_showing, tube_diameter=AC.tube_diameter, fin_diameter=AC.fin_diameter, bare_length=AC.bare_length, fin_thickness=AC.fin_thickness, tube_rows=AC.tube_rows, pitch_normal=AC.pitch_normal, pitch_parallel=AC.pitch_parallel, rho=1.217, Cp=1007., mu=1.8E-5, k=0.0253, k_fin=15),
                  ht.h_ESDU_low_fin(m=0.914, A=AC.A, A_min=AC.A_min, A_increase=AC.A_increase, A_fin=AC.A_fin, A_tube_showing=AC.A_tube_showing, tube_diameter=AC.tube_diameter, fin_diameter=AC.fin_diameter, bare_length=AC.bare_length, fin_thickness=AC.fin_thickness, tube_rows=AC.tube_rows, pitch_normal=AC.pitch_normal, pitch_parallel=AC.pitch_parallel, rho=1.217, Cp=1007., mu=1.8E-5, k=0.0253, k_fin=15))
 
-    AC = AirCooledExchanger(tube_rows=4, tube_passes=4, tubes_per_row=56, tube_length=36*foot, 
+    AC = AirCooledExchanger(tube_rows=4, tube_passes=4, tubes_per_row=56, tube_length=36*foot,
     tube_diameter=1*inch, fin_thickness=0.013*inch, fin_density=10/inch,
     angle=30, pitch_normal=2.5*inch, fin_height=0.625*inch, corbels=True)
-    
+
     kwargs = dict(m=130.70315, A=AC.A, A_min=AC.A_min, A_increase=AC.A_increase, A_fin=AC.A_fin,
         A_tube_showing=AC.A_tube_showing, tube_diameter=AC.tube_diameter,
         fin_diameter=AC.fin_diameter, bare_length=AC.bare_length,
@@ -198,7 +198,7 @@ def test_boiling_flow():
 
     assert_close(ht.numba.Li_Wu(m=1, x=0.2, D=0.3, rhol=567., rhog=18.09, kl=0.086, mul=156E-6, sigma=0.02, Hvap=9E5, q=1E5),
                  ht.Li_Wu(m=1, x=0.2, D=0.3, rhol=567., rhog=18.09, kl=0.086, mul=156E-6, sigma=0.02, Hvap=9E5, q=1E5))
-    
+
     kwargs = dict(m=1.0, D=0.3, rhol=567., rhog=18.09, kl=0.086, mul=156E-6, sigma=0.02, Hvap=9E5, Te=10.0)
     assert_close(ht.numba.Sun_Mishima(**kwargs), ht.Sun_Mishima(**kwargs))
 
@@ -228,7 +228,7 @@ def test_conv_jacket():
 
     assert_close(ht.numba.Lehrer(m=2.5, Dtank=0.6, Djacket=0.65, H=0.6, Dinlet=0.025, dT=20., rho=995.7, Cp=4178.1, k=0.615, mu=798E-6, muw=355E-6),
                  ht.Lehrer(m=2.5, Dtank=0.6, Djacket=0.65, H=0.6, Dinlet=0.025, dT=20., rho=995.7, Cp=4178.1, k=0.615, mu=798E-6, muw=355E-6))
-    
+
     assert_close(ht.numba.Lehrer(m=2.5, Dtank=0.6, Djacket=0.65, H=0.6, Dinlet=0.025, dT=20., rho=995.7, Cp=4178.1, k=0.615, mu=798E-6, muw=355E-6, inlettype='radial', isobaric_expansion=0.000303),
                  ht.Lehrer(m=2.5, Dtank=0.6, Djacket=0.65, H=0.6, Dinlet=0.025, dT=20., rho=995.7, Cp=4178.1, k=0.615, mu=798E-6, muw=355E-6, inlettype='radial', isobaric_expansion=0.000303))
 
@@ -237,14 +237,14 @@ def test_conv_jacket():
 def test_condensation():
     assert_close(ht.numba.Nusselt_laminar(Tsat=370, Tw=350, rhog=7.0, rhol=585., kl=0.091, mul=158.9E-6, Hvap=776900, L=0.1),
                  ht.Nusselt_laminar(Tsat=370, Tw=350, rhog=7.0, rhol=585., kl=0.091, mul=158.9E-6, Hvap=776900, L=0.1))
-    
+
     assert_close(ht.numba.Akers_Deans_Crosser(m=0.35, rhog=6.36, rhol=582.9, kl=0.098,  mul=159E-6, Cpl=2520., D=0.03, x=0.85),
                  ht.Akers_Deans_Crosser(m=0.35, rhog=6.36, rhol=582.9, kl=0.098,  mul=159E-6, Cpl=2520., D=0.03, x=0.85))
-    
+
     assert_close(ht.numba.Cavallini_Smith_Zecchin(m=1, x=0.4, D=.3, rhol=800, rhog=2.5, mul=1E-5, mug=1E-3, kl=0.6, Cpl=2300),
                  ht.Cavallini_Smith_Zecchin(m=1, x=0.4, D=.3, rhol=800, rhog=2.5, mul=1E-5, mug=1E-3, kl=0.6, Cpl=2300))
-    
-    
+
+
     assert_close(ht.numba.Shah(m=1, x=0.4, D=.3, rhol=800, mul=1E-5, kl=0.6, Cpl=2300, P=1E6, Pc=2E7),
                  ht.Shah(m=1, x=0.4, D=.3, rhol=800, mul=1E-5, kl=0.6, Cpl=2300, P=1E6, Pc=2E7))
 
@@ -254,16 +254,16 @@ def test_condensation():
 def test_boiling_plate():
     assert_close(ht.numba.h_boiling_Amalfi(m=3E-5, x=.4, Dh=0.00172, rhol=567., rhog=18.09, kl=0.086, mul=156E-6, mug=7.11E-6, sigma=0.02, Hvap=9E5, q=1E5, A_channel_flow=0.0003),
                  ht.h_boiling_Amalfi(m=3E-5, x=.4, Dh=0.00172, rhol=567., rhog=18.09, kl=0.086, mul=156E-6, mug=7.11E-6, sigma=0.02, Hvap=9E5, q=1E5, A_channel_flow=0.0003))
-    
+
     assert_close(ht.numba.h_boiling_Lee_Kang_Kim(m=3E-5, x=.4, D_eq=0.002, rhol=567., rhog=18.09, kl=0.086, mul=156E-6, mug=9E-6, Hvap=9E5, q=1E5, A_channel_flow=0.0003),
                  ht.h_boiling_Lee_Kang_Kim(m=3E-5, x=.4, D_eq=0.002, rhol=567., rhog=18.09, kl=0.086, mul=156E-6, mug=9E-6, Hvap=9E5, q=1E5, A_channel_flow=0.0003))
-    
+
     assert_close(ht.numba.h_boiling_Han_Lee_Kim(m=3E-5, x=.4, Dh=0.002, rhol=567., rhog=18.09, kl=0.086, mul=156E-6,  Hvap=9E5, Cpl=2200, q=1E5, A_channel_flow=0.0003, wavelength=3.7E-3, chevron_angle=45),
                  ht.h_boiling_Han_Lee_Kim(m=3E-5, x=.4, Dh=0.002, rhol=567., rhog=18.09, kl=0.086, mul=156E-6,  Hvap=9E5, Cpl=2200, q=1E5, A_channel_flow=0.0003, wavelength=3.7E-3, chevron_angle=45))
-    
+
     assert_close(ht.numba.h_boiling_Huang_Sheer(rhol=567., rhog=18.09, kl=0.086, mul=156E-6, Hvap=9E5, sigma=0.02, Cpl=2200, q=1E4, Tsat=279.15),
                  ht.h_boiling_Huang_Sheer(rhol=567., rhog=18.09, kl=0.086, mul=156E-6, Hvap=9E5, sigma=0.02, Cpl=2200, q=1E4, Tsat=279.15))
-    
+
     assert_close(ht.numba.h_boiling_Yan_Lin(m=3E-5, x=.4, Dh=0.002, rhol=567., rhog=18.09, kl=0.086, Cpl=2200, mul=156E-6, Hvap=9E5, q=1E5, A_channel_flow=0.0003),
                  ht.h_boiling_Yan_Lin(m=3E-5, x=.4, Dh=0.002, rhol=567., rhog=18.09, kl=0.086, Cpl=2200, mul=156E-6, Hvap=9E5, q=1E5, A_channel_flow=0.0003))
 
@@ -277,14 +277,14 @@ def test_Ntubes_Phadkeb():
     pitches = np.linspace(.036, .037, 5)
     Ntps = np.linspace(2, 2, 5, dtype=np.int64)
     angles = np.linspace(45, 45, 5, dtype=np.int64)
-    
+
     assert 782 == ht.numba.Ntubes_Phadkeb(DBundle=1.200-.008*2, Do=.028, pitch=.036, Ntp=2, angle=45.)
-    
-    
-    
-#    assert_close(ht.numba_vectorized.Ntubes_Phadkeb(Bundles, Dos, pitches, Ntps, angles), 
+
+
+
+#    assert_close(ht.numba_vectorized.Ntubes_Phadkeb(Bundles, Dos, pitches, Ntps, angles),
 #                 [ 558,  862, 1252, 1700, 2196])
-    
+
 
 @mark_as_numba
 def test_boiling_nucleic():
@@ -294,7 +294,7 @@ def test_boiling_nucleic():
     numba_methods = ht.numba.h_nucleic_methods(P=3E5, Pc=22048320., Te=4.0, CAS='7732-18-5')
     regular_methods = ht.h_nucleic_methods(P=3E5, Pc=22048320., Te=4.0, CAS='7732-18-5')
     assert numba_methods == regular_methods
-    
+
 
     # Has a TON of arguments, and numba wants them all to not be Nones.
     assert_close(ht.numba.h_nucleic(rhol=957.854, rhog=0.595593, mul=2.79E-4, kl=0.680, Cpl=4217, Hvap=2.257E6, sigma=0.0589, Te=4.9, Csf=0.011, n=1.26, P=1e4, Pc=1e6, Tsat=10, MW=33.0, Method='Rohsenow'),
@@ -313,7 +313,7 @@ def test_packed_bed():
     # All good
     assert_close(ht.numba.Nu_packed_bed_Gnielinski(dp=8E-4, voidage=0.4, vs=1, rho=1E3, mu=1E-3, Pr=0.7),
                  ht.Nu_packed_bed_Gnielinski(dp=8E-4, voidage=0.4, vs=1, rho=1E3, mu=1E-3, Pr=0.7))
-    
+
 
 
 @mark_as_numba
@@ -325,12 +325,12 @@ def test_two_phase():
 @mark_as_numba
 def test_supercritical():
     assert_close(ht.numba.Nu_Griem(1E5, 1.2), ht.Nu_Griem(1E5, 1.2))
-    
-    kwargs = dict(Re=1E5, Pr=1.2, rho_w=125.8, rho_b=249.0233, 
+
+    kwargs = dict(Re=1E5, Pr=1.2, rho_w=125.8, rho_b=249.0233,
               Cp_avg=2080.845, Cp_b=2048.621, T_b=650, T_w=700, T_pc=300.0)
     assert_close(ht.numba.Nu_Jackson(**kwargs), ht.Nu_Jackson(**kwargs))
     assert_close(ht.numba.Nu_Jackson(1E5, 1.2), ht.Nu_Jackson(1E5, 1.2))
-    
+
     assert_close(ht.numba.Nu_Gupta(1E5, 1.2), ht.Nu_Gupta(1E5, 1.2))
     assert_close(ht.numba.Nu_Swenson(1E5, 1.2), ht.Nu_Swenson(1E5, 1.2))
     assert_close(ht.numba.Nu_Xu(1E5, 1.2), ht.Nu_Xu(1E5, 1.2))
@@ -352,14 +352,14 @@ def test_supercritical():
 
     assert_close(ht.numba.Nu_Krasnoshchekov(1E5, 1.2),
                  ht.Nu_Krasnoshchekov(1E5, 1.2))
-    
+
 
 
 
 @mark_as_numba
 def test_conduction():
     assert_close(ht.numba.R_value_to_k(1., SI=False), ht.numba.R_value_to_k(1., SI=False))
-    
+
     assert_close(ht.numba.S_isothermal_pipe_to_isothermal_pipe(.1, .2, 1, 1),
                  ht.S_isothermal_pipe_to_isothermal_pipe(.1, .2, 1, 1))
 
@@ -370,7 +370,7 @@ def test_hx_tube_bundles():
     kwargs = dict(Ntubes=782, Do=.028, pitch=.036, Ntp=2, angle=45.)
     assert_close(ht.numba.DBundle_for_Ntubes_Phadkeb(**kwargs),
                  ht.DBundle_for_Ntubes_Phadkeb(**kwargs))
-    
+
     kwargs = dict(DBundle=1.184, Do=.028, Ntp=2, angle=45)
     assert_close(ht.numba.Ntubes_Perrys(**kwargs), ht.Ntubes_Perrys(**kwargs))
 
@@ -399,7 +399,7 @@ def test_hx_effectiveness_basic():
     assert_close(ht.numba.temperature_effectiveness_basic(R1=R1, NTU1=NTU1, subtype='crossflow'),
                  ht.temperature_effectiveness_basic(R1=R1, NTU1=NTU1, subtype='crossflow'))
 
-    P1 = ht.numba.temperature_effectiveness_basic(R1=R1, NTU1=NTU1, 
+    P1 = ht.numba.temperature_effectiveness_basic(R1=R1, NTU1=NTU1,
                                     subtype='crossflow')
     NTU1_calc = ht.numba.NTU_from_P_basic(P1, R1, subtype='crossflow')
     assert_close(NTU1, NTU1_calc)
@@ -408,10 +408,10 @@ def test_hx_effectiveness_basic():
 def test_hx_effectiveness():
     assert_close(ht.numba.temperature_effectiveness_air_cooler(.5, 2, rows=10, passes=10),
                  ht.temperature_effectiveness_air_cooler(.5, 2, rows=10, passes=10))
-    
+
     assert_close(ht.numba.hx.Pp(5, .4),  ht.hx.Pp(5, .4))
     assert_close(ht.numba.hx.Pc(5, .4),  ht.hx.Pc(5, .4))
-        
+
     # Quite literally 20x faster than CPython; Pypy is unfortunately slow as there is a scipy function
 
     assert_close(ht.numba.NTU_from_P_J(P1=.99, R1=.01, Ntp=2),
@@ -434,6 +434,6 @@ def test_hx_effectiveness():
 def test_conv_plate():
     kwargs = dict(Re=2000, Pr=0.7, chevron_angle=30, mu=1E-3, mu_wall=8E-4)
     assert_close(ht.numba.Nu_plate_Kumar(**kwargs), ht.Nu_plate_Kumar(**kwargs))
-    
+
     kwargs = dict(Re=2000, Pr=.7, plate_enlargement_factor=1.18)
     assert_close(ht.numba.Nu_plate_Martin(**kwargs), ht.Nu_plate_Martin(**kwargs))

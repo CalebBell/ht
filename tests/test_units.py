@@ -36,9 +36,9 @@ def assert_pint_allclose(value, magnitude, units, rtol=1e-7):
     assert dict(value.dimensionality) == units
 
 def test_sample_cases():
-    ans = effectiveness_NTU_method(mh=5.2*u.kg/u.s, mc=1.45*u.kg/u.s, 
+    ans = effectiveness_NTU_method(mh=5.2*u.kg/u.s, mc=1.45*u.kg/u.s,
                                    Cph=1860.*u.J/u.K/u.kg, Cpc=1900*u.J/u.K/u.kg,
-                                   subtype='crossflow, mixed Cmax', Tci=15*u.K, 
+                                   subtype='crossflow, mixed Cmax', Tci=15*u.K,
                                    Tco=85*u.K, Thi=130*u.K)
 
     assert_pint_allclose(ans['Cmax'], 9672.0, {'[length]': 2.0, '[mass]': 1.0, '[temperature]': -1.0, '[time]': -3.0})
@@ -82,12 +82,12 @@ def test_custom_wraps():
 
     with pytest.raises(Exception):
         R_to_k(R=1*u.K/u.W, t=.01*u.m, A=2*u.m**2)
-        
-        
+
+
     # R_value_to_k
     k = R_value_to_k(0.12*u.parse_expression('m^2*K/(W*inch)'))
     assert_pint_allclose(k, 0.2116666666666667, {'[length]': 1.0, '[mass]': 1.0, '[temperature]': -1.0, '[time]': -3.0})
-        
+
     k = R_value_to_k(0.71*u.parse_expression('ft^2*delta_degF*hour/(BTU*inch)'))
     assert_pint_allclose(k, 0.20313790001601909, {'[length]': 1.0, '[mass]': 1.0, '[temperature]': -1.0, '[time]': -3.0}, rtol=1e-4)
 
@@ -98,7 +98,7 @@ def test_custom_wraps():
     R_value = k_to_R_value(k=0.71*u.W/u.m/u.K, SI=False)
     assert_pint_allclose(R_value.to_base_units(), 1.4084507042253525, {'[length]': -1.0, '[mass]': -1.0, '[temperature]': 1.0, '[time]': 3.0}, rtol=1e-4)
 
-    
+
 def test_check_signatures():
     from fluids.units import check_args_order
     for name in dir(ht):

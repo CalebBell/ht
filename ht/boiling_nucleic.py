@@ -25,8 +25,8 @@ from math import log, log10
 from fluids.constants import g
 
 __all__ = ['Rohsenow', 'McNelly', 'Forster_Zuber', 'Montinsky',
-'Stephan_Abdelsalam', 'HEDH_Taborek', 'Bier', 'Cooper', 'Gorenflo', 
-'h_nucleic', 'h_nucleic_methods', 
+'Stephan_Abdelsalam', 'HEDH_Taborek', 'Bier', 'Cooper', 'Gorenflo',
+'h_nucleic', 'h_nucleic_methods',
 'Zuber', 'Serth_HEDH', 'HEDH_Montinsky', 'qmax_boiling', 'qmax_boiling_methods',
 'h0_VDI_2e', 'h0_Gorenflow_1993', 'qmax_boiling_all_methods', 'h_nucleic_all_methods']
 
@@ -35,18 +35,18 @@ def Rohsenow(rhol, rhog, mul, kl, Cpl, Hvap, sigma, Te=None, q=None, Csf=0.013,
              n=1.7):
     r'''Calculates heat transfer coefficient for a evaporator operating
     in the nucleate boiling regime according to [2]_ as presented in [1]_.
-    
+
     Either heat flux or excess temperature is required.
 
     With `Te` specified:
-    
+
     .. math::
         h = {{\mu }_{L}} \Delta H_{vap} \left[ \frac{g( \rho_L-\rho_v)}
         {\sigma } \right]^{0.5}\left[\frac{C_{p,L}\Delta T_e^{2/3}}{C_{sf}
         \Delta H_{vap} Pr_L^n}\right]^3
-    
+
     With `q` specified:
-    
+
     .. math::
         h = \left({{\mu }_{L}} \Delta H_{vap} \left[ \frac{g( \rho_L-\rho_v)}
         {\sigma } \right]^{0.5}\left[\frac{C_{p,L}\Delta T_e^{2/3}}{C_{sf}
@@ -119,16 +119,16 @@ def McNelly(rhol, rhog, kl, Cpl, Hvap, sigma, P, Te=None, q=None):
     Either heat flux or excess temperature is required.
 
     With `Te` specified:
-    
+
     .. math::
         h = \left(0.225\left(\frac{\Delta T_e C_{p,l}}{H_{vap}}\right)^{0.69}
         \left(\frac{P k_L}{\sigma}\right)^{0.31}
         \left(\frac{\rho_L}{\rho_V}-1\right)^{0.33}\right)^{1/0.31}
 
     With `q` specified:
-    
+
     .. math::
-        h = 0.225\left(\frac{q C_{p,l}}{H_{vap}}\right)^{0.69} \left(\frac{P 
+        h = 0.225\left(\frac{q C_{p,l}}{H_{vap}}\right)^{0.69} \left(\frac{P
         k_L}{\sigma}\right)^{0.31}\left(\frac{\rho_L}{\rho_V}-1\right)^{0.33}
 
     Parameters
@@ -151,7 +151,7 @@ def McNelly(rhol, rhog, kl, Cpl, Hvap, sigma, P, Te=None, q=None):
         Excess wall temperature, [K]
     q : float, optional
         Heat flux, [W/m^2]
-    
+
     Returns
     -------
     h : float
@@ -192,17 +192,17 @@ def Forster_Zuber(rhol, rhog, mul, kl, Cpl, Hvap, sigma, dPsat, Te=None, q=None)
     Either heat flux or excess temperature is required.
 
     With `Te` specified:
-    
+
     .. math::
         h = 0.00122\left(\frac{k_L^{0.79} C_{p,l}^{0.45}\rho_L^{0.49}}
         {\sigma^{0.5}\mu_L^{0.29} H_{vap}^{0.24} \rho_V^{0.24}}\right)
         \Delta T_e^{0.24} \Delta P_{sat}^{0.75}
 
     With `q` specified:
-    
+
     .. math::
         h = \left[0.00122\left(\frac{k_L^{0.79} C_{p,l}^{0.45}\rho_L^{0.49}}
-        {\sigma^{0.5}\mu_L^{0.29} H_{vap}^{0.24} \rho_V^{0.24}}\right) \Delta 
+        {\sigma^{0.5}\mu_L^{0.29} H_{vap}^{0.24} \rho_V^{0.24}}\right) \Delta
         P_{sat}^{0.75} q^{0.24}\right]^{\frac{1}{1.24}}
 
     Parameters
@@ -270,15 +270,15 @@ def Montinsky(P, Pc, Te=None, q=None):
     Either heat flux or excess temperature is required.
 
     With `Te` specified:
-    
+
     .. math::
-        h = \left(0.00417P_c^{0.69} \Delta Te^{0.7}\left[1.8(P/P_c)^{0.17} + 
+        h = \left(0.00417P_c^{0.69} \Delta Te^{0.7}\left[1.8(P/P_c)^{0.17} +
         4(P/P_c)^{1.2} + 10(P/P_c)^{10}\right]\right)^{1/0.3}
 
     With `q` specified:
-    
+
     .. math::
-        h = 0.00417P_c^{0.69} q^{0.7}\left[1.8(P/P_c)^{0.17} + 4(P/P_c)^{1.2} 
+        h = 0.00417P_c^{0.69} q^{0.7}\left[1.8(P/P_c)^{0.17} + 4(P/P_c)^{1.2}
         + 10(P/P_c)^{10}\right]
 
     Parameters
@@ -338,8 +338,8 @@ def Montinsky(P, Pc, Te=None, q=None):
 _angles_Stephan_Abdelsalam = {'general': 35, 'water': 45, 'hydrocarbon': 35,
 'cryogenic': 1, 'refrigerant': 35}
 
-def Stephan_Abdelsalam(rhol, rhog, mul, kl, Cpl, Hvap, sigma, Tsat, Te=None, 
-                       q=None, kw=401.0, rhow=8.96, Cpw=384.0, angle=None, 
+def Stephan_Abdelsalam(rhol, rhog, mul, kl, Cpl, Hvap, sigma, Tsat, Te=None,
+                       q=None, kw=401.0, rhow=8.96, Cpw=384.0, angle=None,
                        correlation='general'):
     r'''Calculates heat transfer coefficient for a evaporator operating
     in the nucleate boiling regime according to [2]_ as presented in [1]_.
@@ -462,14 +462,14 @@ def Stephan_Abdelsalam(rhol, rhog, mul, kl, Cpl, Hvap, sigma, Tsat, Te=None,
     '''
     if Te is None and q is None:
         raise ValueError('Either q or Te is needed for this correlation')
-        
+
     if correlation == 'water':
         angle = 45.0
     elif correlation == 'cryogenic':
         angle = 1.0
     elif correlation == 'general' or correlation == 'hydrocarbon' or correlation == 'refrigerant' or True:
         angle = 35.0
-        
+
     db = 0.0146*angle*(2*sigma/g/(rhol-rhog))**0.5
     diffusivity_L = kl/rhol/Cpl
 
@@ -521,13 +521,13 @@ def HEDH_Taborek(P, Pc, Te=None, q=None):
     Either heat flux or excess temperature is required.
 
     With `Te` specified:
-    
+
     .. math::
         h = \left(0.00417P_c^{0.69} \Delta Te^{0.7}\left[2.1P_r^{0.27} +
         \left(9 + (1-Pr^2)^{-1}\right)P_r^2 \right]\right)^{1/0.3}
 
     With `q` specified:
-    
+
     .. math::
         h = 0.00417P_c^{0.69} q^{0.7}\left[2.1P_r^{0.27} + \left(9 + (1-Pr^2
         )^{-1}\right)P_r^2\right]
@@ -595,7 +595,7 @@ def Bier(P, Pc, Te=None, q=None):
     With `q` specified:
 
     .. math::
-        h = 0.00417P_c^{0.69} \Delta q^{0.7}\left[0.7 + 2P_r\left(4 + 
+        h = 0.00417P_c^{0.69} \Delta q^{0.7}\left[0.7 + 2P_r\left(4 +
         \frac{1}{1-P_r}\right)  \right]
 
     Parameters
@@ -655,7 +655,7 @@ def Cooper(P, Pc, MW, Te=None, q=None, Rp=1E-6):
     With `q` specified:
 
     .. math::
-        h = 55q^{0.67} \frac{P}{P_c}^{(0.12 - 0.2\log_{10} R_p)}(-\log_{10} 
+        h = 55q^{0.67} \frac{P}{P_c}^{(0.12 - 0.2\log_{10} R_p)}(-\log_{10}
         \frac{P}{P_c})^{-0.55} MW^{-0.5}
 
     Parameters
@@ -671,7 +671,7 @@ def Cooper(P, Pc, MW, Te=None, q=None, Rp=1E-6):
     q : float, optional
         Heat flux, [W/m^2]
     Rp : float, optional
-        Roughness parameter of the surface (1 micrometer default) used by 
+        Roughness parameter of the surface (1 micrometer default) used by
         `Cooper` method, [m]
 
     Returns
@@ -714,17 +714,17 @@ def Cooper(P, Pc, MW, Te=None, q=None, Rp=1E-6):
         raise ValueError('Either q or Te is needed for this correlation')
 
 
-h0_Gorenflow_1993 = {'74-82-8': 7000.0, '74-84-0': 4500.0, '74-98-6': 4000.0, 
-'106-97-8': 3600.0, '109-66-0': 3400.0, '78-78-4': 2500.0, '110-54-3': 3300.0, 
-'142-82-5': 3200.0, '71-43-2': 2900.0, '108-88-3': 2800.0, '92-52-4': 2100.0, 
-'67-56-1': 5400.0, '64-17-5': 4400.0, '71-23-8': 3800.0, '67-63-0': 3000.0, 
-'71-36-3': 2600.0, '78-83-1': 4500.0, '67-64-1': 3300.0, '75-69-4': 2800.0, 
-'75-71-8': 4000.0, '75-72-9': 3900.0, '75-63-8': 3500.0, '75-45-6': 3900.0, 
-'75-46-7': 4400.0, '76-13-1': 2650.0, '76-14-2': 3800.0, '76-15-3': 3200.0, 
-'811-97-2': 4500.0, '28987-04-4': 3700.0, '431-89-0': 3800.0, '115-25-3': 4200.0, 
-'74-87-3': 4400.0, '56-23-5': 3200.0, '75-73-0': 4750.0, '7732-18-5': 5600.0, 
-'7664-41-7': 7000.0, '124-38-9': 5100.0, '2551-62-4': 3700.0, '7782-44-7': 9500.0, 
-'7727-37-9': 10000.0, '7440-37-1': 8200.0, '7440-01-9': 20000.0, '1333-74-0': 24000.0, 
+h0_Gorenflow_1993 = {'74-82-8': 7000.0, '74-84-0': 4500.0, '74-98-6': 4000.0,
+'106-97-8': 3600.0, '109-66-0': 3400.0, '78-78-4': 2500.0, '110-54-3': 3300.0,
+'142-82-5': 3200.0, '71-43-2': 2900.0, '108-88-3': 2800.0, '92-52-4': 2100.0,
+'67-56-1': 5400.0, '64-17-5': 4400.0, '71-23-8': 3800.0, '67-63-0': 3000.0,
+'71-36-3': 2600.0, '78-83-1': 4500.0, '67-64-1': 3300.0, '75-69-4': 2800.0,
+'75-71-8': 4000.0, '75-72-9': 3900.0, '75-63-8': 3500.0, '75-45-6': 3900.0,
+'75-46-7': 4400.0, '76-13-1': 2650.0, '76-14-2': 3800.0, '76-15-3': 3200.0,
+'811-97-2': 4500.0, '28987-04-4': 3700.0, '431-89-0': 3800.0, '115-25-3': 4200.0,
+'74-87-3': 4400.0, '56-23-5': 3200.0, '75-73-0': 4750.0, '7732-18-5': 5600.0,
+'7664-41-7': 7000.0, '124-38-9': 5100.0, '2551-62-4': 3700.0, '7782-44-7': 9500.0,
+'7727-37-9': 10000.0, '7440-37-1': 8200.0, '7440-01-9': 20000.0, '1333-74-0': 24000.0,
 '7440-59-7': 2000.0}
 try:
     if IS_NUMBA:
@@ -734,40 +734,40 @@ except:
     pass
 
 def Gorenflo(P, Pc, q=None, Te=None, CASRN=None, h0=None, Ra=4E-7):
-    r'''Calculates heat transfer coefficient for a pool boiling according to 
+    r'''Calculates heat transfer coefficient for a pool boiling according to
     [1]_ and also presented in [2]_. Calculation is based on the corresponding
-    states law, with a single regression constant per fluid. P and Pc are 
+    states law, with a single regression constant per fluid. P and Pc are
     always required.
-    
-    Either `q` or `Te` may be specified. Either `CASRN` or `h0` may be 
+
+    Either `q` or `Te` may be specified. Either `CASRN` or `h0` may be
     specified as well. If `CASRN` is specified and the fluid is not in the
     list of those studied, an error is raises.
 
     .. math::
         \frac{h}{h_0} = C_W F(p^*) \left(\frac{q}{q_0}\right)^n
-        
+
     .. math::
         C_W = \left(\frac{R_a}{R_{ao}}\right)^{0.133}
 
     .. math::
         q_0 = 20 \;000 \frac{\text{W}}{\text{m}^{2}}
-        
+
     .. math::
         R_{ao} = 0.4 \mu\text{m}
-        
+
     For fluids other than water:
-    
+
     .. math::
         n = 0.9 - 0.3 p^{*0.3}
-        
+
     .. math::
         f(p^*) = 1.2p^{*0.27} + \left(2.5 + \frac{1}{1-p^*}\right)p^*
-    
+
     For water:
-    
+
     .. math::
         n = 0.9 - 0.3 p^{*0.15}
-        
+
     .. math::
         f(p^*) = 1.73p^{*0.27} + \left(6.1 + \frac{0.68}{1-p^*}\right)p^2
 
@@ -786,7 +786,7 @@ def Gorenflo(P, Pc, q=None, Te=None, CASRN=None, h0=None, Ra=4E-7):
     h0 : float
         Reference heat transfer coefficient for Gorenflo method, [W/m^2/K]
     Ra : float, optional
-        Roughness parameter of the surface (0.4 micrometer default) for 
+        Roughness parameter of the surface (0.4 micrometer default) for
         Gorenflo method, [m]
 
     Returns
@@ -811,9 +811,9 @@ def Gorenflo(P, Pc, q=None, Te=None, CASRN=None, h0=None, Ra=4E-7):
 
     References
     ----------
-    .. [1] Schlunder, Ernst U, VDI. VDI Heat Atlas. Dusseldorf: V.D.I. Verlag, 
+    .. [1] Schlunder, Ernst U, VDI. VDI Heat Atlas. Dusseldorf: V.D.I. Verlag,
        1993. http://digital.ub.uni-paderborn.de/hs/download/pdf/41898?originalFilename=true
-    .. [2] Bertsch, Stefan S., Eckhard A. Groll, and Suresh V. Garimella. 
+    .. [2] Bertsch, Stefan S., Eckhard A. Groll, and Suresh V. Garimella.
        "Review and Comparative Analysis of Studies on Saturated Flow Boiling in
        Small Channels." Nanoscale and Microscale Thermophysical Engineering 12,
        no. 3 (September 4, 2008): 187-227. doi:10.1080/15567260802317357.
@@ -847,21 +847,21 @@ def Gorenflo(P, Pc, q=None, Te=None, CASRN=None, h0=None, Ra=4E-7):
         return A**(-1./(n - 1.))
     else:
         raise ValueError('Either q or Te is needed for this correlation')
-        
 
-h0_VDI_2e = {'74-82-8': 7200.0, '74-85-1': 4200.0, '74-84-0': 4600.0, 
-'115-07-1': 4200.0, '74-98-6': 4300.0, '106-97-8': 3600.0, '75-28-5': 3700.0, 
-'109-66-0': 3300.0, '78-78-4': 3200.0, '110-54-3': 3200.0, '110-82-7': 3000.0, 
-'142-82-5': 2900.0, '71-43-2': 2900.0, '108-88-3': 2800.0, '92-52-4': 2100.0, 
-'67-56-1': 5400.0, '64-17-5': 4350.0, '71-23-8': 3750.0, '67-63-0': 4100.0, 
-'71-36-3': 2600.0, '78-83-1': 4500.0, '78-92-2': 3400.0, '75-07-0': 3500.0, 
-'67-64-1': 3300.0, '124-38-9': 5500.0, '75-46-7': 4800.0, '75-10-5': 5000.0, 
-'354-33-6': 4400.0, '811-97-2': 4200.0, '420-46-2': 4700.0, '75-37-6': 4600.0, 
-'754-12-1': 3000.0, '431-89-0': 4100.0, '115-25-3': 4200.0, '75-73-0': 4750.0, 
-'306-83-2': 3000.0, '75-69-4': 2800.0, '75-71-8': 4000.0, '75-72-9': 3900.0, 
-'75-63-8': 3500.0, '75-45-6': 3900.0, '76-13-1': 2650.0, '76-14-2': 3800.0, 
-'76-15-3': 4200.0, '74-87-3': 4400.0, '56-23-5': 3200.0, '2551-62-4': 3700.0, 
-'7732-18-5': 5600.0, '7664-41-7': 7000.0, '7782-44-7': 9500.0, '7727-37-9': 10000.0, 
+
+h0_VDI_2e = {'74-82-8': 7200.0, '74-85-1': 4200.0, '74-84-0': 4600.0,
+'115-07-1': 4200.0, '74-98-6': 4300.0, '106-97-8': 3600.0, '75-28-5': 3700.0,
+'109-66-0': 3300.0, '78-78-4': 3200.0, '110-54-3': 3200.0, '110-82-7': 3000.0,
+'142-82-5': 2900.0, '71-43-2': 2900.0, '108-88-3': 2800.0, '92-52-4': 2100.0,
+'67-56-1': 5400.0, '64-17-5': 4350.0, '71-23-8': 3750.0, '67-63-0': 4100.0,
+'71-36-3': 2600.0, '78-83-1': 4500.0, '78-92-2': 3400.0, '75-07-0': 3500.0,
+'67-64-1': 3300.0, '124-38-9': 5500.0, '75-46-7': 4800.0, '75-10-5': 5000.0,
+'354-33-6': 4400.0, '811-97-2': 4200.0, '420-46-2': 4700.0, '75-37-6': 4600.0,
+'754-12-1': 3000.0, '431-89-0': 4100.0, '115-25-3': 4200.0, '75-73-0': 4750.0,
+'306-83-2': 3000.0, '75-69-4': 2800.0, '75-71-8': 4000.0, '75-72-9': 3900.0,
+'75-63-8': 3500.0, '75-45-6': 3900.0, '76-13-1': 2650.0, '76-14-2': 3800.0,
+'76-15-3': 4200.0, '74-87-3': 4400.0, '56-23-5': 3200.0, '2551-62-4': 3700.0,
+'7732-18-5': 5600.0, '7664-41-7': 7000.0, '7782-44-7': 9500.0, '7727-37-9': 10000.0,
 '7440-37-1': 8200.0, '7440-01-9': 20000.0, '1333-74-0': 24000.0, '7440-59-7': 2000.0}
 
 
@@ -872,13 +872,13 @@ cryogenics = {'132259-10-0': 'Air', '7440-37-1': 'Argon', '630-08-0':
 '74-82-8': 'methane', '7440-01-9': 'neon', '7727-37-9': 'nitrogen',
 '7782-44-7': 'oxygen', '7440-63-3': 'xenon'}
 
-h_nucleic_all_methods = ['Stephan-Abdelsalam', 'Stephan-Abdelsalam water', 
-                     'Stephan-Abdelsalam cryogenic', 'HEDH-Taborek', 
+h_nucleic_all_methods = ['Stephan-Abdelsalam', 'Stephan-Abdelsalam water',
+                     'Stephan-Abdelsalam cryogenic', 'HEDH-Taborek',
                      'Forster-Zuber', 'Rohsenow', 'Cooper', 'Bier',
                      'Montinsky', 'McNelly', 'Gorenflo (1993)']
 
-def h_nucleic_methods(Te=None, Tsat=None, P=None, dPsat=None, Cpl=None, 
-          kl=None, mul=None, rhol=None, sigma=None, Hvap=None, rhog=None, 
+def h_nucleic_methods(Te=None, Tsat=None, P=None, dPsat=None, Cpl=None,
+          kl=None, mul=None, rhol=None, sigma=None, Hvap=None, rhog=None,
           MW=None, Pc=None, CAS=None, check_ranges=False):
     r'''This function returns the names of correlations for nucleate boiling
     heat flux.
@@ -933,7 +933,7 @@ def h_nucleic_methods(Te=None, Tsat=None, P=None, dPsat=None, Cpl=None,
 #        if CAS is not None and CAS in h0_Gorenflow_1993_keys: # numba: uncomment
             methods.append('Gorenflo (1993)')
     if (Te is not None and Tsat is not None and Cpl is not None and kl is not None
-        and mul is not None and sigma is not None and Hvap is not None 
+        and mul is not None and sigma is not None and Hvap is not None
         and rhol is not None and rhog is not None):
         if CAS is not None and CAS == '7732-18-5':
             methods.append('Stephan-Abdelsalam water')
@@ -943,11 +943,11 @@ def h_nucleic_methods(Te=None, Tsat=None, P=None, dPsat=None, Cpl=None,
     if Te is not None and P is not None and Pc is not None:
         methods.append('HEDH-Taborek')
     if (Te is not None and dPsat is not None and Cpl is not None and kl is not None
-        and mul is not None and sigma is not None and Hvap is not None 
+        and mul is not None and sigma is not None and Hvap is not None
         and rhol is not None and rhog is not None):
         methods.append('Forster-Zuber')
     if (Te is not None and Cpl is not None and kl is not None and mul is not None
-        and sigma is not None and Hvap is not None and rhol is not None 
+        and sigma is not None and Hvap is not None and rhol is not None
         and rhog is not None):
         methods.append('Rohsenow')
     if MW is not None and Te is not None and P is not None and Pc is not None:
@@ -961,8 +961,8 @@ def h_nucleic_methods(Te=None, Tsat=None, P=None, dPsat=None, Cpl=None,
     return methods
 
 
-def h_nucleic(Te=None, q=None, Tsat=None, P=None, dPsat=None, Cpl=None, 
-              kl=None, mul=None, rhol=None, sigma=None, Hvap=None, rhog=None, 
+def h_nucleic(Te=None, q=None, Tsat=None, P=None, dPsat=None, Cpl=None,
+              kl=None, mul=None, rhol=None, sigma=None, Hvap=None, rhog=None,
               MW=None, Pc=None, Csf=0.013, n=1.7, kw=401.0, rhow=8.96, Cpw=384.0,
               angle=35.0, Rp=1e-6, Ra=0.4e-6, h0=None,
               CAS=None, Method=None):
@@ -1015,10 +1015,10 @@ def h_nucleic(Te=None, q=None, Tsat=None, P=None, dPsat=None, Cpl=None,
     angle : float, optional
         Contact angle of bubble with wall [degrees]
     Rp : float, optional
-        Roughness parameter of the surface (1 micrometer default) used by 
+        Roughness parameter of the surface (1 micrometer default) used by
         `Cooper` method, [m]
     Ra : float, optional
-        Roughness parameter of the surface (0.4 micrometer default) for 
+        Roughness parameter of the surface (0.4 micrometer default) for
         Gorenflo method, [m]
     h0 : float
         Reference heat transfer coefficient for Gorenflo method, [W/m^2/K]
@@ -1033,38 +1033,38 @@ def h_nucleic(Te=None, q=None, Tsat=None, P=None, dPsat=None, Cpl=None,
     Other Parameters
     ----------------
     Method : string, optional
-        The name of the method to use; one of ['Gorenflo (1993)', 
-        'Stephan-Abdelsalam water', 'Stephan-Abdelsalam cryogenic', 
-        'Stephan-Abdelsalam', 'HEDH-Taborek', 'Forster-Zuber', 'Rohsenow', 
+        The name of the method to use; one of ['Gorenflo (1993)',
+        'Stephan-Abdelsalam water', 'Stephan-Abdelsalam cryogenic',
+        'Stephan-Abdelsalam', 'HEDH-Taborek', 'Forster-Zuber', 'Rohsenow',
         'Cooper', 'Bier', 'Montinsky', 'McNelly']
-        
+
     Notes
     -----
-    The methods Stephan-Abdelsalam, Cooper, and Gorenflo all take other 
+    The methods Stephan-Abdelsalam, Cooper, and Gorenflo all take other
     arguments as well such as surface roughness or the thermal properties of
     the wall material. See them for their documentation. These parameters
     can also be passed as keyword arguments.
-    
+
     >>> h_nucleic(P=3E5, Pc=22048320., q=2E4, CAS='7732-18-5', Ra=1E-6)
     3437.7726419934147
-    
+
     Examples
     --------
     Water boiling at 3 bar and a heat flux of 2E4 W/m^2/K.
 
     >>> h_nucleic(P=3E5, Pc=22048320., q=2E4, CAS='7732-18-5')
     3043.344595525422
-    
+
     Water, known excess temperature of 4.9 K, Rohsenow method
 
     >>> h_nucleic(rhol=957.854, rhog=0.595593, mul=2.79E-4, kl=0.680, Cpl=4217,
-    ... Hvap=2.257E6, sigma=0.0589, Te=4.9, Csf=0.011, n=1.26, 
+    ... Hvap=2.257E6, sigma=0.0589, Te=4.9, Csf=0.011, n=1.26,
     ... Method='Rohsenow')
     3723.655267067467
     '''
     if Method is None:
-        methods = h_nucleic_methods(Te=Te, Tsat=Tsat, P=P, dPsat=dPsat, Cpl=Cpl, 
-              kl=kl, mul=mul, rhol=rhol, sigma=sigma, Hvap=Hvap, rhog=rhog, 
+        methods = h_nucleic_methods(Te=Te, Tsat=Tsat, P=P, dPsat=dPsat, Cpl=Cpl,
+              kl=kl, mul=mul, rhol=rhol, sigma=sigma, Hvap=Hvap, rhog=rhog,
               MW=MW, Pc=Pc, CAS=CAS)
         if not methods:
             raise ValueError('Insufficient property data for any method.')
@@ -1073,7 +1073,7 @@ def h_nucleic(Te=None, q=None, Tsat=None, P=None, dPsat=None, Cpl=None,
     if Method == 'Stephan-Abdelsalam'and Tsat is not None:
         return Stephan_Abdelsalam(Te=Te, q=q, Tsat=Tsat, Cpl=Cpl, kl=kl, mul=mul,
                                sigma=sigma, Hvap=Hvap, rhol=rhol, rhog=rhog,
-                               correlation='general', 
+                               correlation='general',
                                kw=kw, rhow=rhow, Cpw=Cpw, angle=angle)
     elif Method == 'Stephan-Abdelsalam water' and Tsat is not None:
         return Stephan_Abdelsalam(Te=Te, q=q, Tsat=Tsat, Cpl=Cpl, kl=kl, mul=mul,
@@ -1083,7 +1083,7 @@ def h_nucleic(Te=None, q=None, Tsat=None, P=None, dPsat=None, Cpl=None,
     elif Method == 'Stephan-Abdelsalam cryogenic' and Tsat is not None:
         return Stephan_Abdelsalam(Te=Te, q=q, Tsat=Tsat, Cpl=Cpl, kl=kl, mul=mul,
                                sigma=sigma, Hvap=Hvap, rhol=rhol, rhog=rhog,
-                               correlation='cryogenic', 
+                               correlation='cryogenic',
                                kw=kw, rhow=rhow, Cpw=Cpw, angle=angle)
     elif Method == 'HEDH-Taborek' and P is not None and Pc is not None:
         return HEDH_Taborek(Te=Te, q=q, P=P, Pc=Pc)
@@ -1313,17 +1313,17 @@ def qmax_boiling_methods(rhol=None, rhog=None, sigma=None, Hvap=None, D=None,
     -------
     methods : list
         List of methods which can be used to calculate qmax with the given inputs
-        
+
     Examples
     --------
     >>> qmax_boiling_methods(D=0.0127, sigma=8.2E-3, Hvap=272E3, rhol=567, rhog=18.09)
     ['Serth-HEDH', 'Zuber']
     '''
     methods = []
-    if (sigma is not None and Hvap is not None and rhol is not None 
+    if (sigma is not None and Hvap is not None and rhol is not None
         and rhog is not None and D is not None):
         methods.append('Serth-HEDH')
-    if (sigma is not None and Hvap is not None and rhol is not None 
+    if (sigma is not None and Hvap is not None and rhol is not None
         and rhog is not None):
         methods.append('Zuber')
     if P is not None and Pc is not None:
@@ -1331,11 +1331,11 @@ def qmax_boiling_methods(rhol=None, rhog=None, sigma=None, Hvap=None, D=None,
     return methods
 
 
-def qmax_boiling(rhol=None, rhog=None, sigma=None, Hvap=None, D=None, P=None, 
+def qmax_boiling(rhol=None, rhog=None, sigma=None, Hvap=None, D=None, P=None,
                  Pc=None, Method=None):
     r'''This function handles the calculation of nucleate boiling critical
     heat flux and chooses the best method for performing the calculation.
-    
+
     Preferred methods are 'Serth-HEDH' when a tube diameter is specified,
     and 'Zuber' otherwise.
 
@@ -1364,9 +1364,9 @@ def qmax_boiling(rhol=None, rhog=None, sigma=None, Hvap=None, D=None, P=None,
     Other Parameters
     ----------------
     Method : string, optional
-        A string of the function name to use; one of ('Serth-HEDH', 'Zuber', 
+        A string of the function name to use; one of ('Serth-HEDH', 'Zuber',
         or 'HEDH-Montinsky')
-        
+
     Examples
     --------
     >>> qmax_boiling(D=0.0127, sigma=8.2E-3, Hvap=272E3, rhol=567, rhog=18.09)

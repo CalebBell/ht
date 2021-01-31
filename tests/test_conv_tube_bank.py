@@ -30,16 +30,16 @@ from fluids.numerics import assert_close, assert_close1d
 
 def test_Nu_Grimison_tube_bank_tcks():
     from ht.conv_tube_bank import Grimison_ST_aligned, Grimison_SL_aligned, Grimison_C1_aligned, Grimison_C1_aligned_tck
-    Grimison_C1_aligned_interp = RectBivariateSpline(Grimison_ST_aligned, 
+    Grimison_C1_aligned_interp = RectBivariateSpline(Grimison_ST_aligned,
                                                      Grimison_SL_aligned,
                                                      np.array(Grimison_C1_aligned))
 
     tck_recalc = Grimison_C1_aligned_interp.tck
     [assert_allclose(i, j) for i, j in zip(Grimison_C1_aligned_tck, tck_recalc)]
-    
+
     from ht.conv_tube_bank import Grimison_m_aligned_tck, Grimison_m_aligned
-    Grimison_m_aligned_interp = RectBivariateSpline(Grimison_ST_aligned, 
-                                                    Grimison_SL_aligned, 
+    Grimison_m_aligned_interp = RectBivariateSpline(Grimison_ST_aligned,
+                                                    Grimison_SL_aligned,
                                                     np.array(Grimison_m_aligned))
     tck_recalc = Grimison_m_aligned_interp.tck
     [assert_allclose(i, j) for i, j in zip(Grimison_m_aligned_tck, tck_recalc)]
@@ -50,35 +50,35 @@ def test_Nu_Grimison_tube_bank():
 
     Nu = Nu_Grimison_tube_bank(Re=10263.37, Pr=.708, tube_rows=11,  pitch_normal=.07, pitch_parallel=.05, Do=.025)
     assert_allclose(Nu, 79.92721078571385)
-    
+
     Nu = Nu_Grimison_tube_bank(Re=10263.37, Pr=.708, tube_rows=7,  pitch_normal=.05, pitch_parallel=.05, Do=.025)
     assert_allclose(Nu, 77.49726188689894)
-    
+
     Nu = Nu_Grimison_tube_bank(Re=10263.37, Pr=.708, tube_rows=7,  pitch_normal=.07, pitch_parallel=.05, Do=.025)
     assert_allclose(Nu, 78.32866656999958)
-    
+
     # Test the negative input
     args = dict(Re=10263.37, Pr=.708, tube_rows=-1, pitch_normal=.07, pitch_parallel=.05, Do=.025)
     Nu_neg = Nu_Grimison_tube_bank(**args)
     args['tube_rows'] = 1
     Nu_pos =  Nu_Grimison_tube_bank(**args)
     assert_allclose(Nu_neg, Nu_pos)
-    
+
     # Check all data - for changing interpolations
     Nu_bulk = [[Nu_Grimison_tube_bank(Re=10263.37, Pr=.708, tube_rows=11,  pitch_normal=j, pitch_parallel=i, Do=.025) for i in [.025, .04, .05, .75, .1, .15, .2]] for j in [.025, .04, .05, .75, .1, .15, .2]]
     Nu_bulk_expect = [[83.05244932418451, 152.02626127499462, 92.67853984384722, 80.45909971688272, 80.45909971688272, 80.45909971688272, 80.45909971688272], [81.37409021240403, 75.87989409125535, 88.19403137832364, 90.10492890754932, 90.10492890754932, 90.10492890754932, 90.10492890754932], [80.154658166616, 79.27931854213506, 79.07883866010096, 88.31182349500988, 88.31182349500988, 88.31182349500988, 88.31182349500988], [73.98350370839236, 76.51020564051443, 78.3597838488104, 79.12612063682283, 86.25920529135, 86.25920529135, 86.25920529135], [73.98350370839236, 76.51020564051443, 78.3597838488104, 86.25920529135, 79.12612063682283, 86.25920529135, 86.25920529135], [73.98350370839236, 76.51020564051443, 78.3597838488104, 86.25920529135, 86.25920529135, 79.12612063682283, 86.25920529135], [73.98350370839236, 76.51020564051443, 78.3597838488104, 86.25920529135, 86.25920529135, 86.25920529135, 79.12612063682283]]
     assert_allclose(Nu_bulk, Nu_bulk_expect)
 
 def test_Gimison_coeffs_regeneration():
-    from ht.conv_tube_bank import (Grimson_SL_staggered, Grimson_ST_staggered, 
+    from ht.conv_tube_bank import (Grimson_SL_staggered, Grimson_ST_staggered,
                                    Grimson_m_staggered, Grimson_C1_staggered,
                                    tck_Grimson_m_staggered, tck_Grimson_C1_staggered)
     tck = bisplrep(Grimson_ST_staggered, Grimson_SL_staggered, Grimson_C1_staggered, kx=1, ky=1, task=0, s=0)
     [assert_allclose(i, j) for i, j in zip(tck, tck_Grimson_C1_staggered)]
-    
+
     tck = bisplrep(Grimson_ST_staggered, Grimson_SL_staggered, Grimson_m_staggered, kx=1, ky=1, task=0, s=0)
     [assert_allclose(i, j) for i, j in zip(tck, tck_Grimson_m_staggered)]
-    
+
 
 
 def test_ESDU_tube_row_correction():
@@ -93,7 +93,7 @@ def test_ESDU_tube_row_correction():
 def test_ESDU_tube_row_correction_refit():
     # Re-fit the data
     from ht.conv_tube_bank import ESDU_73031_F2_inline, ESDU_73031_F2_staggered
-    
+
     ## Commands used to obtain the fitted data:
     ESDU_nrs = [3., 3.0189, 3.04129, 3.04891, 3.06251, 3.06481, 3.08274, 3.09166, 3.10623, 3.11518, 3.12645, 3.13538, 3.14668, 3.16219, 3.1669, 3.18571, 3.1871,
         3.20732, 3.20924, 3.23084, 3.23273, 3.25107, 3.25625, 3.27126, 3.27977, 3.29808, 3.30329, 3.32816, 3.33011, 3.35363, 3.37712, 3.40394, 3.42746,
@@ -164,8 +164,8 @@ def test_ESDU_tube_row_correction_refit():
     ]
     ESDU_in = interp1d(ESDU_nrs, ESDU_F_in)
     ESDU_st = interp1d(ESDU_nrs, ESDU_F_st)
-    
-    
+
+
     inline_factors = [round(float(ESDU_in(i)),4) for i in range(3, 10)]
     staggered_factors = [round(float(ESDU_st(i)),4) for i in range(3, 10)]
     assert_allclose(inline_factors, ESDU_73031_F2_inline)
@@ -182,14 +182,14 @@ def test_ESDU_tube_row_correction_refit():
 def test_ESDU_tube_angle_correction():
     F3 = ESDU_tube_angle_correction(75)
     assert_allclose(F3, 0.9794139080247666)
-    
+
     # Digitized data from graph
 #    angles = [19.7349, 20.1856, 20.4268, 20.8778, 21.3597, 21.8404, 22.3523, 22.8326, 23.3148, 23.8252, 24.1867, 24.6375, 25.0891, 25.5697, 26.021, 26.5312, 26.9528, 27.4633, 27.9745, 28.455, 28.8762, 29.3867, 30.0483, 30.5291, 30.9798, 31.4905, 31.9712, 32.4519, 32.9026, 33.3833, 33.8938, 34.3743, 34.855, 35.3655, 35.846, 36.3268, 36.8372, 37.3178, 37.8282, 38.3385, 38.8491, 39.3893, 39.8995, 40.38, 40.9203, 41.4305, 41.9706, 42.511, 43.081, 43.5912, 44.1612, 44.7312, 45.2416, 45.8415, 46.3814, 46.9513, 47.5213, 48.0911, 48.6611, 49.231, 49.8008, 50.4004, 50.9701, 51.5698, 52.1694, 52.7393, 53.3386, 53.9382, 54.5378, 55.1372, 55.7069, 56.3062, 56.9356, 57.5648, 58.1642, 58.7935, 59.4227, 60.0818, 60.711, 61.3103, 61.9694, 62.5986, 63.2573, 63.9163, 64.5752, 65.234, 65.8929, 66.5514, 67.2102, 67.869, 68.5575, 69.2162, 69.9047, 70.5632, 71.2813, 71.94, 72.6284, 73.3464, 74.0346, 74.7526, 75.4706, 76.1587, 76.8765, 77.5944, 78.3122, 79.0299, 79.7476, 80.4952, 81.2129, 81.9305, 82.6479, 83.3952, 84.083, 84.8003, 85.5179, 86.2652, 86.9825, 87.7295, 88.4468, 89.1642, 89.9112, 90]
 #    F3s = [0.528819, 0.534137, 0.538566, 0.544474, 0.552447, 0.557766, 0.566034, 0.570763, 0.579326, 0.584351, 0.590551, 0.59587, 0.602957, 0.608276, 0.614774, 0.619504, 0.626296, 0.631616, 0.63841, 0.643434, 0.649342, 0.654662, 0.663523, 0.669137, 0.674456, 0.680071, 0.685685, 0.691004, 0.696322, 0.701641, 0.706961, 0.711986, 0.7176, 0.72292, 0.727944, 0.733558, 0.738583, 0.743902, 0.748928, 0.753953, 0.759273, 0.764299, 0.769029, 0.774053, 0.779079, 0.78381, 0.788541, 0.793862, 0.798594, 0.803324, 0.808056, 0.812788, 0.817813, 0.822546, 0.826982, 0.831419, 0.836151, 0.840588, 0.84532, 0.849757, 0.854194, 0.858337, 0.86248, 0.866917, 0.871061, 0.875498, 0.879051, 0.883194, 0.887337, 0.891185, 0.895328, 0.898881, 0.90273, 0.906284, 0.910133, 0.913982, 0.917536, 0.921091, 0.924645, 0.928199, 0.931754, 0.935308, 0.938273, 0.941533, 0.944794, 0.947759, 0.951019, 0.953395, 0.95636, 0.959326, 0.961997, 0.964668, 0.967339, 0.969715, 0.971797, 0.974468, 0.976844, 0.978632, 0.980714, 0.982501, 0.984289, 0.986076, 0.987569, 0.989062, 0.990555, 0.991753, 0.992951, 0.99415, 0.995348, 0.996251, 0.996859, 0.997468, 0.998666, 0.998979, 0.999883, 1, 1, 1, 1, 1, 1, 1]
-#    
+#
 #    import matplotlib.pyplot as plt
 #    import numpy as np
-#    
+#
 #    plt.plot(angles, F3s)
 #    plt.plot(angles, np.sin(np.radians(angles))**0.6)
 #    plt.show()
@@ -202,18 +202,18 @@ def test_Zukauskas_tube_row_correction():
 
 def test_Zukauskas_tube_row_correction_refit():
     from scipy.interpolate import UnivariateSpline
-    from ht.conv_tube_bank import Zukauskas_Czs_low_Re_staggered, Zukauskas_Czs_high_Re_staggered, Zukauskas_Czs_inline 
+    from ht.conv_tube_bank import Zukauskas_Czs_low_Re_staggered, Zukauskas_Czs_high_Re_staggered, Zukauskas_Czs_inline
     # Commands used to obtain the fitted data:
     Zukauskas_Cz_Zs = [0.968219, 1.01968, 1.04164, 1.04441, 1.07539, 1.09332, 1.13914, 1.16636, 1.23636, 1.2394, 1.24505, 1.3125, 1.33358, 1.38554, 1.43141, 1.48282, 1.4876, 1.55352, 1.58004, 1.60466, 1.65726, 1.67493, 1.70188, 1.79682, 1.91823, 1.99323, 1.99665, 2.04002, 2.16306, 2.18556, 2.19045, 2.30691, 2.3086, 2.36006, 2.45272, 2.45413, 2.57543, 2.59826, 2.72341, 2.7451, 2.8896, 2.91482, 2.98759, 3.1572, 3.23203, 3.25334, 3.3511, 3.42295, 3.4499, 3.52072, 3.6168, 3.83565, 3.9076, 3.9826, 4.02939, 4.17411, 4.20042, 4.44242, 4.48937, 4.61023, 4.82811, 4.95071, 5.07038, 5.28825, 5.31232, 5.3621, 5.50606, 5.53014, 5.60405, 5.74801, 5.74807, 5.82181, 5.99012, 5.99017, 6.13636, 6.23207, 6.23212, 6.37826, 6.44983, 6.44988, 6.62015, 6.69183, 6.69188, 6.95807, 6.95812, 6.98312, 7.1767, 7.20001, 7.41772, 7.41848, 7.65967, 7.87743, 7.90156, 7.95003, 7.97416, 7.97476, 8.21606, 8.2166, 8.45795, 8.60365, 8.67571, 8.79712, 8.91809, 8.96597, 9.18368, 9.20824, 9.42551, 9.45013, 9.66741, 9.69197, 10.0786, 10.3208, 10.5623, 10.5626, 10.7803, 10.9737, 10.9978, 11.2398, 11.2399, 11.4574, 11.4575, 11.6993, 11.7478, 11.9653, 11.9896, 12.2072, 12.2315, 12.4491, 12.691, 12.7152, 12.9812, 13.2231, 13.2715, 13.465, 13.7068, 13.9246, 13.9487, 14.1905, 14.4324, 14.6743, 14.9161, 14.9887, 15.2305, 15.4724, 15.7142, 15.787, 15.811, 15.8835, 16.0046, 16.0287, 16.2465, 16.3673, 16.4883, 16.5124, 16.706, 16.7301, 16.9477, 16.9479, 17.1897, 17.2138, 17.4315, 17.6734, 17.9152, 17.9636, 18.2054, 18.2055, 18.4473, 18.6891, 18.9068, 18.931, 18.9793, 19.2212, 19.4631, 19.5599, 19.7049, 19.9467, 19.9952]
     low_Re_staggered_Cz = [0.828685, 0.831068, 0.832085, 0.832213, 0.833647, 0.834478, 0.836599, 0.83786, 0.8411, 0.841241, 0.841503, 0.845561, 0.84683, 0.849956, 0.852715, 0.855808, 0.856096, 0.859148, 0.860376, 0.861516, 0.863952, 0.864828, 0.866165, 0.870874, 0.876897, 0.880617, 0.880787, 0.882293, 0.886566, 0.887348, 0.887517, 0.89214, 0.892207, 0.894249, 0.897396, 0.897444, 0.901563, 0.902338, 0.906589, 0.907258, 0.911719, 0.912497, 0.914744, 0.91998, 0.92229, 0.922729, 0.92474, 0.926218, 0.926772, 0.928561, 0.930987, 0.936514, 0.938332, 0.940226, 0.940947, 0.943179, 0.943584, 0.946941, 0.947769, 0.9499, 0.95374, 0.955902, 0.957529, 0.960492, 0.96082, 0.961497, 0.962826, 0.963048, 0.96373, 0.965208, 0.965208, 0.965965, 0.967759, 0.96776, 0.969318, 0.969757, 0.969758, 0.970428, 0.970757, 0.970757, 0.971538, 0.972422, 0.972422, 0.975703, 0.975704, 0.976012, 0.978249, 0.978139, 0.977115, 0.977111, 0.977585, 0.978013, 0.97806, 0.978155, 0.978202, 0.978204, 0.97819, 0.97819, 0.979578, 0.980416, 0.980411, 0.980405, 0.981521, 0.981333, 0.980478, 0.980382, 0.981379, 0.981492, 0.981479, 0.981478, 0.982147, 0.982566, 0.982553, 0.982553, 0.98254, 0.981406, 0.98171, 0.98476, 0.984762, 0.98475, 0.98475, 0.984736, 0.984733, 0.985732, 0.985843, 0.986842, 0.986953, 0.985817, 0.986825, 0.986926, 0.986911, 0.987834, 0.988018, 0.988008, 0.987994, 0.991353, 0.991148, 0.98909, 0.9902, 0.990187, 0.991297, 0.991293, 0.991279, 0.991266, 0.992054, 0.992292, 0.99237, 0.992366, 0.992359, 0.992358, 0.993068, 0.993463, 0.993456, 0.993454, 0.994443, 0.994566, 0.994553, 0.994553, 0.99454, 0.994539, 0.996774, 0.99676, 0.996746, 0.996744, 0.99673, 0.99673, 0.997466, 0.998201, 0.998863, 0.998936, 0.99902, 0.999439, 0.999857, 1.00002, 1.00002, 1, 1]
     high_Re_staggered_Cz = [0.617923, 0.630522, 0.635897, 0.636344, 0.64134, 0.644232, 0.651621, 0.654452, 0.661728, 0.662045, 0.662632, 0.669643, 0.671835, 0.683767, 0.694302, 0.704706, 0.705673, 0.719014, 0.721221, 0.72327, 0.727649, 0.729119, 0.73359, 0.749337, 0.759443, 0.770509, 0.771014, 0.777413, 0.785006, 0.786394, 0.786756, 0.795376, 0.795545, 0.800697, 0.809975, 0.810062, 0.817547, 0.818955, 0.829084, 0.830839, 0.842534, 0.843935, 0.847977, 0.857398, 0.861555, 0.862739, 0.866619, 0.869471, 0.870563, 0.873432, 0.877325, 0.886614, 0.889668, 0.89251, 0.894282, 0.899765, 0.900781, 0.910119, 0.911931, 0.916595, 0.921077, 0.925619, 0.930052, 0.932064, 0.932286, 0.933053, 0.935273, 0.935644, 0.937165, 0.940127, 0.940128, 0.941835, 0.945731, 0.945731, 0.947081, 0.947964, 0.947965, 0.949465, 0.950199, 0.9502, 0.952562, 0.953557, 0.953558, 0.958036, 0.958037, 0.958267, 0.960054, 0.96027, 0.961381, 0.961388, 0.963615, 0.964614, 0.964725, 0.965472, 0.965844, 0.965847, 0.966954, 0.966957, 0.968064, 0.96956, 0.970299, 0.970762, 0.971224, 0.971406, 0.972518, 0.972516, 0.972504, 0.972617, 0.973614, 0.97368, 0.974715, 0.975264, 0.975811, 0.975814, 0.978048, 0.980033, 0.980281, 0.982515, 0.982515, 0.982502, 0.982503, 0.983612, 0.98361, 0.983597, 0.983709, 0.984707, 0.984819, 0.985817, 0.985804, 0.985896, 0.986911, 0.986898, 0.98712, 0.988008, 0.987994, 0.988994, 0.989104, 0.98909, 0.9902, 0.990187, 0.991297, 0.991293, 0.991279, 0.991266, 0.991252, 0.995742, 0.994903, 0.992366, 0.99573, 0.995729, 0.995716, 0.99571, 0.995703, 0.995826, 0.996814, 0.996813, 0.996801, 0.996801, 0.996787, 0.996786, 0.996774, 0.99676, 0.997682, 0.997867, 0.997854, 0.997854, 0.99784, 0.997826, 0.997814, 0.997813, 0.99781, 0.99892, 0.998907, 0.998901, 0.998893, 0.998879, 0.998877]
     inline_Cz = [0.658582, 0.681965, 0.69194, 0.6932, 0.700314, 0.704433, 0.710773, 0.714541, 0.724228, 0.724649, 0.725518, 0.735881, 0.738799, 0.74599, 0.751285, 0.75722, 0.757717, 0.76457, 0.767327, 0.776314, 0.781783, 0.783619, 0.786421, 0.794105, 0.803931, 0.81, 0.810227, 0.813093, 0.821227, 0.822615, 0.822917, 0.830103, 0.830207, 0.833383, 0.839101, 0.839188, 0.847046, 0.848103, 0.853898, 0.854902, 0.862547, 0.863881, 0.868371, 0.875104, 0.878568, 0.879555, 0.884081, 0.886933, 0.888003, 0.890813, 0.894236, 0.902032, 0.904114, 0.906285, 0.907639, 0.910812, 0.911389, 0.916696, 0.917725, 0.92029, 0.924912, 0.927513, 0.930052, 0.934534, 0.934906, 0.935673, 0.937893, 0.938227, 0.939252, 0.941249, 0.94125, 0.942957, 0.946853, 0.946854, 0.948204, 0.949088, 0.949088, 0.950588, 0.951322, 0.951323, 0.953685, 0.954679, 0.95468, 0.959159, 0.95916, 0.959274, 0.960163, 0.96027, 0.961381, 0.961388, 0.963615, 0.96585, 0.966222, 0.966969, 0.966968, 0.966968, 0.966954, 0.966957, 0.968064, 0.96956, 0.970299, 0.970762, 0.971224, 0.971406, 0.972518, 0.972516, 0.972504, 0.972617, 0.973614, 0.973737, 0.975675, 0.976888, 0.978099, 0.9781, 0.979191, 0.98016, 0.980281, 0.982515, 0.982515, 0.982502, 0.982503, 0.983612, 0.98361, 0.983597, 0.983709, 0.984707, 0.984819, 0.985817, 0.985804, 0.985896, 0.986911, 0.986898, 0.98712, 0.988008, 0.987994, 0.988994, 0.989104, 0.98909, 0.9902, 0.990187, 0.991297, 0.991293, 0.991279, 0.991266, 0.991252, 0.995742, 0.994903, 0.992366, 0.99573, 0.995729, 0.995716, 0.99571, 0.995703, 0.995826, 0.996814, 0.996813, 0.996801, 0.996801, 0.996787, 0.996786, 0.996774, 0.99676, 0.997682, 0.997867, 0.997854, 0.997854, 0.99784, 0.997826, 0.997814, 0.997813, 0.99781, 0.99892, 0.998907, 0.998901, 0.998893, 0.998879, 0.998877]
-    
+
     # hand tuned smoothing
-    Zukauskas_Cz_low_Re_staggered_obj = UnivariateSpline(Zukauskas_Cz_Zs, low_Re_staggered_Cz, s=0.0001) 
+    Zukauskas_Cz_low_Re_staggered_obj = UnivariateSpline(Zukauskas_Cz_Zs, low_Re_staggered_Cz, s=0.0001)
     Zukauskas_Cz_high_Re_staggered_obj = UnivariateSpline(Zukauskas_Cz_Zs, high_Re_staggered_Cz, s=0.0005)
     Zukauskas_Cz_inline_obj = UnivariateSpline(Zukauskas_Cz_Zs, inline_Cz, s=0.0005)
-    
+
     Zukauskas_Czs_inline2 = np.round(Zukauskas_Cz_inline_obj(range(1, 20)), 4).tolist()
     assert_allclose(Zukauskas_Czs_inline, Zukauskas_Czs_inline2)
 
@@ -227,14 +227,14 @@ def test_Zukauskas_tube_row_correction_refit():
 def test_Nu_Zukauskas_Bejan():
     Nu = Nu_Zukauskas_Bejan(Re=1E4, Pr=7., tube_rows=10, pitch_parallel=.05, pitch_normal=.05)
     assert_allclose(Nu, 175.9202277145248)
-    
+
     Nu = Nu_Zukauskas_Bejan(Re=1E4, Pr=7., tube_rows=10, pitch_parallel=.05, pitch_normal=.05, Pr_wall=9.0)
     assert_allclose(Nu, 165.2074626671159)
-    
+
     Nus = [Nu_Zukauskas_Bejan(Re=Re, Pr=7., tube_rows=30, pitch_parallel=.05, pitch_normal=.05) for Re in (10, 2000, 1E5, 1E7)]
     Nus_expect = [4.554889061992833, 65.35035570869223, 768.4207053648229, 26469.71311148279]
     assert_allclose(Nus, Nus_expect)
-    
+
     Nus = [Nu_Zukauskas_Bejan(Re=Re, Pr=7., tube_rows=30, pitch_parallel=.05, pitch_normal=.09) for Re in (10, 2000, 1E5, 1E7)]
     Nus_expect = [5.263427360525052, 75.85353712516013, 793.1545862201796, 27967.361063088636]
     assert_allclose(Nus, Nus_expect)
@@ -242,16 +242,16 @@ def test_Nu_Zukauskas_Bejan():
 def test_Nu_ESDU_73031():
     Nu = Nu_ESDU_73031(Re=1.32E4, Pr=0.71, tube_rows=8, pitch_parallel=.09, pitch_normal=.05)
     assert_allclose(98.2563319140594, Nu)
-    
+
     Nu = Nu_ESDU_73031(Re=1.32E4, Pr=0.71, tube_rows=8, pitch_parallel=.09, pitch_normal=.05, Pr_wall=0.71)
     assert_allclose(98.2563319140594, Nu)
- 
+
     Nu = Nu_ESDU_73031(Re=1.32E4, Pr=0.71, tube_rows=8, pitch_parallel=.05, pitch_normal=.05, Pr_wall=0.75)
     assert_allclose(87.69324193674449, Nu)
-    
+
     Nu = Nu_ESDU_73031(Re=1.32E4, Pr=0.71, tube_rows=3, pitch_parallel=.05, pitch_normal=.05, Pr_wall=0.75)
     assert_allclose(Nu, 75.57180591337092)
-    
+
     Nus = [Nu_ESDU_73031(Re=Re, Pr=0.71, tube_rows=3, pitch_parallel=pp, pitch_normal=.05, Pr_wall=0.75) for pp in [0.09, 0.05] for Re in [100, 1E5, 1E6]]
     Nus_expect = [5.179925804379317, 307.9970377601136, 1481.8545490578865, 4.0177935875859365, 282.40096167747, 1367.860174719831]
     assert_allclose(Nus, Nus_expect)
@@ -260,7 +260,7 @@ def test_Nu_ESDU_73031():
 def test_Nu_HEDH_tube_bank():
     Nu = Nu_HEDH_tube_bank(Re=1E4, Pr=7., tube_rows=10, pitch_normal=.05, pitch_parallel=.05, Do=.03)
     assert_allclose(Nu, 382.4636554404698)
-    
+
     Nu = Nu_HEDH_tube_bank(Re=10263.37, Pr=.708, tube_rows=11, pitch_normal=.05, pitch_parallel=.05, Do=.025)
     assert_allclose(Nu, 149.18735251017594)
 
@@ -345,18 +345,18 @@ Bell_baffle_configuration_Jcs = np.array([0.534317, 0.544632, 0.556665, 0.566983
 def test_baffle_correction_Bell():
     Jc = baffle_correction_Bell(0.82)
     assert_allclose(Jc, 1.1258554691854046, 5e-4)
-    
+
     # Check the match is reasonably good
     errs = np.array([(baffle_correction_Bell(float(Fc))-Jc)/Jc for Fc, Jc in zip(Bell_baffle_configuration_Fcs, Bell_baffle_configuration_Jcs)])
     assert np.abs(errs).sum()/len(errs) < 1e-3
-    
-    Jc = baffle_correction_Bell(0.1, 'chebyshev')   
+
+    Jc = baffle_correction_Bell(0.1, 'chebyshev')
     assert_allclose(Jc, 0.61868011359447)
-     
+
     Jc = baffle_correction_Bell(0.82, 'HEDH')
     assert_allclose(Jc, 1.1404)
-    
-    # Example in spreadsheet 02 - Heat Exchangers, tab Shell htc imperial, 
+
+    # Example in spreadsheet 02 - Heat Exchangers, tab Shell htc imperial,
     # Rules of Thumb for Chemical Engineers 5E
     Jc = baffle_correction_Bell(0.67292816689362900, method='HEDH')
     assert_allclose(1.034508280163413, Jc)
@@ -367,9 +367,9 @@ def test_baffle_correction_Bell_fit():
     # 125 us to create.
     spl = splrep(Bell_baffle_configuration_Fcs, Bell_baffle_configuration_Jcs, s=8e-5)
     [assert_allclose(i, j) for (i, j) in zip(spl, Bell_baffle_configuration_tck)]
-    
-    Bell_baffle_configuration_obj = UnivariateSpline(Bell_baffle_configuration_Fcs, 
-                                                     Bell_baffle_configuration_Jcs, 
+
+    Bell_baffle_configuration_obj = UnivariateSpline(Bell_baffle_configuration_Fcs,
+                                                     Bell_baffle_configuration_Jcs,
                                                      s=8e-5)
 #    import matplotlib.pyplot as plt
 #    plt.plot(Bell_baffle_configuration_Fcs, Bell_baffle_configuration_Jcs)
@@ -377,7 +377,7 @@ def test_baffle_correction_Bell_fit():
 #    plt.plot(pts, [Bell_baffle_configuration_obj(i) for i in pts])
 #    plt.plot(pts, [0.55 + 0.72*i for i in pts]) # Serth and HEDH 3.3.6g misses the tip
 #    plt.show()
-#                             
+#
 
 Bell_baffle_leakage_x = np.array([0.0, 1e-5, 1e-4, 1e-3, 0.0037779, 0.00885994, 0.012644, 0.0189629, 0.0213694, 0.0241428, 0.0289313, 0.0339093, 0.0376628,
     0.0425124, 0.0487152, 0.0523402, 0.0552542, 0.0614631, 0.0676658, 0.0719956, 0.0770838, 0.081302, 0.0885214, 0.0956308, 0.101638, 0.102145,
@@ -450,21 +450,21 @@ Bell_baffle_leakage_obj = RectBivariateSpline(Bell_baffle_leakage_x, Bell_baffle
 def test_baffle_leakage_Bell():
     Jl = baffle_leakage_Bell(1, 1, 4)
     assert_allclose(Jl, 0.5159239501898142, rtol=1e-3)
-    
+
     Jl = baffle_leakage_Bell(1, 1, 8)
     assert_allclose(Jl, 0.6820523047494141, rtol=1e-3)
 
     Jl = baffle_leakage_Bell(1, 3, 8)
     assert_allclose(Jl, 0.5906621282470395, rtol=1e-3)
-    
+
     # Silent clipping
     Jl = baffle_leakage_Bell(1, .0001, .00001)
     assert_allclose(Jl,  0.16072739052053492)
-    
+
     Jl = baffle_leakage_Bell(1, 3, 8, method='HEDH')
     assert_allclose(Jl, 0.5530236260777133)
-    
-    # Example in spreadsheet 02 - Heat Exchangers, tab Shell htc imperial, 
+
+    # Example in spreadsheet 02 - Heat Exchangers, tab Shell htc imperial,
     # Rules of Thumb for Chemical Engineers 5E
     # Has an error
     Jl = baffle_leakage_Bell(Ssb=5.5632369907320000000, Stb=4.7424109055909500, Sm=42.7842616174504, method='HEDH')
@@ -500,17 +500,17 @@ def test_bundle_bypassing_Bell():
     assert_allclose(Jb, 0.8469611760884599, rtol=1e-3)
     Jb = bundle_bypassing_Bell(0.5, 5, 25, laminar=True)
     assert_allclose(Jb, 0.8327442867825271, rtol=1e-3)
-    
+
     Jb = bundle_bypassing_Bell(0.99, 5, 25, laminar=True)
     assert_allclose(Jb, 0.7786963825447165, rtol=1e-3)
-    
+
     Jb = bundle_bypassing_Bell(0.5, 5, 25, method='HEDH')
     assert_allclose(Jb, 0.8483210970579099)
-    
+
     Jb = bundle_bypassing_Bell(0.5, 5, 25, method='HEDH', laminar=True)
     assert_allclose(0.8372305924553625, Jb)
-    
-    # Example in spreadsheet 02 - Heat Exchangers, tab Shell htc imperial, 
+
+    # Example in spreadsheet 02 - Heat Exchangers, tab Shell htc imperial,
     # Rules of Thumb for Chemical Engineers 5E
     Jb = bundle_bypassing_Bell(bypass_area_fraction=0.331946755407654, seal_strips=2, crossflow_rows=10.6516290726817, method='HEDH')
     assert_allclose(Jb, 0.8908547260332952)
@@ -663,7 +663,7 @@ Bell_bundle_bypass_z_low = np.array([Bell_bundle_bypass_z_low_0, Bell_bundle_byp
 Bell_bundle_bypass_low_obj = RectBivariateSpline(Bell_bundle_bypass_x, Bell_bundle_bypass_z_values, Bell_bundle_bypass_z_low, kx = 3, ky = 3, s = 0.0007)
 #for ys in Bell_bundle_bypass_z_low.T:
 #    plt.plot(Bell_bundle_bypass_x, ys)
-#    
+#
 #for z in Bell_bundle_bypass_z_values:
 #    xs = np.linspace(min(Bell_bundle_bypass_x), max(Bell_bundle_bypass_x), 1000)
 #    ys = np.clip(Bell_bundle_bypass_low_obj(xs, z), 0, 1)
@@ -672,10 +672,10 @@ Bell_bundle_bypass_low_obj = RectBivariateSpline(Bell_bundle_bypass_x, Bell_bund
 
 def test_bundle_bypassing_Bell():
     from ht.conv_tube_bank import Bell_bundle_bypass_high_spl, Bell_bundle_bypass_low_spl
-    
+
     low_spl = Bell_bundle_bypass_low_obj.tck + Bell_bundle_bypass_low_obj.degrees
     high_spl = Bell_bundle_bypass_high_obj.tck + Bell_bundle_bypass_high_obj.degrees
-    
+
     [assert_allclose(i, j) for i, j in zip(Bell_bundle_bypass_high_spl, high_spl)]
     [assert_allclose(i, j) for i, j in zip(Bell_bundle_bypass_low_spl, low_spl)]
 
@@ -687,5 +687,5 @@ def test_unequal_baffle_spacing_Bell():
 def test_laminar_correction_Bell():
     Jr = laminar_correction_Bell(30.0, 80)
     assert_allclose(Jr, 0.7267995454361379)
-    
+
     assert_allclose(0.4, laminar_correction_Bell(30, 80000))

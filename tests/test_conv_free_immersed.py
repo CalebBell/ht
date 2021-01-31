@@ -37,14 +37,14 @@ import pytest
 def test_Nu_free_vertical_plate():
     Nu = Nu_free_vertical_plate(0.69, 2.63E9)
     assert_close(147.16185223770603, Nu)
-    
+
     Nu = Nu_free_vertical_plate(0.69, 2.63E9, H=1.0, W=1.0)
     assert_close(147.16185223770603, Nu)
 
     methods = Nu_free_vertical_plate_methods(0.69, 2.63E9, H=1.0, W=1.0, check_ranges=True)
     assert methods[0] == 'Churchill'
     assert len(methods) == 1
-    
+
     with pytest.raises(Exception):
         Nu_free_vertical_plate(0.69, 2.63E9, Method='BADMETHOD')
 
@@ -53,34 +53,34 @@ def test_Nu_horizontal_plate_VDI():
     assert_allclose(Nu, 203.89681224927565)
     Nu = Nu_horizontal_plate_VDI(5.54, 3.21e8, buoyancy=False)
     assert_allclose(Nu, 39.16864971535617)
-    
+
     Nu = Nu_horizontal_plate_VDI(5.54, 3.21e3, buoyancy=True)
     assert_allclose(Nu, 5.810590581487902)
-    
+
 def test_Nu_horizontal_plate_Rohsenow():
     Nu = Nu_horizontal_plate_Rohsenow(5.54, 3.21e8, buoyancy=True)
     assert_allclose(Nu, 175.91054716322836)
-    
+
     Nu = Nu_horizontal_plate_Rohsenow(5.54, 3.21e8, buoyancy=False)
     assert_allclose(Nu, 35.95799244863986)
-    
-    
+
+
 def test_Nu_free_horizontal_plate():
     Nu = Nu_free_horizontal_plate(5.54, 3.21e8, L=1.0, W=1.0, buoyancy=True)
     assert_allclose(Nu, 203.89681224927565)
-    
+
     Nu = Nu_free_horizontal_plate(5.54, 3.21e8, buoyancy=True, Method='McAdams')
     assert_allclose(Nu, 181.73121274384457)
-    
+
     assert Nu_free_horizontal_plate_methods(5.54, 3.21e8, buoyancy=True, L=1.0, W=1.0, check_ranges=True) == ['VDI', 'McAdams', 'Rohsenow']
-    
+
 def test_Nu_horizontal_plate_McAdams():
     Nu = Nu_horizontal_plate_McAdams(5.54, 3.21e8, buoyancy=True)
     assert_allclose(Nu, 181.73121274384457)
-    
+
     Nu = Nu_horizontal_plate_McAdams(5.54, 3.21e8, buoyancy=False)
     assert_allclose(Nu, 55.44564799362829)
-    
+
     Nu = Nu_horizontal_plate_McAdams(.01, 3.21e8, buoyancy=True)
     assert_allclose(Nu, 22.857041558492334)
     Nu = Nu_horizontal_plate_McAdams(.01, 3.21e8, buoyancy=False)
@@ -125,26 +125,26 @@ def test_Nu_vertical_cylinder_Eigenson_Morgan():
 def test_Nu_vertical_cylinder_Touloukian_Morgan():
     Nus = [Nu_vertical_cylinder_Touloukian_Morgan(.7, i) for i in (5.7E10, 5.8E10)]
     assert_allclose(Nus, [324.47395664562873, 223.80067132541936])
-    
+
     assert_close(249.72879961097854, Nu_vertical_cylinder_Touloukian_Morgan(.7, 2E10, False))
 
 
 def test_Nu_vertical_cylinder_McAdams_Weiss_Saunders():
     Nus = [Nu_vertical_cylinder_McAdams_Weiss_Saunders(.7, i) for i in [1.42E9,  1.43E9]]
-    assert_allclose(Nus, [104.76075212013542, 130.04331889690818])   
-    
+    assert_allclose(Nus, [104.76075212013542, 130.04331889690818])
+
     Nu = Nu_vertical_cylinder_McAdams_Weiss_Saunders(.7, 2E10, False)
     assert_close(Nu, 202.9476470667732)
-    
-    
+
+
 def test_Nu_vertical_cylinder_Kreith_Eckert():
     Nus = [Nu_vertical_cylinder_Kreith_Eckert(.7, i) for i in [1.42E9, 1.43E9]]
     assert_allclose(Nus, [98.54613123165282, 83.63593679160734])
-    
+
     Nu = Nu_vertical_cylinder_Kreith_Eckert(.7, 2E10, False)
     assert_close(Nu, 190.90837986789683)
-    
-    
+
+
 def test_Nu_vertical_cylinder_Hanesian_Kalish_Morgan():
     Nu = Nu_vertical_cylinder_Hanesian_Kalish_Morgan(.7, 1E7)
     assert_allclose(Nu, 18.014150492696604)
@@ -163,16 +163,16 @@ def test_Nu_vertical_cylinder_Popiel_Churchill():
 def test_Nu_vertical_cylinder():
     Nu = Nu_vertical_cylinder(0.72, 1E7)
     assert_allclose(Nu, 30.562236756513943)
-    
+
     Nu = Nu_vertical_cylinder(0.72, 1E7, L=1., D=.1)
     assert_allclose(Nu, 36.82833881084525)
-    
+
     with pytest.raises(Exception):
         Nu_vertical_cylinder(0.72, 1E7, Method='BADMETHOD')
-    
+
     l = Nu_vertical_cylinder_methods(0.72, 1E7, L=1.0, D=.1)
     assert len(l) == 11
-    
+
 
 
 def test_Nu_horizontal_cylinder_Churchill_Chu():
@@ -183,25 +183,25 @@ def test_Nu_horizontal_cylinder_Churchill_Chu():
 def test_Nu_horizontal_cylinder_Kuehn_Goldstein():
     Nu = Nu_horizontal_cylinder_Kuehn_Goldstein(0.69, 2.63E9)
     assert_allclose(Nu, 122.99323525628186)
-    
-    
+
+
 def test_Nu_horizontal_cylinder_Morgan():
     Nus = [Nu_horizontal_cylinder_Morgan(.9, i) for i in (1E-2, 1E2, 1E4, 1E7, 1E10)]
     Nus_expect = [0.5136293570857408, 1.9853087795801612, 4.707783879945983, 26.290682760247975, 258.0315247153301]
     assert_allclose(Nus, Nus_expect)
-    
-    
+
+
 def test_Nu_horizontal_cylinder():
     Nu = Nu_horizontal_cylinder(Pr=0.72, Gr=1E7)
     assert_allclose(Nu, 24.864192615468973)
-    
+
     l = Nu_horizontal_cylinder_methods(0.72, 1E7)
     assert len(l) == 3
-    
+
     with pytest.raises(Exception):
         Nu_horizontal_cylinder(Pr=0.72, Gr=1E7, Method='BADMETHOD')
 
-    
+
 
 def test_Nu_coil_Xin_Ebadian():
     Nu = Nu_coil_Xin_Ebadian(0.7, 2E4, horizontal=False)

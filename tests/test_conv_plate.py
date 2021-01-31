@@ -29,7 +29,7 @@ import pytest
 
 
 
- 
+
 def test_Nu_plate_Kumar():
     from fluids.friction import Kumar_beta_list
 
@@ -42,10 +42,10 @@ def test_Nu_plate_Kumar():
 
     Nu = Nu_plate_Kumar(2000.0, 0.7, 30.0)
     assert_allclose(Nu, 47.757818892853955)
-    
+
     Nu = Nu_plate_Kumar(Re=2000.0, Pr=0.7, chevron_angle=30.0, mu=1E-3, mu_wall=8E-4)
     assert_allclose(Nu, 49.604284135097544)
-    
+
     all_ans_expected = [[[1.3741604132237337, 1.5167183720237427], [1.3741604132237337, 1.4917469901578877]],
      [[1.3741604132237337, 1.4917469901578877, 5.550501072445418, 5.686809480248301],
       [1.1640875871334992, 1.2445337163511674, 3.9101709259523125, 3.9566649343960067]],
@@ -55,7 +55,7 @@ def test_Nu_plate_Kumar():
       [1.3046449654318206, 1.360776035122095, 5.9841120030888915, 5.999181017513207]],
      [[1.3046449654318206, 1.360776035122095, 6.696608679807539, 6.712512276614001],
       [1.3046449654318206, 1.360776035122095, 6.696608679807539, 6.712512276614001]]]
-     
+
     all_ans = []
     for i, beta_main in enumerate(Kumar_beta_list):
         beta_ans = []
@@ -67,24 +67,24 @@ def test_Nu_plate_Kumar():
                     Re_ans.append(ans)
             beta_ans.append(Re_ans)
         all_ans.append(beta_ans)
-        
+
         for row1, row2 in zip(all_ans_expected, all_ans):
             assert_allclose(row1, row2)
-    
+
 
 def test_Nu_plate_Martin():
     Nu = Nu_plate_Martin(2000, .7, 1.18)
     assert_allclose(Nu, 43.5794551998615)
-    
+
     Nu = Nu_plate_Martin(2000.0, .7, 1.18, variant='VDI')
     assert_allclose(Nu, 46.42246468447807)
-    
-    
+
+
 def test_Nu_plate_Muley_Manglik():
     Nu = Nu_plate_Muley_Manglik(Re=2000.0, Pr=.7, chevron_angle=45.0, plate_enlargement_factor=1.18)
     assert_allclose(Nu, 36.49087100602062)
-    
-    
+
+
 def test_Nu_plate_Khan_Khan():
     # The author presented three correlations; all of them are well matched by
     # the fourth correlation. beta max is not the largest angle in *your*
@@ -93,5 +93,5 @@ def test_Nu_plate_Khan_Khan():
     assert_allclose(Nu,38.40883639103741 )
 
 
-    
-    
+
+

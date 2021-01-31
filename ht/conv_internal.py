@@ -36,7 +36,7 @@ __all__ = ['laminar_T_const', 'laminar_Q_const',
 'Nu_conv_internal', 'Nu_conv_internal_methods',
 
 'Morimoto_Hotta', 'helical_turbulent_Nu_Mori_Nakayama',
-'helical_turbulent_Nu_Schmidt', 'helical_turbulent_Nu_Xin_Ebadian', 
+'helical_turbulent_Nu_Schmidt', 'helical_turbulent_Nu_Xin_Ebadian',
 'Nu_laminar_rectangular_Shan_London',
 'conv_tube_methods', 'conv_tube_laminar_methods', 'conv_tube_turbulent_methods']
 
@@ -764,7 +764,7 @@ def turbulent_Sandall(Re, Pr, fd):
        (August 1, 1980): 443–47. doi:10.1002/cjce.5450580404.
     '''
     C = 2.78*log((fd/8.)**0.5*Re/45.)
-    return (fd/8.)**0.5*Re*Pr/(12.48*Pr**(2/3.) - 7.853*Pr**(1/3.) 
+    return (fd/8.)**0.5*Re*Pr/(12.48*Pr**(2/3.) - 7.853*Pr**(1/3.)
                                + 3.613*log(Pr) + 5.8 + C)
 
 
@@ -1295,8 +1295,8 @@ def turbulent_Bhatti_Shah(Re, Pr, fd, eD):
 conv_tube_laminar_methods = {
     'Laminar - constant T': (laminar_T_const, ()),
     'Laminar - constant Q': (laminar_Q_const, ()),
-    'Baehr-Stephan laminar thermal/velocity entry': (laminar_entry_thermal_Hausen, ('Re', 'Pr', 'L', 'Di')), 
-     'Hausen laminar thermal entry': (laminar_entry_Seider_Tate, ('Re', 'Pr', 'L', 'Di')), 
+    'Baehr-Stephan laminar thermal/velocity entry': (laminar_entry_thermal_Hausen, ('Re', 'Pr', 'L', 'Di')),
+     'Hausen laminar thermal entry': (laminar_entry_Seider_Tate, ('Re', 'Pr', 'L', 'Di')),
     'Seider-Tate laminar thermal entry': (laminar_entry_Baehr_Stephan, ('Re', 'Pr', 'L', 'Di')),
 }
 
@@ -1313,7 +1313,7 @@ conv_tube_turbulent_methods = {
     'Gowen-Smith': (turbulent_Gowen_Smith, ('Re', 'Pr', 'fd')),
     'Kawase-Ulbrecht': (turbulent_Kawase_Ulbrecht, ('Re', 'Pr', 'fd')),
     'Kawase-De': (turbulent_Kawase_De, ('Re', 'Pr', 'fd')),
-    
+
     'Dittus-Boelter': (turbulent_Dittus_Boelter, ('Re', 'Pr')),
     'Sieder-Tate': (turbulent_Sieder_Tate, ('Re', 'Pr')),
     'Drexel-McAdams': (turbulent_Drexel_McAdams, ('Re', 'Pr')),
@@ -1321,7 +1321,7 @@ conv_tube_turbulent_methods = {
     'ESDU': (turbulent_ESDU, ('Re', 'Pr')),
     'Gnielinski smooth low Pr': (turbulent_Gnielinski_smooth_1, ('Re', 'Pr')),
     'Gnielinski smooth high Pr': (turbulent_Gnielinski_smooth_2, ('Re', 'Pr')),
-    
+
     'Hausen': (turbulent_entry_Hausen, ('Re', 'Pr', 'Di', 'x')),
     'Bhatti-Shah': (turbulent_Bhatti_Shah, ('Re', 'Pr', 'fd', 'eD')),
     'Dipprey-Sabersky': (turbulent_Dipprey_Sabersky, ('Re', 'Pr', 'fd', 'eD')),
@@ -1334,9 +1334,9 @@ conv_tube_methods_list = list(conv_tube_methods.keys())
 
 def Nu_conv_internal_methods(Re, Pr, eD=0, Di=None, x=None, fd=None,
                              check_ranges=True):
-    r'''This function returns a list of correlation names for the calculation 
-    of heat transfer coefficient for internal convection inside a circular pipe. 
-    
+    r'''This function returns a list of correlation names for the calculation
+    of heat transfer coefficient for internal convection inside a circular pipe.
+
     Parameters
     ----------
     Re : float
@@ -1363,12 +1363,12 @@ def Nu_conv_internal_methods(Re, Pr, eD=0, Di=None, x=None, fd=None,
     Examples
     --------
     Turbulent example
-    
+
     >>> Nu_conv_internal_methods(Re=1E5, Pr=.7)[0]
     'Churchill-Zajic'
 
     Entry length - laminar example
-    
+
     >>> Nu_conv_internal_methods(Re=1E2, Pr=.7, x=.01, Di=.1)[0]
     'Baehr-Stephan laminar thermal/velocity entry'
     '''
@@ -1416,18 +1416,18 @@ def Nu_conv_internal_methods(Re, Pr, eD=0, Di=None, x=None, fd=None,
 
 def Nu_conv_internal(Re, Pr, eD=0.0, Di=None, x=None, fd=None, Method=None):
     r'''This function calculates the heat transfer coefficient for internal
-    convection inside a circular pipe. 
-    
-    Requires at a minimum a flow's Reynolds and Prandtl numbers `Re` and `Pr`. 
-    Relative roughness `eD` can be specified to include the enhancement of heat 
-    transfer from the added turbulence. 
-    
+    convection inside a circular pipe.
+
+    Requires at a minimum a flow's Reynolds and Prandtl numbers `Re` and `Pr`.
+    Relative roughness `eD` can be specified to include the enhancement of heat
+    transfer from the added turbulence.
+
     For laminar flow, thermally and hydraulically developing flow is supported
     with the pipe diameter `Di` and distance `x` is provided.
-    
-    If no correlation's name is provided as `Method`, the most accurate 
+
+    If no correlation's name is provided as `Method`, the most accurate
     applicable correlation is selected.
-    
+
     * If laminar, `x` and `Di` provided:  'Baehr-Stephan laminar thermal/velocity entry'
     * Otherwise if laminar, no entry information provided: 'Laminar - constant T' (Nu = 3.66)
     * If turbulent and `Pr` < 0.03: 'Martinelli'
@@ -1463,12 +1463,12 @@ def Nu_conv_internal(Re, Pr, eD=0.0, Di=None, x=None, fd=None, Method=None):
     Examples
     --------
     Turbulent example
-    
+
     >>> Nu_conv_internal(Re=1E5, Pr=.7)
     183.71057902604906
 
     Entry length - laminar example
-    
+
     >>> Nu_conv_internal(Re=1E2, Pr=.7, x=.01, Di=.1)
     14.91799128769779
     '''
@@ -1476,7 +1476,7 @@ def Nu_conv_internal(Re, Pr, eD=0.0, Di=None, x=None, fd=None, Method=None):
         Method2 = Nu_conv_internal_methods(Re=Re, Pr=Pr, eD=eD, Di=Di, x=x, fd=fd, check_ranges=True)[0]
     else:
         Method2 = Method
-        
+
     L = x
     if eD is not None and fd is None:
         fd = Clamond(Re=Re, eD=eD)
@@ -1575,16 +1575,16 @@ def Morimoto_Hotta(Re, Pr, Dh, Rm):
     r'''Calculates Nusselt number for flow inside a spiral heat exchanger of
     spiral mean diameter `Rm` and hydraulic diameter `Dh` according to [1]_,
     also as shown in [2]_ and [3]_.
-    
+
     .. math::
         Nu = 0.0239\left(1 + 5.54\frac{D_h}{R_m}\right)Re^{0.806}Pr^{0.268}
-        
+
     .. math::
         D_h = \frac{2HS}{H+S}
-        
+
     .. math::
         R_m = \frac{R_{min} + R_{max}}{2}
-    
+
 
     Parameters
     ----------
@@ -1613,18 +1613,18 @@ def Morimoto_Hotta(Re, Pr, Dh, Rm):
 
     References
     ----------
-    .. [1] Morimoto, Eiji, and Kazuyuki Hotta. "Study of Geometric Structure 
-       and Heat Transfer Characteristics of Spiral Plate Heat Exchanger." 
-       Transactions of the Japan Society of Mechanical Engineers Series B 52, 
+    .. [1] Morimoto, Eiji, and Kazuyuki Hotta. "Study of Geometric Structure
+       and Heat Transfer Characteristics of Spiral Plate Heat Exchanger."
+       Transactions of the Japan Society of Mechanical Engineers Series B 52,
        no. 474 (1986): 926-33. doi:10.1299/kikaib.52.926.
-    .. [2] Bidabadi, M. and Sadaghiani, A. and Azad, A. "Spiral heat exchanger 
-       optimization using genetic algorithm." Transaction on Mechanical 
+    .. [2] Bidabadi, M. and Sadaghiani, A. and Azad, A. "Spiral heat exchanger
+       optimization using genetic algorithm." Transaction on Mechanical
        Engineering, International Journal of Science and Technology,
-       vol. 20, no. 5 (2013): 1445-1454. 
+       vol. 20, no. 5 (2013): 1445-1454.
        http://www.scientiairanica.com/en/ManuscriptDetail?mid=47.
-    .. [3] Turgut, Oğuz Emrah, and Mustafa Turhan Çoban. "Thermal Design of 
-       Spiral Heat Exchangers and Heat Pipes through Global Best Algorithm." 
-       Heat and Mass Transfer, July 7, 2016, 1-18. 
+    .. [3] Turgut, Oğuz Emrah, and Mustafa Turhan Çoban. "Thermal Design of
+       Spiral Heat Exchangers and Heat Pipes through Global Best Algorithm."
+       Heat and Mass Transfer, July 7, 2016, 1-18.
        doi:10.1007/s00231-016-1861-y.
     '''
     return 0.0239*(1. + 5.54*Dh/Rm)*Re**0.806*Pr**0.268
@@ -1635,24 +1635,24 @@ def Morimoto_Hotta(Re, Pr, Dh, Rm):
 
 
 def helical_turbulent_Nu_Mori_Nakayama(Re, Pr, Di, Dc):
-    r'''Calculates Nusselt number for a fluid flowing inside a curved 
-    pipe such as a helical coil under turbulent conditions, using the method of 
+    r'''Calculates Nusselt number for a fluid flowing inside a curved
+    pipe such as a helical coil under turbulent conditions, using the method of
     Mori and Nakayama [1]_, also shown in [2]_ and [3]_.
-            
+
     For :math:`Pr < 1`:
-        
+
     .. math::
         Nu = \frac{Pr}{26.2(Pr^{2/3}-0.074)}Re^{0.8}\left(\frac{D_i}{D_c}
         \right)^{0.1}\left[1 + \frac{0.098}{\left[Re\left(\frac{D_i}{D_c}
         \right)^2\right]^{0.2}}\right]
-            
+
     For :math:`Pr \ge 1`:
-        
+
     .. math::
         Nu = \frac{Pr^{0.4}}{41}Re^{5/6}\left(\frac{D_i}{D_c}\right)^{1/12}
         \left[1 + \frac{0.061}{\left[Re\left(\frac{D_i}{D_c}\right)^{2.5}
         \right]^{1/6}}\right]
-        
+
     Parameters
     ----------
     Re : float
@@ -1671,10 +1671,10 @@ def helical_turbulent_Nu_Mori_Nakayama(Re, Pr, Di, Dc):
         Nusselt number with respect to `Di`, [-]
 
     Notes
-    -----    
+    -----
     At very low curvatures, the predicted heat transfer coefficient
     grows unbounded.
-    
+
     Applicable for :math:`Re\left(\frac{D_i}{D_c}\right)^2 > 0.1`
 
     Examples
@@ -1684,17 +1684,17 @@ def helical_turbulent_Nu_Mori_Nakayama(Re, Pr, Di, Dc):
 
     References
     ----------
-    .. [1] Mori, Yasuo, and Wataru Nakayama. "Study on Forced Convective Heat 
-       Transfer in Curved Pipes." International Journal of Heat and Mass 
-       Transfer 10, no. 5 (May 1, 1967): 681-95. 
-       doi:10.1016/0017-9310(67)90113-5. 
-    .. [2] El-Genk, Mohamed S., and Timothy M. Schriener. "A Review and 
-       Correlations for Convection Heat Transfer and Pressure Losses in 
+    .. [1] Mori, Yasuo, and Wataru Nakayama. "Study on Forced Convective Heat
+       Transfer in Curved Pipes." International Journal of Heat and Mass
+       Transfer 10, no. 5 (May 1, 1967): 681-95.
+       doi:10.1016/0017-9310(67)90113-5.
+    .. [2] El-Genk, Mohamed S., and Timothy M. Schriener. "A Review and
+       Correlations for Convection Heat Transfer and Pressure Losses in
        Toroidal and Helically Coiled Tubes." Heat Transfer Engineering 0, no. 0
        (June 7, 2016): 1-28. doi:10.1080/01457632.2016.1194693.
-    .. [3] Hardik, B. K., P. K. Baburajan, and S. V. Prabhu. "Local Heat 
-       Transfer Coefficient in Helical Coils with Single Phase Flow." 
-       International Journal of Heat and Mass Transfer 89 (October 2015): 
+    .. [3] Hardik, B. K., P. K. Baburajan, and S. V. Prabhu. "Local Heat
+       Transfer Coefficient in Helical Coils with Single Phase Flow."
+       International Journal of Heat and Mass Transfer 89 (October 2015):
        522-38. doi:10.1016/j.ijheatmasstransfer.2015.05.069.
     '''
     D_ratio = Di/Dc
@@ -1708,23 +1708,23 @@ def helical_turbulent_Nu_Mori_Nakayama(Re, Pr, Di, Dc):
 
 
 def helical_turbulent_Nu_Schmidt(Re, Pr, Di, Dc):
-    r'''Calculates Nusselt number for a fluid flowing inside a curved 
-    pipe such as a helical coil under turbulent conditions, using the method of 
+    r'''Calculates Nusselt number for a fluid flowing inside a curved
+    pipe such as a helical coil under turbulent conditions, using the method of
     Schmidt [1]_, also shown in [2]_, [3]_, and [4]_.
-            
+
     For :math:`Re_{crit} < Re < 2.2\times 10 ^4`:
-        
+
     .. math::
         Nu = 0.023\left[1 + 14.8\left(1 + \frac{D_i}{D_c}\right)\left(
         \frac{D_i}{D_c}\right)^{1/3}\right]Re^{0.8-0.22\left(\frac{D_i}{D_c}
         \right)^{0.1}}Pr^{1/3}
-            
+
     For :math:`2.2\times 10^4 < Re < 1.5\times 10^5`:
-        
+
     .. math::
         Nu = 0.023\left[1 + 3.6\left(1 - \frac{D_i}{D_c}\right)\left(\frac{D_i}
         {D_c}\right)^{0.8}\right]Re^{0.8}Pr^{1/3}
-        
+
     Parameters
     ----------
     Re : float
@@ -1741,7 +1741,7 @@ def helical_turbulent_Nu_Schmidt(Re, Pr, Di, Dc):
     -------
     Nu : float
         Nusselt number with respect to `Di`, [-]
-        
+
     Notes
     -----
     For very low curvatures, reasonable results are returned by both cases
@@ -1754,16 +1754,16 @@ def helical_turbulent_Nu_Schmidt(Re, Pr, Di, Dc):
 
     References
     ----------
-    .. [1] Schmidt, Eckehard F. "Wärmeübergang Und Druckverlust in 
-       Rohrschlangen." Chemie Ingenieur Technik 39, no. 13 (July 10, 1967): 
-       781-89. doi:10.1002/cite.330391302. 
-    .. [2] El-Genk, Mohamed S., and Timothy M. Schriener. "A Review and 
-       Correlations for Convection Heat Transfer and Pressure Losses in 
+    .. [1] Schmidt, Eckehard F. "Wärmeübergang Und Druckverlust in
+       Rohrschlangen." Chemie Ingenieur Technik 39, no. 13 (July 10, 1967):
+       781-89. doi:10.1002/cite.330391302.
+    .. [2] El-Genk, Mohamed S., and Timothy M. Schriener. "A Review and
+       Correlations for Convection Heat Transfer and Pressure Losses in
        Toroidal and Helically Coiled Tubes." Heat Transfer Engineering 0, no. 0
        (June 7, 2016): 1-28. doi:10.1080/01457632.2016.1194693.
-    .. [3] Hardik, B. K., P. K. Baburajan, and S. V. Prabhu. "Local Heat 
-       Transfer Coefficient in Helical Coils with Single Phase Flow." 
-       International Journal of Heat and Mass Transfer 89 (October 2015): 
+    .. [3] Hardik, B. K., P. K. Baburajan, and S. V. Prabhu. "Local Heat
+       Transfer Coefficient in Helical Coils with Single Phase Flow."
+       International Journal of Heat and Mass Transfer 89 (October 2015):
        522-38. doi:10.1016/j.ijheatmasstransfer.2015.05.069.
     .. [4] Rohsenow, Warren and James Hartnett and Young Cho. Handbook of Heat
        Transfer, 3E. New York: McGraw-Hill, 1998.
@@ -1777,16 +1777,16 @@ def helical_turbulent_Nu_Schmidt(Re, Pr, Di, Dc):
 
 
 def helical_turbulent_Nu_Xin_Ebadian(Re, Pr, Di, Dc):
-    r'''Calculates Nusselt number for a fluid flowing inside a curved 
-    pipe such as a helical coil under turbulent conditions, using the method of 
+    r'''Calculates Nusselt number for a fluid flowing inside a curved
+    pipe such as a helical coil under turbulent conditions, using the method of
     Xin and Ebadian [1]_, also shown in [2]_ and [3]_.
-            
+
     For :math:`Re_{crit} < Re < 1\times 10^5`:
-        
+
     .. math::
         Nu = 0.00619Re^{0.92} Pr^{0.4}\left[1 + 3.455\left(\frac{D_i}{D_c}
         \right)\right]
-        
+
     Parameters
     ----------
     Re : float
@@ -1803,12 +1803,12 @@ def helical_turbulent_Nu_Xin_Ebadian(Re, Pr, Di, Dc):
     -------
     Nu : float
         Nusselt number with respect to `Di`, [-]
-        
+
     Notes
     -----
     For very low curvatures, reasonable results are returned.
-    
-    The correlation was developed with data in the range of 
+
+    The correlation was developed with data in the range of
     :math:`0.7 < Pr < 5; 0.0267 < \frac{D_i}{D_c} < 0.0884`.
 
     Examples
@@ -1818,17 +1818,17 @@ def helical_turbulent_Nu_Xin_Ebadian(Re, Pr, Di, Dc):
 
     References
     ----------
-    .. [1] Xin, R. C., and M. A. Ebadian. "The Effects of Prandtl Numbers on 
-       Local and Average Convective Heat Transfer Characteristics in Helical 
-       Pipes." Journal of Heat Transfer 119, no. 3 (August 1, 1997): 467-73. 
+    .. [1] Xin, R. C., and M. A. Ebadian. "The Effects of Prandtl Numbers on
+       Local and Average Convective Heat Transfer Characteristics in Helical
+       Pipes." Journal of Heat Transfer 119, no. 3 (August 1, 1997): 467-73.
        doi:10.1115/1.2824120.
-    .. [2] El-Genk, Mohamed S., and Timothy M. Schriener. "A Review and 
-       Correlations for Convection Heat Transfer and Pressure Losses in 
+    .. [2] El-Genk, Mohamed S., and Timothy M. Schriener. "A Review and
+       Correlations for Convection Heat Transfer and Pressure Losses in
        Toroidal and Helically Coiled Tubes." Heat Transfer Engineering 0, no. 0
        (June 7, 2016): 1-28. doi:10.1080/01457632.2016.1194693.
-    .. [3] Hardik, B. K., P. K. Baburajan, and S. V. Prabhu. "Local Heat 
-       Transfer Coefficient in Helical Coils with Single Phase Flow." 
-       International Journal of Heat and Mass Transfer 89 (October 2015): 
+    .. [3] Hardik, B. K., P. K. Baburajan, and S. V. Prabhu. "Local Heat
+       Transfer Coefficient in Helical Coils with Single Phase Flow."
+       International Journal of Heat and Mass Transfer 89 (October 2015):
        522-38. doi:10.1016/j.ijheatmasstransfer.2015.05.069.
     '''
     return 0.00619*Re**0.92*Pr**0.4*(1. + 3.455*Di/Dc)
@@ -1839,19 +1839,19 @@ def helical_turbulent_Nu_Xin_Ebadian(Re, Pr, Di, Dc):
 def Nu_laminar_rectangular_Shan_London(a_r):
     r'''Calculates internal convection Nusselt number for laminar flows
     in a rectangular pipe of varying aspect ratio, as developed in [1]_.
-    
+
     This model is derived assuming a constant wall heat flux from all sides.
     This is entirely theoretically derived and reproduced experimentally.
 
     .. math::
         Nu_{lam} = 8.235\left(1 - 2.0421\alpha + 3.0853\alpha^2
         - 2.4765\alpha^3 + 1.0578\alpha^4 - 0.1861\alpha^5\right)
-    
+
     Parameters
     ----------
     a_r : float
         The aspect ratio of the channel, from 0 to 1 [-]
-        
+
     Returns
     -------
     Nu : float
@@ -1860,26 +1860,26 @@ def Nu_laminar_rectangular_Shan_London(a_r):
     Notes
     -----
     At an aspect ratio of 1 (square channel), the Nusselt number converges to
-    3.610224. The authors of [1]_ also published [2]_, which tabulates in 
-    their table 42 some less precise results that are used to check this 
+    3.610224. The authors of [1]_ also published [2]_, which tabulates in
+    their table 42 some less precise results that are used to check this
     function.
-    
+
     Examples
     --------
     >>> Nu_laminar_rectangular_Shan_London(.7)
     3.751762675455
-    
+
     References
     ----------
-    .. [1] Shah, R. K, and Alexander Louis London. Supplement 1: Laminar Flow 
-       Forced Convection in Ducts: A Source Book for Compact Heat Exchanger 
+    .. [1] Shah, R. K, and Alexander Louis London. Supplement 1: Laminar Flow
+       Forced Convection in Ducts: A Source Book for Compact Heat Exchanger
        Analytical Data. New York: Academic Press, 1978.
-    .. [2] Shah, Ramesh K., and A. L. London. "Laminar Flow Forced Convection 
+    .. [2] Shah, Ramesh K., and A. L. London. "Laminar Flow Forced Convection
        Heat Transfer and Flow Friction in Straight and Curved Ducts - A Summary
-       of Analytical Solutions." STANFORD UNIV CA DEPT OF MECHANICAL 
-       ENGINEERING, STANFORD UNIV CA DEPT OF MECHANICAL ENGINEERING, November 
+       of Analytical Solutions." STANFORD UNIV CA DEPT OF MECHANICAL
+       ENGINEERING, STANFORD UNIV CA DEPT OF MECHANICAL ENGINEERING, November
        1971. http://www.dtic.mil/docs/citations/AD0736260.
     '''
-    return 8.235*(1 - 2.0421*a_r + 3.0853*a_r**2 - 2.4765*a_r**3 
+    return 8.235*(1 - 2.0421*a_r + 3.0853*a_r**2 - 2.4765*a_r**3
                   + 1.0578*a_r**4 - 0.1861*a_r**5)
 

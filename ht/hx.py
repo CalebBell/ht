@@ -32,21 +32,21 @@ from fluids.numerics import numpy as np
 
 __all__ = ['effectiveness_from_NTU', 'NTU_from_effectiveness', 'calc_Cmin',
 'calc_Cmax', 'calc_Cr', 'Pp', 'Pc',
-'NTU_from_UA', 'UA_from_NTU', 'effectiveness_NTU_method', 'F_LMTD_Fakheri', 
+'NTU_from_UA', 'UA_from_NTU', 'effectiveness_NTU_method', 'F_LMTD_Fakheri',
 'temperature_effectiveness_basic', 'temperature_effectiveness_TEMA_J',
 'temperature_effectiveness_TEMA_H', 'temperature_effectiveness_TEMA_G',
-'temperature_effectiveness_TEMA_E', 'temperature_effectiveness_plate', 
+'temperature_effectiveness_TEMA_E', 'temperature_effectiveness_plate',
 'temperature_effectiveness_air_cooler',
 'P_NTU_method',  'NTU_from_P_basic',
 'NTU_from_P_J', 'NTU_from_P_G', 'NTU_from_P_E', 'NTU_from_P_H',
 'NTU_from_P_plate', 'check_tubing_TEMA', 'get_tube_TEMA',
 'DBundle_min', 'shell_clearance', 'baffle_thickness', 'D_baffle_holes',
 'L_unsupported_max', 'Ntubes', 'size_bundle_from_tubecount',
-'Ntubes_Perrys', 'Ntubes_VDI', 'Ntubes_Phadkeb', 
+'Ntubes_Perrys', 'Ntubes_VDI', 'Ntubes_Phadkeb',
 'DBundle_for_Ntubes_Phadkeb',
-'Ntubes_HEDH', 'DBundle_for_Ntubes_HEDH',  'D_for_Ntubes_VDI', 
-'TEMA_heads', 'TEMA_shells', 
-'TEMA_rears', 'TEMA_services', 'baffle_types', 'triangular_Ns', 
+'Ntubes_HEDH', 'DBundle_for_Ntubes_HEDH',  'D_for_Ntubes_VDI',
+'TEMA_heads', 'TEMA_shells',
+'TEMA_rears', 'TEMA_services', 'baffle_types', 'triangular_Ns',
 'triangular_C1s', 'square_Ns', 'square_C1s', 'R_value']
 
 R_value = foot*foot*degree_Fahrenheit*hour/Btu
@@ -60,7 +60,7 @@ try:
         __numba_additional_funcs__.append('factorial')
         def factorial(n):
             return gamma(n + 1.0)
-        
+
 except:
     pass
 
@@ -70,10 +70,10 @@ def crossflow_effectiveness_to_int(v, NTU, t0):
     return (1. + NTU - x0)*exp(-x0)*v*float(iv(0.0, v))
 
 def effectiveness_from_NTU(NTU, Cr, subtype='counterflow'):
-    r'''Returns the effectiveness of a heat exchanger at a specified heat 
+    r'''Returns the effectiveness of a heat exchanger at a specified heat
     capacity rate, number of transfer units, and configuration. The following
     configurations are supported:
-        
+
         * Counterflow (ex. double-pipe)
         * Parallel (ex. double pipe inefficient configuration)
         * Shell and tube exchangers with even numbers of tube passes,
@@ -82,12 +82,12 @@ def effectiveness_from_NTU(NTU, Cr, subtype='counterflow'):
         * Crossflow, single pass, Cmax mixed, Cmin unmixed
         * Crossflow, single pass, Cmin mixed, Cmax unmixed
         * Boiler or condenser
-    
+
     These situations are normally not those which occur in real heat exchangers,
-    but are useful for academic purposes. More complicated expressions are 
+    but are useful for academic purposes. More complicated expressions are
     available for other methods. These equations are confirmed in [1]_,
     [2]_, and [3]_.
-    
+
     For parallel flow heat exchangers:
 
     .. math::
@@ -101,15 +101,15 @@ def effectiveness_from_NTU(NTU, Cr, subtype='counterflow'):
     .. math::
         \epsilon = \frac{NTU}{1+NTU},\; C_r = 1
 
-    For TEMA E shell-and-tube heat exchangers with one shell pass, 2n tube 
+    For TEMA E shell-and-tube heat exchangers with one shell pass, 2n tube
     passes:
 
     .. math::
         \epsilon_1 = 2\left\{1 + C_r + \sqrt{1+C_r^2}\times\frac{1+\exp
         [-(NTU)_1\sqrt{1+C_r^2}]}{1-\exp[-(NTU)_1\sqrt{1+C_r^2}]}\right\}^{-1}
 
-    For TEMA E shell-and-tube heat exchangers with more than one shell pass, 2n  
-    tube passes (this model assumes each exchanger has an equal share of the 
+    For TEMA E shell-and-tube heat exchangers with more than one shell pass, 2n
+    tube passes (this model assumes each exchanger has an equal share of the
     overall NTU or said more plainly, the same UA):
 
     .. math::
@@ -123,12 +123,12 @@ def effectiveness_from_NTU(NTU, Cr, subtype='counterflow'):
     .. math::
         \epsilon = 1 - \exp\left[\left(\frac{1}{C_r}\right)
         (NTU)^{0.22}\left\{\exp\left[C_r(NTU)^{0.78}\right]-1\right\}\right]
-        
+
     The exact solution for crossflow (fluids unmixed) uses SciPy's quad
     to perform an integral (there is no analytical integral solution available).
     :math:`I_0(v)` is the modified Bessel function of the first kind. This formula
     was developed in [4]_.
-    
+
     .. math::
         \epsilon = \frac{1}{C_r} - \frac{\exp(-C_r \cdot NTU)}{2(C_r NTU)^2}
         \int_0^{2 NTU\sqrt{C_r}} \left(1 + NTU - \frac{v^2}{4C_r NTU}\right)
@@ -145,7 +145,7 @@ def effectiveness_from_NTU(NTU, Cr, subtype='counterflow'):
         \epsilon = 1 - \exp(-C_r^{-1}\{1 - \exp[-C_r(NTU)]\})
 
     For cases where `Cr` = 0, as in an exchanger with latent heat exchange,
-    flow arrangement does not matter: 
+    flow arrangement does not matter:
 
     .. math::
         \epsilon = 1 - \exp(-NTU)
@@ -159,8 +159,8 @@ def effectiveness_from_NTU(NTU, Cr, subtype='counterflow'):
         fluid, [-]
     subtype : str, optional
         The subtype of exchanger; one of 'counterflow', 'parallel', 'crossflow'
-        'crossflow approximate', 'crossflow, mixed Cmin', 
-        'crossflow, mixed Cmax', 'boiler', 'condenser', 'S&T', or 'nS&T' where 
+        'crossflow approximate', 'crossflow, mixed Cmin',
+        'crossflow, mixed Cmax', 'boiler', 'condenser', 'S&T', or 'nS&T' where
         n is the number of shell and tube exchangers in a row.
 
     Returns
@@ -173,52 +173,52 @@ def effectiveness_from_NTU(NTU, Cr, subtype='counterflow'):
     Once the effectiveness of the exchanger has been calculated, the total
     heat transferred can be calculated according to the following formulas,
     depending on which stream temperatures are known:
-        
+
     If the inlet temperatures for both sides are known:
-        
+
     .. math::
         Q=\epsilon C_{min}(T_{h,i}-T_{c,i})
-        
+
     If the outlet temperatures for both sides are known:
-        
+
     .. math::
         Q = \frac{\epsilon C_{min}C_{hot}C_{cold}(T_{c,o}-T_{h,o})}
         {\epsilon  C_{min}(C_{hot} +C_{cold}) - (C_{hot}C_{cold}) }
-    
+
     If the hot inlet and cold outlet are known:
-        
+
     .. math::
         Q = \frac{\epsilon C_{min}C_c(T_{co}-T_{hi})}{\epsilon C_{min}-C_c}
-        
+
     If the hot outlet stream and cold inlet stream are known:
-        
+
     .. math::
         Q = \frac{\epsilon C_{min}C_h(T_{ci}-T_{ho})}{\epsilon C_{min}-C_h}
-    
-    
+
+
     If the inlet and outlet conditions for a single side are known, the
     effectiveness wasn't needed for it to be calculated. For completeness,
     the formulas are as follows:
-        
+
     .. math::
         Q = C_c(T_{c,o} - T_{c,i}) = C_h(T_{h,i} - T_{h,o})
-        
+
     There is also a term called :math:`Q_{max}`, which is the heat which would
     have been transferred if the effectiveness was 1. It is calculated as
     follows:
-        
+
     .. math::
         Q_{max} = \frac{Q}{\text{effectiveness}}
-        
+
     Examples
     --------
     Worst case, parallel flow:
-    
+
     >>> effectiveness_from_NTU(NTU=5, Cr=0.7, subtype='parallel')
     0.5881156068417585
-    
+
     Crossflow, somewhat higher effectiveness:
-        
+
     >>> effectiveness_from_NTU(NTU=5, Cr=0.7, subtype='crossflow')
     0.844482179974855
 
@@ -226,22 +226,22 @@ def effectiveness_from_NTU(NTU, Cr, subtype='counterflow'):
 
     >>> effectiveness_from_NTU(NTU=5, Cr=0.7, subtype='counterflow')
     0.9206703686051108
-    
+
     One shell and tube heat exchanger gives worse performance than counterflow,
     but they are designed to be economical and compact which a counterflow
     exchanger would not be. As the number of shells approaches infinity,
     the counterflow result is obtained exactly.
-    
+
     >>> effectiveness_from_NTU(NTU=5, Cr=0.7, subtype='S&T')
     0.6834977044311439
     >>> effectiveness_from_NTU(NTU=5, Cr=0.7, subtype='50S&T')
     0.9205058702789254
 
-    
+
     Overall case of rating an existing heat exchanger where a known flowrate
     of steam and oil are contacted in crossflow, with the steam side mixed
     (example 10-9 in [3]_):
-        
+
     >>> U = 275 # W/m^2/K
     >>> A = 10.82 # m^2
     >>> Cp_oil = 1900 # J/kg/K
@@ -264,9 +264,9 @@ def effectiveness_from_NTU(NTU, Cr, subtype='counterflow'):
     (2.160072595281307, 0.8312180361425988, 131675.32715043944)
     >>> Tco, Tho
     (110.59007415639887, 116.38592564614977)
-    
+
     Alternatively, if only the outlet temperatures had been known:
-        
+
     >>> Tco = 110.59007415639887
     >>> Tho = 116.38592564614977
     >>> Cc, Ch = Cmin, Cmax # In this case but not always
@@ -281,18 +281,18 @@ def effectiveness_from_NTU(NTU, Cr, subtype='counterflow'):
     .. [1] Bergman, Theodore L., Adrienne S. Lavine, Frank P. Incropera, and
        David P. DeWitt. Introduction to Heat Transfer. 6E. Hoboken, NJ:
        Wiley, 2011.
-    .. [2] Shah, Ramesh K., and Dusan P. Sekulic. Fundamentals of Heat 
+    .. [2] Shah, Ramesh K., and Dusan P. Sekulic. Fundamentals of Heat
        Exchanger Design. 1st edition. Hoboken, NJ: Wiley, 2002.
-    .. [3] Holman, Jack. Heat Transfer. 10th edition. Boston: McGraw-Hill 
+    .. [3] Holman, Jack. Heat Transfer. 10th edition. Boston: McGraw-Hill
        Education, 2009.
-    .. [4] Triboix, Alain. "Exact and Approximate Formulas for Cross Flow Heat 
-       Exchangers with Unmixed Fluids." International Communications in Heat 
-       and Mass Transfer 36, no. 2 (February 1, 2009): 121-24. 
+    .. [4] Triboix, Alain. "Exact and Approximate Formulas for Cross Flow Heat
+       Exchangers with Unmixed Fluids." International Communications in Heat
+       and Mass Transfer 36, no. 2 (February 1, 2009): 121-24.
        doi:10.1016/j.icheatmasstransfer.2008.10.012.
     '''
     if Cr > 1:
         raise ValueError('Heat capacity rate must be less than 1 by definition.')
-        
+
     if subtype == 'counterflow':
         if Cr < 1:
             return (1. - exp(-NTU*(1. - Cr)))/(1. - Cr*exp(-NTU*(1. - Cr)))
@@ -304,7 +304,7 @@ def effectiveness_from_NTU(NTU, Cr, subtype='counterflow'):
         str_shells = subtype.split('S&T')[0]
         shells = int(str_shells) if str_shells else 1
         NTU = NTU/shells
-        
+
         x0 = (1. + Cr*Cr)**.5
         x1 = exp(-NTU*x0)
         top = 1. + x1
@@ -329,13 +329,13 @@ def effectiveness_from_NTU(NTU, Cr, subtype='counterflow'):
         return  1. - exp(-NTU)
     else:
         raise ValueError('Input heat exchanger type not recognized')
-        
+
 
 def NTU_from_effectiveness(effectiveness, Cr, subtype='counterflow'):
-    r'''Returns the Number of Transfer Units of a heat exchanger at a specified 
+    r'''Returns the Number of Transfer Units of a heat exchanger at a specified
     heat capacity rate, effectiveness, and configuration. The following
     configurations are supported:
-        
+
         * Counterflow (ex. double-pipe)
         * Parallel (ex. double pipe inefficient configuration)
         * Shell and tube exchangers with even numbers of tube passes,
@@ -346,46 +346,46 @@ def NTU_from_effectiveness(effectiveness, Cr, subtype='counterflow'):
         * Boiler or condenser
 
     These situations are normally not those which occur in real heat exchangers,
-    but are useful for academic purposes. More complicated expressions are 
+    but are useful for academic purposes. More complicated expressions are
     available for other methods. These equations are confirmed in [1]_, [2]_,
     and [3]_.
-    
+
     For parallel flow heat exchangers:
 
     .. math::
         NTU = -\frac{\ln[1 - \epsilon(1+C_r)]}{1+C_r}
-        
+
     For counterflow heat exchangers:
 
     .. math::
         NTU = \frac{1}{C_r-1}\ln\left(\frac{\epsilon-1}{\epsilon C_r-1}\right)
-        
+
     .. math::
         NTU = \frac{\epsilon}{1-\epsilon} \text{ if } C_r = 1
 
-    For TEMA E shell-and-tube heat exchangers with one shell pass, 2n tube 
+    For TEMA E shell-and-tube heat exchangers with one shell pass, 2n tube
     passes:
 
     .. math::
         (NTU)_1 = -(1 + C_r^2)^{-0.5}\ln\left(\frac{E-1}{E+1}\right)
-        
+
     .. math::
         E = \frac{2/\epsilon_1 - (1 + C_r)}{(1 + C_r^2)^{0.5}}
 
-    For TEMA E shell-and-tube heat exchangers with more than one shell pass, 2n  
-    tube passes (this model assumes each exchanger has an equal share of the 
+    For TEMA E shell-and-tube heat exchangers with more than one shell pass, 2n
+    tube passes (this model assumes each exchanger has an equal share of the
     overall NTU or said more plainly, the same UA):
 
     .. math::
         \epsilon_1 = \frac{F-1}{F-C_r}
-        
+
     .. math::
         F = \left(\frac{\epsilon C_r-1}{\epsilon-1}\right)^{1/n}
-        
+
     .. math::
         NTU = n(NTU)_1
-        
-    For cross-flow (single-pass) heat exchangers with both fluids unmixed, 
+
+    For cross-flow (single-pass) heat exchangers with both fluids unmixed,
     there is no analytical solution. However, the function is monotonically
     increasing, and a closed-form solver is implemented as 'crossflow approximate',
     guaranteed to solve for :math:`10^{-7} < NTU < 10^5`. The exact solution
@@ -398,14 +398,14 @@ def NTU_from_effectiveness(effectiveness, Cr, subtype='counterflow'):
 
     .. math::
         NTU = -\ln\left[1 + \frac{1}{C_r}\ln(1 - \epsilon C_r)\right]
-        
+
     For cross-flow (single-pass) heat exchangers with Cmin mixed, Cmax unmixed:
 
     .. math::
         NTU = -\frac{1}{C_r}\ln[C_r\ln(1-\epsilon)+1]
 
     For cases where `Cr` = 0, as in an exchanger with latent heat exchange,
-    flow arrangement does not matter: 
+    flow arrangement does not matter:
 
     .. math::
         NTU = -\ln(1-\epsilon)
@@ -419,8 +419,8 @@ def NTU_from_effectiveness(effectiveness, Cr, subtype='counterflow'):
         fluid, [-]
     subtype : str, optional
         The subtype of exchanger; one of 'counterflow', 'parallel', 'crossflow'
-        'crossflow approximate', 'crossflow, mixed Cmin', 
-        'crossflow, mixed Cmax', 'boiler', 'condenser', 'S&T', or 'nS&T' where 
+        'crossflow approximate', 'crossflow, mixed Cmin',
+        'crossflow, mixed Cmax', 'boiler', 'condenser', 'S&T', or 'nS&T' where
         n is the number of shell and tube exchangers in a row.
 
     Returns
@@ -430,12 +430,12 @@ def NTU_from_effectiveness(effectiveness, Cr, subtype='counterflow'):
 
     Notes
     -----
-    Unlike :obj:`ht.hx.effectiveness_from_NTU`, not all inputs can 
+    Unlike :obj:`ht.hx.effectiveness_from_NTU`, not all inputs can
     calculate the NTU - many exchanger types have effectiveness limits
     below 1 which depend on `Cr` and the number of shells in the case of
     heat exchangers. If an impossible input is given, an error will be raised
     and the maximum possible effectiveness will be printed.
-    
+
     >>> NTU_from_effectiveness(.99, Cr=.7, subtype='5S&T') # doctest: +SKIP
     Traceback (most recent call last):
     Exception: The specified effectiveness is not physically possible for this configuration; the maximum effectiveness possible is 0.974122977755.
@@ -443,26 +443,26 @@ def NTU_from_effectiveness(effectiveness, Cr, subtype='counterflow'):
     Examples
     --------
     Worst case, parallel flow:
-    
+
     >>> NTU_from_effectiveness(effectiveness=0.5881156068417585, Cr=0.7, subtype='parallel')
-    5.000000000000012
-    
+    5.000000000000
+
     Crossflow, somewhat higher effectiveness:
-        
+
     >>> NTU_from_effectiveness(effectiveness=0.8444821799748551, Cr=0.7, subtype='crossflow')
-    5.000000000000007
+    5.000000000000
 
     Counterflow, better than either crossflow or parallel flow:
 
     >>> NTU_from_effectiveness(effectiveness=0.9206703686051108, Cr=0.7, subtype='counterflow')
     5.0
-    
+
     Shell and tube exchangers:
-    
+
     >>> NTU_from_effectiveness(effectiveness=0.6834977044311439, Cr=0.7, subtype='S&T')
-    5.000000000000071
+    5.000000000000
     >>> NTU_from_effectiveness(effectiveness=0.9205058702789254, Cr=0.7, subtype='50S&T')
-    4.999999999999996
+    4.999999999999
 
 
     Overall case of rating an existing heat exchanger where a known flowrate
@@ -498,9 +498,9 @@ def NTU_from_effectiveness(effectiveness, Cr, subtype='counterflow'):
     .. [1] Bergman, Theodore L., Adrienne S. Lavine, Frank P. Incropera, and
        David P. DeWitt. Introduction to Heat Transfer. 6E. Hoboken, NJ:
        Wiley, 2011.
-    .. [2] Shah, Ramesh K., and Dusan P. Sekulic. Fundamentals of Heat 
+    .. [2] Shah, Ramesh K., and Dusan P. Sekulic. Fundamentals of Heat
        Exchanger Design. 1st edition. Hoboken, NJ: Wiley, 2002.
-    .. [3] Holman, Jack. Heat Transfer. 10th edition. Boston: McGraw-Hill 
+    .. [3] Holman, Jack. Heat Transfer. 10th edition. Boston: McGraw-Hill
        Education, 2009.
     '''
     if Cr > 1:
@@ -528,18 +528,18 @@ def NTU_from_effectiveness(effectiveness, Cr, subtype='counterflow'):
         # differently
         str_shells = subtype.split('S&T')[0]
         shells = int(str_shells) if str_shells else 1
-        
+
         F = ((effectiveness*Cr - 1.)/(effectiveness - 1.))**(1./shells)
         e1 = (F - 1.)/(F - Cr)
         E = (2./e1 - (1. + Cr))/(1. + Cr**2)**0.5
-        
+
         if (E - 1.)/(E + 1.) <= 0:
             # Derived with SymPy
             max_effectiveness = (-((-Cr + sqrt(Cr**2 + 1) + 1)/(Cr + sqrt(Cr**2 + 1) - 1))**shells + 1)/(Cr - ((-Cr + sqrt(Cr**2 + 1) + 1)/(Cr + sqrt(Cr**2 + 1) - 1))**shells)
             raise ValueError('The specified effectiveness is not physically ' # numba: delete
 'possible for this configuration; the maximum effectiveness possible is %s.' % (max_effectiveness)) # numba: delete
 #            raise ValueError("Fail") # numba: uncomment
-        
+
         NTU = -(1. + Cr*Cr)**-0.5*log((E - 1.)/(E + 1.))
         return shells*NTU
     elif subtype == 'crossflow':
@@ -553,25 +553,25 @@ def NTU_from_effectiveness(effectiveness, Cr, subtype='counterflow'):
         # This will fail if NTU is more than 10,000 or less than 1E-7, but
         # this is extremely unlikely to occur in normal usage.
         # Maple and SymPy and Wolfram Alpha all failed to obtain an exact
-        # analytical expression even with coefficients for 0.22 and 0.78 or 
+        # analytical expression even with coefficients for 0.22 and 0.78 or
         # with an explicit value for Cr. The function has been plotted,
         # and appears to be monotonic - there is only one solution.
         def to_solve(NTU, Cr, effectiveness):
             return (1. - exp(1./Cr*NTU**0.22*(exp(-Cr*NTU**0.78) - 1.))) - effectiveness
         return ridder(to_solve, a=1E-7, b=1E5, args=(Cr, effectiveness))
-    
+
     elif subtype == 'crossflow, mixed Cmin':
         if Cr*log(1. - effectiveness) < -1:
             raise ValueError('The specified effectiveness is not physically \
 possible for this configuration; the maximum effectiveness possible is %s.' % (1. - exp(-1./Cr)))
         return -1./Cr*log(Cr*log(1. - effectiveness) + 1.)
-    
+
     elif subtype ==  'crossflow, mixed Cmax':
         if 1./Cr*log(1. - effectiveness*Cr) < -1:
             raise ValueError('The specified effectiveness is not physically \
 possible for this configuration; the maximum effectiveness possible is %s.' % (((exp(Cr) - 1.0)*exp(-Cr)/Cr)))
         return -log(1. + 1./Cr*log(1. - effectiveness*Cr))
-    
+
     elif subtype in ['boiler', 'condenser']:
         return -log(1. - effectiveness)
     else:
@@ -804,16 +804,16 @@ def UA_from_NTU(NTU, Cmin):
 
 
 def Pp(x, y):
-    r'''Basic helper calculator which accepts a transformed R1 and NTU1 as 
-    inputs for a common term used in the calculation of the P-NTU method for 
+    r'''Basic helper calculator which accepts a transformed R1 and NTU1 as
+    inputs for a common term used in the calculation of the P-NTU method for
     plate exchangers.
-    
-    Returns a value which is normally used in other calculations before the 
+
+    Returns a value which is normally used in other calculations before the
     actual P1 is calculated.
 
     .. math::
         P_p(x, y) = \frac{1 - \exp[-x(1 + y)]}{1 + y}
-        
+
     Parameters
     ----------
     x : float
@@ -839,7 +839,7 @@ def Pp(x, y):
 
     References
     ----------
-    .. [1] Shah, Ramesh K., and Dusan P. Sekulic. Fundamentals of Heat 
+    .. [1] Shah, Ramesh K., and Dusan P. Sekulic. Fundamentals of Heat
        Exchanger Design. 1st edition. Hoboken, NJ: Wiley, 2002.
     .. [2] Rohsenow, Warren and James Hartnett and Young Cho. Handbook of Heat
        Transfer, 3E. New York: McGraw-Hill, 1998.
@@ -850,16 +850,16 @@ def Pp(x, y):
 
 
 def Pc(x, y):
-    r'''Basic helper calculator which accepts a transformed R1 and NTU1 as 
-    inputs for a common term used in the calculation of the P-NTU method for 
+    r'''Basic helper calculator which accepts a transformed R1 and NTU1 as
+    inputs for a common term used in the calculation of the P-NTU method for
     plate exchangers.
-    
-    Returns a value which is normally used in other calculations before the 
-    actual P1 is calculated. Nominally used in counterflow calculations 
+
+    Returns a value which is normally used in other calculations before the
+    actual P1 is calculated. Nominally used in counterflow calculations
 
     .. math::
         P_c(x, y) = \frac{1 - \exp[-x(1 - y)]}{1 - y\exp[-x(1 - y)]}
-        
+
     Parameters
     ----------
     x : float
@@ -885,7 +885,7 @@ def Pc(x, y):
 
     References
     ----------
-    .. [1] Shah, Ramesh K., and Dusan P. Sekulic. Fundamentals of Heat 
+    .. [1] Shah, Ramesh K., and Dusan P. Sekulic. Fundamentals of Heat
        Exchanger Design. 1st edition. Hoboken, NJ: Wiley, 2002.
     .. [2] Rohsenow, Warren and James Hartnett and Young Cho. Handbook of Heat
        Transfer, 3E. New York: McGraw-Hill, 1998.
@@ -896,19 +896,19 @@ def Pc(x, y):
     return (1. - term)/(1. - y*term)
 
 
-def effectiveness_NTU_method(mh, mc, Cph, Cpc, subtype='counterflow', Thi=None, 
+def effectiveness_NTU_method(mh, mc, Cph, Cpc, subtype='counterflow', Thi=None,
                              Tho=None, Tci=None, Tco=None, UA=None):
     r'''Wrapper for the various effectiveness-NTU method function calls,
     which can solve a heat exchanger. The heat capacities and mass flows
     of each stream and the type of the heat exchanger are always required.
     As additional inputs, one combination of the following inputs is required:
-        
+
     * Three of the four inlet and outlet stream temperatures.
     * Temperatures for the cold outlet and hot inlet and UA
     * Temperatures for the cold outlet and hot outlet and UA
     * Temperatures for the cold inlet and hot inlet and UA
     * Temperatures for the cold inlet and hot outlet and UA
-      
+
     Parameters
     ----------
     mh : float
@@ -922,7 +922,7 @@ def effectiveness_NTU_method(mh, mc, Cph, Cpc, subtype='counterflow', Thi=None,
     subtype : str, optional
         The subtype of exchanger; one of 'counterflow', 'parallel', 'crossflow'
         'crossflow, mixed Cmin', 'crossflow, mixed Cmax', 'boiler', 'condenser',
-        'S&T', or 'nS&T' where n is the number of shell and tube exchangers in 
+        'S&T', or 'nS&T' where n is the number of shell and tube exchangers in
         a row
     Thi : float, optional
         Inlet temperature of hot fluid, [K]
@@ -950,7 +950,7 @@ def effectiveness_NTU_method(mh, mc, Cph, Cpc, subtype='counterflow', Thi=None,
         * Tho : Outlet temperature of hot fluid, [K]
         * Tci : Inlet temperature of cold fluid, [K]
         * Tco : Outlet temperature of cold fluid, [K]
-    
+
     See also
     --------
     effectiveness_from_NTU
@@ -961,9 +961,9 @@ def effectiveness_NTU_method(mh, mc, Cph, Cpc, subtype='counterflow', Thi=None,
     Solve a heat exchanger to determine UA and effectiveness given the
     configuration, flows, subtype, the cold inlet/outlet temperatures, and the
     hot stream inlet temperature.
-    
+
     >>> from pprint import pprint
-    >>> pprint(effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, 
+    >>> pprint(effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900,
     ... subtype='crossflow, mixed Cmax', Tci=15, Tco=85, Thi=130))
     {'Cmax': 9672.0,
      'Cmin': 2755.0,
@@ -976,11 +976,11 @@ def effectiveness_NTU_method(mh, mc, Cph, Cpc, subtype='counterflow', Thi=None,
      'Tho': 110.06100082712986,
      'UA': 3041.751170834494,
      'effectiveness': 0.6086956521739131}
-    
+
     Solve the same heat exchanger with the UA specified, and known inlet
     temperatures:
-        
-    >>> pprint(effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, 
+
+    >>> pprint(effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900,
     ... subtype='crossflow, mixed Cmax', Tci=15, Thi=130, UA=3041.75))
     {'Cmax': 9672.0,
      'Cmin': 2755.0,
@@ -1002,11 +1002,11 @@ def effectiveness_NTU_method(mh, mc, Cph, Cpc, subtype='counterflow', Thi=None,
     if UA is not None:
         NTU = NTU_from_UA(UA=UA, Cmin=Cmin)
         effectiveness = eff = effectiveness_from_NTU(NTU=NTU, Cr=Cr, subtype=subtype)
-        
+
         possible_inputs = [(Tci, Thi), (Tci, Tho), (Tco, Thi), (Tco, Tho)]
         if not any([i for i in possible_inputs if None not in i]):
             raise ValueError('One set of (Tci, Thi), (Tci, Tho), (Tco, Thi), or (Tco, Tho) are required along with UA.')
-        
+
         if Thi and Tci:
             Q = eff*Cmin*(Thi - Tci)
         elif Tho and Tco :
@@ -1028,8 +1028,8 @@ def effectiveness_NTU_method(mh, mc, Cph, Cpc, subtype='counterflow', Thi=None,
         if Thi and not Tho:
             Tho = Thi - Q/(Ch)
         else:
-            Thi = Tho + Q/(Ch)        
-    
+            Thi = Tho + Q/(Ch)
+
     elif UA is None:
         # Case where we're solving for UA
         # Three temperatures are required
@@ -1046,7 +1046,7 @@ def effectiveness_NTU_method(mh, mc, Cph, Cpc, subtype='counterflow', Thi=None,
                     raise ValueError('The specified heat capacities, mass flows, and temperatures are inconsistent')
             else:
                 raise ValueError('At least one temperature is required to be specified on the cold side.')
-                
+
         elif Tci is not None and Tco is not None:
             Q = mc*Cpc*(Tco-Tci)
             if Thi is not None and Tho is None:
@@ -1061,62 +1061,62 @@ def effectiveness_NTU_method(mh, mc, Cph, Cpc, subtype='counterflow', Thi=None,
 
         effectiveness = Q/Cmin/(Thi-Tci)
         NTU = NTU_from_effectiveness(effectiveness, Cr, subtype=subtype)
-        UA = UA_from_NTU(NTU, Cmin)    
-    return {'Q': Q, 'UA': UA, 'Cr':Cr, 'Cmin': Cmin, 'Cmax':Cmax, 
+        UA = UA_from_NTU(NTU, Cmin)
+    return {'Q': Q, 'UA': UA, 'Cr':Cr, 'Cmin': Cmin, 'Cmax':Cmax,
             'effectiveness': effectiveness, 'NTU': NTU, 'Thi': Thi, 'Tho': Tho,
-            'Tci': Tci, 'Tco': Tco} 
-        
+            'Tci': Tci, 'Tco': Tco}
+
 
 def temperature_effectiveness_air_cooler(R1, NTU1, rows, passes, coerce=True):
-    r'''Returns temperature effectiveness `P1` of an air cooler with 
+    r'''Returns temperature effectiveness `P1` of an air cooler with
     a specified heat capacity ratio, number of transfer units `NTU1`,
     number of rows `rows`, and number of passes `passes`. The supported cases
     are as follows:
-        
+
     * N rows 1 pass
     * N row N pass (up to N = 5)
     * 4 rows 2 passes
-    
+
     For N rows 1 passes ([2]_, shown in [1]_ and [3]_):
-        
+
     .. math::
         P = \frac{1}{R} \left\{1 - \left[\frac{N\exp(NKR)}
         {1 + \sum_{i=1}^{N-1}\sum_{j=0}^i  {{i}\choose{j}}K^j \exp(-(i-j)NTU/N)
         \sum_{k=0}^j \frac{(NKR)^k}{k!}}\right]^{-1}\right\}
-        
+
     For 2 rows 2 passes (cited as from [4]_ in [1]_):
-        
+
     .. math::
         P_1 = \frac{1}{R}\left(1 -\frac{1}{\xi}\right)
-        
+
     .. math::
         \xi = \frac{K}{2} + \left(1 - \frac{K}{2}\right)\exp(2KR)
-        
+
     .. math::
         K = 1 - \exp\left(\frac{-NTU}{2}\right)
-        
+
     For 3 rows / 3 passes (cited as from [4]_ in [1]_):
-        
+
     .. math::
         \xi = K\left[1 - \frac{K}{4} - RK\left(1 - \frac{K}{2}\right)\right]
         \exp(KR) + \exp(3KR)\left(1 - \frac{K}{2}\right)^2
-        
+
     .. math::
         K = 1 - \exp\left(\frac{-NTU}{3}\right)
-        
+
     For 4 rows / 4 passes (cited as from [4]_ in [1]_):
-        
+
     .. math::
         \xi = \frac{K}{2}\left(1 - \frac{K}{2} + \frac{K^2}{4}\right)
         + K\left(1 - \frac{K}{2}\right)
         \left[1 - \frac{R}{8}K\left(1 - \frac{K}{2}\right)\exp(2KR)\right]
         + \exp(4KR)\left(1 - \frac{K}{2}\right)^3
-        
+
     .. math::
         K = 1 - \exp\left(\frac{-NTU}{4}\right)
-        
+
     For 5 rows / 5 passes (cited as from [4]_ in [1]_):
-        
+
     .. math::
         \xi = \left\{K \left(1 - \frac{3}{4}K + \frac{K^2}{2}- \frac{K^3}{8}
         \right) - RK^2\left[1 -K + \frac{3}{4}K^2 - \frac{1}{4}K^3
@@ -1126,26 +1126,26 @@ def temperature_effectiveness_air_cooler(R1, NTU1, rows, passes, coerce=True):
         \exp(5KR)
 
     For 4 rows / 2 passes (cited as from [4]_ in [1]_):
-        
+
     .. math::
         P_1 = \frac{1}{R}\left(1 -\frac{1}{\xi}\right)
-        
+
     .. math::
         \xi = \left\{\frac{R}{2}K^3[4 - K + 2RK^2] + \exp(4KR)
         + K\left[1 - \frac{K}{2} + \frac{K^2}{8}\right]
         \left[1 - \exp(4KR)\right]
         \right\}\frac{1}{(1+RK^2)^2}
-        
+
     .. math::
         K = 1 - \exp\left(\frac{-NTU}{4}\right)
-        
+
     Parameters
     ----------
     R1 : float
         Heat capacity ratio of the heat exchanger in the P-NTU method,
         calculated with respect to stream 1 (process fluid side) [-]
     NTU1 : float
-        Thermal number of transfer units of the heat exchanger in the P-NTU 
+        Thermal number of transfer units of the heat exchanger in the P-NTU
         method, calculated with respect to stream 1 (process fluid side) [-]
     rows : int
         Number of rows of tubes in the air cooler [-]
@@ -1155,7 +1155,7 @@ def temperature_effectiveness_air_cooler(R1, NTU1, rows, passes, coerce=True):
         If True, the number of passes or rows, if otherwise unsupported, will
         be replaced with a similar number to allow the calculation to proceed,
         [-]
-        
+
     Returns
     -------
     P1 : float
@@ -1169,19 +1169,19 @@ def temperature_effectiveness_air_cooler(R1, NTU1, rows, passes, coerce=True):
     Floating point rounding behavior can also be an issue for large numbers of
     tube passes, leading to thermal effectivenesses larger than one being
     returned:
-        
+
     >>> temperature_effectiveness_air_cooler(1e-10, 100, rows=150, passes=1.0)
     1.000026728092962
-    
+
     Furthermore, as a factorial of the number of tube counts is used, there
     comes a point where standard floats are not able to hold the intermediate
     calculations values and an error will occur:
-        
+
     >>> temperature_effectiveness_air_cooler(.5, 1.1, rows=200, passes=1.0)
     Traceback (most recent call last):
     ...
     OverflowError: int too large to convert to float
-    
+
 
     Examples
     --------
@@ -1190,9 +1190,9 @@ def temperature_effectiveness_air_cooler(R1, NTU1, rows, passes, coerce=True):
 
     References
     ----------
-    .. [1] Thulukkanam, Kuppan. Heat Exchanger Design Handbook, Second Edition. 
+    .. [1] Thulukkanam, Kuppan. Heat Exchanger Design Handbook, Second Edition.
        CRC Press, 2013.
-    .. [2] Schedwill, H., "Thermische Auslegung von Kreuzstromwarmeaustauschern, 
+    .. [2] Schedwill, H., "Thermische Auslegung von Kreuzstromwarmeaustauschern,
        Fortschr-Ber." VDI Reihe 6 19, VDI, Germany, 1968.
     .. [3] Schlunder, Ernst U, and International Center for Heat and Mass
        Transfer. Heat Exchanger Design Handbook. Washington:
@@ -1216,20 +1216,20 @@ def temperature_effectiveness_air_cooler(R1, NTU1, rows, passes, coerce=True):
         K_powers = [K**j for j in range(0, N+1)]
         NKR1_powers = [NKR1**k for k in range(0, N+1)]
         exp_terms = [exp(i*NTU1_N) for i in range(-N+1, 1)] # Only need to compute one exp, then multiply
-        NKR1_powers_over_factorials = [NKR1_powers[k]/factorials[k] 
+        NKR1_powers_over_factorials = [NKR1_powers[k]/factorials[k]
                                        for k in range(N)]
-        
+
         # Precompute even more...
         NKR1_pows_div_factorials = [0]
         for k in NKR1_powers_over_factorials:
             NKR1_pows_div_factorials.append(NKR1_pows_div_factorials[-1]+k)
         NKR1_pows_div_factorials.pop(0)
-        
+
         final_speed = [0.0]*N
         for i in range(N):
             final_speed[i] = K_powers[i]*NKR1_pows_div_factorials[i]
 #        final_speed = [i*j for i, j in zip(K_powers, NKR1_pows_div_factorials)]
-        
+
         tot = 0.
         for i in range(1, N):
             for j in range(0, i+1):
@@ -1237,7 +1237,7 @@ def temperature_effectiveness_air_cooler(R1, NTU1, rows, passes, coerce=True):
                 prod = factorials[i]/(factorials[i-j]*factorials[j])
                 tot1 = prod*exp_terms[j-i-1]
                 tot += tot1*final_speed[j]
-    
+
         return 1./R1*(1. - 1./(top/(1.+tot)))
     elif rows == passes == 2:
         K = 1. - exp(-0.5*NTU1)
@@ -1258,15 +1258,15 @@ def temperature_effectiveness_air_cooler(R1, NTU1, rows, passes, coerce=True):
         K = 1. - exp(-0.2*NTU1)
         K2 = K*K
         K3 = K2*K
-        xi = (K*(1. - .75*K + .5*K2 - .125*K3) 
-              - R1*K2*(1. - K + .75*K2 - .25*K3 
+        xi = (K*(1. - .75*K + .5*K2 - .125*K3)
+              - R1*K2*(1. - K + .75*K2 - .25*K3
               - .5*R1*K2*(1. - .5*K)**2))*exp(K*R1)
         xi += ((K*(1. - .75*K + 1/16.*K3) - 3*R1*K2*(1. - .5*K)**3)
               *exp(3*K*R1) + (1. - .5*K)**4*exp(5*K*R1))
         return 1./R1*(1. - 1./xi)
     elif rows == 4 and passes == 2:
         K = 1. - exp(-0.25*NTU1)
-        xi = (0.5*R1*K**3*(4. - K + 2.*R1*K**2) + exp(4.*K*R1) + K*(1. - 0.5*K 
+        xi = (0.5*R1*K**3*(4. - K + 2.*R1*K**2) + exp(4.*K*R1) + K*(1. - 0.5*K
               + 0.125*K**2)*(1 - exp(4.*K*R1)))*(1. + R1*K**2)**-2
         return 1./R1*(1. - 1./xi)
     else:
@@ -1283,27 +1283,27 @@ def temperature_effectiveness_air_cooler(R1, NTU1, rows, passes, coerce=True):
                 new_rows, new_passes = rows -1, passes
             elif (passes == 2 or passes == 3 or passes == 5) and rows >= 4:
                 new_rows, new_passes = 4, 2
-                
+
             return temperature_effectiveness_air_cooler(R1=R1, NTU1=NTU1, rows=new_rows, passes=new_passes)
-                
+
         else:
             raise ValueError('Number of passes and rows not supported.')
 
 
 def temperature_effectiveness_basic(R1, NTU1, subtype='crossflow'):
-    r'''Returns temperature effectiveness `P1` of a heat exchanger with 
+    r'''Returns temperature effectiveness `P1` of a heat exchanger with
     a specified heat capacity ratio, number of transfer units `NTU1`,
     and of type `subtype`. This function performs the calculations for the
     basic cases, not actual shell-and-tube exchangers. The supported cases
     are as follows:
-        
+
     * Counterflow (ex. double-pipe)
     * Parallel (ex. double pipe inefficient configuration)
     * Crossflow, single pass, fluids unmixed
     * Crossflow, single pass, fluid 1 mixed, fluid 2 unmixed
     * Crossflow, single pass, fluid 2 mixed, fluid 1 unmixed
     * Crossflow, single pass, both fluids mixed
-    
+
     For parallel flow heat exchangers (this configuration is symmetric):
 
     .. math::
@@ -1324,7 +1324,7 @@ def temperature_effectiveness_basic(R1, NTU1, subtype='crossflow'):
         (\exp(-R_1 NTU_1^{0.78})-1)\right]
 
     The exact solution for crossflow (single pass, fluids unmixed) is:
-        
+
     .. math::
         \epsilon = \frac{1}{R_1} - \frac{\exp(-R_1 \cdot NTU_1)}{2(R_1 NTU_1)^2}
         \int_0^{2 NTU_1\sqrt{R_1}} \left(1 + NTU_1 - \frac{v^2}{4R_1 NTU_1}
@@ -1335,44 +1335,44 @@ def temperature_effectiveness_basic(R1, NTU1, subtype='crossflow'):
 
     .. math::
         P_1 = 1 - \exp\left(-\frac{K}{R_1}\right)
-        
+
     .. math::
         K = 1 - \exp(-R_1 NTU_1)
 
-    For cross-flow (single-pass) heat exchangers with fluid 2 mixed, fluid 1 
+    For cross-flow (single-pass) heat exchangers with fluid 2 mixed, fluid 1
     unmixed:
 
     .. math::
         P_1 = \frac{1 - \exp(-K R_1)}{R_1}
-        
+
     .. math::
         K = 1 - \exp(-NTU_1)
 
-    For cross-flow (single-pass) heat exchangers with both fluids mixed 
+    For cross-flow (single-pass) heat exchangers with both fluids mixed
     (this configuration is symmetric):
 
     .. math::
         P_1 = \left(\frac{1}{K_1} + \frac{R_1}{K_2} - \frac{1}{NTU_1}\right)^{-1}
-        
+
     .. math::
         K_1 = 1 - \exp(-NTU_1)
-        
+
     .. math::
         K_2 = 1 - \exp(-R_1 NTU_1)
-        
+
     Parameters
     ----------
     R1 : float
         Heat capacity ratio of the heat exchanger in the P-NTU method,
         calculated with respect to stream 1 [-]
     NTU1 : float
-        Thermal number of transfer units of the heat exchanger in the P-NTU 
+        Thermal number of transfer units of the heat exchanger in the P-NTU
         method, calculated with respect to stream 1 [-]
     subtype : float
-        The type of heat exchanger; one of 'counterflow', 'parallel', 
-        'crossflow', 'crossflow approximate', 'crossflow, mixed 1', 
+        The type of heat exchanger; one of 'counterflow', 'parallel',
+        'crossflow', 'crossflow approximate', 'crossflow, mixed 1',
         'crossflow, mixed 2', 'crossflow, mixed 1&2'.
-        
+
     Returns
     -------
     P1 : float
@@ -1382,7 +1382,7 @@ def temperature_effectiveness_basic(R1, NTU1, subtype='crossflow'):
     Notes
     -----
     The crossflow case is an approximation only. There is an actual
-    solution involving an infinite sum. This was implemented, but found to 
+    solution involving an infinite sum. This was implemented, but found to
     differ substantially so the approximation is used instead.
 
     Examples
@@ -1392,15 +1392,15 @@ def temperature_effectiveness_basic(R1, NTU1, subtype='crossflow'):
 
     References
     ----------
-    .. [1] Shah, Ramesh K., and Dusan P. Sekulic. Fundamentals of Heat 
+    .. [1] Shah, Ramesh K., and Dusan P. Sekulic. Fundamentals of Heat
        Exchanger Design. 1st edition. Hoboken, NJ: Wiley, 2002.
-    .. [2] Thulukkanam, Kuppan. Heat Exchanger Design Handbook, Second Edition. 
+    .. [2] Thulukkanam, Kuppan. Heat Exchanger Design Handbook, Second Edition.
        CRC Press, 2013.
     .. [3] Rohsenow, Warren and James Hartnett and Young Cho. Handbook of Heat
        Transfer, 3E. New York: McGraw-Hill, 1998.
-    .. [4] Triboix, Alain. "Exact and Approximate Formulas for Cross Flow Heat 
-       Exchangers with Unmixed Fluids." International Communications in Heat 
-       and Mass Transfer 36, no. 2 (February 1, 2009): 121-24. 
+    .. [4] Triboix, Alain. "Exact and Approximate Formulas for Cross Flow Heat
+       Exchangers with Unmixed Fluids." International Communications in Heat
+       and Mass Transfer 36, no. 2 (February 1, 2009): 121-24.
        doi:10.1016/j.icheatmasstransfer.2008.10.012.
     '''
     if subtype == 'counterflow':
@@ -1436,78 +1436,78 @@ def temperature_effectiveness_basic(R1, NTU1, subtype='crossflow'):
 
 
 def temperature_effectiveness_TEMA_J(R1, NTU1, Ntp):
-    r'''Returns temperature effectiveness `P1` of a TEMA J type heat exchanger  
+    r'''Returns temperature effectiveness `P1` of a TEMA J type heat exchanger
     with a specified heat capacity ratio, number of transfer units `NTU1`,
     and of number of tube passes `Ntp`. The supported cases are as follows:
-        
+
     * One tube pass (shell fluid mixed)
     * Two tube passes (shell fluid mixed, tube pass mixed between passes)
     * Four tube passes (shell fluid mixed, tube pass mixed between passes)
-    
+
     For 1-1 TEMA J shell and tube exchangers, shell and tube fluids mixed:
 
     .. math::
         P_1 = \frac{1}{R_1}\left[1- \frac{(2-R_1)(2E + R_1 B)}{(2+R_1)
         (2E - R_1/B)}\right]
-        
-    For 1-2 TEMA J, shell and tube fluids mixed. There are two possible 
+
+    For 1-2 TEMA J, shell and tube fluids mixed. There are two possible
     arrangements for the flow and the number of tube passes, but the equation
     is the same in both:
-        
+
     .. math::
         P_1 = \left[1 + \frac{R_1}{2} + \lambda B - 2\lambda C D\right]^{-1}
-        
+
     .. math::
         B = \frac{(A^\lambda +1)}{A^\lambda -1}
-        
+
     .. math::
         C = \frac{A^{(1 + \lambda)/2}}{\lambda - 1 + (1 + \lambda)A^\lambda}
-        
+
     .. math::
         D = 1 + \frac{\lambda A^{(\lambda-1)/2}}{A^\lambda -1}
-        
+
     .. math::
         A = \exp(NTU_1)
-        
+
     .. math::
         \lambda = (1 + R_1^2/4)^{0.5}
-        
+
     For 1-4 TEMA J, shell and tube exchanger with both sides mixed:
-        
+
     .. math::
-        P_1 = \left[1 + \frac{R_1}{4}\left(\frac{1+3E}{1+E}\right) + \lambda B 
+        P_1 = \left[1 + \frac{R_1}{4}\left(\frac{1+3E}{1+E}\right) + \lambda B
         - 2 \lambda C D\right]^{-1}
-        
+
     .. math::
         B = \frac{A^\lambda +1}{A^\lambda -1}
-        
+
     .. math::
         C = \frac{A^{(1+\lambda)/2}}{\lambda - 1 + (1 + \lambda)A^\lambda}
-        
+
     .. math::
         D = 1 + \frac{\lambda A^{(\lambda-1)/2}}{A^\lambda -1}
-        
+
     .. math::
         A = \exp(NTU_1)
-        
+
     .. math::
         E = \exp(R_1 NTU_1/2)
-        
+
     .. math::
         \lambda = (1 + R_1^2/16)^{0.5}
-        
+
     Parameters
     ----------
     R1 : float
         Heat capacity ratio of the heat exchanger in the P-NTU method,
         calculated with respect to stream 1 (shell side = 1, tube side = 2) [-]
     NTU1 : float
-        Thermal number of transfer units of the heat exchanger in the P-NTU 
+        Thermal number of transfer units of the heat exchanger in the P-NTU
         method, calculated with respect to stream 1 (shell side = 1, tube side
         = 2) [-]
     Ntp : int
         Number of tube passes, 1, 2, or 4, [-]
-        
+
     Returns
     -------
     P1 : float
@@ -1518,7 +1518,7 @@ def temperature_effectiveness_TEMA_J(R1, NTU1, Ntp):
     -----
     For numbers of tube passes that are not 1, 2, or 4, an exception is raised.
     The convention for the formulas in [1]_ and [3]_ are with the shell side
-    as side 1, and the tube side as side 2. [2]_ has formulas with the 
+    as side 1, and the tube side as side 2. [2]_ has formulas with the
     opposite convention.
 
     Examples
@@ -1528,9 +1528,9 @@ def temperature_effectiveness_TEMA_J(R1, NTU1, Ntp):
 
     References
     ----------
-    .. [1] Shah, Ramesh K., and Dusan P. Sekulic. Fundamentals of Heat 
+    .. [1] Shah, Ramesh K., and Dusan P. Sekulic. Fundamentals of Heat
        Exchanger Design. 1st edition. Hoboken, NJ: Wiley, 2002.
-    .. [2] Thulukkanam, Kuppan. Heat Exchanger Design Handbook, Second Edition. 
+    .. [2] Thulukkanam, Kuppan. Heat Exchanger Design Handbook, Second Edition.
        CRC Press, 2013.
     .. [3] Rohsenow, Warren and James Hartnett and Young Cho. Handbook of Heat
        Transfer, 3E. New York: McGraw-Hill, 1998.
@@ -1563,98 +1563,98 @@ def temperature_effectiveness_TEMA_J(R1, NTU1, Ntp):
 
 
 def temperature_effectiveness_TEMA_H(R1, NTU1, Ntp, optimal=True):
-    r'''Returns temperature effectiveness `P1` of a TEMA H type heat exchanger  
+    r'''Returns temperature effectiveness `P1` of a TEMA H type heat exchanger
     with a specified heat capacity ratio, number of transfer units `NTU1`,
     and of number of tube passes `Ntp`. For the two tube pass case, there are
     two possible orientations, one inefficient and one efficient controlled
     by the `optimal` option. The supported cases are as follows:
-        
-    * One tube pass (tube fluid split into two streams individually mixed,  
+
+    * One tube pass (tube fluid split into two streams individually mixed,
       shell fluid mixed)
     * Two tube passes (shell fluid mixed, tube pass mixed between passes)
     * Two tube passes (shell fluid mixed, tube pass mixed between passes, inlet
       tube side next to inlet shell-side)
-    
-    1-1 TEMA H, tube fluid split into two streams individually mixed, shell 
+
+    1-1 TEMA H, tube fluid split into two streams individually mixed, shell
     fluid mixed:
 
     .. math::
         P_1 = E[1 + (1 - BR_1/2)(1 - A R_1/2 + ABR_1)] - AB(1 - BR_1/2)
-        
+
     .. math::
         A = \frac{1}{1 + R_1/2}\{1 - \exp[-NTU_1(1 + R_1/2)/2]\}
-        
+
     .. math::
         B = \frac{1-D}{1-R_1 D/2}
-        
+
     .. math::
         D = \exp[-NTU_1(1-R_1/2)/2]
-        
+
     .. math::
         E = (A + B - ABR_1/2)/2
-        
+
     1-2 TEMA H, shell and tube fluids mixed in each pass at the cross section:
-        
+
     .. math::
         P_1 = \frac{1}{R_1}\left[1 - \frac{(1-D)^4}{B - 4G/R_1}\right]
-        
+
     .. math::
         B = (1+H)(1+E)^2
-        
+
     .. math::
         G = (1-D)^2(D^2 + E^2) + D^2(1 + E)^2
-        
+
     .. math::
         H = [1 - \exp(-2\beta)]/(4/R_1 -1)
-        
+
     .. math::
         E = [1 - \exp(-\beta)]/(4/R_1 - 1)
-        
+
     .. math::
         D = [1 - \exp(-\alpha)]/(4/R_1 + 1)
-        
+
     .. math::
         \alpha = NTU_1(4 + R_1)/8
-        
+
     .. math::
         \beta = NTU_1(4-R_1)/8
-        
+
     1-2 TEMA H, shell and tube fluids mixed in each pass at the cross section
     but with the inlet tube stream coming in next to the shell fluid inlet
-    in an inefficient way (this is only shown in [2]_, and the stream 1/2 
+    in an inefficient way (this is only shown in [2]_, and the stream 1/2
     convention in it is different but converted here; P1 is still returned):
-        
+
     .. math::
         P_2 = \left[1 - \frac{B + 4GR_2}{(1-D)^4}\right]
-    
+
     .. math::
         B = (1 + H)(1 + E)^2
-        
+
     .. math::
         G = (1-D)^2(D^2 + E^2) + D^2(1 + E)^2
-        
+
     .. math::
         D = \frac{1 - \exp(-\alpha)}{1 - 4R_2}
-        
+
     .. math::
         E = \frac{\exp(-\beta) - 1}{4R_2 +1}
-        
+
     .. math::
         H = \frac{\exp(-2\beta) - 1}{4R_2 +1}
-        
+
     .. math::
         \alpha = \frac{NTU_2}{8}(4R_2 -1)
-        
+
     .. math::
         \beta = \frac{NTU_2}{8}(4R_2 +1)
-                
+
     Parameters
     ----------
     R1 : float
         Heat capacity ratio of the heat exchanger in the P-NTU method,
         calculated with respect to stream 1 (shell side = 1, tube side = 2) [-]
     NTU1 : float
-        Thermal number of transfer units of the heat exchanger in the P-NTU 
+        Thermal number of transfer units of the heat exchanger in the P-NTU
         method, calculated with respect to stream 1 (shell side = 1, tube side
         = 2) [-]
     Ntp : int
@@ -1663,7 +1663,7 @@ def temperature_effectiveness_TEMA_H(R1, NTU1, Ntp, optimal=True):
         Whether or not the arrangement is configured to give more of a
         countercurrent and efficient (True) case or an inefficient parallel
         case, [-]
-        
+
     Returns
     -------
     P1 : float
@@ -1674,7 +1674,7 @@ def temperature_effectiveness_TEMA_H(R1, NTU1, Ntp, optimal=True):
     -----
     For numbers of tube passes greater than 1 or 2, an exception is raised.
     The convention for the formulas in [1]_ and [3]_ are with the shell side
-    as side 1, and the tube side as side 2. [2]_ has formulas with the 
+    as side 1, and the tube side as side 2. [2]_ has formulas with the
     opposite convention.
 
     Examples
@@ -1684,9 +1684,9 @@ def temperature_effectiveness_TEMA_H(R1, NTU1, Ntp, optimal=True):
 
     References
     ----------
-    .. [1] Shah, Ramesh K., and Dusan P. Sekulic. Fundamentals of Heat 
+    .. [1] Shah, Ramesh K., and Dusan P. Sekulic. Fundamentals of Heat
        Exchanger Design. 1st edition. Hoboken, NJ: Wiley, 2002.
-    .. [2] Thulukkanam, Kuppan. Heat Exchanger Design Handbook, Second Edition. 
+    .. [2] Thulukkanam, Kuppan. Heat Exchanger Design Handbook, Second Edition.
        CRC Press, 2013.
     .. [3] Rohsenow, Warren and James Hartnett and Young Cho. Handbook of Heat
        Transfer, 3E. New York: McGraw-Hill, 1998.
@@ -1719,7 +1719,7 @@ def temperature_effectiveness_TEMA_H(R1, NTU1, Ntp, optimal=True):
         NTU1 = NTU1*R1_orig # switch 1
         # R2 = 1/R1 but we want to treat it as R1 in this case
         R1 = 1./R1_orig # switch 2
-        
+
         beta = NTU1*(4.*R1 + 1)/8.
         alpha = NTU1/8.*(4.*R1 - 1.)
         H = (exp(-2.*beta) - 1.)/(4.*R1 + 1.)
@@ -1740,79 +1740,79 @@ def temperature_effectiveness_TEMA_H(R1, NTU1, Ntp, optimal=True):
 
 
 def temperature_effectiveness_TEMA_G(R1, NTU1, Ntp, optimal=True):
-    r'''Returns temperature effectiveness `P1` of a TEMA G type heat exchanger  
+    r'''Returns temperature effectiveness `P1` of a TEMA G type heat exchanger
     with a specified heat capacity ratio, number of transfer units `NTU1`,
     and of number of tube passes `Ntp`. For the two tube pass case, there are
     two possible orientations, one inefficient and one efficient controlled
     by the `optimal` option. The supported cases are as follows:
-        
-    * One tube pass (tube fluid split into two streams individually mixed,  
+
+    * One tube pass (tube fluid split into two streams individually mixed,
       shell fluid mixed)
-    * Two tube passes (shell and tube exchanger with shell and tube fluids  
+    * Two tube passes (shell and tube exchanger with shell and tube fluids
       mixed in each pass at the cross section), counterflow arrangement
-    * Two tube passes (shell and tube exchanger with shell and tube fluids  
+    * Two tube passes (shell and tube exchanger with shell and tube fluids
       mixed in each pass at the cross section), parallelflow arrangement
-    
+
     1-1 TEMA G, tube fluid split into two streams individually mixed, shell
     fluid mixed (this configuration is symmetric):
-    
+
     .. math::
         P_1 = A + B - AB(1 + R_1) + R_1 AB^2
-        
+
     .. math::
         A = \frac{1}{1 + R_1}\{1 - \exp(-NTU_1(1+R_1)/2)\}
-        
+
     .. math::
         B = \frac{1 - D}{1 - R_1 D}
-        
+
     .. math::
         D = \exp[-NTU_1(1-R_1)/2]
-        
-    1-2 TEMA G, shell and tube exchanger with shell and tube fluids mixed in 
+
+    1-2 TEMA G, shell and tube exchanger with shell and tube fluids mixed in
     each pass at the cross section:
-        
+
     .. math::
         P_1 = (B - \alpha^2)/(A + 2 + R_1 B)
-        
+
     .. math::
         A = -2 R_1(1-\alpha)^2/(2 + R_1)
-        
+
     .. math::
         B = [4 - \beta(2+R_1)]/(2 - R_1)
-        
+
     .. math::
         \alpha = \exp[-NTU_1(2+R_1)/4]
-        
+
     .. math::
         \beta = \exp[-NTU_1(2 - R_1)/2]
-        
-    1-2 TEMA G, shell and tube exchanger in overall parallelflow arrangement 
+
+    1-2 TEMA G, shell and tube exchanger in overall parallelflow arrangement
     with shell and tube fluids mixed in each pass at the cross section
     (this is only shown in [2]_, and the stream convention in it is different
     but converted here; P1 is still returned):
-        
+
     .. math::
         P_2 = \frac{(B-\alpha^2)}{R_2(A - \alpha^2/R_2 + 2)}
-        
+
     .. math::
         A = \frac{(1-\alpha)^2}{(R_2-0.5)}
-        
+
     .. math::
         B = \frac{4R_2 - \beta(2R_2 - 1)}{2R_2 + 1}
-        
+
     .. math::
         \alpha = \exp\left(\frac{-NTU_2(2R_2-1)}{4}\right)
-        
+
     .. math::
         \beta = \exp\left(\frac{-NTU_2(2R_2+1)}{2}\right)
-        
+
     Parameters
     ----------
     R1 : float
         Heat capacity ratio of the heat exchanger in the P-NTU method,
         calculated with respect to stream 1 (shell side = 1, tube side = 2) [-]
     NTU1 : float
-        Thermal number of transfer units of the heat exchanger in the P-NTU 
+        Thermal number of transfer units of the heat exchanger in the P-NTU
         method, calculated with respect to stream 1 (shell side = 1, tube side
         = 2) [-]
     Ntp : int
@@ -1832,7 +1832,7 @@ def temperature_effectiveness_TEMA_G(R1, NTU1, Ntp, optimal=True):
     -----
     For numbers of tube passes greater than 1 or 2, an exception is raised.
     The convention for the formulas in [1]_ and [3]_ are with the shell side
-    as side 1, and the tube side as side 2. [2]_ has formulas with the 
+    as side 1, and the tube side as side 2. [2]_ has formulas with the
     opposite convention.
 
     Examples
@@ -1842,9 +1842,9 @@ def temperature_effectiveness_TEMA_G(R1, NTU1, Ntp, optimal=True):
 
     References
     ----------
-    .. [1] Shah, Ramesh K., and Dusan P. Sekulic. Fundamentals of Heat 
+    .. [1] Shah, Ramesh K., and Dusan P. Sekulic. Fundamentals of Heat
        Exchanger Design. 1st edition. Hoboken, NJ: Wiley, 2002.
-    .. [2] Thulukkanam, Kuppan. Heat Exchanger Design Handbook, Second Edition. 
+    .. [2] Thulukkanam, Kuppan. Heat Exchanger Design Handbook, Second Edition.
        CRC Press, 2013.
     .. [3] Rohsenow, Warren and James Hartnett and Young Cho. Handbook of Heat
        Transfer, 3E. New York: McGraw-Hill, 1998.
@@ -1889,138 +1889,138 @@ def temperature_effectiveness_TEMA_G(R1, NTU1, Ntp, optimal=True):
 
 
 def temperature_effectiveness_TEMA_E(R1, NTU1, Ntp=1, optimal=True):
-    r'''Returns temperature effectiveness `P1` of a TEMA E type heat exchanger  
+    r'''Returns temperature effectiveness `P1` of a TEMA E type heat exchanger
     with a specified heat capacity ratio, number of transfer units `NTU1`,
-    number of tube passes `Ntp`, and whether or not it is arranged in a more 
+    number of tube passes `Ntp`, and whether or not it is arranged in a more
     countercurrent (optimal configuration) way or a more parallel (optimal=False)
     case. The supported cases are as follows:
-        
+
     * 1-1 TEMA E, shell fluid mixed
     * 1-2 TEMA E, shell fluid mixed (this configuration is symmetric)
     * 1-2 TEMA E, shell fluid split into two steams individually mixed
-    * 1-3 TEMA E, shell and tube fluids mixed, one parallel pass and two 
+    * 1-3 TEMA E, shell and tube fluids mixed, one parallel pass and two
       counterflow passes (efficient)
-    * 1-3 TEMA E, shell and tube fluids mixed, two parallel passes and one 
+    * 1-3 TEMA E, shell and tube fluids mixed, two parallel passes and one
       counteflow pass (inefficient)
     * 1-N TEMA E, shall and tube fluids mixed, efficient counterflow orientation,
       N an even number
-      
+
     1-1 TEMA E, shell fluid mixed:
-        
+
     .. math::
         P_1 = \frac{1 - \exp[-NTU_1(1-R_1)]}{1 - R_1 \exp[-NTU_1(1-R_1)]}
-    
+
     1-2 TEMA E, shell fluid mixed (this configuration is symmetric):
 
     .. math::
         P_1 = \frac{2}{1 + R_1 + E\coth(E\cdot NTU_1/2)}
-        
+
     .. math::
         E = [1 + R_1^2]^{1/2}
-    
+
     1-2 TEMA E, shell fluid split into two steams individually mixed:
-        
+
     .. math::
         P_1 = \frac{1}{R_1}\left[1 - \frac{(2-R_1)(2E+R_1B)}{(2+R_1)(2E-R_1/B)}
         \right]
-        
+
     .. math::
         E = \exp(NTU_1)
-        
+
     .. math::
         B = \exp(-NTU_1 R_1/2)
-        
-    1-3 TEMA E, shell and tube fluids mixed, one parallel pass and two 
+
+    1-3 TEMA E, shell and tube fluids mixed, one parallel pass and two
     counterflow passes (efficient):
-        
+
     .. math::
         P_1 = \frac{1}{R_1} \left[1 - \frac{C}{AC + B^2}\right]
-        
+
     .. math::
         A = X_1(R_1 + \lambda_1)(R_1 - \lambda_2)/(2\lambda_1) - X_3 \delta
         - X_2(R_1 + \lambda_2)(R_1-\lambda_1)/(2\lambda_2) + 1/(1-R_1)
-        
+
     .. math::
         B = X_1(R_1-\lambda_2) - X_2(R_1-\lambda_1) + X_3\delta
-        
+
     .. math::
         C = X_2(3R_1 + \lambda_1) - X_1(3R_1 + \lambda_2) + X_3 \delta
-        
+
     .. math::
         X_i = \exp(\lambda_i NTU_1/3)/(2\delta),\;\; i = 1,2,3
-        
+
     .. math::
         \delta = \lambda_1 - \lambda_2
-        
+
     .. math::
         \lambda_1 = -\frac{3}{2} + \left[\frac{9}{4} + R_1(R_1-1)\right]^{1/2}
-        
+
     .. math::
         \lambda_2 = -\frac{3}{2} - \left[\frac{9}{4} + R_1(R_1-1)\right]^{1/2}
-        
+
     .. math::
         \lambda_3 = R_1
-        
-    1-3 TEMA E, shell and tube fluids mixed, two parallel passes and one 
+
+    1-3 TEMA E, shell and tube fluids mixed, two parallel passes and one
     counteflow pass (inefficient):
-        
+
     .. math::
         P_2 = \left[1 - \frac{C}{(AC + B^2)}\right]
-        
+
     .. math::
         A = \chi_1(1 + R_2 \lambda_1)(1 - R_2\lambda_2)/(2R_2^2\lambda_1) - E
         -\chi_2(1 + R_2\lambda_2)(1 - R_2\lambda_1)/(2R^2\lambda_2) + R/(R-1)
-        
+
     .. math::
         B = \chi_1(1 - R_2\lambda_2)/R_2 - \chi_2(1 - R_2 \lambda_1)/R_2 + E
-        
+
     .. math::
         C = -\chi_1(3 + R_2\lambda_2)/R_2 + \chi_2(3 + R_2\lambda_1)/R_2 + E
-        
+
     .. math::
         E = 0.5\exp(NTU_2/3)
-        
+
     .. math::
         \lambda_1 = (-3 + \delta)/2
-        
+
     .. math::
         \lambda_2 = (-3 - \delta)/2
-        
+
     .. math::
         \delta = \frac{[9R_2^2 + 4(1-R_2))]^{0.5}}{R_2}
-            
+
     .. math::
         \chi_1 = \frac{\exp(\lambda_1 R_2 NTU_2/3)}{2\delta}
-        
+
     .. math::
         \chi_2 = \frac{\exp(\lambda_2 R_2 NTU_2/3)}{2\delta}
-        
+
     1-N TEMA E, shall and tube fluids mixed, efficient counterflow orientation,
     N an even number:
-        
+
     .. math::
         P_2 = \frac{2}{A + B + C}
-        
+
     .. math::
         A = 1 + R_2 + \coth(NTU_2/2)
-        
+
     .. math::
         B = \frac{-1}{N_1}\coth\left(\frac{NTU_2}{2N_1}\right)
-        
+
     .. math::
         C = \frac{1}{N_1}\sqrt{1 + N_1^2 R_2^2}
         \coth\left(\frac{NTU_2}{2N_1}\sqrt{1 + N_1^2 R_2^2}\right)
-        
+
     .. math::
         N_1 = \frac{N_{tp}}{2}
-        
+
     Parameters
     ----------
     R1 : float
         Heat capacity ratio of the heat exchanger in the P-NTU method,
         calculated with respect to stream 1 (shell side = 1, tube side = 2) [-]
     NTU1 : float
-        Thermal number of transfer units of the heat exchanger in the P-NTU 
+        Thermal number of transfer units of the heat exchanger in the P-NTU
         method, calculated with respect to stream 1 (shell side = 1, tube side
         = 2) [-]
     Ntp : int
@@ -2038,11 +2038,11 @@ def temperature_effectiveness_TEMA_E(R1, NTU1, Ntp=1, optimal=True):
 
     Notes
     -----
-    For odd numbers of tube passes greater than 3, an exception is raised. 
-    [2]_ actually has a formula for 5 tube passes, but it is an entire page 
+    For odd numbers of tube passes greater than 3, an exception is raised.
+    [2]_ actually has a formula for 5 tube passes, but it is an entire page
     long.
     The convention for the formulas in [1]_ and [3]_ are with the shell side
-    as side 1, and the tube side as side 2. [2]_ has formulas with the 
+    as side 1, and the tube side as side 2. [2]_ has formulas with the
     opposite convention.
 
     Examples
@@ -2052,9 +2052,9 @@ def temperature_effectiveness_TEMA_E(R1, NTU1, Ntp=1, optimal=True):
 
     References
     ----------
-    .. [1] Shah, Ramesh K., and Dusan P. Sekulic. Fundamentals of Heat 
+    .. [1] Shah, Ramesh K., and Dusan P. Sekulic. Fundamentals of Heat
        Exchanger Design. 1st edition. Hoboken, NJ: Wiley, 2002.
-    .. [2] Thulukkanam, Kuppan. Heat Exchanger Design Handbook, Second Edition. 
+    .. [2] Thulukkanam, Kuppan. Heat Exchanger Design Handbook, Second Edition.
        CRC Press, 2013.
     .. [3] Rohsenow, Warren and James Hartnett and Young Cho. Handbook of Heat
        Transfer, 3E. New York: McGraw-Hill, 1998.
@@ -2103,7 +2103,7 @@ def temperature_effectiveness_TEMA_E(R1, NTU1, Ntp=1, optimal=True):
         NTU1 = NTU1*R1_orig # switch 1
         # R2 = 1/R1 but we want to treat it as R1 in this case
         R1 = 1./R1_orig # switch 2
-        
+
         delta = (9*R1**2 + 4*(1 - R1))**0.5/R1
         l1 = (-3 + delta)/2.
         l2 = (-3 - delta)/2.
@@ -2113,18 +2113,18 @@ def temperature_effectiveness_TEMA_E(R1, NTU1, Ntp=1, optimal=True):
         C = -chi1*(3 + R1*l2)/R1 + chi2*(3 + R1*l1)/R1 + E
         B = chi1*(1 - R1*l2)/R1 - chi2*(1 - R1*l1)/R1 + E
 #        if R1 != 1:
-        A = (chi1*(1 + R1*l1)*(1 - R1*l2)/(2*R1**2*l1) - E 
+        A = (chi1*(1 + R1*l1)*(1 - R1*l2)/(2*R1**2*l1) - E
              - chi2*(1 + R1*l2)*(1 - R1*l1)/(2*R1**2*l2) + R1*(R1 -1))
         # The below change is NOT CONSISTENT with the main expression and is disabled
 #        else:
 #            A = -exp(-NTU1)/18. - exp(NTU1/3)/2. + (5 + NTU1)/9.
         P1 = (1 - C/(A*C + B**2))
-        
+
         P1 = P1/R1_orig # switch 3, confirmed
 
     elif Ntp == 4 or Ntp %2 == 0:
         # The 4 pass case is present in all three sources, and is confirmed to
-        # give the same results for all three for Ntp = 4. However, 
+        # give the same results for all three for Ntp = 4. However,
         # what is awesome about the Thulukkanam version is that it supports
         # n tube passes so long as n is even.
         R1_orig = R1
@@ -2138,225 +2138,225 @@ def temperature_effectiveness_TEMA_E(R1, NTU1, Ntp=1, optimal=True):
         B = -1/N1/tanh(NTU1/(2*N1))
         A = 1 + R1 + 1/tanh(NTU1/2.)
         P1 = 2/(A + B + C)
-        
+
         P1 = P1/R1_orig # switch 3, confirmed
     else:
         raise ValueError('For TEMA E shells with an odd number of tube passes more than 3, no solution is implemented.')
     return P1
 
 
-def temperature_effectiveness_plate(R1, NTU1, Np1, Np2, counterflow=True, 
+def temperature_effectiveness_plate(R1, NTU1, Np1, Np2, counterflow=True,
                                     passes_counterflow=True, reverse=False):
-    r'''Returns the temperature effectiveness `P1` of side 1 of a plate heat 
+    r'''Returns the temperature effectiveness `P1` of side 1 of a plate heat
     exchanger with a specified side 1 heat capacity ratio `R1`, side 1 number
     of transfer units `NTU1`, number of passes on sides 1 and 2 (respectively
-    `Np1` and `Np2`). 
-        
-    For all cases, the function also takes as arguments whether the exchanger 
-    is setup in an overall counter or parallel orientation `counterflow`, and 
+    `Np1` and `Np2`).
+
+    For all cases, the function also takes as arguments whether the exchanger
+    is setup in an overall counter or parallel orientation `counterflow`, and
     whether or not individual stream passes are themselves counterflow or
-    parallel. 
-    
+    parallel.
+
     The 20 supported cases are as follows. (the first number of sides listed
     refers to side 1, and the second number refers to side 2):
-        
+
     * 1 pass/1 pass parallelflow
     * 1 pass/1 pass counterflow
     * 1 pass/2 pass
     * 1 pass/3 pass or 3 pass/1 pass (with the two end passes in parallel)
     * 1 pass/3 pass or 3 pass/1 pass (with the two end passes in counterflow)
-    * 1 pass/4 pass 
-    * 2 pass/2 pass, overall parallelflow, individual passes in parallel 
+    * 1 pass/4 pass
+    * 2 pass/2 pass, overall parallelflow, individual passes in parallel
     * 2 pass/2 pass, overall parallelflow, individual passes counterflow
-    * 2 pass/2 pass, overall counterflow, individual passes parallelflow 
-    * 2 pass/2 pass, overall counterflow, individual passes counterflow 
-    * 2 pass/3 pass or 3 pass/2 pass, overall parallelflow 
+    * 2 pass/2 pass, overall counterflow, individual passes parallelflow
+    * 2 pass/2 pass, overall counterflow, individual passes counterflow
+    * 2 pass/3 pass or 3 pass/2 pass, overall parallelflow
     * 2 pass/3 pass or 3 pass/2 pass, overall counterflow
     * 2 pass/4 pass or 4 pass/2 pass, overall parallel flow
     * 2 pass/4 pass or 4 pass/2 pass, overall counterflow flow
-    
+
     For all plate heat exchangers, there are two common formulas used by most
     of the expressions.
-    
+
     .. math::
         P_p(x, y) = \frac{1 - \exp[-x(1 + y)]}{1 + y}
-        
+
         P_c(x, y) = \frac{1 - \exp[-x(1 - y)]}{1 - y\exp[-x(1 - y)]}
-        
+
     The main formulas used are as follows. Note that for some cases such as
-    4 pass/2 pass, the formula is not shown because it is that of 2 pass/4 
+    4 pass/2 pass, the formula is not shown because it is that of 2 pass/4
     pass, but with R1, NTU1, and P1 conversions.
-        
+
     For 1 pass/1 pass paralleflow (streams symmetric):
-        
+
     .. math::
         P_1 = P_p(NTU_1, R_1)
-        
+
     For 1 pass/1 pass counterflow (streams symmetric):
-    
+
     .. math::
         P_1 = P_c(NTU_1, R_1)
-            
+
     For 1 pass/2 pass (any of the four possible configurations):
-        
+
     .. math::
         P_1 = 0.5(A + B - 0.5ABR_1)
-        
+
     .. math::
         A = P_p(NTU_1, 0.5R_1)
-        
+
     .. math::
         B = P_c(NTU_1, 0.5R_1)
-        
+
     For 1 pass/3 pass (with the two end passes in parallel):
-        
+
     .. math::
-        P_1 = \frac{1}{3}\left[B + A\left(1 - \frac{R_1 B}{3}\right)\left(2 
+        P_1 = \frac{1}{3}\left[B + A\left(1 - \frac{R_1 B}{3}\right)\left(2
         - \frac{R_1 A}{3}\right)\right]
-        
+
     .. math::
         A = P_p\left(NTU_1, \frac{R_1}{3}\right)
-        
+
     .. math::
         B = P_c\left(NTU_1, \frac{R_1}{3}\right)
-        
+
     For 1 pass/3 pass (with the two end passes in counterflow):
-        
+
     .. math::
         P_1 = \frac{1}{3}\left[A + B\left(1 - \frac{R_1 A}{3}\right)\left(2
         - \frac{R_1 B}{3}\right)\right]
-            
+
     .. math::
         A = P_p\left(NTU_1, \frac{R_1}{3}\right)
-        
+
     .. math::
         B = P_c\left(NTU_1, \frac{R_1}{3}\right)
-        
+
     For 1 pass/4 pass (any of the four possible configurations):
-    
+
     .. math::
         P_1 = \frac{1-Q}{R_1}
-        
+
     .. math::
         Q = \left(1 - \frac{AR_1}{4}\right)^2\left(1 - \frac{BR_1}{4}\right)^2
-        
+
     .. math::
         A = P_p\left(NTU_1, \frac{R_1}{4}\right)
-        
+
     .. math::
         B = P_c\left(NTU_1, \frac{R_1}{4}\right)
-        
-    For 2 pass/2 pass, overall parallelflow, individual passes in parallel 
+
+    For 2 pass/2 pass, overall parallelflow, individual passes in parallel
     (stream symmetric):
-        
+
     .. math::
         P_1 = P_p(NTU_1, R_1)
-        
+
     For 2 pass/2 pass, overall parallelflow, individual passes counterflow
     (stream symmetric):
-        
+
     .. math::
         P_1 = B[2 - B(1 + R_1)]
-        
+
     .. math::
         B = P_c\left(\frac{NTU_1}{2}, R_1\right)
-        
-    For 2 pass/2 pass, overall counterflow, individual passes parallelflow 
+
+    For 2 pass/2 pass, overall counterflow, individual passes parallelflow
     (stream symmetric):
-        
+
     .. math::
         P_1 = \frac{2A - A^2(1 + R_1)}{1 - R_1 A^2}
-        
+
     .. math::
         A = P_p\left(\frac{NTU_1}{2}, R_1\right)
-        
-    For 2 pass/2 pass, overall counterflow and individual passes counterflow 
+
+    For 2 pass/2 pass, overall counterflow and individual passes counterflow
     (stream symmetric):
-        
+
     .. math::
         P_1 = P_c(NTU_1, R_1)
-        
+
     For 2 pass/3 pass, overall parallelflow:
-        
+
     .. math::
         P_1 = A + B - \left(\frac{2}{9} + \frac{D}{3}\right)
         (A^2 + B^2) - \left(\frac{5}{9} + \frac{4D}{3}\right)AB
         + \frac{D(1+D)AB(A+B)}{3} - \frac{D^2A^2B^2}{9}
-        
+
     .. math::
         A = P_p\left(\frac{NTU_1}{2}, D\right)
-        
+
     .. math::
         B = P_c\left(\frac{NTU_1}{2}, D\right)
-        
+
     .. math::
         D = \frac{2R_1}{3}
-        
+
     For 2 pass/3 pass, overall counterflow:
-        
+
     .. math::
         P_1 = \frac{A + 0.5B + 0.5C + D}{R_1}
-        
+
     .. math::
         A = \frac{2R_1 EF^2 - 2EF + F - F^2}
         {2R_1 E^2 F^2 - E^2 - F^2 - 2EF + E + F}
-        
+
     .. math::
         B = \frac{A(E-1)}{F}
-        
+
     .. math::
         C = \frac{1 - A}{E}
-        
+
     .. math::
         D = R_1 E^2 C - R_1 E + R_1 - \frac{C}{2}
-        
+
     .. math::
         E = \frac{3}{2R_1 G}
-        
+
     .. math::
         F = \frac{3}{2R_1 H}
-        
+
     .. math::
         G = P_c\left(\frac{NTU_1}{2}, \frac{2R_1}{3}\right)
-        
+
     .. math::
         H = P_p\left(\frac{NTU_1}{2}, \frac{2R_1}{3}\right)
-        
+
     For 2 pass/4 pass, overall parallel flow:
-        
+
     .. math::
         P_1 = 2D - (1 + R_1)D^2
-        
+
     .. math::
         D = \frac{A + B - 0.5ABR_1}{2}
-        
+
     .. math::
         A = P_p\left(\frac{NTU_1}{2}, \frac{R_1}{2}\right)
-        
+
     .. math::
         B = P_c\left(\frac{NTU_1}{2}, \frac{R_1}{2}\right)
-        
+
     For 2 pass/4 pass, overall counterflow flow:
-        
+
     .. math::
         P_1 = \frac{2D - (1+R_1)D^2}{1 - D^2 R_1}
-        
+
     .. math::
         D = \frac{A + B - 0.5ABR_1}{2}
-        
+
     .. math::
         A = P_p\left(\frac{NTU_1}{2}, \frac{R_1}{2}\right)
-        
+
     .. math::
         B = P_c\left(\frac{NTU_1}{2}, \frac{R_1}{2}\right)
-                
+
     Parameters
     ----------
     R1 : float
         Heat capacity ratio of the heat exchanger in the P-NTU method,
         calculated with respect to stream 1 [-]
     NTU1 : float
-        Thermal number of transfer units of the heat exchanger in the P-NTU 
+        Thermal number of transfer units of the heat exchanger in the P-NTU
         method, calculated with respect to stream 1 [-]
     Np1 : int
         Number of passes on side 1 [-]
@@ -2366,10 +2366,10 @@ def temperature_effectiveness_plate(R1, NTU1, Np1, Np2, counterflow=True,
         Whether or not the overall flow through the heat exchanger is in
         counterflow or parallel flow, [-]
     passes_counterflow : bool
-        In addition to the overall flow direction, in some cases individual 
+        In addition to the overall flow direction, in some cases individual
         passes may be in counter or parallel flow; this controls that [-]
     reverse : bool
-        Used **internally only** to allow cases like the 1-4 formula to work  
+        Used **internally only** to allow cases like the 1-4 formula to work
         for the 4-1 flow case, without having to duplicate the code [-]
 
     Returns
@@ -2385,11 +2385,11 @@ def temperature_effectiveness_plate(R1, NTU1, Np1, Np2, counterflow=True,
     of plates. The fluid velocities must be uniform across the plate channels,
     and the flow must be uniformly distributed between the channels. The heat
     transfer coefficient is also assumed constant.
-    
+
     The defaults of counterflow=True and passes_counterflow=True will always
     result in the most efficient heat exchanger option, normally what is
     desired.
-    
+
     If a number of passes which is not supported is provided, an exception is
     raised.
 
@@ -2397,29 +2397,29 @@ def temperature_effectiveness_plate(R1, NTU1, Np1, Np2, counterflow=True,
     --------
     Three passes on side 1; one pass on side 2; two end passes in counterflow
     orientation.
-    
+
     >>> temperature_effectiveness_plate(R1=1/3., NTU1=1., Np1=3, Np2=1)
     0.5743514352720835
-    
+
     If the same heat exchanger (in terms of NTU1 and R1) were operating with
     sides 1 and 2 switched, a slightly less efficient design results.
-    
+
     >>> temperature_effectiveness_plate(R1=1/3., NTU1=1., Np1=1, Np2=3)
     0.5718726757657066
-    
+
     References
     ----------
-    .. [1] Shah, Ramesh K., and Dusan P. Sekulic. Fundamentals of Heat 
+    .. [1] Shah, Ramesh K., and Dusan P. Sekulic. Fundamentals of Heat
        Exchanger Design. 1st edition. Hoboken, NJ: Wiley, 2002.
     .. [2] Rohsenow, Warren and James Hartnett and Young Cho. Handbook of Heat
        Transfer, 3E. New York: McGraw-Hill, 1998.
-    .. [3] Kandlikar, S. G., and R. K. Shah. "Asymptotic Effectiveness-NTU 
-       Formulas for Multipass Plate Heat Exchangers." Journal of Heat Transfer 
+    .. [3] Kandlikar, S. G., and R. K. Shah. "Asymptotic Effectiveness-NTU
+       Formulas for Multipass Plate Heat Exchangers." Journal of Heat Transfer
        111, no. 2 (May 1, 1989): 314-21. doi:10.1115/1.3250679.
     .. [4] Kandlikar, S. G., and R. K. Shah. "Multipass Plate Heat Exchangers
-       Effectiveness-NTU Results and Guidelines for Selecting Pass 
-       Arrangements." Journal of Heat Transfer 111, no. 2 (May 1, 1989): 
-       300-313. doi:10.1115/1.3250678.   
+       Effectiveness-NTU Results and Guidelines for Selecting Pass
+       Arrangements." Journal of Heat Transfer 111, no. 2 (May 1, 1989):
+       300-313. doi:10.1115/1.3250678.
     '''
     if Np1 == 1 and Np2 == 1 and counterflow:
         return Pc(NTU1, R1)
@@ -2463,7 +2463,7 @@ def temperature_effectiveness_plate(R1, NTU1, Np1, Np2, counterflow=True,
             B = Pc(0.5*NTU1, R1)
             return B*(2. - B*(1. + R1))
         elif not counterflow and not passes_counterflow:
-            return temperature_effectiveness_plate(R1, NTU1, Np1=1, Np2=1, 
+            return temperature_effectiveness_plate(R1, NTU1, Np1=1, Np2=1,
                                                    passes_counterflow=True,
                                                    counterflow=False,
                                                    reverse=False)
@@ -2507,22 +2507,22 @@ def temperature_effectiveness_plate(R1, NTU1, Np1, Np2, counterflow=True,
         # Note that asymmetric performs differently depending on the arguments
         # The user still needs to input R1, NTU1 for side 1
         # so if they want to do a 3-1 instead of a 1-3 as is implemented here
-        # They give R1 and NTU1 for "3 pass" side instead of the "1 pass" side 
+        # They give R1 and NTU1 for "3 pass" side instead of the "1 pass" side
         # and will get back P1 for the "3 pass" side.
-        
+
         # numba is dying on this recursion when caching is on, disable caching for now
         R2 = 1./R1
         NTU2 = NTU1*R1
         P2 = temperature_effectiveness_plate(R1=R2, NTU1=NTU2, Np1=Np2, Np2=Np1,
-                                             counterflow=counterflow, 
-                                             passes_counterflow=passes_counterflow, 
+                                             counterflow=counterflow,
+                                             passes_counterflow=passes_counterflow,
                                              reverse=True)
         P1 = P2*R2
         return P1
-    
+
     raise ValueError('Supported number of passes does not have a formula available')
 
-    
+
 NTU_from_plate_2_3_parallel_offset = [7.5e-09, 1.4249999999999999e-08, 2.7074999999999996e-08, 5.144249999999999e-08, 9.774074999999998e-08, 1.8570742499999996e-07,
         3.528441074999999e-07, 6.704038042499998e-07, 1.2737672280749996e-06, 2.420157733342499e-06, 4.598299693350748e-06, 8.73676941736642e-06,
         1.6599861892996197e-05, 3.153973759669277e-05, 5.9925501433716265e-05, 0.0001138584527240609, 0.0002163310601757157, 0.0004110290143338598,
@@ -2947,7 +2947,7 @@ NTU_from_P_J_2_q = [
         [-9.742102821144731e-05, -0.002065573589076824, 0.019790600076312437, 0.41450177639499663, 1.235749069760604, 2.312490295019506, 1.0],
         [-1.5856176703649368e-05, -0.00041496261982164757, 0.0018006879594633617, -0.012449317525219798, 0.13114216762570655, -0.6025944343758391, 1.0],
         [4.690094899391156e-10, 1.1078843951667822e-07, 3.7862270042457132e-06, -0.0001399289022755603, 0.006526270606084676, 0.00022681636474048618, 1.0]
-    ] 
+    ]
 NTU_from_P_J_4_offset = [7.5e-08, 1.5e-07, 3e-07, 6e-07, 1.2e-06, 2.4e-06, 4.8e-06, 9.6e-06, 1.92e-05, 3.84e-05, 7.68e-05, 0.0001536, 0.0003072, 0.0006144, 0.0012288,
         0.0024576, 0.0049152, 0.0098304, 0.0196608, 0.0393216, 0.0786432, 0.1572864, 0.3145728, 0.6291456, 1.2582912, 2.5165824, 5.0331648, 10.0663296,
         20.1326592, 40.2653184
@@ -3016,7 +3016,7 @@ NTU_from_P_J_4_q = [
         [7.574689191705429e-06, 0.0015757631170495458, 0.07698932879125621, 1.0],
         [-8.744918585890159e-05, -0.011691953640170439, -0.31212155570753924, 1.0]
     ]
-    
+
 NTU_from_P_basic_crossflow_mixed_12_offset = [7.5e-08, 1.5e-07, 3e-07, 6e-07, 1.2e-06, 2.4e-06, 4.8e-06, 9.6e-06, 1.92e-05, 3.84e-05, 7.68e-05, 0.0001536, 0.0003072, 0.0006144, 0.0012288,
         0.0024576, 0.0049152, 0.0098304, 0.0196608, 0.0393216, 0.0786432, 0.1572864, 0.3145728, 0.6291456, 1.2582912, 2.5165824, 5.0331648, 10.0663296,
         20.1326592, 40.2653184, 80.5306368, 161.0612736, 322.1225472, 644.2450944, 1288.4901888
@@ -3100,7 +3100,7 @@ NTU_from_P_basic_crossflow_mixed_12_q = [
 
 
 def _NTU_from_P_objective(NTU1, R1, P1, function, *args):
-    '''Private function to hold the common objective function used by 
+    '''Private function to hold the common objective function used by
     all backwards solvers for the P-NTU method.
     These methods are really hard on on floating points (overflows and divide
     by zeroes due to numbers really close to 1), so if the function fails,
@@ -3124,7 +3124,7 @@ def _NTU_from_P_objective(NTU1, R1, P1, function, *args):
 
 
 def _NTU_from_P_erf(NTU1, *args):
-    '''Private function to hold the common objective function used by 
+    '''Private function to hold the common objective function used by
     all backwards solvers for the P-NTU method.
     These methods are really hard on on floating points (overflows and divide
     by zeroes due to numbers really close to 1), so if the function fails,
@@ -3153,7 +3153,7 @@ def _NTU_from_P_solver(P1, R1, NTU_min, NTU_max, function, guess, *args):
         # secant failed. For some reason, the bisection in secant is going to wrong wrong value
         # floating point really sucks
         pass
-    
+
     # Better for numerical stability if we don't need to evaluate these
     P1_max = _NTU_from_P_erf(NTU_max, *(R1, 0.0, function) + args)
     P1_min = _NTU_from_P_erf(NTU_min, *(R1, 0.0, function) + args)
@@ -3171,9 +3171,9 @@ def _NTU_max_for_P_solver(ps, qs, offsets, R1):
     '''Private function to calculate the upper bound on the NTU1 value in the
     P-NTU method. This value is calculated via a pade approximation obtained
     on the result of a global minimizer which calculated the maximum P1
-    at a given R1 from ~1E-7 to approximately 100. This should suffice for 
+    at a given R1 from ~1E-7 to approximately 100. This should suffice for
     engineering applications. This value is needed to bound the solver.
-    '''        
+    '''
     offset_max = offsets[-1]
     for offset, p, q in zip(offsets, ps, qs):
         if R1 < offset or offset == offset_max:
@@ -3183,43 +3183,43 @@ def _NTU_max_for_P_solver(ps, qs, offsets, R1):
 
 def NTU_from_P_basic(P1, R1, subtype='crossflow'):
     r'''Returns the number of transfer units of a basic heat exchanger type
-    with a specified (for side 1) thermal effectiveness `P1`, and heat capacity 
+    with a specified (for side 1) thermal effectiveness `P1`, and heat capacity
     ratio `R1`. The supported cases are as follows:
-        
+
     * Counterflow (ex. double-pipe) [analytical]
     * Parallel (ex. double pipe inefficient configuration) [analytical]
     * Crossflow, single pass, fluids unmixed [numerical]
     * Crossflow, single pass, fluid 1 mixed, fluid 2 unmixed [analytical]
     * Crossflow, single pass, fluid 2 mixed, fluid 1 unmixed [analytical]
     * Crossflow, single pass, both fluids mixed [numerical]
-    
-    The analytical solutions, for those cases they are available, are as 
+
+    The analytical solutions, for those cases they are available, are as
     follows:
-        
+
     Counterflow:
-        
+
     .. math::
-        NTU_1 = - \frac{1}{R_{1} - 1} \log{\left (\frac{P_{1} R_{1} - 1}{P_{1} 
+        NTU_1 = - \frac{1}{R_{1} - 1} \log{\left (\frac{P_{1} R_{1} - 1}{P_{1}
         - 1} \right )}
-    
+
     Parallel:
-    
+
     .. math::
-        NTU_1 = \frac{1}{R_{1} + 1} \log{\left (- \frac{1}{P_{1} \left(R_{1} 
+        NTU_1 = \frac{1}{R_{1} + 1} \log{\left (- \frac{1}{P_{1} \left(R_{1}
         + 1\right) - 1} \right )}
-    
+
     Crossflow, single pass, fluid 1 mixed, fluid 2 unmixed:
-        
+
     .. math::
         NTU_1 = - \frac{1}{R_{1}} \log{\left (R_{1} \log{\left (- \left(P_{1}
         - 1\right) e^{\frac{1}{R_{1}}} \right )} \right )}
-    
+
     Crossflow, single pass, fluid 2 mixed, fluid 1 unmixed
-    
+
     .. math::
         NTU_1 = - \log{\left (\frac{1}{R_{1}} \log{\left (- \left(P_{1} R_{1}
         - 1\right) e^{R_{1}} \right )} \right )}
-    
+
     Parameters
     ----------
     P1 : float
@@ -3229,14 +3229,14 @@ def NTU_from_P_basic(P1, R1, subtype='crossflow'):
         Heat capacity ratio of the heat exchanger in the P-NTU method,
         calculated with respect to stream 1 [-]
     subtype : float
-        The type of heat exchanger; one of 'counterflow', 'parallel', 
-        'crossflow', 'crossflow approximate', 'crossflow, mixed 1', 
+        The type of heat exchanger; one of 'counterflow', 'parallel',
+        'crossflow', 'crossflow approximate', 'crossflow, mixed 1',
         'crossflow, mixed 2', 'crossflow, mixed 1&2'.
-        
+
     Returns
     -------
     NTU1 : float
-        Thermal number of transfer units of the heat exchanger in the P-NTU 
+        Thermal number of transfer units of the heat exchanger in the P-NTU
         method, calculated with respect to stream 1 [-]
 
     Notes
@@ -3244,22 +3244,22 @@ def NTU_from_P_basic(P1, R1, subtype='crossflow'):
     Although this function allows the thermal effectiveness desired to be
     specified, it does not mean such a high value can be obtained. An exception
     is raised when this occurs, although not always a helpful one.
-    
+
     >>> NTU_from_P_basic(P1=.99, R1=.1, subtype='parallel')
     Traceback (most recent call last):
     ValueError: math domain error
-            
+
     For the 'crossflow approximate' solution the function is monotonic, and a
-    bounded solver is used within the range of NTU1 from 1E-11 to 1E5. 
-    
+    bounded solver is used within the range of NTU1 from 1E-11 to 1E5.
+
     For the full correct 'crossflow' solution, the initial guess for newton's
     method is obtained by the 'crossflow approximate' solution; the function
-    may not converge because of inaccuracy performing the numerical integral 
+    may not converge because of inaccuracy performing the numerical integral
     involved.
 
     For the 'crossflow, mixed 1&2' solution, a bounded solver is first use, but
     the upper bound on P1 and the upper NTU1 limit is calculated from a pade
-    approximation performed with mpmath. 
+    approximation performed with mpmath.
 
     Examples
     --------
@@ -3278,9 +3278,9 @@ def NTU_from_P_basic(P1, R1, subtype='crossflow'):
     elif subtype == 'crossflow, mixed 2':
         return -log(log(-(P1*R1 - 1.)*exp(R1))/R1)
     elif subtype == 'crossflow, mixed 1&2':
-        NTU_max = _NTU_max_for_P_solver(NTU_from_P_basic_crossflow_mixed_12_p, 
+        NTU_max = _NTU_max_for_P_solver(NTU_from_P_basic_crossflow_mixed_12_p,
                                         NTU_from_P_basic_crossflow_mixed_12_q,
-                                        NTU_from_P_basic_crossflow_mixed_12_offset, R1)        
+                                        NTU_from_P_basic_crossflow_mixed_12_offset, R1)
     elif subtype == 'crossflow approximate':
         # These are tricky but also easy because P1 can always be 1
         NTU_max = 1E5
@@ -3296,18 +3296,18 @@ def NTU_from_P_basic(P1, R1, subtype='crossflow'):
 
 def NTU_from_P_G(P1, R1, Ntp, optimal=True):
     r'''Returns the number of transfer units of a TEMA G type heat exchanger
-    with a specified (for side 1) thermal effectiveness `P1`, heat capacity 
+    with a specified (for side 1) thermal effectiveness `P1`, heat capacity
     ratio `R1`, the number of tube passes `Ntp`, and for the two-pass case
-    whether or not the inlets are arranged optimally. The supported cases are 
+    whether or not the inlets are arranged optimally. The supported cases are
     as follows:
-        
-    * One tube pass (tube fluid split into two streams individually mixed,  
+
+    * One tube pass (tube fluid split into two streams individually mixed,
       shell fluid mixed)
-    * Two tube passes (shell and tube exchanger with shell and tube fluids  
+    * Two tube passes (shell and tube exchanger with shell and tube fluids
       mixed in each pass at the cross section), counterflow arrangement
-    * Two tube passes (shell and tube exchanger with shell and tube fluids  
+    * Two tube passes (shell and tube exchanger with shell and tube fluids
       mixed in each pass at the cross section), parallelflow arrangement
-                
+
     Parameters
     ----------
     P1 : float
@@ -3326,30 +3326,30 @@ def NTU_from_P_G(P1, R1, Ntp, optimal=True):
     Returns
     -------
     NTU1 : float
-        Thermal number of transfer units of the heat exchanger in the P-NTU 
+        Thermal number of transfer units of the heat exchanger in the P-NTU
         method, calculated with respect to stream 1 (shell side = 1, tube side
         = 2) [-]
 
     Notes
     -----
     For numbers of tube passes greater than 1 or 2, an exception is raised.
-    
+
     Although this function allows the thermal effectiveness desired to be
     specified, it does not mean such a high value can be obtained. An exception
     is raised which shows the maximum possible effectiveness obtainable at the
     specified `R1` and configuration.
-    
+
     >>> NTU_from_P_G(P1=1, R1=1/3., Ntp=2)
     Traceback (most recent call last):
     ValueError: No solution possible gives such a high P1; maximum P1=0.954545 at NTU1=10000.000000
-    
-    Of the three configurations, 1 pass and the optimal 2 pass have monotonic 
+
+    Of the three configurations, 1 pass and the optimal 2 pass have monotonic
     functions which allow for a bounded solver to work smoothly. In both cases
     a solution is searched for between NTU1 values of 1E-11 and 1E-4.
-    
+
     For the 2 pass unoptimal solution, a bounded solver is first use, but
     the upper bound on P1 and the upper NTU1 limit is calculated from a pade
-    approximation performed with mpmath. 
+    approximation performed with mpmath.
 
     Examples
     --------
@@ -3364,7 +3364,7 @@ def NTU_from_P_G(P1, R1, Ntp, optimal=True):
         # does not allow NTU to increase though, but that would be another
         # binary bisection process, different from the current pipeline
     elif Ntp == 2 and not optimal:
-        NTU_max = _NTU_max_for_P_solver(NTU_from_G_2_unoptimal_p, NTU_from_G_2_unoptimal_q, 
+        NTU_max = _NTU_max_for_P_solver(NTU_from_G_2_unoptimal_p, NTU_from_G_2_unoptimal_q,
                                         NTU_from_G_2_unoptimal_offset, R1)
     else:
         raise ValueError('Supported numbers of tube passes are 1 or 2.')
@@ -3373,14 +3373,14 @@ def NTU_from_P_G(P1, R1, Ntp, optimal=True):
 
 def NTU_from_P_J(P1, R1, Ntp):
     r'''Returns the number of transfer units of a TEMA J type heat exchanger
-    with a specified (for side 1) thermal effectiveness `P1`, heat capacity 
-    ratio `R1`, and the number of tube passes `Ntp`. The supported cases are 
+    with a specified (for side 1) thermal effectiveness `P1`, heat capacity
+    ratio `R1`, and the number of tube passes `Ntp`. The supported cases are
     as follows:
-        
+
     * One tube pass (shell fluid mixed)
     * Two tube passes (shell fluid mixed, tube pass mixed between passes)
     * Four tube passes (shell fluid mixed, tube pass mixed between passes)
-    
+
     Parameters
     ----------
     P1 : float
@@ -3391,33 +3391,33 @@ def NTU_from_P_J(P1, R1, Ntp):
         calculated with respect to stream 1 (shell side = 1, tube side = 2) [-]
     Ntp : int
         Number of tube passes, 1, 2, or 4, [-]
-        
+
     Returns
     -------
     NTU1 : float
-        Thermal number of transfer units of the heat exchanger in the P-NTU 
+        Thermal number of transfer units of the heat exchanger in the P-NTU
         method, calculated with respect to stream 1 (shell side = 1, tube side
         = 2) [-]
 
     Notes
     -----
     For numbers of tube passes that are not 1, 2, or 4, an exception is raised.
-    
+
     For the 1 tube pass case, a bounded solver is used to solve the equation
     numerically, with NTU1 ranging from 1E-11 to 1E3. NTU1 grows extremely
-    quickly near its upper limit (NTU1 diverges to infinity at this maximum, 
+    quickly near its upper limit (NTU1 diverges to infinity at this maximum,
     but because the solver is bounded it will only increase up to 1000 before
     an exception is raised).
-        
+
     >>> NTU_from_P_J(P1=.995024, R1=.01, Ntp=1)
     13.940758768266656
     >>> NTU_from_P_J(P1=.99502487562189, R1=.01, Ntp=1)  # doctest: +SKIP
     Traceback (most recent call last):
     ValueError: No solution possible gives such a high P1; maximum P1=0.995025 at NTU1=1000.000000
-    
+
     For the 2 pass and 4 pass solution, a bounded solver is first use, but
     the upper bound on P1 and the upper NTU1 limit is calculated from a pade
-    approximation performed with mpmath. These normally do not allow NTU1 to 
+    approximation performed with mpmath. These normally do not allow NTU1 to
     rise above 100.
 
     Examples
@@ -3446,38 +3446,38 @@ def NTU_from_P_J(P1, R1, Ntp):
 
 def NTU_from_P_E(P1, R1, Ntp, optimal=True):
     r'''Returns the number of transfer units of a TEMA E type heat exchanger
-    with a specified (for side 1) thermal effectiveness `P1`, heat capacity 
+    with a specified (for side 1) thermal effectiveness `P1`, heat capacity
     ratio `R1`, the number of tube passes `Ntp`, and for the two-pass case
-    whether or not the inlets are arranged optimally. The supported cases are 
+    whether or not the inlets are arranged optimally. The supported cases are
     as follows:
-        
+
     * 1-1 TEMA E, shell fluid mixed
     * 1-2 TEMA E, shell fluid mixed (this configuration is symmetric)
     * 1-2 TEMA E, shell fluid split into two steams individually mixed
-    * 1-3 TEMA E, shell and tube fluids mixed, one parallel pass and two 
+    * 1-3 TEMA E, shell and tube fluids mixed, one parallel pass and two
       counterflow passes (efficient)
-    * 1-3 TEMA E, shell and tube fluids mixed, two parallel passes and one 
+    * 1-3 TEMA E, shell and tube fluids mixed, two parallel passes and one
       counteflow pass (inefficient)
-    * 1-N TEMA E, shall and tube fluids mixed, efficient counterflow 
+    * 1-N TEMA E, shall and tube fluids mixed, efficient counterflow
       orientation, N an even number
-      
-    Two of these cases have analytical solutions; the rest use numerical 
+
+    Two of these cases have analytical solutions; the rest use numerical
     solvers of varying quality.
-    
+
     The analytical solution to 1-1 TEMA E, shell fluid mixed (the same as pure
     counterflow):
-        
+
     .. math::
-        NTU_1 = - \frac{1}{R_{1} - 1} \log{\left (\frac{P_{1} R_{1} - 1}{P_{1} 
+        NTU_1 = - \frac{1}{R_{1} - 1} \log{\left (\frac{P_{1} R_{1} - 1}{P_{1}
         - 1} \right )}
-    
+
     1-2 TEMA E, shell fluid mixed:
-        
+
     .. math::
-        NTU_1 = \frac{2}{\sqrt{R_{1}^{2} + 1}} \log{\left (\sqrt{\frac{P_{1} 
-        R_{1} - P_{1} \sqrt{R_{1}^{2} + 1} + P_{1} - 2}{P_{1} R_{1} + P_{1} 
+        NTU_1 = \frac{2}{\sqrt{R_{1}^{2} + 1}} \log{\left (\sqrt{\frac{P_{1}
+        R_{1} - P_{1} \sqrt{R_{1}^{2} + 1} + P_{1} - 2}{P_{1} R_{1} + P_{1}
         \sqrt{R_{1}^{2} + 1} + P_{1} - 2}} \right )}
-        
+
     Parameters
     ----------
     P1 : float
@@ -3496,24 +3496,24 @@ def NTU_from_P_E(P1, R1, Ntp, optimal=True):
     Returns
     -------
     NTU1 : float
-        Thermal number of transfer units of the heat exchanger in the P-NTU 
+        Thermal number of transfer units of the heat exchanger in the P-NTU
         method, calculated with respect to stream 1 (shell side = 1, tube side
         = 2) [-]
 
     Notes
     -----
-    For odd numbers of tube passes greater than 3, an exception is raised. 
-    
+    For odd numbers of tube passes greater than 3, an exception is raised.
+
     For the 2 pass, unoptimal case, a bounded solver is used with NTU1 between
     1E-11 and 100; the solution to any feasible P1 was found to lie in there.
     For the 4 or a higher even number of pass case, the upper limit on NTU1
     is 1000; this solver works pretty well, but as NTU1 reaches its limit the
-    change in P1 is so small a smaller but also correct solution is often 
+    change in P1 is so small a smaller but also correct solution is often
     returned.
-    
+
     For both the optimal and unoptimal 3 tube pass case, a solution is only
     returned if NTU1 is between 1E-11 and 10. These functions are extremely
-    mathematically frustrating, and as NTU1 rises above 10 catastrophic 
+    mathematically frustrating, and as NTU1 rises above 10 catastrophic
     cancellation quickly results in this expression finding a ZeroDivisionError.
     The use of arbitrary prevision helps little - quickly 1000 digits are needed,
     and then 1000000 digits, and so one. Using SymPy's rational number support
@@ -3537,7 +3537,7 @@ def NTU_from_P_E(P1, R1, Ntp, optimal=True):
         x1 = R1*R1 + 1.
         return 2.*log(((P1*R1 - P1*x1**0.5 + P1 - 2.)/(P1*R1 + P1*x1**0.5 + P1 - 2.))**0.5)*(x1)**-.5
     elif Ntp == 2 and not optimal:
-        NTU_max = 1E2 
+        NTU_max = 1E2
         # Can't find anywhere it needs to go above 70 to reach the maximum
     elif Ntp == 3 and optimal:
         # no pade could be found, just about the worst-conditioned problem
@@ -3557,17 +3557,17 @@ def NTU_from_P_E(P1, R1, Ntp, optimal=True):
 
 def NTU_from_P_H(P1, R1, Ntp, optimal=True):
     r'''Returns the number of transfer units of a TEMA H type heat exchanger
-    with a specified (for side 1) thermal effectiveness `P1`, heat capacity 
+    with a specified (for side 1) thermal effectiveness `P1`, heat capacity
     ratio `R1`, the number of tube passes `Ntp`, and for the two-pass case
-    whether or not the inlets are arranged optimally. The supported cases are 
+    whether or not the inlets are arranged optimally. The supported cases are
     as follows:
-        
-    * One tube pass (tube fluid split into two streams individually mixed,  
+
+    * One tube pass (tube fluid split into two streams individually mixed,
       shell fluid mixed)
     * Two tube passes (shell fluid mixed, tube pass mixed between passes)
     * Two tube passes (shell fluid mixed, tube pass mixed between passes, inlet
       tube side next to inlet shell-side)
-                    
+
     Parameters
     ----------
     P1 : float
@@ -3582,27 +3582,27 @@ def NTU_from_P_H(P1, R1, Ntp, optimal=True):
         Whether or not the arrangement is configured to give more of a
         countercurrent and efficient (True) case or an inefficient parallel
         case, [-]
-        
+
     Returns
     -------
     NTU1 : float
-        Thermal number of transfer units of the heat exchanger in the P-NTU 
+        Thermal number of transfer units of the heat exchanger in the P-NTU
         method, calculated with respect to stream 1 (shell side = 1, tube side
         = 2) [-]
 
     Notes
     -----
     For numbers of tube passes greater than 1 or 2, an exception is raised.
-    
+
     Only numerical solutions are available for this function. For the case of
-    1 tube pass or the optimal 2 tube pass, the function is monotonic and a 
+    1 tube pass or the optimal 2 tube pass, the function is monotonic and a
     bounded solver is used with NTU1 between 1E-11 and 100; it will find the
-    solution anywhere in that range. 
-    
+    solution anywhere in that range.
+
     For the non-optimal 2 pass case, the function is not monotonic and a pade
     approximation was used to obtain a curve of NTU1s which give the maximum
-    P1s which is used as the upper bound in the bounded solver. The lower 
-    bound is still 1E-11. These solvers are all robust. 
+    P1s which is used as the upper bound in the bounded solver. The lower
+    bound is still 1E-11. These solvers are all robust.
 
     Examples
     --------
@@ -3615,7 +3615,7 @@ def NTU_from_P_H(P1, R1, Ntp, optimal=True):
     elif Ntp == 2 and optimal:
         NTU_max = 100
     elif Ntp == 2 and not optimal:
-        NTU_max = _NTU_max_for_P_solver(NTU_from_H_2_unoptimal_p, NTU_from_H_2_unoptimal_q, 
+        NTU_max = _NTU_max_for_P_solver(NTU_from_H_2_unoptimal_p, NTU_from_H_2_unoptimal_q,
                                         NTU_from_H_2_unoptimal_offset, R1)
     else:
         raise ValueError('Supported numbers of tube passes are 1 and 2.')
@@ -3623,50 +3623,50 @@ def NTU_from_P_H(P1, R1, Ntp, optimal=True):
                               None, Ntp, optimal)
 
 
-def NTU_from_P_plate(P1, R1, Np1, Np2, counterflow=True, 
+def NTU_from_P_plate(P1, R1, Np1, Np2, counterflow=True,
                      passes_counterflow=True, reverse=False):
     r'''Returns the number of transfer units of a plate heat exchanger
     with a specified side 1 heat capacity ratio `R1`, side 1 number
     of transfer units `NTU1`, number of passes on sides 1 and 2 (respectively
-    `Np1` and `Np2`). 
-            
-    For all cases, the function also takes as arguments whether the exchanger 
-    is setup in an overall counter or parallel orientation `counterflow`, and 
+    `Np1` and `Np2`).
+
+    For all cases, the function also takes as arguments whether the exchanger
+    is setup in an overall counter or parallel orientation `counterflow`, and
     whether or not individual stream passes are themselves counterflow or
-    parallel. 
-    
+    parallel.
+
     The 20 supported cases are as follows. (the first number of sides listed
     refers to side 1, and the second number refers to side 2):
-        
+
     * 1 pass/1 pass parallelflow
     * 1 pass/1 pass counterflow
     * 1 pass/2 pass
     * 1 pass/3 pass or 3 pass/1 pass (with the two end passes in parallel)
     * 1 pass/3 pass or 3 pass/1 pass (with the two end passes in counterflow)
-    * 1 pass/4 pass 
-    * 2 pass/2 pass, overall parallelflow, individual passes in parallel 
+    * 1 pass/4 pass
+    * 2 pass/2 pass, overall parallelflow, individual passes in parallel
     * 2 pass/2 pass, overall parallelflow, individual passes counterflow
-    * 2 pass/2 pass, overall counterflow, individual passes parallelflow 
-    * 2 pass/2 pass, overall counterflow, individual passes counterflow 
-    * 2 pass/3 pass or 3 pass/2 pass, overall parallelflow 
+    * 2 pass/2 pass, overall counterflow, individual passes parallelflow
+    * 2 pass/2 pass, overall counterflow, individual passes counterflow
+    * 2 pass/3 pass or 3 pass/2 pass, overall parallelflow
     * 2 pass/3 pass or 3 pass/2 pass, overall counterflow
     * 2 pass/4 pass or 4 pass/2 pass, overall parallel flow
     * 2 pass/4 pass or 4 pass/2 pass, overall counterflow flow
-    
+
     For all except the simplest cases numerical solutions are used.
-    
+
     1 pass/1 pass counterflow (also 2/2 fully counterflow):
-    
+
     .. math::
-        NTU_1 = - \frac{1}{R_{1} - 1} \log{\left (\frac{P_{1} R_{1} - 1}{P_{1} 
+        NTU_1 = - \frac{1}{R_{1} - 1} \log{\left (\frac{P_{1} R_{1} - 1}{P_{1}
         - 1} \right )}
-    
+
     1 pass/1 pass parallel flow (also 2/2 fully parallelflow):
-    
+
     .. math::
-        NTU_1 = \frac{1}{R_{1} + 1} \log{\left (- \frac{1}{P_{1} \left(R_{1} 
+        NTU_1 = \frac{1}{R_{1} + 1} \log{\left (- \frac{1}{P_{1} \left(R_{1}
         + 1\right) - 1} \right )}
-                
+
     Parameters
     ----------
     P1 : float
@@ -3683,16 +3683,16 @@ def NTU_from_P_plate(P1, R1, Np1, Np2, counterflow=True,
         Whether or not the overall flow through the heat exchanger is in
         counterflow or parallel flow, [-]
     passes_counterflow : bool
-        In addition to the overall flow direction, in some cases individual 
+        In addition to the overall flow direction, in some cases individual
         passes may be in counter or parallel flow; this controls that [-]
     reverse : bool
-        Used **internally only** to allow cases like the 1-4 formula to work  
+        Used **internally only** to allow cases like the 1-4 formula to work
         for the 4-1 flow case, without having to duplicate the code [-]
 
     Returns
     -------
     NTU1 : float
-        Thermal number of transfer units of the heat exchanger in the P-NTU 
+        Thermal number of transfer units of the heat exchanger in the P-NTU
         method, calculated with respect to stream 1 [-]
 
     Notes
@@ -3700,17 +3700,17 @@ def NTU_from_P_plate(P1, R1, Np1, Np2, counterflow=True,
     The defaults of counterflow=True and passes_counterflow=True will always
     result in the most efficient heat exchanger option, normally what is
     desired.
-    
+
     If a number of passes which is not supported is provided, an exception is
     raised.
-    
+
     For more details, see :obj:`temperature_effectiveness_plate`.
 
     Examples
     --------
     Three passes on side 1; one pass on side 2; two end passes in counterflow
     orientation.
-    
+
     >>> NTU_from_P_plate(P1=0.5743, R1=1/3., Np1=3, Np2=1)
     0.9998336056090733
     '''
@@ -3721,7 +3721,7 @@ def NTU_from_P_plate(P1, R1, Np1, Np2, counterflow=True,
         except:
 #            raise ValueError("impossible") # numba: uncomment
             raise ValueError('The maximum P1 obtainable at the specified R1 is %f at the limit of NTU1=inf.' %(1./R1)) # numba: delete
-        
+
     elif Np1 == 1 and Np2 == 1 and not counterflow:
         try:
             return log(-1./(P1*(R1 + 1.) - 1.))/(R1 + 1.)
@@ -3738,7 +3738,7 @@ def NTU_from_P_plate(P1, R1, Np1, Np2, counterflow=True,
         NTU_max = 100.
     elif Np1 == 2 and Np2 == 2:
         if counterflow and passes_counterflow:
-            return NTU_from_P_plate(P1, R1, Np1=1, Np2=1, counterflow=True, 
+            return NTU_from_P_plate(P1, R1, Np1=1, Np2=1, counterflow=True,
                                     passes_counterflow=True)
         elif counterflow and not passes_counterflow:
             NTU_max = 100.0
@@ -3747,7 +3747,7 @@ def NTU_from_P_plate(P1, R1, Np1, Np2, counterflow=True,
                                             NTU_from_plate_2_2_parallel_counterflow_q,
                                             NTU_from_plate_2_2_parallel_counterflow_offset, R1)
         elif not counterflow and not passes_counterflow:
-            return NTU_from_P_plate(P1, R1, Np1=1, Np2=1, counterflow=False, 
+            return NTU_from_P_plate(P1, R1, Np1=1, Np2=1, counterflow=False,
                                     passes_counterflow=False)
     elif Np1 == 2 and Np2 == 3:
         if counterflow:
@@ -3760,32 +3760,32 @@ def NTU_from_P_plate(P1, R1, Np1, Np2, counterflow=True,
         if counterflow:
             NTU_max = 100.0
         elif not counterflow:
-            NTU_max = _NTU_max_for_P_solver(NTU_from_plate_2_4_parallel_p, 
-                                            NTU_from_plate_2_4_parallel_q, 
+            NTU_max = _NTU_max_for_P_solver(NTU_from_plate_2_4_parallel_p,
+                                            NTU_from_plate_2_4_parallel_q,
                                             NTU_from_plate_2_4_parallel_offset, R1)
     elif not reverse:
         # Proved to work by example
         P2 = P1*R1
         R2 = 1./R1
         NTU2 = NTU_from_P_plate(R1=R2, P1=P2, Np1=Np2, Np2=Np1,
-                                counterflow=counterflow, 
-                                passes_counterflow=passes_counterflow, 
+                                counterflow=counterflow,
+                                passes_counterflow=passes_counterflow,
                                 reverse=True)
         NTU1 = NTU2/R1
         return NTU1
     else:
         raise ValueError('Supported number of passes does not have a formula available')
-    return _NTU_from_P_solver(P1, R1, NTU_min, NTU_max, temperature_effectiveness_plate, None, Np1, 
+    return _NTU_from_P_solver(P1, R1, NTU_min, NTU_max, temperature_effectiveness_plate, None, Np1,
                               Np2, counterflow, passes_counterflow)
 
 
-def P_NTU_method(m1, m2, Cp1, Cp2, UA=None, T1i=None, T1o=None, 
+def P_NTU_method(m1, m2, Cp1, Cp2, UA=None, T1i=None, T1o=None,
                  T2i=None, T2o=None, subtype='crossflow', Ntp=1, optimal=True):
     r'''Wrapper for the various P-NTU method function calls,
     which can solve a heat exchanger. The heat capacities and mass flows
     of each stream and the type of the heat exchanger are always required.
     As additional inputs, one combination of the following inputs is required:
-    
+
     * Three of the four inlet and outlet stream temperatures.
     * Temperatures for the side 1 outlet and side 2 inlet and UA
     * Temperatures for the side 1 outlet side 2 outlet and UA
@@ -3794,7 +3794,7 @@ def P_NTU_method(m1, m2, Cp1, Cp2, UA=None, T1i=None, T1o=None,
 
     Computes the total heat exchanged as well as both temperatures of both
     streams.
-      
+
     Parameters
     ----------
     m1 : float
@@ -3821,7 +3821,7 @@ def P_NTU_method(m1, m2, Cp1, Cp2, UA=None, T1i=None, T1o=None,
         or 'crossflow, mixed 1&2'. For plate exchangers 'Np1/Np2' where `Np1`
         is the number of side 1 passes and `Np2` is the number of side 2 passes
     Ntp : int, optional
-        For real heat exchangers (types 'E', 'G', 'H', and 'J'), the number of 
+        For real heat exchangers (types 'E', 'G', 'H', and 'J'), the number of
         tube passes needss to be specified as well. Not all types support
         any number of tube passes.
     optimal : bool, optional
@@ -3846,118 +3846,118 @@ def P_NTU_method(m1, m2, Cp1, Cp2, UA=None, T1i=None, T1o=None,
         * C2 : The heat capacity rate of fluid 2, [W/K]
         * NTU1 : Thermal Number of Transfer Units with respect to stream 1 [-]
         * NTU2 : Thermal Number of Transfer Units with respect to stream 2 [-]
-    
+
     Notes
     -----
     The main equations used in this method are as follows. For the individual
     expressions used to calculate `P1`, see the `See Also` section.
-    
+
     .. math::
         Q = P_1 C_1 \Delta T_{max} = P_2 C_2 \Delta T_{max}
-        
+
     .. math::
         \Delta T_{max} = T_{h,i} - T_{c,i} = |T_{2,i} - T_{1,i}|
-        
+
     .. math::
         R_1 = \frac{C_1}{C_2} = \frac{T_{2,i} - T_{2,o}}{T_{1,o} - T_{1, i}}
-        
+
     .. math::
         R_2 = \frac{C_2}{C_1} = \frac{T_{1,o} - T_{1, i}}{T_{2,i} - T_{2,o}}
 
     .. math::
         R_1 = \frac{1}{R_2}
-        
+
     .. math::
         NTU_1 = \frac{UA}{C_1}
-        
+
     .. math::
         NTU_2 = \frac{UA}{C_2}
-        
+
     .. math::
         NTU_1 = NTU_2 R_2
-        
+
     .. math::
         NTU_2 = NTU_1 R_1
-        
+
     .. math::
         P_1 = \frac{T_{1,o} - T_{1,i}}{T_{2,i} - T_{1,i}}
-        
+
     .. math::
         P_2 = \frac{T_{2,i} - T_{2,o}}{T_{2,i} - T_{1,i}}
-        
+
     .. math::
         P_1 = P_2 R_2
-        
+
     .. math::
         P_2 = P_1 R_1
-        
+
     .. math::
         C_1 = m_1 Cp_1
-        
+
     .. math::
         C_2 = m_2 Cp_2
-        
+
     Once `P1` has been calculated, there are six different cases for calculating
-    the other stream temperatures depending on the two temperatures provided. 
+    the other stream temperatures depending on the two temperatures provided.
     They were derived with SymPy.
-        
+
     Two known inlet temperatures:
-        
+
     .. math::
         T_{1,o} = - P_{1} T_{1,i} + P_{1} T_{2,i} + T_{1,i}
-        
+
     .. math::
         T_{2,o} = P_{1} R_{1} T_{1,i} - P_{1} R_{1} T_{2,i} + T_{2,i}
-        
+
     Two known outlet temperatures:
-        
+
     .. math::
-        T_{1,i} = \frac{P_{1} R_{1} T_{1,o} + P_{1} T_{2,o} 
+        T_{1,i} = \frac{P_{1} R_{1} T_{1,o} + P_{1} T_{2,o}
         - T_{1,o}}{P_{1} R_{1} + P_{1} - 1}
-        
+
     .. math::
         T_{2,i} = \frac{P_{1} R_{1} T_{1,o} + P_{1} T_{2,o}
         - T_{2,o}}{P_{1} R_{1} + P_{1} - 1}
-        
+
     Inlet 1 known, outlet 2 known:
-        
+
     .. math::
         T_{1,o} = \frac{1}{P_{1} R_{1} - 1} \left(P_{1} R_{1} T_{1,i}
         + P_{1} T_{1,i} - P_{1} T_{2,o} - T_{1,i}\right)
-        
+
     .. math::
         T_{2,i} = \frac{P_{1} R_{1} T_{1,i} - T_{2,o}}{P_{1} R_{1} - 1}
-        
+
     Outlet 1 known, inlet 2 known:
-        
+
     .. math::
         T_{1,i} = \frac{P_{1} T_{2,i} - T_{1,o}}{P_{1} - 1}
-        
+
     .. math::
         T_{2,o}  = \frac{1}{P_{1} - 1} \left(R_{1} \left(P_{1} T_{2,i}
         - T_{1,o}\right) - \left(P_{1} - 1\right) \left(R_{1} T_{1,o}
         - T_{2,i}\right)\right)
-    
+
     Input and output of 2 known:
-        
+
     .. math::
-        T_{1,i} = \frac{1}{P_{1} R_{1}} \left(P_{1} R_{1} T_{2,i} 
+        T_{1,i} = \frac{1}{P_{1} R_{1}} \left(P_{1} R_{1} T_{2,i}
         - T_{2,i} + T_{2,o}\right)
-        
+
     .. math::
-        T_{1,o} = \frac{1}{P_{1} R_{1}} \left(P_{1} R_{1} T_{2,i} 
+        T_{1,o} = \frac{1}{P_{1} R_{1}} \left(P_{1} R_{1} T_{2,i}
         + \left(P_{1} - 1\right) \left(T_{2,i} - T_{2,o}\right)\right)
-        
+
     Input and output of 1 known:
-        
+
     .. math::
-        T_{2,i} = \frac{1}{P_{1}} \left(P_{1} T_{1,i} - T_{1,i} 
+        T_{2,i} = \frac{1}{P_{1}} \left(P_{1} T_{1,i} - T_{1,i}
         + T_{1,o}\right)
-        
+
     .. math::
-        T_{2,o} = \frac{1}{P_{1}} \left(P_{1} R_{1} \left(T_{1,i} 
+        T_{2,o} = \frac{1}{P_{1}} \left(P_{1} R_{1} \left(T_{1,i}
         - T_{1,o}\right) + P_{1} T_{1,i} - T_{1,i} + T_{1,o}\right)
-        
+
     See also
     --------
     temperature_effectiveness_basic
@@ -3976,9 +3976,9 @@ def P_NTU_method(m1, m2, Cp1, Cp2, UA=None, T1i=None, T1o=None,
     Examples
     --------
     Solve a heat exchanger with the UA specified, and known inlet temperatures:
-    
+
     >>> from pprint import pprint
-    >>> pprint(P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900, 
+    >>> pprint(P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900,
     ... subtype='E', Ntp=4, T2i=15, T1i=130, UA=3041.75))
     {'C1': 9672.0,
      'C2': 2755.0,
@@ -3994,11 +3994,11 @@ def P_NTU_method(m1, m2, Cp1, Cp2, UA=None, T1i=None, T1o=None,
      'T2i': 15,
      'T2o': 84.87829918042112,
      'UA': 3041.75}
-    
+
     Solve the same heat exchanger as if T1i, T2i, and T2o were known but UA was
     not:
-        
-    >>> pprint(P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900, subtype='E', 
+
+    >>> pprint(P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900, subtype='E',
     ... Ntp=4, T1i=130, T2i=15, T2o=84.87829918042112))
     {'C1': 9672.0,
      'C2': 2755.0,
@@ -4018,11 +4018,11 @@ def P_NTU_method(m1, m2, Cp1, Cp2, UA=None, T1i=None, T1o=None,
     Solve a 2 pass/2 pass plate heat exchanger with overall parallel flow and
     its individual passes operating in parallel and known outlet temperatures.
     Note the overall parallel part is trigered with `optimal=False`, and the
-    individual pass parallel is triggered by appending 'p' to the subtype. The 
-    subpass counterflow can be specified by appending 'c' instead to the 
+    individual pass parallel is triggered by appending 'p' to the subtype. The
+    subpass counterflow can be specified by appending 'c' instead to the
     subtype, but this is never necessary as it is the default.
-        
-    >>> pprint(P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., UA=300, 
+
+    >>> pprint(P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., UA=300,
     ... T1o=126.7, T2o=26.7, subtype='2/2p', optimal=False))
     {'C1': 9672.0,
      'C2': 2755.0,
@@ -4041,9 +4041,9 @@ def P_NTU_method(m1, m2, Cp1, Cp2, UA=None, T1i=None, T1o=None,
 
     References
     ----------
-    .. [1] Shah, Ramesh K., and Dusan P. Sekulic. Fundamentals of Heat 
+    .. [1] Shah, Ramesh K., and Dusan P. Sekulic. Fundamentals of Heat
        Exchanger Design. 1st edition. Hoboken, NJ: Wiley, 2002.
-    .. [2] Thulukkanam, Kuppan. Heat Exchanger Design Handbook, Second Edition. 
+    .. [2] Thulukkanam, Kuppan. Heat Exchanger Design Handbook, Second Edition.
        CRC Press, 2013.
     .. [3] Rohsenow, Warren and James Hartnett and Young Cho. Handbook of Heat
        Transfer, 3E. New York: McGraw-Hill, 1998.
@@ -4054,11 +4054,11 @@ def P_NTU_method(m1, m2, Cp1, Cp2, UA=None, T1i=None, T1o=None,
     C2 = m2*Cp2
     R1 = C1/C2
     R2 = C2/C1
-    
+
     if UA is not None:
         NTU1 = UA/C1
         NTU2 = UA/C2
-        
+
         if subtype in ('counterflow', 'parallel', 'crossflow', 'crossflow, mixed 1', 'crossflow, mixed 2', 'crossflow, mixed 1&2'):
             P1 = temperature_effectiveness_basic(R1, NTU1, subtype=subtype)
         elif subtype == 'E':
@@ -4081,11 +4081,11 @@ def P_NTU_method(m1, m2, Cp1, Cp2, UA=None, T1i=None, T1o=None,
             raise ValueError("Supported types are 'E', 'G', 'H', 'J', 'counterflow',\
     'parallel', 'crossflow', 'crossflow, mixed 1', 'crossflow, mixed 2', \
     'crossflow, mixed 1&2', or 'Np1/Np2' for plate exchangers")
-        
+
         possible_inputs = [(T1i, T2i), (T1o, T2o), (T1i, T2o), (T1o, T2i), (T1i, T1o), (T2i, T2o)]
         if not any([i for i in possible_inputs if None not in i]):
             raise ValueError('One set of (T1i, T2i), (T1o, T2o), (T1i, T2o), (T1o, T2i), (T1i, T1o), or (T2i, T2o) is required along with UA.')
-        
+
         # Deal with different temperature inputs, generated with SymPy
         if T1i and T2i:
             T2o = P1*R1*T1i - P1*R1*T2i + T2i
@@ -4104,7 +4104,7 @@ def P_NTU_method(m1, m2, Cp1, Cp2, UA=None, T1i=None, T1o=None,
             T1i = (P1*R1*T2i - T2i + T2o)/(P1*R1)
         elif T1i and T1o:
             T2o = (P1*R1*(T1i - T1o) + P1*T1i - T1i + T1o)/P1
-            T2i = (P1*T1i - T1i + T1o)/P1 
+            T2i = (P1*T1i - T1i + T1o)/P1
     else:
         # Case where we're solving for UA
         # Three temperatures are required
@@ -4123,7 +4123,7 @@ def P_NTU_method(m1, m2, Cp1, Cp2, UA=None, T1i=None, T1o=None,
             else:
                 raise ValueError('At least one temperature is required to be '
                                 'specified on side 2.')
-                
+
         elif T2i is not None and T2o is not None:
             Q = m2*Cp2*(T2o-T2i)
             if T1i is not None and T1o is None:
@@ -4136,7 +4136,7 @@ def P_NTU_method(m1, m2, Cp1, Cp2, UA=None, T1i=None, T1o=None,
         else:
             raise ValueError('Three temperatures are required to be specified '
                             'when solving for UA')
-                
+
         P1 = Q/(C1*abs(T2i-T1i))
         if subtype in ('counterflow', 'parallel', 'crossflow', 'crossflow, mixed 1', 'crossflow, mixed 2', 'crossflow, mixed 1&2'):
             NTU1 = NTU_from_P_basic(P1=P1, R1=R1, subtype=subtype)
@@ -4162,46 +4162,46 @@ def P_NTU_method(m1, m2, Cp1, Cp2, UA=None, T1i=None, T1o=None,
     'crossflow, mixed 1&2', or 'Np1/Np2' for plate exchangers")
         UA = NTU1*C1
         NTU2 = UA/C2
-        
+
     Q = abs(T1i-T2i)*P1*C1
     # extra:
     P2 = P1*R1
 #    effectiveness = max(C1, C2)/min(C1, C2)
-    results = {'Q': Q, 'T1i': T1i, 'T1o': T1o, 'T2i': T2i, 'T2o': T2o, 
+    results = {'Q': Q, 'T1i': T1i, 'T1o': T1o, 'T2i': T2i, 'T2o': T2o,
           'C1': C1, 'C2': C2, 'R1': R1, 'R2': R2, 'P1': P1, 'P2': P2, 'NTU1': NTU1, 'NTU2': NTU2, 'UA': UA}
     return results
 
 
 def F_LMTD_Fakheri(Thi, Tho, Tci, Tco, shells=1):
-    r'''Calculates the log-mean temperature difference correction factor `Ft` 
-    for a shell-and-tube heat exchanger with one or an even number of tube 
-    passes, and a given number of shell passes, with the expression given in 
+    r'''Calculates the log-mean temperature difference correction factor `Ft`
+    for a shell-and-tube heat exchanger with one or an even number of tube
+    passes, and a given number of shell passes, with the expression given in
     [1]_ and also shown in [2]_.
-    
+
     .. math::
         F_t=\frac{S\ln W}{\ln \frac{1+W-S+SW}{1+W+S-SW}}
 
     .. math::
         S = \frac{\sqrt{R^2+1}}{R-1}
-        
+
     .. math::
         W = \left(\frac{1-PR}{1-P}\right)^{1/N}
-        
+
     .. math::
         R = \frac{T_{in}-T_{out}}{t_{out}-t_{in}}
-        
+
     .. math::
         P = \frac{t_{out}-t_{in}}{T_{in}-t_{in}}
-        
+
     If R = 1 and logarithms cannot be evaluated:
-        
+
     .. math::
         W' = \frac{N-NP}{N-NP+P}
-        
+
     .. math::
         F_t = \frac{\sqrt{2}\frac{1-W'}{W'}}{\ln\frac{\frac{W'}{1-W'}+\frac{1}
         {\sqrt{2}}}{\frac{W'}{1-W'}-\frac{1}{\sqrt{2}}}}
-        
+
     Parameters
     ----------
     Thi : float
@@ -4211,7 +4211,7 @@ def F_LMTD_Fakheri(Thi, Tho, Tci, Tco, shells=1):
     Tci : float
         Inlet temperature of cold fluid, [K]
     Tco : float
-        Outlet temperature of cold fluid, [K]        
+        Outlet temperature of cold fluid, [K]
     shells : int, optional
         Number of shell-side passes, [-]
 
@@ -4223,7 +4223,7 @@ def F_LMTD_Fakheri(Thi, Tho, Tci, Tco, shells=1):
     Notes
     -----
     This expression is symmetric - the same result is calculated if the cold
-    side values are swapped with the hot side values. It also does not 
+    side values are swapped with the hot side values. It also does not
     depend on the units of the temperature given.
 
     Examples
@@ -4233,8 +4233,8 @@ def F_LMTD_Fakheri(Thi, Tho, Tci, Tco, shells=1):
 
     References
     ----------
-    .. [1] Fakheri, Ahmad. "A General Expression for the Determination of the 
-       Log Mean Temperature Correction Factor for Shell and Tube Heat 
+    .. [1] Fakheri, Ahmad. "A General Expression for the Determination of the
+       Log Mean Temperature Correction Factor for Shell and Tube Heat
        Exchangers." Journal of Heat Transfer 125, no. 3 (May 20, 2003): 527-30.
        doi:10.1115/1.1571078.
     .. [2] Hall, Stephen. Rules of Thumb for Chemical Engineers, Fifth Edition.
@@ -4380,7 +4380,7 @@ def DBundle_min(Do):
     Notes
     -----
     This function should be used if a tube diameter is specified but not a
-    shell size. DShell will have to be adjusted later, once the area 
+    shell size. DShell will have to be adjusted later, once the area
     requirement is known.
     This function is essentially a lookup table.
 
@@ -4403,8 +4403,8 @@ def DBundle_min(Do):
 
 
 def shell_clearance(DBundle=None, DShell=None):
-    r'''Looks up the recommended clearance between a shell and tube bundle in 
-    a TEMA HX [1]. Either the bundle diameter or the shell diameter are needed 
+    r'''Looks up the recommended clearance between a shell and tube bundle in
+    a TEMA HX [1]. Either the bundle diameter or the shell diameter are needed
     provided.
 
     Parameters
@@ -4422,8 +4422,8 @@ def shell_clearance(DBundle=None, DShell=None):
     Notes
     -----
     Lower limits are extended up to the next limit where intermediate limits
-    are not provided. 
-    
+    are not provided.
+
     Examples
     --------
     >>> shell_clearance(DBundle=1.245)
@@ -4487,7 +4487,7 @@ def baffle_thickness(Dshell, L_unsupported, service='C'):
     Notes
     -----
     No checks are implemented to ensure the given shell size is TEMA compatible.
-    The baffles do not need to be strongas the pressure is almost the same on 
+    The baffles do not need to be strongas the pressure is almost the same on
     both of their sides. `L_unsupported` is a design choice; the more baffles
     in a given length, the higher the pressure drop.
 
@@ -4587,13 +4587,13 @@ def D_baffle_holes(do, L_unsupported):
 
 _L_unsupported_Do =   [0.25,  0.375, 0.5,  0.628,  0.75,  0.875, 1.,   1.25,  1.5,  2.,    2.5,   3.]
 _L_unsupported_steel = [0.66, 0.889, 1.118, 1.321, 1.524, 1.753, 1.88, 2.235, 2.54, 3.175, 3.175, 3.175]
-_L_unsupported_aluminium = [0.559, 0.762, 0.965, 1.143, 1.321, 1.524, 1.626, 
+_L_unsupported_aluminium = [0.559, 0.762, 0.965, 1.143, 1.321, 1.524, 1.626,
                             1.93, 2.21, 2.794, 2.794, 2.794]
 
 
 def L_unsupported_max(Do, material='CS'):
     r'''Determines the maximum length of a heat exchanger tube can go without
-    a support, according to TEMA [1]_. The limits provided apply for the 
+    a support, according to TEMA [1]_. The limits provided apply for the
     worst-case temperature allowed for the material to be used at.
 
     Parameters
@@ -4610,18 +4610,18 @@ def L_unsupported_max(Do, material='CS'):
 
     Notes
     -----
-    The 'CS' results is also listed as representing high alloy steel, low 
+    The 'CS' results is also listed as representing high alloy steel, low
     alloy steel, nickel-copper, nickel, and nickel-chromium-iron alloys.
     The 'aluminium' results are those of copper and copper alloys and
     also titanium alloys.
-    
-    The maximum and minimum tube outer diameter tabulated are 3 inch and 1/4  
+
+    The maximum and minimum tube outer diameter tabulated are 3 inch and 1/4
     inch respectively. The result is returned for the nearest tube diameter
-    equal or smaller than the provided diameter, which helps ensures the 
-    returned tube length will not be optimistic. However, if the diameter is 
+    equal or smaller than the provided diameter, which helps ensures the
+    returned tube length will not be optimistic. However, if the diameter is
     under 0.25 inches, the result will be optimistic!
-    
-    
+
+
     Examples
     --------
     >>> L_unsupported_max(Do=.0254, material='CS')
@@ -4687,35 +4687,35 @@ def Ntubes_Phadkeb(DBundle, Do, pitch, Ntp, angle=30):
     Notes
     -----
     For single-pass cases, the result is exact, and no tubes need to be removed
-    for any reason. For 4, 6, 8 pass arrangements, a number of tubes must be 
+    for any reason. For 4, 6, 8 pass arrangements, a number of tubes must be
     removed to accommodate pass partition plates. The following assumptions
     are involved with that:
-        * The pass partition plate is where a row of tubes would have been. 
+        * The pass partition plate is where a row of tubes would have been.
           Only one or two rows are assumed affected.
         * The thickness of partition plate is < 70% of the tube outer diameter.
-        * The distance between the centerline of the partition plate and the 
-          centerline of the nearest row of tubes is equal to the pitch.    
-    
+        * The distance between the centerline of the partition plate and the
+          centerline of the nearest row of tubes is equal to the pitch.
+
     This function will fail when there are more than 100,000 tubes.
-    [1]_ tabulated values up to approximately 3,000 tubes derived with 
+    [1]_ tabulated values up to approximately 3,000 tubes derived with
     number theory. The sequesnces of integers were identified in the
     On-Line Encyclopedia of Integer Sequences (OEIS), and formulas listed in
     it were used to generate more coefficient to allow up to 100,000 tubes.
-    The integer sequences are A003136, A038590, A001481, and A057961. The 
+    The integer sequences are A003136, A038590, A001481, and A057961. The
     generation of coefficients for A038590 is very slow, but the rest are
     reasonably fast.
-    
+
     The number of tubes that fit generally does not increase one-by-one, but by
     several.
-    
+
     >>> Ntubes_Phadkeb(DBundle=1.007, Do=.028, pitch=.036, Ntp=2, angle=45.)
     558
     >>> Ntubes_Phadkeb(DBundle=1.008, Do=.028, pitch=.036, Ntp=2, angle=45.)
     574
-    
+
     Because a pass partition needs to be installed in multiple tube pass
     shells, more tubes fit in an exchanger the fewer passes are used.
-    
+
     >>> Ntubes_Phadkeb(DBundle=1.008, Do=.028, pitch=.036, Ntp=1, angle=45.)
     593
 
@@ -4732,7 +4732,7 @@ def Ntubes_Phadkeb(DBundle, Do, pitch, Ntp, angle=30):
     if square_C1s is None: _load_coeffs_Phadkeb() # numba: delete
     if DBundle <= Do*Ntp:
         return 0
-    
+
     if Ntp == 6:
         e = 0.265
     elif Ntp == 8:
@@ -4887,7 +4887,7 @@ def to_solve_Ntubes_Phadkeb(DBundle, Do, pitch, Ntp, angle, Ntubes):
 def DBundle_for_Ntubes_Phadkeb(Ntubes, Do, pitch, Ntp, angle=30):
     r'''Determine the bundle diameter required to fit a specified number of
     tubes in a heat exchanger. Uses the highly accurate method of [1]_,
-    which takes into account pitch, number of tube passes, angle, 
+    which takes into account pitch, number of tube passes, angle,
     and tube diameter. The method is analytically correct when used in the
     other direction (calculating number of tubes from bundle diameter); in
     reverse, it is solved by bisection.
@@ -4912,8 +4912,8 @@ def DBundle_for_Ntubes_Phadkeb(Ntubes, Do, pitch, Ntp, angle=30):
 
     Notes
     -----
-    This function will fail when there are more than 100,000 tubes. There are 
-    a range of correct diameters for which there can be the given number of 
+    This function will fail when there are more than 100,000 tubes. There are
+    a range of correct diameters for which there can be the given number of
     tubes; a number within that range is returned as found by bisection.
 
     Examples
@@ -4963,14 +4963,14 @@ def Ntubes_Perrys(DBundle, Do, Ntp, angle=30):
     Perry's equation 11-74.
     Pitch equal to 1.25 times the tube outside diameter
     No other source for this equation is given.
-    Experience suggests this is accurate to 40 tubes, but is often around 20 
+    Experience suggests this is accurate to 40 tubes, but is often around 20
     tubes off.
 
     Examples
     --------
     >>> Ntubes_Perrys(DBundle=1.184, Do=.028, Ntp=2, angle=45)
     803
-    
+
     References
     ----------
     .. [1] Green, Don, and Robert Perry. Perry's Chemical Engineers' Handbook,
@@ -5035,7 +5035,7 @@ def Ntubes_VDI(DBundle=None, Ntp=None, Do=None, pitch=None, angle=30.):
 
     Examples
     --------
-    >>> Ntubes_VDI(DBundle=1.184, Ntp=2, Do=.028, pitch=.036, angle=30) 
+    >>> Ntubes_VDI(DBundle=1.184, Ntp=2, Do=.028, pitch=.036, angle=30)
     966
 
     References
@@ -5144,9 +5144,9 @@ def Ntubes_HEDH(DBundle=None, Do=None, pitch=None, angle=30):
 
     .. math::
         N = \frac{0.78(D_{bundle} - D_o)^2}{C_1(\text{pitch})^2}
-        
+
     C1 = 0.866 for 30° and 60° layouts, and 1 for 45 and 90° layouts.
-        
+
     Parameters
     ----------
     DBundle : float
@@ -5191,7 +5191,7 @@ def Ntubes_HEDH(DBundle=None, Do=None, pitch=None, angle=30):
 
 def DBundle_for_Ntubes_HEDH(N, Do, pitch, angle=30):
     r'''A rough equation presented in the HEDH for estimating the tube bundle
-    diameter necessary to fit a given number of tubes. 
+    diameter necessary to fit a given number of tubes.
     No accuracy estimation given. Only 1 pass is supported.
 
     .. math::
@@ -5244,11 +5244,11 @@ def DBundle_for_Ntubes_HEDH(N, Do, pitch, angle=30):
 def Ntubes(DBundle, Do, pitch, Ntp=1, angle=30, Method=None):
     r'''Calculates the number of tubes which can fit in a heat exchanger.
     The tube count is effected by the pitch, number of tube passes, and angle.
-    
+
     The result is an exact number of tubes and is calculated by a very accurate
     method using number theory by default. This method is available only up to
     100,000 tubes.
-    
+
     Parameters
     ----------
     DBundle : float
@@ -5279,14 +5279,14 @@ def Ntubes(DBundle, Do, pitch, Ntp=1, angle=30, Method=None):
     Ntubes_VDI
     Ntubes_HEDH
     size_bundle_from_tubecount
-    
+
     Examples
     --------
     >>> Ntubes(DBundle=1.2, Do=0.025, pitch=0.03125)
     1285
-    
+
     The approximations are pretty good too:
-        
+
     >>> Ntubes(DBundle=1.2, Do=0.025, pitch=0.03125, Method='Perry')
     1297
     >>> Ntubes(DBundle=1.2, Do=0.025, pitch=0.03125, Method='VDI')
@@ -5316,11 +5316,11 @@ def size_bundle_from_tubecount(N, Do, pitch, Ntp=1, angle=30, Method=None):
     r'''Calculates the outer diameter of a tube bundle containing a specified
     number of tubes.
     The tube count is effected by the pitch, number of tube passes, and angle.
-    
+
     The result is an exact number of tubes and is calculated by a very accurate
     method using number theory by default. This method is available only up to
     100,000 tubes.
-    
+
     Parameters
     ----------
     N : int
@@ -5350,11 +5350,11 @@ def size_bundle_from_tubecount(N, Do, pitch, Ntp=1, angle=30, Method=None):
     DBundle_for_Ntubes_Phadkeb
     D_for_Ntubes_VDI
     DBundle_for_Ntubes_HEDH
-    
+
     Notes
     -----
     The 'Perry' method is solved with a numerical solver and is very unreliable.
-    
+
     Examples
     --------
     >>> size_bundle_from_tubecount(N=1285, Do=0.025, pitch=0.03125)
@@ -5379,27 +5379,27 @@ def size_bundle_from_tubecount(N, Do, pitch, Ntp=1, angle=30, Method=None):
 
 
 
-TEMA_heads = {'A': 'Removable Channel and Cover', 
-              'B': 'Bonnet (Integral Cover)', 
+TEMA_heads = {'A': 'Removable Channel and Cover',
+              'B': 'Bonnet (Integral Cover)',
               'C': 'Integral With Tubesheet Removable Cover',
-              'N': 'Channel Integral With Tubesheet and Removable Cover', 
+              'N': 'Channel Integral With Tubesheet and Removable Cover',
               'D': 'Special High-Pressure Closures'}
 TEMA_shells = {'E': 'One-Pass Shell',
-               'F': 'Two-Pass Shell with Longitudinal Baffle', 
-               'G': 'Split Flow', 'H': 'Double Split Flow', 
+               'F': 'Two-Pass Shell with Longitudinal Baffle',
+               'G': 'Split Flow', 'H': 'Double Split Flow',
                'J': 'Divided Flow',
-               'K': 'Kettle-Type Reboiler',  
+               'K': 'Kettle-Type Reboiler',
                'X': 'Cross Flow'}
 TEMA_rears = {'L': 'Fixed Tube Sheet; Like "A" Stationary Head',
-              'M': 'Fixed Tube Sheet; Like "B" Stationary Head', 
-              'N': 'Fixed Tube Sheet; Like "C" Stationary Head', 
-              'P': 'Outside Packed Floating Head', 
+              'M': 'Fixed Tube Sheet; Like "B" Stationary Head',
+              'N': 'Fixed Tube Sheet; Like "C" Stationary Head',
+              'P': 'Outside Packed Floating Head',
               'S': 'Floating Head with Backing Device',
-              'T': 'Pull-Through Floating Head', 
+              'T': 'Pull-Through Floating Head',
               'U': 'U-Tube Bundle',
               'W': 'Externally Sealed Floating Tubesheet'}
 TEMA_services = {'B': 'Chemical',
-                 'R': 'Refinery', 
+                 'R': 'Refinery',
                  'C': 'General'}
-baffle_types = ['segmental', 'double segmental', 'triple segmental', 
+baffle_types = ['segmental', 'double segmental', 'triple segmental',
                 'disk and doughnut', 'no tubes in window', 'orifice', 'rod']

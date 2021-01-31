@@ -63,7 +63,7 @@ def test_cylindrical_heat_transfer():
      'U_inner': 1.9649599487726137,
      'U_outer': 0.8106078714663484,
      'q': 123.21239646288495}
-    
+
     for k, v in expect.items():
         assert_allclose(v, data[k])
 
@@ -114,7 +114,7 @@ def test_insulation():
 @pytest.mark.slow
 def test_insulation_fuzz():
     assert_allclose(sum([ASHRAE_k(ID) for ID in ASHRAE]), 102.33813464784427)
-    
+
     k_tot = sum([k_material(ID) for ID in materials_dict])
     assert_allclose(k_tot, 1436.251534647845)
 

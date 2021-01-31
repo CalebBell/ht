@@ -67,7 +67,7 @@ from .boiling_plate import *
 
 __all__ = ['core', 'hx', 'conv_internal', 'boiling_nucleic', 'air_cooler',
 'radiation', 'condensation', 'conduction', 'conv_jacket', 'conv_free_immersed',
-'conv_tube_bank', 'insulation', 'conv_packed_bed', 'conv_external', 
+'conv_tube_bank', 'insulation', 'conv_packed_bed', 'conv_external',
 'conv_supercritical', 'conv_two_phase', 'boiling_flow', 'boiling_plate',
 'conv_plate', 'conv_free_enclosed']
 
@@ -94,8 +94,8 @@ __all__.extend(conv_plate.__all__)
 __all__.extend(conv_free_enclosed.__all__)
 
 submodules = (core, hx, conv_internal, boiling_flow, boiling_nucleic, conv_tube_bank,
-              air_cooler, radiation, condensation, conduction, conv_jacket, insulation, 
-              conv_free_immersed, conv_free_enclosed, conv_packed_bed, conv_external, 
+              air_cooler, radiation, condensation, conduction, conv_jacket, insulation,
+              conv_free_immersed, conv_free_enclosed, conv_packed_bed, conv_external,
               conv_supercritical, conv_two_phase, conv_plate, boiling_plate)
 
 __version__ = '0.1.57'

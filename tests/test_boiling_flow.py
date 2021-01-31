@@ -34,13 +34,13 @@ def test_Lazarek_Black():
     assert_allclose(h1, 51009.87001967105)
     h2 = Lazarek_Black(m=10.0, D=0.3, mul=1E-3, kl=0.6, Hvap=2E6, Te=Te)
     assert_allclose(h1, h2)
-    
+
     with pytest.raises(Exception):
         Lazarek_Black(m=10, D=0.3, mul=1E-3, kl=0.6, Hvap=2E6)
     '''
     The code to derive the form with `Te` specified is
     as follows:
-    
+
     >>> from sympy import *
     >>> Relo, Bgish, kl, D, h, Te = symbols('Relo, Bgish, kl, D, h, Te',
     ... positive=True, real=True)
@@ -48,7 +48,7 @@ def test_Lazarek_Black():
     ... 1000)*kl/D), h)
     [27000*30**(71/143)*Bgish**(357/143)*Relo**(857/286)*Te**(357/143)*kl**(500/143)/D**(500/143)]
     '''
-    
+
 
 def test_Li_Wu():
     q = 1E5
@@ -57,14 +57,14 @@ def test_Li_Wu():
     assert_allclose(h, 5345.409399239493)
     h2 = Li_Wu(m=1, x=0.2, D=0.3, rhol=567., rhog=18.09, kl=0.086, mul=156E-6, sigma=0.02, Hvap=9E5, Te=Te)
     assert_allclose(h2, h)
-    
+
     with pytest.raises(Exception):
          Li_Wu(m=1, x=0.2, D=0.3, rhol=567., rhog=18.09, kl=0.086, mul=156E-6, sigma=0.02, Hvap=9E5)
-    
+
     '''
     The code to derive the form with `Te` specified is
     as follows:
-    
+
     >>> from sympy import *
     >>> h, A, Te, G, Hvap = symbols('h, A, Te, G, Hvap', positive=True, real=True)
     >>> solve(Eq(h, A*(h*Te/G/Hvap)**0.3), h)
@@ -74,21 +74,21 @@ def test_Li_Wu():
 def test_Sun_Mishima():
     h = Sun_Mishima(m=1.0, D=0.3, rhol=567., rhog=18.09, kl=0.086, mul=156E-6, sigma=0.02, Hvap=9E5, Te=10)
     assert_allclose(h, 507.6709168372167)
-    
+
     q = 1E5
     h = Sun_Mishima(m=1, D=0.3, rhol=567., rhog=18.09, kl=0.086, mul=156E-6, sigma=0.02, Hvap=9E5, q=q)
     Te = q/h
     h2 = Sun_Mishima(m=1, D=0.3, rhol=567., rhog=18.09, kl=0.086, mul=156E-6, sigma=0.02, Hvap=9E5, Te=Te)
     assert_allclose(h, h2)
     assert_allclose(h2, 2538.4455424345983)
-    
+
     with pytest.raises(Exception):
         Sun_Mishima(m=1, D=0.3, rhol=567., rhog=18.09, kl=0.086, mul=156E-6, sigma=0.02, Hvap=9E5)
 
     '''
     The code to derive the form with `Te` specified is
     as follows:
-    
+
     >>> from sympy import *
     >>> h, A, Te, G, Hvap = symbols('h, A, Te, G, Hvap', positive=True, real=True)
     >>> solve(Eq(h, A*(h*Te/G/Hvap)**0.54), h)
@@ -98,32 +98,32 @@ def test_Sun_Mishima():
 def test_Thome():
     h = Thome(m=1.0, x=0.4, D=0.3, rhol=567., rhog=18.09, kl=0.086, kg=0.2, mul=156E-6, mug=1E-5, Cpl=2300.0, Cpg=1400, sigma=0.02, Hvap=9E5, Psat=1E5, Pc=22E6, q=1E5)
     assert_allclose(h, 1633.008836502032)
-    
+
     h = Thome(m=10, x=0.5, D=0.3, rhol=567., rhog=18.09, kl=0.086, kg=0.2, mul=156E-6, mug=1E-5, Cpl=2300.0, Cpg=1400.0, sigma=0.02, Hvap=9E5, Psat=1E5, Pc=22E6, q=1E5)
     assert_allclose(h, 3120.1787715124824)
-    
+
     Te = 32.04944566414243
     h2 = Thome(m=10.0, x=0.5, D=0.3, rhol=567., rhog=18.09, kl=0.086, kg=0.2, mul=156E-6, mug=1E-5, Cpl=2300.0, Cpg=1400.0, sigma=0.02, Hvap=9E5, Psat=1E5, Pc=22E6, Te=Te)
     assert_allclose(h, h2)
-    
+
     with pytest.raises(Exception):
         Thome(m=1, x=0.4, D=0.3, rhol=567., rhog=18.09, kl=0.086, kg=0.2, mul=156E-6, mug=1E-5, Cpl=2300., Cpg=1400., sigma=0.02, Hvap=9E5, Psat=1E5, Pc=22E6)
-    
-    
+
+
 def test_Yun_Heo_Kim():
     q = 1E4
     h1 = Yun_Heo_Kim(m=1.0, x=0.4, D=0.3, rhol=567., mul=156E-6, sigma=0.02, Hvap=9E5, q=q)
     Te = q/h1
     h2 = Yun_Heo_Kim(m=1, x=0.4, D=0.3, rhol=567., mul=156E-6, sigma=0.02, Hvap=9E5, Te=Te)
     assert_allclose(h1, h2)
-    
+
     with pytest.raises(Exception):
         Yun_Heo_Kim(m=1, x=0.4, D=0.3, rhol=567., mul=156E-6, sigma=0.02, Hvap=9E5)
 
     '''
     The code to derive the form with `Te` specified is
     as follows:
-    
+
     >>> from sympy import *
     >>> h, A = symbols('h, A', positive=True, real=True)
     >>> solve(Eq(h, A*(h)**0.1993), h)

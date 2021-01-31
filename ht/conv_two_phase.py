@@ -27,20 +27,20 @@ from ht.conv_internal import laminar_entry_Seider_Tate
 
 __all__ = ['Davis_David', 'Elamvaluthi_Srinivas', 'Groothuis_Hendal',
            'Hughmark', 'Knott', 'Kudirka_Grosh_McFadden', 'Martin_Sims',
-           'Ravipudi_Godbold', 'Aggour', 
+           'Ravipudi_Godbold', 'Aggour',
            'h_two_phase', 'h_two_phase_methods']
 
 
 def Davis_David(m, x, D, rhol, rhog, Cpl, kl, mul):
-    r'''Calculates the two-phase non-boiling heat transfer coefficient of a 
-    liquid and gas flowing inside a tube of any inclination, as in [1]_ and 
+    r'''Calculates the two-phase non-boiling heat transfer coefficient of a
+    liquid and gas flowing inside a tube of any inclination, as in [1]_ and
     reviewed in [2]_.
 
     .. math::
         \frac{h_{TP} D}{k_l} = 0.060\left(\frac{\rho_L}{\rho_G}\right)^{0.28}
         \left(\frac{DG_{TP} x}{\mu_L}\right)^{0.87}
         \left(\frac{C_{p,L} \mu_L}{k_L}\right)^{0.4}
-        
+
     Parameters
     ----------
     m : float
@@ -67,26 +67,26 @@ def Davis_David(m, x, D, rhol, rhog, Cpl, kl, mul):
 
     Notes
     -----
-    Developed for both vertical and horizontal flow, and flow patters of 
-    annular or mist annular flow. Steam-water and air-water were the only 
+    Developed for both vertical and horizontal flow, and flow patters of
+    annular or mist annular flow. Steam-water and air-water were the only
     considered fluid combinations. Quality ranged from 0.1 to 1 in their data.
     [1]_ claimed an AAE of 17%.
 
     Examples
     --------
-    >>> Davis_David(m=1, x=.9, D=.3, rhol=1000, rhog=2.5, Cpl=2300, kl=.6, 
+    >>> Davis_David(m=1, x=.9, D=.3, rhol=1000, rhog=2.5, Cpl=2300, kl=.6,
     ... mul=1E-3)
     1437.3282869955121
 
     References
     ----------
     .. [1] Davis, E. J., and M. M. David. "Two-Phase Gas-Liquid Convection Heat
-       Transfer. A Correlation." Industrial & Engineering Chemistry 
+       Transfer. A Correlation." Industrial & Engineering Chemistry
        Fundamentals 3, no. 2 (May 1, 1964): 111-18. doi:10.1021/i160010a005.
-    .. [2] Dongwoo Kim, Venkata K. Ryali, Afshin J. Ghajar, Ronald L. 
-       Dougherty. "Comparison of 20 Two-Phase Heat Transfer Correlations with 
-       Seven Sets of Experimental Data, Including Flow Pattern and Tube 
-       Inclination Effects." Heat Transfer Engineering 20, no. 1 (February 1, 
+    .. [2] Dongwoo Kim, Venkata K. Ryali, Afshin J. Ghajar, Ronald L.
+       Dougherty. "Comparison of 20 Two-Phase Heat Transfer Correlations with
+       Seven Sets of Experimental Data, Including Flow Pattern and Tube
+       Inclination Effects." Heat Transfer Engineering 20, no. 1 (February 1,
        1999): 15-40. doi:10.1080/014576399271691.
     '''
     G = m/(pi/4*D**2)
@@ -96,17 +96,17 @@ def Davis_David(m, x, D, rhol, rhog, Cpl, kl, mul):
 
 
 def Elamvaluthi_Srinivas(m, x, D, rhol, rhog, Cpl, kl, mug, mu_b, mu_w=None):
-    r'''Calculates the two-phase non-boiling heat transfer coefficient of a 
-    liquid and gas flowing inside a tube of any inclination, as in [1]_ and 
+    r'''Calculates the two-phase non-boiling heat transfer coefficient of a
+    liquid and gas flowing inside a tube of any inclination, as in [1]_ and
     reviewed in [2]_.
 
     .. math::
-        \frac{h_{TP} D}{k_L} = 0.5\left(\frac{\mu_G}{\mu_L}\right)^{0.25} 
+        \frac{h_{TP} D}{k_L} = 0.5\left(\frac{\mu_G}{\mu_L}\right)^{0.25}
         Re_M^{0.7} Pr^{1/3}_L (\mu_b/\mu_w)^{0.14}
-        
+
     .. math::
         Re_M = \frac{D V_L \rho_L}{\mu_L} + \frac{D V_g \rho_g}{\mu_g}
-        
+
     Parameters
     ----------
     m : float
@@ -126,7 +126,7 @@ def Elamvaluthi_Srinivas(m, x, D, rhol, rhog, Cpl, kl, mug, mu_b, mu_w=None):
     mug : float
         Viscosity of gas [Pa*s]
     mu_b : float
-        Viscosity of liquid at bulk conditions (average of inlet/outlet 
+        Viscosity of liquid at bulk conditions (average of inlet/outlet
         temperature) [Pa*s]
     mu_w : float, optional
         Viscosity of liquid at wall temperature [Pa*s]
@@ -140,28 +140,28 @@ def Elamvaluthi_Srinivas(m, x, D, rhol, rhog, Cpl, kl, mug, mu_b, mu_w=None):
     -----
     If the viscosity at the wall temperature is not given, the liquid viscosity
     correction is not applied.
-    
+
     Developed for vertical flow, and flow patters of bubbly and slug.
-    Gas/liquid superficial velocity ratios from 0.3 to 4.6, liquid mass fluxes 
-    from 200 to 1600 kg/m^2/s, and the fluids tested were air-water and 
+    Gas/liquid superficial velocity ratios from 0.3 to 4.6, liquid mass fluxes
+    from 200 to 1600 kg/m^2/s, and the fluids tested were air-water and
     air-aqueous glycerine solutions. The tube inner diameter was 1 cm, and the
     L/D ratio was 86.
-    
+
     Examples
     --------
-    >>> Elamvaluthi_Srinivas(m=1, x=.9, D=.3, rhol=1000, rhog=2.5, Cpl=2300, 
+    >>> Elamvaluthi_Srinivas(m=1, x=.9, D=.3, rhol=1000, rhog=2.5, Cpl=2300,
     ... kl=.6, mug=1E-5, mu_b=1E-3, mu_w=1.2E-3)
     3901.2134471578584
-    
+
     References
     ----------
     .. [1] Elamvaluthi, G., and N. S. Srinivas. "Two-Phase Heat Transfer in Two
-       Component Vertical Flows." International Journal of Multiphase Flow 10, 
+       Component Vertical Flows." International Journal of Multiphase Flow 10,
        no. 2 (April 1, 1984): 237-42. doi:10.1016/0301-9322(84)90021-1.
-    .. [2] Dongwoo Kim, Venkata K. Ryali, Afshin J. Ghajar, Ronald L. 
-       Dougherty. "Comparison of 20 Two-Phase Heat Transfer Correlations with 
-       Seven Sets of Experimental Data, Including Flow Pattern and Tube 
-       Inclination Effects." Heat Transfer Engineering 20, no. 1 (February 1, 
+    .. [2] Dongwoo Kim, Venkata K. Ryali, Afshin J. Ghajar, Ronald L.
+       Dougherty. "Comparison of 20 Two-Phase Heat Transfer Correlations with
+       Seven Sets of Experimental Data, Including Flow Pattern and Tube
+       Inclination Effects." Heat Transfer Engineering 20, no. 1 (February 1,
        1999): 15-40. doi:10.1080/014576399271691.
     '''
     Vg = m*x/(rhog*pi/4*D**2)
@@ -175,25 +175,25 @@ def Elamvaluthi_Srinivas(m, x, D, rhol, rhog, Cpl, kl, mug, mu_b, mu_w=None):
     return Nu_TP*kl/D
 
 
-def Groothuis_Hendal(m, x, D, rhol, rhog, Cpl, kl, mug, mu_b, mu_w=None, 
+def Groothuis_Hendal(m, x, D, rhol, rhog, Cpl, kl, mug, mu_b, mu_w=None,
                      water=False):
-    r'''Calculates the two-phase non-boiling heat transfer coefficient of a 
-    liquid and gas flowing inside a tube of any inclination, as in [1]_ and 
+    r'''Calculates the two-phase non-boiling heat transfer coefficient of a
+    liquid and gas flowing inside a tube of any inclination, as in [1]_ and
     reviewed in [2]_.
 
     .. math::
         Re_M = \frac{D V_{ls} \rho_l}{\mu_l} + \frac{D V_{gs} \rho_g}{\mu_g}
-    
+
     For the air-water system:
-    
+
     .. math::
         \frac{h_{TP} D}{k_L} = 0.029 Re_M^{0.87}Pr^{1/3}_l (\mu_b/\mu_w)^{0.14}
-    
+
     For gas/air-oil systems (default):
-    
+
     .. math::
         \frac{h_{TP} D}{k_L} = 2.6 Re_M^{0.39}Pr^{1/3}_l (\mu_b/\mu_w)^{0.14}
-        
+
     Parameters
     ----------
     m : float
@@ -213,7 +213,7 @@ def Groothuis_Hendal(m, x, D, rhol, rhog, Cpl, kl, mug, mu_b, mu_w=None,
     mug : float
         Viscosity of gas [Pa*s]
     mu_b : float
-        Viscosity of liquid at bulk conditions (average of inlet/outlet 
+        Viscosity of liquid at bulk conditions (average of inlet/outlet
         temperature) [Pa*s]
     mu_w : float, optional
         Viscosity of liquid at wall temperature [Pa*s]
@@ -229,10 +229,10 @@ def Groothuis_Hendal(m, x, D, rhol, rhog, Cpl, kl, mug, mu_b, mu_w=None,
     -----
     If the viscosity at the wall temperature is not given, the liquid viscosity
     correction is not applied.
-    
-    Developed for vertical pipes, with superficial velocity ratios of 0.6-250. 
-    Tested fluids were air-water, and gas/air-oil. 
-    
+
+    Developed for vertical pipes, with superficial velocity ratios of 0.6-250.
+    Tested fluids were air-water, and gas/air-oil.
+
     Examples
     --------
     >>> Groothuis_Hendal(m=1, x=.9, D=.3, rhol=1000, rhog=2.5, Cpl=2300, kl=.6,
@@ -241,13 +241,13 @@ def Groothuis_Hendal(m, x, D, rhol, rhog, Cpl, kl, mug, mu_b, mu_w=None,
 
     References
     ----------
-    .. [1] Groothuis, H., and W. P. Hendal. "Heat Transfer in Two-Phase Flow.: 
-       Chemical Engineering Science 11, no. 3 (November 1, 1959): 212-20. 
-       doi:10.1016/0009-2509(59)80089-0. 
-    .. [2] Dongwoo Kim, Venkata K. Ryali, Afshin J. Ghajar, Ronald L. 
-       Dougherty. "Comparison of 20 Two-Phase Heat Transfer Correlations with 
-       Seven Sets of Experimental Data, Including Flow Pattern and Tube 
-       Inclination Effects." Heat Transfer Engineering 20, no. 1 (February 1, 
+    .. [1] Groothuis, H., and W. P. Hendal. "Heat Transfer in Two-Phase Flow.:
+       Chemical Engineering Science 11, no. 3 (November 1, 1959): 212-20.
+       doi:10.1016/0009-2509(59)80089-0.
+    .. [2] Dongwoo Kim, Venkata K. Ryali, Afshin J. Ghajar, Ronald L.
+       Dougherty. "Comparison of 20 Two-Phase Heat Transfer Correlations with
+       Seven Sets of Experimental Data, Including Flow Pattern and Tube
+       Inclination Effects." Heat Transfer Engineering 20, no. 1 (February 1,
        1999): 15-40. doi:10.1080/014576399271691.
     '''
     Vg = m*x/(rhog*pi/4*D**2)
@@ -266,14 +266,14 @@ def Groothuis_Hendal(m, x, D, rhol, rhog, Cpl, kl, mug, mu_b, mu_w=None,
 
 
 def Hughmark(m, x, alpha, D, L, Cpl, kl, mu_b=None, mu_w=None):
-    r'''Calculates the two-phase non-boiling laminar heat transfer coefficient  
-    of a liquid and gas flowing inside a tube of any inclination, as in [1]_  
+    r'''Calculates the two-phase non-boiling laminar heat transfer coefficient
+    of a liquid and gas flowing inside a tube of any inclination, as in [1]_
     and reviewed in [2]_.
 
     .. math::
         \frac{h_{TP} D}{k_l} = 1.75(1-\alpha)^{-0.5}\left(\frac{m_l C_{p,l}}
         {(1-\alpha)k_l L}\right)^{1/3}\left(\frac{\mu_b}{\mu_w}\right)^{0.14}
-    
+
     Parameters
     ----------
     m : float
@@ -291,7 +291,7 @@ def Hughmark(m, x, alpha, D, L, Cpl, kl, mu_b=None, mu_w=None):
     kl : float
         Thermal conductivity of liquid [W/m/K]
     mu_b : float
-        Viscosity of liquid at bulk conditions (average of inlet/outlet 
+        Viscosity of liquid at bulk conditions (average of inlet/outlet
         temperature) [Pa*s]
     mu_w : float, optional
         Viscosity of liquid at wall temperature [Pa*s]
@@ -303,32 +303,32 @@ def Hughmark(m, x, alpha, D, L, Cpl, kl, mu_b=None, mu_w=None):
 
     Notes
     -----
-    This model is based on a laminar entry length correlation - for a 
+    This model is based on a laminar entry length correlation - for a
     sufficiently long tube, this will predict unrealistically low heat transfer
     coefficients.
-    
+
     If the viscosity at the wall temperature is not given, the liquid viscosity
     correction is not applied.
 
-    Developed for horizontal pipes in laminar slug flow. Data consisted of the 
+    Developed for horizontal pipes in laminar slug flow. Data consisted of the
     systems air-water, air-SAE 10 oil, gas-oil, air-diethylene glycol, and
     air-aqueous glycerine.
-    
+
     Examples
     --------
-    >>> Hughmark(m=1, x=.9, alpha=.9, D=.3, L=.5, Cpl=2300, kl=0.6, mu_b=1E-3, 
+    >>> Hughmark(m=1, x=.9, alpha=.9, D=.3, L=.5, Cpl=2300, kl=0.6, mu_b=1E-3,
     ... mu_w=1.2E-3)
     212.7411636127175
 
     References
     ----------
     .. [1] Hughmark, G. A. "Holdup and Heat Transfer in Horizontal Slug Gas-
-       Liquid Flow." Chemical Engineering Science 20, no. 12 (December 1, 
+       Liquid Flow." Chemical Engineering Science 20, no. 12 (December 1,
        1965): 1007-10. doi:10.1016/0009-2509(65)80101-4.
-    .. [2] Dongwoo Kim, Venkata K. Ryali, Afshin J. Ghajar, Ronald L. 
-       Dougherty. "Comparison of 20 Two-Phase Heat Transfer Correlations with 
-       Seven Sets of Experimental Data, Including Flow Pattern and Tube 
-       Inclination Effects." Heat Transfer Engineering 20, no. 1 (February 1, 
+    .. [2] Dongwoo Kim, Venkata K. Ryali, Afshin J. Ghajar, Ronald L.
+       Dougherty. "Comparison of 20 Two-Phase Heat Transfer Correlations with
+       Seven Sets of Experimental Data, Including Flow Pattern and Tube
+       Inclination Effects." Heat Transfer Engineering 20, no. 1 (February 1,
        1999): 15-40. doi:10.1080/014576399271691.
     '''
     ml = m*(1-x)
@@ -341,16 +341,16 @@ def Hughmark(m, x, alpha, D, L, Cpl, kl, mu_b=None, mu_w=None):
 
 def Knott(m, x, D, rhol, rhog, Cpl=None, kl=None, mu_b=None, mu_w=None, L=None,
           hl=None):
-    r'''Calculates the two-phase non-boiling heat transfer coefficient of a 
-    liquid and gas flowing inside a tube of any inclination, as in [1]_ and 
+    r'''Calculates the two-phase non-boiling heat transfer coefficient of a
+    liquid and gas flowing inside a tube of any inclination, as in [1]_ and
     reviewed in [2]_.
 
-    Either a specified `hl` is required, or `Cpl`, `kl`, `mu_b`, `mu_w` and 
+    Either a specified `hl` is required, or `Cpl`, `kl`, `mu_b`, `mu_w` and
     `L` are required to calculate `hl`.
 
     .. math::
         \frac{h_{TP}}{h_l} = \left(1 + \frac{V_{gs}}{V_{ls}}\right)^{1/3}
-            
+
     Parameters
     ----------
     m : float
@@ -368,7 +368,7 @@ def Knott(m, x, D, rhol, rhog, Cpl=None, kl=None, mu_b=None, mu_w=None, L=None,
     kl : float, optional
         Thermal conductivity of liquid [W/m/K]
     mu_b : float, optional
-        Viscosity of liquid at bulk conditions (average of inlet/outlet 
+        Viscosity of liquid at bulk conditions (average of inlet/outlet
         temperature) [Pa*s]
     mu_w : float, optional
         Viscosity of liquid at wall temperature [Pa*s]
@@ -384,33 +384,33 @@ def Knott(m, x, D, rhol, rhog, Cpl=None, kl=None, mu_b=None, mu_w=None, L=None,
 
     Notes
     -----
-    The liquid-only heat transfer coefficient will be calculated with the 
+    The liquid-only heat transfer coefficient will be calculated with the
     `laminar_entry_Seider_Tate` correlation, should it not be provided as an
     input. Many of the arguments to this function are optional and are only
-    used if `hl` is not provided. 
-    
-    `hl` should be calculated with a velocity equal to that determined with 
-    a combined volumetric flow of both the liquid and the gas. All other 
+    used if `hl` is not provided.
+
+    `hl` should be calculated with a velocity equal to that determined with
+    a combined volumetric flow of both the liquid and the gas. All other
     parameters used in calculating the heat transfer coefficient are those
-    of the liquid. If the viscosity at the wall temperature is not given, the 
+    of the liquid. If the viscosity at the wall temperature is not given, the
     liquid viscosity correction in `laminar_entry_Seider_Tate` is not applied.
-    
+
     Examples
     --------
-    >>> Knott(m=1, x=.9, D=.3, rhol=1000, rhog=2.5, Cpl=2300, kl=.6, mu_b=1E-3, 
+    >>> Knott(m=1, x=.9, D=.3, rhol=1000, rhog=2.5, Cpl=2300, kl=.6, mu_b=1E-3,
     ... mu_w=1.2E-3, L=4)
     4225.536758045839
 
     References
     ----------
-    .. [1] Knott, R. F., R. N. Anderson, Andreas. Acrivos, and E. E. Petersen. 
-       "An Experimental Study of Heat Transfer to Nitrogen-Oil Mixtures." 
-       Industrial & Engineering Chemistry 51, no. 11 (November 1, 1959): 
-       1369-72. doi:10.1021/ie50599a032. 
-    .. [2] Dongwoo Kim, Venkata K. Ryali, Afshin J. Ghajar, Ronald L. 
-       Dougherty. "Comparison of 20 Two-Phase Heat Transfer Correlations with 
-       Seven Sets of Experimental Data, Including Flow Pattern and Tube 
-       Inclination Effects." Heat Transfer Engineering 20, no. 1 (February 1, 
+    .. [1] Knott, R. F., R. N. Anderson, Andreas. Acrivos, and E. E. Petersen.
+       "An Experimental Study of Heat Transfer to Nitrogen-Oil Mixtures."
+       Industrial & Engineering Chemistry 51, no. 11 (November 1, 1959):
+       1369-72. doi:10.1021/ie50599a032.
+    .. [2] Dongwoo Kim, Venkata K. Ryali, Afshin J. Ghajar, Ronald L.
+       Dougherty. "Comparison of 20 Two-Phase Heat Transfer Correlations with
+       Seven Sets of Experimental Data, Including Flow Pattern and Tube
+       Inclination Effects." Heat Transfer Engineering 20, no. 1 (February 1,
        1999): 15-40. doi:10.1080/014576399271691.
     '''
     Vgs = m*x/(rhog*pi/4*D**2)
@@ -421,19 +421,19 @@ def Knott(m, x, D, rhol, rhog, Cpl=None, kl=None, mu_b=None, mu_w=None, L=None,
         Pr = Prandtl(Cp=Cpl, k=kl, mu=mu_b)
         Nul = laminar_entry_Seider_Tate(Re=Re, Pr=Pr, L=L, Di=D, mu=mu_b, mu_w=mu_w)
         hl = Nul*kl/D
-    return hl*(1 + Vgs/Vls)**(1/3.) 
+    return hl*(1 + Vgs/Vls)**(1/3.)
 
 
 def Kudirka_Grosh_McFadden(m, x, D, rhol, rhog, Cpl, kl, mug, mu_b, mu_w=None):
-    r'''Calculates the two-phase non-boiling heat transfer coefficient of a 
-    liquid and gas flowing inside a tube of any inclination, as in [1]_ and 
+    r'''Calculates the two-phase non-boiling heat transfer coefficient of a
+    liquid and gas flowing inside a tube of any inclination, as in [1]_ and
     reviewed in [2]_.
 
     .. math::
         Nu = \frac{h_{TP} D}{k_l} = 125 \left(\frac{V_{gs}}{V_{ls}}
-        \right)^{0.125}\left(\frac{\mu_g}{\mu_l}\right)^{0.6} Re_{ls}^{0.25} 
+        \right)^{0.125}\left(\frac{\mu_g}{\mu_l}\right)^{0.6} Re_{ls}^{0.25}
         Pr_l^{1/3}\left(\frac{\mu_b}{\mu_w}\right)^{0.14}
-            
+
     Parameters
     ----------
     m : float
@@ -453,7 +453,7 @@ def Kudirka_Grosh_McFadden(m, x, D, rhol, rhog, Cpl, kl, mug, mu_b, mu_w=None):
     mug : float
         Viscosity of gas [Pa*s]
     mu_b : float
-        Viscosity of liquid at bulk conditions (average of inlet/outlet 
+        Viscosity of liquid at bulk conditions (average of inlet/outlet
         temperature) [Pa*s]
     mu_w : float, optional
         Viscosity of liquid at wall temperature [Pa*s]
@@ -467,27 +467,27 @@ def Kudirka_Grosh_McFadden(m, x, D, rhol, rhog, Cpl, kl, mug, mu_b, mu_w=None):
     -----
     If the viscosity at the wall temperature is not given, the liquid viscosity
     correction is not applied.
-    
-    Developed for air-water and air-ethylene glycol systems with a L/D of 17.6 
+
+    Developed for air-water and air-ethylene glycol systems with a L/D of 17.6
     and at low gas-liquid ratios. The flow regimes studied were bubble, slug,
     and froth flow.
-        
+
     Examples
     --------
-    >>> Kudirka_Grosh_McFadden(m=1, x=.9, D=.3, rhol=1000, rhog=2.5, Cpl=2300, 
+    >>> Kudirka_Grosh_McFadden(m=1, x=.9, D=.3, rhol=1000, rhog=2.5, Cpl=2300,
     ... kl=.6, mug=1E-5, mu_b=1E-3, mu_w=1.2E-3)
     303.9941255903587
 
     References
     ----------
-    .. [1] Kudirka, A. A., R. J. Grosh, and P. W. McFadden. "Heat Transfer in 
-       Two-Phase Flow of Gas-Liquid Mixtures." Industrial & Engineering 
-       Chemistry Fundamentals 4, no. 3 (August 1, 1965): 339-44. 
+    .. [1] Kudirka, A. A., R. J. Grosh, and P. W. McFadden. "Heat Transfer in
+       Two-Phase Flow of Gas-Liquid Mixtures." Industrial & Engineering
+       Chemistry Fundamentals 4, no. 3 (August 1, 1965): 339-44.
        doi:10.1021/i160015a018.
-    .. [2] Dongwoo Kim, Venkata K. Ryali, Afshin J. Ghajar, Ronald L. 
-       Dougherty. "Comparison of 20 Two-Phase Heat Transfer Correlations with 
-       Seven Sets of Experimental Data, Including Flow Pattern and Tube 
-       Inclination Effects." Heat Transfer Engineering 20, no. 1 (February 1, 
+    .. [2] Dongwoo Kim, Venkata K. Ryali, Afshin J. Ghajar, Ronald L.
+       Dougherty. "Comparison of 20 Two-Phase Heat Transfer Correlations with
+       Seven Sets of Experimental Data, Including Flow Pattern and Tube
+       Inclination Effects." Heat Transfer Engineering 20, no. 1 (February 1,
        1999): 15-40. doi:10.1080/014576399271691.
     '''
     Vgs = m*x/(rhog*pi/4*D**2)
@@ -502,13 +502,13 @@ def Kudirka_Grosh_McFadden(m, x, D, rhol, rhog, Cpl, kl, mug, mu_b, mu_w=None):
 
 def Martin_Sims(m, x, D, rhol, rhog, hl=None,
                 Cpl=None, kl=None, mu_b=None, mu_w=None, L=None):
-    r'''Calculates the two-phase non-boiling heat transfer coefficient of a 
-    liquid and gas flowing inside a tube of any inclination, as in [1]_ and 
+    r'''Calculates the two-phase non-boiling heat transfer coefficient of a
+    liquid and gas flowing inside a tube of any inclination, as in [1]_ and
     reviewed in [2]_.
 
     .. math::
         \frac{h_{TP}}{h_l} = 1 + 0.64\sqrt{\frac{V_{gs}}{V_{ls}}}
-            
+
     Parameters
     ----------
     m : float
@@ -528,7 +528,7 @@ def Martin_Sims(m, x, D, rhol, rhog, hl=None,
     kl : float, optional
         Thermal conductivity of liquid [W/m/K]
     mu_b : float, optional
-        Viscosity of liquid at bulk conditions (average of inlet/outlet 
+        Viscosity of liquid at bulk conditions (average of inlet/outlet
         temperature) [Pa*s]
     mu_w : float, optional
         Viscosity of liquid at wall temperature [Pa*s]
@@ -545,25 +545,25 @@ def Martin_Sims(m, x, D, rhol, rhog, hl=None,
     No specific suggestion for how to calculate the liquid-phase heat transfer
     coefficient is given in [1]_; [2]_ suggests to use the same procedure as
     in `Knott`.
-    
+
     Examples
     --------
     >>> Martin_Sims(m=1, x=.9, D=.3, rhol=1000, rhog=2.5, hl=141.2)
     5563.280000000001
-    >>> Martin_Sims(m=1, x=.9, D=.3, rhol=1000, rhog=2.5, Cpl=2300, kl=.6, 
+    >>> Martin_Sims(m=1, x=.9, D=.3, rhol=1000, rhog=2.5, Cpl=2300, kl=.6,
     ... mu_b=1E-3, mu_w=1.2E-3, L=24)
     5977.505465781747
 
     References
     ----------
-    .. [1] Martin, B. W, and G. E Sims. "Forced Convection Heat Transfer to 
-       Water with Air Injection in a Rectangular Duct." International Journal 
-       of Heat and Mass Transfer 14, no. 8 (August 1, 1971): 1115-34. 
+    .. [1] Martin, B. W, and G. E Sims. "Forced Convection Heat Transfer to
+       Water with Air Injection in a Rectangular Duct." International Journal
+       of Heat and Mass Transfer 14, no. 8 (August 1, 1971): 1115-34.
        doi:10.1016/0017-9310(71)90208-0.
-    .. [2] Dongwoo Kim, Venkata K. Ryali, Afshin J. Ghajar, Ronald L. 
-       Dougherty. "Comparison of 20 Two-Phase Heat Transfer Correlations with 
-       Seven Sets of Experimental Data, Including Flow Pattern and Tube 
-       Inclination Effects." Heat Transfer Engineering 20, no. 1 (February 1, 
+    .. [2] Dongwoo Kim, Venkata K. Ryali, Afshin J. Ghajar, Ronald L.
+       Dougherty. "Comparison of 20 Two-Phase Heat Transfer Correlations with
+       Seven Sets of Experimental Data, Including Flow Pattern and Tube
+       Inclination Effects." Heat Transfer Engineering 20, no. 1 (February 1,
        1999): 15-40. doi:10.1080/014576399271691.
     '''
     Vgs = m*x/(rhog*pi/4*D**2)
@@ -578,15 +578,15 @@ def Martin_Sims(m, x, D, rhol, rhog, hl=None,
 
 
 def Ravipudi_Godbold(m, x, D, rhol, rhog, Cpl, kl, mug, mu_b, mu_w=None):
-    r'''Calculates the two-phase non-boiling heat transfer coefficient of a 
-    liquid and gas flowing inside a tube of any inclination, as in [1]_ and 
+    r'''Calculates the two-phase non-boiling heat transfer coefficient of a
+    liquid and gas flowing inside a tube of any inclination, as in [1]_ and
     reviewed in [2]_.
 
     .. math::
         Nu = \frac{h_{TP} D}{k_l} = 0.56 \left(\frac{V_{gs}}{V_{ls}}
-        \right)^{0.3}\left(\frac{\mu_g}{\mu_l}\right)^{0.2} Re_{ls}^{0.6} 
+        \right)^{0.3}\left(\frac{\mu_g}{\mu_l}\right)^{0.2} Re_{ls}^{0.6}
         Pr_l^{1/3}\left(\frac{\mu_b}{\mu_w}\right)^{0.14}
-    
+
     Parameters
     ----------
     m : float
@@ -606,7 +606,7 @@ def Ravipudi_Godbold(m, x, D, rhol, rhog, Cpl, kl, mug, mu_b, mu_w=None):
     mug : float
         Viscosity of gas [Pa*s]
     mu_b : float
-        Viscosity of liquid at bulk conditions (average of inlet/outlet 
+        Viscosity of liquid at bulk conditions (average of inlet/outlet
         temperature) [Pa*s]
     mu_w : float, optional
         Viscosity of liquid at wall temperature [Pa*s]
@@ -620,11 +620,11 @@ def Ravipudi_Godbold(m, x, D, rhol, rhog, Cpl, kl, mug, mu_b, mu_w=None):
     -----
     If the viscosity at the wall temperature is not given, the liquid viscosity
     correction is not applied.
-    
-    Developed with a vertical pipe, superficial gas/liquid velocity ratios of 
-    1-90, in the froth regime, and for fluid mixtures of air and water, 
+
+    Developed with a vertical pipe, superficial gas/liquid velocity ratios of
+    1-90, in the froth regime, and for fluid mixtures of air and water,
     toluene, benzene, and methanol.
-    
+
     Examples
     --------
     >>> Ravipudi_Godbold(m=1, x=.9, D=.3, rhol=1000, rhog=2.5, Cpl=2300, kl=.6, mug=1E-5, mu_b=1E-3, mu_w=1.2E-3)
@@ -633,12 +633,12 @@ def Ravipudi_Godbold(m, x, D, rhol, rhog, Cpl, kl, mug, mu_b, mu_w=None):
     References
     ----------
     .. [1] Ravipudi, S., and Godbold, T., The Effect of Mass Transfer on Heat
-       Transfer Rates for Two-Phase Flow in a Vertical Pipe, Proceedings 6th 
+       Transfer Rates for Two-Phase Flow in a Vertical Pipe, Proceedings 6th
        International Heat Transfer Conference, Toronto, V. 1, p. 505-510, 1978.
-    .. [2] Dongwoo Kim, Venkata K. Ryali, Afshin J. Ghajar, Ronald L. 
-       Dougherty. "Comparison of 20 Two-Phase Heat Transfer Correlations with 
-       Seven Sets of Experimental Data, Including Flow Pattern and Tube 
-       Inclination Effects." Heat Transfer Engineering 20, no. 1 (February 1, 
+    .. [2] Dongwoo Kim, Venkata K. Ryali, Afshin J. Ghajar, Ronald L.
+       Dougherty. "Comparison of 20 Two-Phase Heat Transfer Correlations with
+       Seven Sets of Experimental Data, Including Flow Pattern and Tube
+       Inclination Effects." Heat Transfer Engineering 20, no. 1 (February 1,
        1999): 15-40. doi:10.1080/014576399271691.
     '''
     Vgs = m*x/(rhog*pi/4*D**2)
@@ -651,10 +651,10 @@ def Ravipudi_Godbold(m, x, D, rhol, rhog, Cpl, kl, mug, mu_b, mu_w=None):
     return Nu*kl/D
 
 
-def Aggour(m, x, alpha, D, rhol, Cpl, kl, mu_b, mu_w=None, L=None, 
+def Aggour(m, x, alpha, D, rhol, Cpl, kl, mu_b, mu_w=None, L=None,
            turbulent=None):
-    r'''Calculates the two-phase non-boiling laminar heat transfer coefficient  
-    of a liquid and gas flowing inside a tube of any inclination, as in [1]_  
+    r'''Calculates the two-phase non-boiling laminar heat transfer coefficient
+    of a liquid and gas flowing inside a tube of any inclination, as in [1]_
     and reviewed in [2]_.
 
     Laminar for Rel <= 2000:
@@ -662,15 +662,15 @@ def Aggour(m, x, alpha, D, rhol, Cpl, kl, mu_b, mu_w=None, L=None,
     .. math::
         h_{TP} = 1.615\frac{k_l}{D}\left(\frac{Re_l Pr_l D}{L}\right)^{1/3}
         \left(\frac{\mu_b}{\mu_w}\right)^{0.14}
-    
+
     Turbulent for Rel > 2000:
-    
+
     .. math::
         h_{TP} = 0.0155\frac{k_l}{D} Pr_l^{0.5} Re_l^{0.83}
-    
+
     .. math::
         Re_l = \frac{\rho_l v_l D}{\mu_l}
-        
+
     .. math::
         V_l = \frac{V_{ls}}{1-\alpha}
 
@@ -691,7 +691,7 @@ def Aggour(m, x, alpha, D, rhol, Cpl, kl, mu_b, mu_w=None, L=None,
     kl : float
         Thermal conductivity of liquid [W/m/K]
     mu_b : float
-        Viscosity of liquid at bulk conditions (average of inlet/outlet 
+        Viscosity of liquid at bulk conditions (average of inlet/outlet
         temperature) [Pa*s]
     mu_w : float, optional
         Viscosity of liquid at wall temperature [Pa*s]
@@ -708,12 +708,12 @@ def Aggour(m, x, alpha, D, rhol, Cpl, kl, mu_b, mu_w=None, L=None,
 
     Notes
     -----
-    Developed with mixtures of air-water, helium-water, and freon-12-water and 
-    vertical tests. Studied flow patterns were bubbly, slug, annular, 
-    bubbly-slug, and slug-annular regimes. Superficial velocity ratios ranged 
+    Developed with mixtures of air-water, helium-water, and freon-12-water and
+    vertical tests. Studied flow patterns were bubbly, slug, annular,
+    bubbly-slug, and slug-annular regimes. Superficial velocity ratios ranged
     from 0.02 to 470.
 
-    A viscosity correction is only suggested for the laminar regime. 
+    A viscosity correction is only suggested for the laminar regime.
     If the viscosity at the wall temperature is not given, the liquid viscosity
     correction is not applied.
 
@@ -724,18 +724,18 @@ def Aggour(m, x, alpha, D, rhol, Cpl, kl, mu_b, mu_w=None, L=None,
 
     References
     ----------
-    .. [1] Aggour, Mohamed A. Hydrodynamics and Heat Transfer in Two-Phase 
-       Two-Component Flows, Ph.D. Thesis, University of Manutoba, Canada 
+    .. [1] Aggour, Mohamed A. Hydrodynamics and Heat Transfer in Two-Phase
+       Two-Component Flows, Ph.D. Thesis, University of Manutoba, Canada
        (1978). http://mspace.lib.umanitoba.ca/xmlui/handle/1993/14171.
-    .. [2] Dongwoo Kim, Venkata K. Ryali, Afshin J. Ghajar, Ronald L. 
-       Dougherty. "Comparison of 20 Two-Phase Heat Transfer Correlations with 
-       Seven Sets of Experimental Data, Including Flow Pattern and Tube 
-       Inclination Effects." Heat Transfer Engineering 20, no. 1 (February 1, 
+    .. [2] Dongwoo Kim, Venkata K. Ryali, Afshin J. Ghajar, Ronald L.
+       Dougherty. "Comparison of 20 Two-Phase Heat Transfer Correlations with
+       Seven Sets of Experimental Data, Including Flow Pattern and Tube
+       Inclination Effects." Heat Transfer Engineering 20, no. 1 (February 1,
        1999): 15-40. doi:10.1080/014576399271691.
     '''
     Vls = m*(1-x)/(rhol*pi/4*D**2)
     Vl = Vls/(1.-alpha)
-    
+
     Prl = Prandtl(Cp=Cpl, k=kl, mu=mu_b)
     Rel = Reynolds(V=Vl, D=D, rho=rhol, mu=mu_b)
 
@@ -762,7 +762,7 @@ conv_two_phase_methods = {
 }
 
 # Not actually ranked
-conv_two_phase_methods_ranked = ['Knott', 'Martin_Sims', 'Kudirka_Grosh_McFadden', 'Groothuis_Hendal', 
+conv_two_phase_methods_ranked = ['Knott', 'Martin_Sims', 'Kudirka_Grosh_McFadden', 'Groothuis_Hendal',
                                  'Aggour', 'Hughmark', 'Elamvaluthi_Srinivas', 'Davis-David', 'Ravipudi_Godbold']
 
 conv_two_phase_bad_method = "Correlation name not recognized; the availble methods are %s." %(list(conv_two_phase_methods.keys()))
@@ -783,12 +783,12 @@ for m in conv_two_phase_methods_ranked:
         if ar not in ('m', 'x', 'D', 'Cpl', 'kl'):
             t += '%s is not None and ' %(ar)
     t = t[:-5] + ':'
-    
+
     print(t)
     print('    methods.append("%s")' %m)
 '''
 
-def h_two_phase_methods(m, x, D, Cpl, kl, rhol=None, rhog=None, mul=None, 
+def h_two_phase_methods(m, x, D, Cpl, kl, rhol=None, rhog=None, mul=None,
                         mu_b=None, mu_w=None, mug=None, L=None, alpha=None,
                         check_ranges=True):
     r'''Returns a list of correlation names for the case of two-phase
@@ -813,7 +813,7 @@ def h_two_phase_methods(m, x, D, Cpl, kl, rhol=None, rhog=None, mul=None,
     mul : float, optional
         Viscosity of liquid [Pa*s]
     mu_b : float, optional
-        Viscosity of liquid at bulk conditions (average of inlet/outlet 
+        Viscosity of liquid at bulk conditions (average of inlet/outlet
         temperature) [Pa*s]
     mu_w : float, optional
         Viscosity of liquid at wall temperature [Pa*s]
@@ -864,10 +864,10 @@ def h_two_phase_methods(m, x, D, Cpl, kl, rhol=None, rhog=None, mul=None,
     return methods
 
 
-def h_two_phase(m, x, D, Cpl, kl, rhol=None, rhog=None, mul=None, 
+def h_two_phase(m, x, D, Cpl, kl, rhol=None, rhog=None, mul=None,
                 mu_b=None, mu_w=None, mug=None, L=None, alpha=None,
                 method=None):
-    r'''Calculates the two-phase non-boiling laminar heat transfer coefficient  
+    r'''Calculates the two-phase non-boiling laminar heat transfer coefficient
     of a liquid and gas flowing inside a tube according to the specified
     method. Nine methods are available.
 
@@ -891,7 +891,7 @@ def h_two_phase(m, x, D, Cpl, kl, rhol=None, rhog=None, mul=None,
     mul : float, optional
         Viscosity of liquid [Pa*s]
     mu_b : float, optional
-        Viscosity of liquid at bulk conditions (average of inlet/outlet 
+        Viscosity of liquid at bulk conditions (average of inlet/outlet
         temperature) [Pa*s]
     mu_w : float, optional
         Viscosity of liquid at wall temperature [Pa*s]
@@ -921,12 +921,12 @@ def h_two_phase(m, x, D, Cpl, kl, rhol=None, rhog=None, mul=None,
     --------
     >>> h_two_phase(m=1, x=.9, D=.3, alpha=.9, rhol=1000, Cpl=2300, kl=.6, mu_b=1E-3, mu_w=1.2E-3, L=5, method='Aggour')
     420.9347146885667
-    '''    
+    '''
     if method is None:
         method2 = h_two_phase_methods(m=m, x=x, D=D, Cpl=Cpl, kl=kl, rhol=rhol, rhog=rhog, mul=mul, mu_b=mu_b, mu_w=mu_w, mug=mug, L=L, alpha=alpha, check_ranges=True)[0]
     else:
         method2 = method
-        
+
     if method2 == "Knott":
         return Knott(m=m, x=x, D=D, rhol=rhol, rhog=rhog, Cpl=Cpl, kl=kl, mu_b=mu_b, mu_w=mu_w, L=L)
     elif method2 == "Martin_Sims":

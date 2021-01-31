@@ -53,17 +53,17 @@ def blackbody_spectral_radiance(T, wavelength):
     -----
     Can be used to derive the Stefan-Boltzman law, or determine the maximum
     radiant frequency for a given temperature.
-    
+
     Examples
     --------
     Checked with Spectral-calc.com, at [2]_.
 
     >>> blackbody_spectral_radiance(800., 4E-6)
     1311694129.7430933
-    
+
     Calculation of power from the sun (earth occupies 6.8E-5 steradian of the
     sun):
-        
+
     >>> from scipy.integrate import quad
     >>> rad = lambda l: blackbody_spectral_radiance(5778., l)*6.8E-5
     >>> quad(rad, 1E-10, 1E-4)[0]
@@ -131,9 +131,9 @@ def q_rad(emissivity, T, T2=0):
 
 def grey_transmittance(extinction_coefficient, molar_density, length, base=e):
     r'''Calculates the transmittance of a grey body, given the extinction
-    coefficient of the material, its molar density, and the path length of the 
+    coefficient of the material, its molar density, and the path length of the
     radiation.
-    
+
     .. math::
         \tau = base^{(-\epsilon \cdot l\cdot \rho_m )}
 
@@ -154,7 +154,7 @@ def grey_transmittance(extinction_coefficient, molar_density, length, base=e):
     Returns
     -------
     transmittance : float
-        The fraction of spectral radiance which is transmitted through a grey 
+        The fraction of spectral radiance which is transmitted through a grey
         body (can be liquid, gas, or even solid ex. in the case of glasses) [-]
 
     Notes
@@ -166,7 +166,7 @@ def grey_transmittance(extinction_coefficient, molar_density, length, base=e):
     --------
     Overall transmission loss through 1 cm of precipitable water equivalent
     atmospheric water vapor at a frequency of 1.3 um [2]_:
-    
+
     >>> grey_transmittance(3.8e-4, molar_density=55300, length=1e-2)
     0.8104707721191062
 
@@ -174,7 +174,7 @@ def grey_transmittance(extinction_coefficient, molar_density, length, base=e):
     ----------
     .. [1] Modest, Michael F. Radiative Heat Transfer, Third Edition. 3rd
        edition. New York: Academic Press, 2013.
-    .. [2] Eldridge, Ralph G. "Water Vapor Absorption of Visible and Near 
+    .. [2] Eldridge, Ralph G. "Water Vapor Absorption of Visible and Near
        Infrared Radiation." Applied Optics 6, no. 4 (April 1, 1967): 709-13.
        https://doi.org/10.1364/AO.6.000709.
     '''
@@ -198,53 +198,53 @@ def solar_spectrum(model='SOLAR-ISS'):
     SSI : ndarray
         The solar spectral irradiance of the sun, [W/(m^2*m)]
     uncertainties : ndarray
-        The estimated absolute uncertainty of the measured spectral irradiance  
+        The estimated absolute uncertainty of the measured spectral irradiance
         of the sun, [W/(m^2*m)]
 
     Notes
     -----
     The power of the sun changes as the earth gets closer or further away.
-    
+
     In [1]_, the UV and VIS data come from observations in 2008; the IR comes
     from measurements made from 2010-2016. There is a further 28 W/m^2 for the
     3 micrometer to 160 micrometer range, not included in this model. All data
     was corrected to a standard distance of one astronomical unit from the Sun,
-    as is the resultant spectrum. 
-    
+    as is the resultant spectrum.
+
     The variation of the spectrum as a function of distance from the sun should
     alter only the absolute magnitudes.
-    
+
     [2]_ contains another dataset.
-    
+
     99.9% of the time this function takes is to read in the solar data from
     disk. This could be reduced by using pandas.
-    
+
     Examples
     --------
     >>> wavelengths, SSI, uncertainties = solar_spectrum()
-    
+
     Calculate the minimum and maximum values of the wavelengths (0.5 nm/3000nm)
     and SSI:
-        
+
     >>> min(wavelengths), max(wavelengths), min(SSI), max(SSI)
     (5e-10, 2.9999000000000003e-06, 1330.0, 2256817820.0)
-    
+
     Integration - calculate the solar constant, in untis of W/m^2 hitting
     earth's atmosphere.
-    
+
     >>> import numpy as np
     >>> np.trapz(SSI, wavelengths)
     1344.802978238
 
     References
     ----------
-    .. [1] Meftah, M., L. Damé, D. Bolsée, A. Hauchecorne, N. Pereira, D. 
-       Sluse, G. Cessateur, et al. "SOLAR-ISS: A New Reference Spectrum Based 
-       on SOLAR/SOLSPEC Observations." Astronomy & Astrophysics 611 (March 1, 
+    .. [1] Meftah, M., L. Damé, D. Bolsée, A. Hauchecorne, N. Pereira, D.
+       Sluse, G. Cessateur, et al. "SOLAR-ISS: A New Reference Spectrum Based
+       on SOLAR/SOLSPEC Observations." Astronomy & Astrophysics 611 (March 1,
        2018): A1. https://doi.org/10.1051/0004-6361/201731316.
-    .. [2] Woods Thomas N., Chamberlin Phillip C., Harder Jerald W., Hock 
+    .. [2] Woods Thomas N., Chamberlin Phillip C., Harder Jerald W., Hock
        Rachel A., Snow Martin, Eparvier Francis G., Fontenla Juan, McClintock
-       William E., and Richard Erik C. "Solar Irradiance Reference Spectra 
+       William E., and Richard Erik C. "Solar Irradiance Reference Spectra
        (SIRS) for the 2008 Whole Heliosphere Interval (WHI)." Geophysical
        Research Letters 36, no. 1 (January 1, 2009).
        https://doi.org/10.1029/2008GL036373.
@@ -255,13 +255,13 @@ def solar_spectrum(model='SOLAR-ISS'):
         pth = os.path.join(folder, 'solar_iss_2018_spectrum.dat')
         data = np.loadtxt(pth)
         wavelengths, SSI, uncertainties = data[:, 0], data[:, 1], data[:, 2]
-        
+
         wavelengths = wavelengths*1E-9
         SSI = SSI*1E9
-        
+
         # Convert -1 uncertainties to nans
         uncertainties[uncertainties == -1] = np.nan
-        
+
         uncertainties = uncertainties*1E9
     return wavelengths, SSI, uncertainties
 

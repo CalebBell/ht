@@ -27,9 +27,9 @@ import ht
 
 
 '''Basic module which wraps all ht functions with numpy's vectorize.
-All other object - dicts, classes, etc - are not wrapped. Supports star 
+All other object - dicts, classes, etc - are not wrapped. Supports star
 imports; so the same objects exported when importing from the main library
-will be imported from here. 
+will be imported from here.
 
 >>> from ht.vectorized import *
 
@@ -41,7 +41,7 @@ array([ 43.20040929,  43.60182765])
 
 Note that because this needs to import ht itself, ht.vectorized
 needs to be imported separately; the following will cause an error:
-    
+
 >>> import ht
 >>> ht.vectorized # Won't work, has not been imported yet
 
@@ -68,4 +68,4 @@ globals().update(__funcs)
 
 
 
-        
+

@@ -87,15 +87,15 @@ def test_Nu_cylinder_Perkins_Leppert_1964():
 def test_Nu_external_cylinder():
     Nu = Nu_external_cylinder(6071.0, 0.7)
     assert_allclose(Nu, 40.38327083519522)
-    
+
     Nu = Nu_external_cylinder(6071.0, 0.7, Method='Zukauskas')
     assert_allclose(Nu, 42.4244052368103)
-    
+
     methods = Nu_external_cylinder_methods(6071.0, 0.7, Prw=.8, mu=1e-4, muw=2e-4)
-    
+
     with pytest.raises(Exception):
         Nu_external_cylinder(6071.0, 0.7, Method='BADMETHOD')
-        
+
     Nu = Nu_external_cylinder(6071.0, 0.7, Prw=.8, Method='Zukauskas')
     assert_close(Nu, 41.0315360788783)
 
@@ -106,59 +106,59 @@ def test_Nu_external_cylinder():
 def test_Nu_horizontal_plate_laminar_Baehr():
     Prs = [1e-4, 1e-1, 1, 100]
     Nu_expects = [3.5670492006699317, 97.46187137010543, 209.9752366351804, 995.1679034477633]
-    
+
     for Pr, Nu_expect in zip(Prs, Nu_expects):
         assert_allclose(Nu_horizontal_plate_laminar_Baehr(1e5, Pr), Nu_expect)
 
 
 def test_Nu_horizontal_plate_laminar_Churchill_Ozoe():
     assert_allclose(Nu_horizontal_plate_laminar_Churchill_Ozoe(1e5, .7), 183.08600782591418)
-    
-    
+
+
 def test_Nu_horizontal_plate_turbulent_Schlichting():
     assert_allclose(Nu_horizontal_plate_turbulent_Schlichting(1e5, 0.7), 309.620048541267)
-    
-    
+
+
 def test_Nu_horizontal_plate_turbulent_Kreith():
     Nu = Nu_horizontal_plate_turbulent_Kreith(1.03e6, 0.71)
     assert_allclose(Nu, 2074.8740070411122)
-    
-    
+
+
 def test_Nu_external_horizontal_plate():
     # default function - turbulent
     assert_allclose(Nu_external_horizontal_plate(5e6, .7),
                     Nu_external_horizontal_plate(5e6, .7, turbulent_method='Schlichting'))
-    
+
     # specific function - turbulent - vs specify turbulent method
     assert_allclose(Nu_horizontal_plate_turbulent_Kreith(5e6, .7),
                     Nu_external_horizontal_plate(5e6, .7, turbulent_method='Kreith'))
-    
+
     # specific function - turbulent - vs specify method
     assert_allclose(Nu_horizontal_plate_turbulent_Kreith(5e6, .7),
                     Nu_external_horizontal_plate(5e6, .7, Method='Kreith'))
-    
+
     # default function - laminar
     assert_allclose(Nu_external_horizontal_plate(5e3, .7),
                     Nu_external_horizontal_plate(5e3, .7, laminar_method='Baehr'))
-    
+
     # specific function - laminar - vs specify laminar method
     assert_allclose(Nu_horizontal_plate_laminar_Baehr(5e3, .7),
                     Nu_external_horizontal_plate(5e3, .7, laminar_method='Baehr'))
-    
+
     # specific function - laminar - vs specify method
     assert_allclose(Nu_horizontal_plate_laminar_Churchill_Ozoe(5e6, .7),
                     Nu_external_horizontal_plate(5e6, .7, Method='Churchill Ozoe'))
-    
+
     # Swith the transition region to be higher
     assert_allclose(Nu_horizontal_plate_laminar_Baehr(5e6, .7),
                     Nu_external_horizontal_plate(5e6, .7, Re_transition=1e7))
-    
+
     # Check the AvailableMethods
-    assert (set(Nu_external_horizontal_plate_methods(1e5, .7, L=1.0, x=0.5, check_ranges=True)) 
+    assert (set(Nu_external_horizontal_plate_methods(1e5, .7, L=1.0, x=0.5, check_ranges=True))
             == set(conv_horizontal_plate_laminar_methods.keys()) )
-    
-    assert (set(Nu_external_horizontal_plate_methods(1e7, .7)) 
+
+    assert (set(Nu_external_horizontal_plate_methods(1e7, .7))
             == set(conv_horizontal_plate_turbulent_methods.keys()) )
-    
-    
-    
+
+
+

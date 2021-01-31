@@ -30,7 +30,7 @@ __all__ = ['Nu_cylinder_Zukauskas', 'Nu_cylinder_Churchill_Bernstein',
            'Nu_cylinder_McAdams',
            'Nu_external_cylinder',
            'Nu_external_cylinder_methods',
-           'Nu_horizontal_plate_laminar_Baehr', 
+           'Nu_horizontal_plate_laminar_Baehr',
            'Nu_horizontal_plate_laminar_Churchill_Ozoe',
            'Nu_horizontal_plate_turbulent_Schlichting',
            'Nu_horizontal_plate_turbulent_Kreith',
@@ -489,22 +489,22 @@ conv_external_cylinder_turbulent_methods = {
     'Perkins-Leppert 1964': (Nu_cylinder_Perkins_Leppert_1964, ('Re', 'Pr', 'mu', 'muw')),
 }
 
-conv_external_cylinder_turbulent_methods_ranked = ['Sanitjai-Goldstein', 
-                                                   'Churchill-Bernstein', 
-                                                   'Zukauskas', 'Whitaker', 
-                                                   'Perkins-Leppert 1964',  
-                                                   'McAdams',  'Fand', 
+conv_external_cylinder_turbulent_methods_ranked = ['Sanitjai-Goldstein',
+                                                   'Churchill-Bernstein',
+                                                   'Zukauskas', 'Whitaker',
+                                                   'Perkins-Leppert 1964',
+                                                   'McAdams',  'Fand',
                                                    'Perkins-Leppert 1962']
 
 conv_external_cylinder_methods = conv_external_cylinder_turbulent_methods.copy()
 
 _missing_external_cylinder_method = "Correlation name not recognized; the availble methods are %s." %(list(conv_external_cylinder_methods.keys()))
-        
-        
+
+
 def Nu_external_cylinder_methods(Re, Pr, Prw=None, mu=None, muw=None, check_ranges=True):
-    r'''This function returns a list of correlation names for forced convection 
+    r'''This function returns a list of correlation names for forced convection
     over an external cylinder.
-    
+
     The preferred method 'Sanitjai-Goldstein'.
 
     Parameters
@@ -512,7 +512,7 @@ def Nu_external_cylinder_methods(Re, Pr, Prw=None, mu=None, muw=None, check_rang
     Re : float
         Reynolds number of fluid with respect to cylinder diameter, [-]
     Pr : float
-        Prandtl number at either the free stream or wall temperature 
+        Prandtl number at either the free stream or wall temperature
         depending on the method, [-]
     Prw : float, optional
         Prandtl number at wall temperature, [-]
@@ -527,9 +527,9 @@ def Nu_external_cylinder_methods(Re, Pr, Prw=None, mu=None, muw=None, check_rang
     Returns
     -------
     methods : list[str]
-        List of methods which can be used to calculate `Nu` with the given 
+        List of methods which can be used to calculate `Nu` with the given
         inputs
-        
+
     Examples
     --------
     >>> Nu_external_cylinder_methods(0.72, 1E7)[0]
@@ -544,13 +544,13 @@ def Nu_external_cylinder_methods(Re, Pr, Prw=None, mu=None, muw=None, check_rang
 
 
 def Nu_external_cylinder(Re, Pr, Prw=None, mu=None, muw=None, Method=None):
-    r'''Calculates Nusselt number for crossflow across a single tube at a 
+    r'''Calculates Nusselt number for crossflow across a single tube at a
     specified `Re` and `Pr` according to the specified method. Optional
     parameters are `Prw`, `mu`, and `muw`. This function has eight methods
     available. The 'Sanitjai-Goldstein' method is
     the default.
-    
-    The front of the cyliner is normally always in a laminar regime; whereas 
+
+    The front of the cyliner is normally always in a laminar regime; whereas
     the back is turbulent. The proportions change with `Re`; all correlations
     take this into account. For this heat transfer case, there is no separation
     between laminar and turbulent methods.
@@ -560,7 +560,7 @@ def Nu_external_cylinder(Re, Pr, Prw=None, mu=None, muw=None, Method=None):
     Re : float
         Reynolds number of fluid with respect to cylinder diameter, [-]
     Pr : float
-        Prandtl number at either the free stream or wall temperature 
+        Prandtl number at either the free stream or wall temperature
         depending on the method, [-]
     Prw : float, optional
         Prandtl number at wall temperature, [-]
@@ -584,7 +584,7 @@ def Nu_external_cylinder(Re, Pr, Prw=None, mu=None, muw=None, Method=None):
     -----
     A comparison of the methods for various Prandtl and Reynolds number ranges
     is plotted below.
-    
+
     .. plot:: plots/Nu_external_cylinder.py
 
     Examples
@@ -593,7 +593,7 @@ def Nu_external_cylinder(Re, Pr, Prw=None, mu=None, muw=None, Method=None):
     40.38327083519522
     '''
     Method2 = 'Sanitjai-Goldstein' if Method is None else Method
-    
+
     if Method2 == 'Sanitjai-Goldstein':
         return Nu_cylinder_Sanitjai_Goldstein(Re=Re, Pr=Pr)
     elif Method2 == 'Churchill-Bernstein':
@@ -615,31 +615,31 @@ def Nu_external_cylinder(Re, Pr, Prw=None, mu=None, muw=None, Method=None):
 # Horizontal Plate in crossflow
 
 def Nu_horizontal_plate_laminar_Baehr(Re, Pr):
-    r'''Calculates Nusselt number for laminar flow across an **isothermal**  
-    flat plate at a specified `Re` and `Pr`, both evaluated at the bulk 
-    temperature. No other wall correction is necessary for this formulation. 
+    r'''Calculates Nusselt number for laminar flow across an **isothermal**
+    flat plate at a specified `Re` and `Pr`, both evaluated at the bulk
+    temperature. No other wall correction is necessary for this formulation.
     Four different equations are used for different Prandtl number ranges.
-    
+
     The equation for the common Prandtl number range is also recommended in
     [2]_ and [3]_.
-    
+
     if :math:`\text{Pr} < 0.005`:
-        
+
     .. math::
         \text{Nu}_L = 1.128\text{Re}^{0.5}\text{Pr}^{0.5}
-        
+
     if :math:`0.005 < \text{Pr} < 0.05`:
-        
+
     .. math::
         \text{Nu}_L = 1.0\text{Re}^{0.5}\text{Pr}^{0.5}
-        
+
     if :math:`0.6 < \text{Pr} < 10`:
-        
+
     .. math::
         \text{Nu}_L = 0.664\text{Re}^{0.5}\text{Pr}^{1/3}
-        
+
     if :math:`\text{Pr} > 10`:
-        
+
     .. math::
         \text{Nu}_L = 0.678\text{Re}^{0.5}\text{Pr}^{1/3}
 
@@ -658,7 +658,7 @@ def Nu_horizontal_plate_laminar_Baehr(Re, Pr):
 
     Notes
     -----
-    Does not take into account the impact of free convection, which can 
+    Does not take into account the impact of free convection, which can
     increase the convection substantially.
 
     Examples
@@ -688,14 +688,14 @@ def Nu_horizontal_plate_laminar_Baehr(Re, Pr):
 
 
 def Nu_horizontal_plate_laminar_Churchill_Ozoe(Re, Pr):
-    r'''Calculates Nusselt number for laminar flow across an **isothermal**  
-    flat plate at a specified `Re` and `Pr`, both evaluated at the bulk 
-    temperature. No other wall correction is necessary for this formulation. 
+    r'''Calculates Nusselt number for laminar flow across an **isothermal**
+    flat plate at a specified `Re` and `Pr`, both evaluated at the bulk
+    temperature. No other wall correction is necessary for this formulation.
     A single equation covers all Prandtl number ranges.
-        
+
     .. math::
         Nu_L = \frac{0.6774Re_L^{1/2}Pr^{1/3}}{[1+(0.0468/Pr)^{2/3}]^{1/4}}
-        
+
 
     Parameters
     ----------
@@ -712,7 +712,7 @@ def Nu_horizontal_plate_laminar_Churchill_Ozoe(Re, Pr):
 
     Notes
     -----
-    Does not take into account the impact of free convection, which can 
+    Does not take into account the impact of free convection, which can
     increase the convection substantially.
 
     Examples
@@ -722,8 +722,8 @@ def Nu_horizontal_plate_laminar_Churchill_Ozoe(Re, Pr):
 
     References
     ----------
-    .. [1] Churchill, Stuart W., and Hiroyuki Ozoe. "Correlations for Laminar 
-       Forced Convection in Flow Over an Isothermal Flat Plate and in 
+    .. [1] Churchill, Stuart W., and Hiroyuki Ozoe. "Correlations for Laminar
+       Forced Convection in Flow Over an Isothermal Flat Plate and in
        Developing and Fully Developed Flow in an Isothermal Tube." Journal of
        Heat Transfer 95, no. 3 (August 1, 1973): 416
        https://doi.org/10.1115/1.3450078.
@@ -736,11 +736,11 @@ def Nu_horizontal_plate_laminar_Churchill_Ozoe(Re, Pr):
 
 
 def Nu_horizontal_plate_turbulent_Schlichting(Re, Pr):
-    r'''Calculates Nusselt number for turbulent flow across an **isothermal**  
-    flat plate at a specified `Re` and `Pr`, both evaluated at the bulk 
-    temperature. The formulation of Schlichting is used, which adds a 
+    r'''Calculates Nusselt number for turbulent flow across an **isothermal**
+    flat plate at a specified `Re` and `Pr`, both evaluated at the bulk
+    temperature. The formulation of Schlichting is used, which adds a
     surface friction term to a formulation from Petukhov and Popov.
-            
+
     .. math::
         \text{Nu}_L = \frac{0.037\text{Re_L}^{0.8} \text{Pr}}
         {1 + 2.443\text{Re}_L^{-0.1}(\text{Pr}^{2/3} - 1)}
@@ -760,7 +760,7 @@ def Nu_horizontal_plate_turbulent_Schlichting(Re, Pr):
 
     Notes
     -----
-    Does not take into account the impact of free convection, which can 
+    Does not take into account the impact of free convection, which can
     increase the convection substantially.
 
     Examples
@@ -770,8 +770,8 @@ def Nu_horizontal_plate_turbulent_Schlichting(Re, Pr):
 
     References
     ----------
-    .. [1] Schlichting, H., and Klaus Gersten. Grenzschicht-Theorie. 9th ed. 
-       Berlin Heidelberg: Springer-Verlag, 1997. 
+    .. [1] Schlichting, H., and Klaus Gersten. Grenzschicht-Theorie. 9th ed.
+       Berlin Heidelberg: Springer-Verlag, 1997.
        http://www.springer.com/de/book/9783662075548.
     .. [2] Gesellschaft, V. D. I., ed. VDI Heat Atlas. 2nd ed. 2010 edition.
        Berlin ; New York: Springer, 2010.
@@ -782,10 +782,10 @@ def Nu_horizontal_plate_turbulent_Schlichting(Re, Pr):
 
 
 def Nu_horizontal_plate_turbulent_Kreith(Re, Pr):
-    r'''Calculates Nusselt number for turbulent flow across an **isothermal**  
-    flat plate at a specified `Re` and `Pr`, both evaluated at the bulk 
+    r'''Calculates Nusselt number for turbulent flow across an **isothermal**
+    flat plate at a specified `Re` and `Pr`, both evaluated at the bulk
     temperature. The formulation of Kreith is used.
-            
+
     .. math::
         \text{Nu}_L = 0.036\text{Re}_L^{0.8} \text{Pr}^{2/3}
 
@@ -804,7 +804,7 @@ def Nu_horizontal_plate_turbulent_Kreith(Re, Pr):
 
     Notes
     -----
-    Does not take into account the impact of free convection, which can 
+    Does not take into account the impact of free convection, which can
     increase the convection substantially. Applies for turbulent flow only.
 
     Examples
@@ -837,10 +837,10 @@ LAMINAR_TRANSITION_HORIZONTAL_PLATE = 5E5
 
 def Nu_external_horizontal_plate_methods(Re, Pr, L=None, x=None,
                                    check_ranges=True):
-    r'''Returns a list of correlation names for calculating Nusselt number for 
+    r'''Returns a list of correlation names for calculating Nusselt number for
     forced convection across a horizontal plate, supporting both laminar
     and turbulent regimes.
-    
+
     Parameters
     ----------
     Re : float
@@ -854,11 +854,11 @@ def Nu_external_horizontal_plate_methods(Re, Pr, L=None, x=None,
     check_ranges : bool, optional
         Whether or not to return only correlations suitable for the provided
         data, [-]
-    
+
     Returns
     -------
     methods : list[str]
-        List of methods which can be used to calculate `Nu` with the given 
+        List of methods which can be used to calculate `Nu` with the given
         inputs
 
     Examples
@@ -875,20 +875,20 @@ def Nu_external_horizontal_plate_methods(Re, Pr, L=None, x=None,
     else:
         return ['Baehr', 'Churchill Ozoe', 'Schlichting', 'Kreith']
 
-def Nu_external_horizontal_plate(Re, Pr, L=None, x=None, Method=None, 
+def Nu_external_horizontal_plate(Re, Pr, L=None, x=None, Method=None,
                                  laminar_method='Baehr',
-                                 turbulent_method='Schlichting', 
+                                 turbulent_method='Schlichting',
                                  Re_transition=LAMINAR_TRANSITION_HORIZONTAL_PLATE):
     r'''This function calculates the heat transfer coefficient for external
-    forced convection along a horizontal plate. 
-    
-    Requires at a minimum a flow's Reynolds and Prandtl numbers `Re` and `Pr`. 
-    `L` and `x` are not used by any correlations presently, but are included 
+    forced convection along a horizontal plate.
+
+    Requires at a minimum a flow's Reynolds and Prandtl numbers `Re` and `Pr`.
+    `L` and `x` are not used by any correlations presently, but are included
     for future support.
-    
-    If no correlation's name is provided as `Method`, the most accurate 
+
+    If no correlation's name is provided as `Method`, the most accurate
     applicable correlation is selected.
-    
+
     Parameters
     ----------
     Re : float
@@ -917,11 +917,11 @@ def Nu_external_horizontal_plate(Re, Pr, L=None, x=None, Method=None,
     Re_transition : float, optional
         The transition Reynolds number for laminar changing to turbulent flow,
         [-]
-        
+
     Examples
     --------
     Turbulent example
-    
+
     >>> Nu_external_horizontal_plate(Re=1E7, Pr=.7)
     11496.952599969829
     '''

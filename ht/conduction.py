@@ -601,7 +601,7 @@ def cylindrical_heat_transfer(Ti, To, hi, ho, Di, ts, ks):
     layer to iterate on temperature or duty to meet a fixed specification,
     or include things like temperature dependent thermal conductivities
     or radiation.
-    
+
     Parameters
     ----------
     Ti : float
@@ -626,7 +626,7 @@ def cylindrical_heat_transfer(Ti, To, hi, ho, Di, ts, ks):
         * Q : Heat exchanged through the cylinder (per meter of length), [W/m]
         * Rs : Thermal resistances of each of the layers, [m*K/W]
         * Ts : Temperatures of the outside of each of the layers, [K]
-        * UA : Heat transfer coefficient times area (on a per-meter of 
+        * UA : Heat transfer coefficient times area (on a per-meter of
                cylinder) basis, [W/K/m]
         * U_inner : Heat transfer coefficient with respect to the inside
                     diameter, [W/K]
@@ -637,7 +637,7 @@ def cylindrical_heat_transfer(Ti, To, hi, ho, Di, ts, ks):
 
     Examples
     --------
-    
+
     >>> pprint(cylindrical_heat_transfer(Ti=453.15, To=301.15, hi=1e12, ho=22.697193, Di=0.0779272, ts=[0.0054864, .05], ks=[56.045, 0.0598535265]))
     {'Q': 73.12000884069367,
      'Rs': [0.00022201030738405449, 1.189361782070256],
@@ -649,7 +649,7 @@ def cylindrical_heat_transfer(Ti, To, hi, ho, Di, ts, ks):
     '''
     length = 1.0 # basis
     # Note - fouling is just another layer, should be converted to a thickness/thermal conductivity
-    
+
     external_diameter = Di + 2.0*sum(ts)
     A_external = pi*external_diameter*length
     A_internal = pi*Di*length
@@ -677,7 +677,7 @@ def cylindrical_heat_transfer(Ti, To, hi, ho, Di, ts, ks):
     Ts = [Ti]
     for Ri in Rs:
         Ts.append(Ts[-1] - q*Ri)
-    
+
     # Convert heat transfer coefficient area basis = U_i*A_i = U_o*A_o, divide
     ans = {'Q': Q, 'q': q, 'UA': UA, 'U_outer': U_external, 'U_inner': UA/A_internal, 'Ts': Ts,
           'Rs': Rs}

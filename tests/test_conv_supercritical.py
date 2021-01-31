@@ -48,10 +48,10 @@ def test_Nu_Griem():
 
 def test_Nu_Jackson():
     Nu = Nu_Jackson(1E5, 1.2)
-    assert_allclose(Nu, 252.37231572974918)    
-    
-    Nu_calc = [Nu_Jackson(1E5, 1.2, rho_w=125.8, rho_b=249.0233, 
-                          Cp_avg=2080.845, Cp_b=2048.621, T_b=650, T_w=700, 
+    assert_allclose(Nu, 252.37231572974918)
+
+    Nu_calc = [Nu_Jackson(1E5, 1.2, rho_w=125.8, rho_b=249.0233,
+                          Cp_avg=2080.845, Cp_b=2048.621, T_b=650, T_w=700,
                           T_pc=T) for T in [750, 675, 600]]
     Nu_exp = [206.91175020307264, 206.93567238866916, 206.97455183928113]
     assert_allclose(Nu_calc, Nu_exp)
@@ -120,16 +120,16 @@ def test_Nu_Yamagata():
     Nu = Nu_Yamagata(1E5, 1.2)
     assert_allclose(Nu, 283.9383689412967)
 
-    Nu_calc = [Nu_Yamagata(1E5, 1.2, 1.5, Cp_avg=2080.845, Cp_b=2048.621, 
+    Nu_calc = [Nu_Yamagata(1E5, 1.2, 1.5, Cp_avg=2080.845, Cp_b=2048.621,
                            T_b=650, T_w=700, T_pc=T) for T in [750.0, 675.0, 600.0]]
     Nu_exp = [283.9383689412967, 187.02304885276828, 292.3473428004679]
     assert_allclose(Nu_calc, Nu_exp)
 
-    
+
 def test_Nu_Kitoh():
     Nu = Nu_Kitoh(1E5, 1.2)
     assert_allclose(Nu, 302.5006546293724)
-    
+
     Nu_calc = [Nu_Kitoh(1E5, 1.2, H, 1500, 5E6) for H in [1.4E6, 2E6, 3.5E6]]
     Nu_exp = [331.80234139591306, 174.8417387874232, 308.40146536866945]
     assert_allclose(Nu_calc, Nu_exp)
@@ -146,15 +146,15 @@ def test_Nu_Petukhov():
 
 
 def test_Nu_Krasnoshchekov():
-    Nu_calc = [Nu_Krasnoshchekov(1E5, 1.2, rho_w=125.8, rho_b=249.0233, 
-                          Cp_avg=2080.845, Cp_b=2048.621, T_b=650, T_w=700, 
+    Nu_calc = [Nu_Krasnoshchekov(1E5, 1.2, rho_w=125.8, rho_b=249.0233,
+                          Cp_avg=2080.845, Cp_b=2048.621, T_b=650, T_w=700,
                           T_pc=T) for T in [750.0, 675.0]]
     Nu_exp = [192.52819597784372, 192.54822916468785]
     assert_allclose(Nu_calc, Nu_exp)
-    
-    Nu_3 = Nu_Krasnoshchekov(1E5, 1.2, rho_w=125.8, rho_b=249.0233, 
+
+    Nu_3 = Nu_Krasnoshchekov(1E5, 1.2, rho_w=125.8, rho_b=249.0233,
                       Cp_avg=2080.845, Cp_b=2048.621, T_b=400.0, T_w=200.0, T_pc=400.0)
     assert_allclose(Nu_3, 192.2579518680533)
-    
+
     Nu = Nu_Krasnoshchekov(1E5, 1.2)
     assert_allclose(Nu, 234.82855185610364)

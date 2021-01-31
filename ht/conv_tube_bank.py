@@ -26,10 +26,10 @@ from fluids.constants import g
 from fluids.numerics import horner, splev, bisplev, implementation_optimize_tck, tck_interp2d_linear, numpy as np
 from ht.core import wall_factor, WALL_FACTOR_PRANDTL
 
-__all__ = ['dP_Kern', 'dP_Zukauskas', 
+__all__ = ['dP_Kern', 'dP_Zukauskas',
            'Nu_ESDU_73031', 'Nu_Zukauskas_Bejan','Nu_HEDH_tube_bank',
            'Nu_Grimison_tube_bank',
-           'Zukauskas_tube_row_correction', 
+           'Zukauskas_tube_row_correction',
            'ESDU_tube_row_correction',
            'ESDU_tube_angle_correction',
 	   'baffle_correction_Bell', 'baffle_leakage_Bell',
@@ -62,60 +62,60 @@ Grimison_m_aligned = [[0.592, 0.608, 0.704, 0.752],
                                [0.601, 0.584, 0.581, 0.608]]
 
 Grimison_C1_aligned_tck = implementation_optimize_tck([[1.25, 1.25, 1.25, 1.25, 3.0, 3.0, 3.0, 3.0],
-                           [1.25, 1.25, 1.25, 1.25, 3.0, 3.0, 3.0, 3.0], 
+                           [1.25, 1.25, 1.25, 1.25, 3.0, 3.0, 3.0, 3.0],
                            [0.34800000000000003, 0.20683194444444492, -0.18023055555555617,
                             0.06330000000000001, 0.3755277777777776, -0.28351037808642043,
-                            0.24365763888889008, -0.0007166666666667326, 0.5481111111111114, 
-                            0.2925767746913588, 0.8622214506172828, 0.5207777777777779, 0.29, 
+                            0.24365763888889008, -0.0007166666666667326, 0.5481111111111114,
+                            0.2925767746913588, 0.8622214506172828, 0.5207777777777779, 0.29,
                             0.5062500000000002, 0.26944444444444426, 0.286],
                             3, 3], force_numpy=IS_NUMBA)
-                           
+
 Grimison_C1_aligned_interp = lambda x, y : float(bisplev(x, y, Grimison_C1_aligned_tck))
 
 
-Grimison_m_aligned_tck = implementation_optimize_tck([[1.25, 1.25, 1.25, 1.25, 3.0, 3.0, 3.0, 3.0], 
-                          [1.25, 1.25, 1.25, 1.25, 3.0, 3.0, 3.0, 3.0], 
+Grimison_m_aligned_tck = implementation_optimize_tck([[1.25, 1.25, 1.25, 1.25, 3.0, 3.0, 3.0, 3.0],
+                          [1.25, 1.25, 1.25, 1.25, 3.0, 3.0, 3.0, 3.0],
                           [0.5920000000000001, 0.5877777777777775, 0.9133333333333344,
                            0.752, 0.5828472222222219, 0.7998613040123475,
-                           0.7413584104938251, 0.7841111111111112, 0.5320833333333332, 
+                           0.7413584104938251, 0.7841111111111112, 0.5320833333333332,
                            0.5504147376543196, 0.30315663580247154, 0.4148888888888891,
                            0.601, 0.5454861111111109, 0.6097500000000002, 0.608],
                            3, 3], force_numpy=IS_NUMBA)
 Grimison_m_aligned_interp = lambda x, y : float(bisplev(x, y, Grimison_m_aligned_tck))
 
 
-Grimson_SL_staggered = [1.25, 1.5, 2, 3, 1, 1.25, 1.5, 2, 3, 0.9, 
+Grimson_SL_staggered = [1.25, 1.5, 2, 3, 1, 1.25, 1.5, 2, 3, 0.9,
                                  1.125, 1.25, 1.5, 2, 3, 0.6, 0.9, 1.125, 1.25,
                                  1.5, 2, 3]
 
-Grimson_ST_staggered = [1.25, 1.25, 1.25, 1.25, 1.5, 1.5, 1.5, 1.5, 
+Grimson_ST_staggered = [1.25, 1.25, 1.25, 1.25, 1.5, 1.5, 1.5, 1.5,
                                  1.5, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3]
 
-Grimson_m_staggered = [0.556, 0.568, 0.572, 0.592, 0.558, 0.554, 
+Grimson_m_staggered = [0.556, 0.568, 0.572, 0.592, 0.558, 0.554,
                                 0.562, 0.568, 0.58, 0.571, 0.565, 0.556, 0.568,
                                 0.556, 0.562, 0.636, 0.581, 0.56, 0.562, 0.568,
                                 0.57, 0.574]
 
 Grimson_C1_staggered = [0.518, 0.451, 0.404, 0.31, 0.497, 0.505, 0.46,
                                  0.416, 0.356, 0.446, 0.478, 0.519, 0.452,
-                                 0.482, 0.44, 0.213, 0.401, 0.518, 0.522, 
+                                 0.482, 0.44, 0.213, 0.401, 0.518, 0.522,
                                  0.488, 0.449, 0.428]
 
 '''`interp2d` creates warnings when used on these. They are avoided by
 pre-generating the splines, and interfacing with fitpack at a lower level.
 '''
-tck_Grimson_m_staggered = implementation_optimize_tck([[1.25, 1.25, 1.8667584356619125, 2.0, 2.8366905775206916, 3.0, 3.0], 
-     [0.6, 0.6, 1.0085084989709654, 1.340729148958038, 1.5154196399508033, 3.0, 3.0], 
-     [1.731351706314169, 0.3675823638826614, 0.6267891238439347, 0.5623083927989683, 0.5920000000000982, 1.180171700201992, 
-               0.7874995409316767, 0.4622370503994375, 0.562004066622535, 0.5623955950882191, 0.5680620929528815, 0.5720626262793304, 
-               0.5510099520872309, 0.5641771077227365, 0.5597975310692721, 0.0, 0.0, 0.0, 0.0, 0.0, 0.6361653765016168, 
+tck_Grimson_m_staggered = implementation_optimize_tck([[1.25, 1.25, 1.8667584356619125, 2.0, 2.8366905775206916, 3.0, 3.0],
+     [0.6, 0.6, 1.0085084989709654, 1.340729148958038, 1.5154196399508033, 3.0, 3.0],
+     [1.731351706314169, 0.3675823638826614, 0.6267891238439347, 0.5623083927989683, 0.5920000000000982, 1.180171700201992,
+               0.7874995409316767, 0.4622370503994375, 0.562004066622535, 0.5623955950882191, 0.5680620929528815, 0.5720626262793304,
+               0.5510099520872309, 0.5641771077227365, 0.5597975310692721, 0.0, 0.0, 0.0, 0.0, 0.0, 0.6361653765016168,
                0.5601991640778442, 0.5621224100266599, 0.5684014375982079, 0.573932491076899],
     1, 1], force_numpy=IS_NUMBA)
 
-tck_Grimson_C1_staggered = implementation_optimize_tck([[1.25, 1.25, 1.936293121624252, 2.0, 2.094408820089069, 3.0, 3.0], 
+tck_Grimson_C1_staggered = implementation_optimize_tck([[1.25, 1.25, 1.936293121624252, 2.0, 2.094408820089069, 3.0, 3.0],
     [0.6, 0.6, 1.1841422334268308, 1.3897531616318943, 1.6483901017748916, 3.0, 3.0],
     [0.534042720665836, 0.5446897215451869, 0.4613632028066018, 0.4370513304331604, 0.31000000000000005, 0.3060114256888106,
-              0.4719357486311919, 0.5043332405690643, 0.4371755864391464, 0.4362779343788622, 0.364660449991649, 0.5144234623651529, 
+              0.4719357486311919, 0.5043332405690643, 0.4371755864391464, 0.4362779343788622, 0.364660449991649, 0.5144234623651529,
               0.4513822953351327, 0.4852710459180796, 0.4420724694173403, 0.0, 0.0, 0.0, 0.0, 0.0, 0.21898644381978172,
               0.5500312131715677, 0.4969529176876636, 0.46150347905703587, 0.4270770845430577],
     1, 1], force_numpy=IS_NUMBA)
@@ -127,7 +127,7 @@ Grimson_C1_staggered_interp = lambda x, y: float(bisplev(x, y, tck_Grimson_C1_st
 
 def Nu_Grimison_tube_bank(Re, Pr, Do, tube_rows, pitch_parallel, pitch_normal):
     r'''Calculates Nusselt number for crossflow across a tube bank
-    of tube rows at a specified `Re`, `Pr`, and `D` using the Grimison 
+    of tube rows at a specified `Re`, `Pr`, and `D` using the Grimison
     methodology as described in [1]_.
 
     .. math::
@@ -150,7 +150,7 @@ def Nu_Grimison_tube_bank(Re, Pr, Do, tube_rows, pitch_parallel, pitch_normal):
     pitch_normal : float
         Distance between tube centers in a line 90° to the line of flow;
         has been called the `transverse` pitch, `pn`, `s1`, `ST`, and `p1`, [m]
-    
+
     Returns
     -------
     Nu : float
@@ -163,18 +163,18 @@ def Nu_Grimison_tube_bank(Re, Pr, Do, tube_rows, pitch_parallel, pitch_normal):
 
     Examples
     --------
-    >>> Nu_Grimison_tube_bank(Re=10263.37, Pr=.708, tube_rows=11, 
+    >>> Nu_Grimison_tube_bank(Re=10263.37, Pr=.708, tube_rows=11,
     ... pitch_normal=.05, pitch_parallel=.05, Do=.025)
-    79.07883866010096
+    79.07883866010
 
-    >>> Nu_Grimison_tube_bank(Re=10263.37, Pr=.708, tube_rows=11, 
+    >>> Nu_Grimison_tube_bank(Re=10263.37, Pr=.708, tube_rows=11,
     ... pitch_normal=.07, pitch_parallel=.05, Do=.025)
-    79.92721078571385
+    79.92721078571
 
     References
     ----------
     .. [1] Grimson, E. D. (1937) Correlation and Utilisation of New Data on
-       Flow Resistance and Heat Transfer for Cross Flow of Gases over Tube 
+       Flow Resistance and Heat Transfer for Cross Flow of Gases over Tube
        Banks. Trans. ASME. 59 583-594
     '''
     staggered = abs(1 - pitch_normal/pitch_parallel) > 0.05
@@ -186,7 +186,7 @@ def Nu_Grimison_tube_bank(Re, Pr, Do, tube_rows, pitch_parallel, pitch_normal):
     else:
         C1 = float(bisplev(b, a, tck_Grimson_C1_staggered))
         m = float(bisplev(b, a, tck_Grimson_m_staggered))
-        
+
     tube_rows = int(tube_rows)
     if tube_rows < 10:
         if tube_rows < 1:
@@ -214,13 +214,13 @@ Zukauskas_Czs_inline = [0.6768, 0.8089, 0.8687, 0.9054, 0.9303, 0.9465, 0.9569,
 def Zukauskas_tube_row_correction(tube_rows, staggered=True, Re=1E4):
     r'''Calculates the tube row correction factor according to a graph
     digitized from [1]_ and also shown in [2]_ for heat transfer across
-    a tube bundle. The correction factors are slightly different for 
+    a tube bundle. The correction factors are slightly different for
     staggered vs. inline configurations; for the staggered configuration,
     factors are available separately for `Re` larger or smaller than 1000.
-    
+
     This method is a tabular lookup, with values of 1 when the tube row count
     is 20 or more.
-    
+
     Parameters
     ----------
     tube_rows : int
@@ -230,7 +230,7 @@ def Zukauskas_tube_row_correction(tube_rows, staggered=True, Re=1E4):
     Re : float, optional
         The Reynolds number of flow through the tube bank using the bare tube
         outer diameter and the minimum flow area through the bundle, [-]
-        
+
     Returns
     -------
     F : float
@@ -238,9 +238,9 @@ def Zukauskas_tube_row_correction(tube_rows, staggered=True, Re=1E4):
 
     Notes
     -----
-    The basis for this method is that an infinitely long tube bank has a 
+    The basis for this method is that an infinitely long tube bank has a
     factor of 1; in practice the factor is reached at 20 rows.
-    
+
     Examples
     --------
     >>> Zukauskas_tube_row_correction(4, staggered=True)
@@ -274,9 +274,9 @@ def Zukauskas_tube_row_correction(tube_rows, staggered=True, Re=1E4):
 def Nu_Zukauskas_Bejan(Re, Pr, tube_rows, pitch_parallel, pitch_normal,
                        Pr_wall=None):
     r'''Calculates Nusselt number for crossflow across a tube bank
-    of tube number n at a specified `Re` according to the method of Zukauskas 
-    [1]_. A fit to graphs from [1]_ published in [2]_ is used for the 
-    correlation. The tube row correction factor is obtained from digitized 
+    of tube number n at a specified `Re` according to the method of Zukauskas
+    [1]_. A fit to graphs from [1]_ published in [2]_ is used for the
+    correlation. The tube row correction factor is obtained from digitized
     graphs from [1]_, and a lookup table was created and is used for speed.
 
     The formulas are as follows:
@@ -335,7 +335,7 @@ def Nu_Zukauskas_Bejan(Re, Pr, tube_rows, pitch_parallel, pitch_normal,
         Distance between tube centers in a line 90° to the line of flow;
         has been called the `transverse` pitch, `pn`, `s1`, `ST`, and `p1`, [m]
     Pr_wall : float, optional
-        Prandtl number at the wall temperature; provide if a correction with  
+        Prandtl number at the wall temperature; provide if a correction with
         the defaults parameters is desired; otherwise apply the correction
         elsewhere, [-]
 
@@ -387,7 +387,7 @@ def Nu_Zukauskas_Bejan(Re, Pr, tube_rows, pitch_parallel, pitch_normal,
         else:
             c, m = 0.031, 0.8
             f = (pitch_normal/pitch_parallel)**0.2
-    
+
     Nu = c*Re**m*Pr**0.36*f
     if Pr_wall is not None:
         Nu*= (Pr/Pr_wall)**0.25
@@ -403,13 +403,13 @@ ESDU_73031_F2_staggered = [0.8593, 0.8984, 0.9268, 0.9482, 0.965, 0.9777, 0.9868
 
 def ESDU_tube_row_correction(tube_rows, staggered=True, Re=3000.0, method='Hewitt'):
     r'''Calculates the tube row correction factor according to [1]_ as shown in
-    [2]_ for heat transfer across a tube bundle. This is also used for finned 
-    bundles. The correction factors are slightly different for staggered vs. 
+    [2]_ for heat transfer across a tube bundle. This is also used for finned
+    bundles. The correction factors are slightly different for staggered vs.
     inline configurations.
-    
+
     This method is a tabular lookup, with values of 1 when the tube row count
     is 10 or more.
-    
+
     Parameters
     ----------
     tube_rows : int
@@ -421,7 +421,7 @@ def ESDU_tube_row_correction(tube_rows, staggered=True, Re=3000.0, method='Hewit
         outer diameter and the minimum flow area through the bundle, [-]
     method : str, optional
         'Hewitt'; this may have another option in the future, [-]
-        
+
     Returns
     -------
     F2 : float
@@ -430,13 +430,13 @@ def ESDU_tube_row_correction(tube_rows, staggered=True, Re=3000.0, method='Hewit
     Notes
     -----
     In [1]_, for line data, there are two curves given for different Reynolds
-    number ranges. This is not included in [2]_ and only an average curve is 
+    number ranges. This is not included in [2]_ and only an average curve is
     given. This is not implemented here; `Re` is an argument but does not
     impact the result of this function.
-    
+
     For tube counts 1-7, [3]_ claims the factors from [1]_ are on average:
     [0.65, 0.77, 0.84, 0.9, 0.94, 0.97, 0.99].
-    
+
     Examples
     --------
     >>> ESDU_tube_row_correction(4, staggered=True)
@@ -446,14 +446,14 @@ def ESDU_tube_row_correction(tube_rows, staggered=True, Re=3000.0, method='Hewit
 
     References
     ----------
-    .. [1] "Convective Heat Transfer During Crossflow of Fluids Over Plain Tube 
-       Banks." ESDU 73031 (November 1, 1973). 
+    .. [1] "Convective Heat Transfer During Crossflow of Fluids Over Plain Tube
+       Banks." ESDU 73031 (November 1, 1973).
     .. [2] Hewitt, G. L. Shires, T. Reg Bott G. F., George L. Shires, and T.
-       R. Bott. Process Heat Transfer. 1st edition. Boca Raton: CRC Press, 
+       R. Bott. Process Heat Transfer. 1st edition. Boca Raton: CRC Press,
        1994.
     .. [3] Rabas, T. J., and J. Taborek. "Survey of Turbulent Forced-Convection
        Heat Transfer and Pressure Drop Characteristics of Low-Finned Tube Banks
-       in Cross Flow."  Heat Transfer Engineering 8, no. 2 (January 1987): 
+       in Cross Flow."  Heat Transfer Engineering 8, no. 2 (January 1987):
        49-62.
     '''
     if method == 'Hewitt':
@@ -475,18 +475,18 @@ def ESDU_tube_row_correction(tube_rows, staggered=True, Re=3000.0, method='Hewit
 
 
 def ESDU_tube_angle_correction(angle):
-    r'''Calculates the tube bank inclination correction factor according to 
-    [1]_ for heat transfer across a tube bundle. 
+    r'''Calculates the tube bank inclination correction factor according to
+    [1]_ for heat transfer across a tube bundle.
 
     .. math::
         F_3 = \frac{Nu_{\theta}}{Nu_{\theta=90^{\circ}}} = (\sin(\theta))^{0.6}
-    
+
     Parameters
     ----------
     angle : float
-        The angle of inclination of the tuba bank with respect to the 
+        The angle of inclination of the tuba bank with respect to the
         longitudinal axis (90° for a straight tube bank)
-        
+
     Returns
     -------
     F3 : float
@@ -497,10 +497,10 @@ def ESDU_tube_angle_correction(angle):
     A curve is given in [1]_ but it is so close the function, it is likely the
     function is all that is used. [1]_ claims this correction is valid for
     :math:`100 < Re < 10^{6}`.
-    
+
     For angles less than 10°, the problem should be considered internal
     flow, not flow across a tube bank.
-    
+
     Examples
     --------
     >>> ESDU_tube_angle_correction(75)
@@ -508,23 +508,23 @@ def ESDU_tube_angle_correction(angle):
 
     References
     ----------
-    .. [1] "Convective Heat Transfer During Crossflow of Fluids Over Plain Tube 
-       Banks." ESDU 73031 (November 1, 1973). 
+    .. [1] "Convective Heat Transfer During Crossflow of Fluids Over Plain Tube
+       Banks." ESDU 73031 (November 1, 1973).
     '''
     return sin(radians(angle))**0.6
 
 
-def Nu_ESDU_73031(Re, Pr, tube_rows, pitch_parallel, pitch_normal, 
+def Nu_ESDU_73031(Re, Pr, tube_rows, pitch_parallel, pitch_normal,
                   Pr_wall=None, angle=90.0):
     r'''Calculates the Nusselt number for crossflow across a tube bank
-    with a specified number of tube rows, at a specified `Re` according to 
+    with a specified number of tube rows, at a specified `Re` according to
     [1]_, also shown in [2]_.
-    
+
     .. math::
         \text{Nu} = a \text{Re}^m\text{Pr}^{0.34}F_1 F_2
 
     The constants `a` and `m` come from the following tables:
-    
+
     In-line tube banks:
 
     +---------+-------+-------+
@@ -536,9 +536,9 @@ def Nu_ESDU_73031(Re, Pr, tube_rows, pitch_parallel, pitch_normal,
     +---------+-------+-------+
     | 2E5-2E6 | 0.116 | 0.700 |
     +---------+-------+-------+
-    
+
     Staggered tube banks:
-        
+
     +---------+-------+-------+
     | Re      | a     | m     |
     +=========+=======+=======+
@@ -565,11 +565,11 @@ def Nu_ESDU_73031(Re, Pr, tube_rows, pitch_parallel, pitch_normal,
         Distance between tube centers in a line 90° to the line of flow;
         has been called the `transverse` pitch, `pn`, `s1`, `ST`, and `p1`, [m]
     Pr_wall : float, optional
-        Prandtl number at the wall temperature; provide if a correction with  
+        Prandtl number at the wall temperature; provide if a correction with
         the defaults parameters is desired; otherwise apply the correction
         elsewhere, [-]
     angle : float, optional
-        The angle of inclination of the tuba bank with respect to the 
+        The angle of inclination of the tuba bank with respect to the
         longitudinal axis (90° for a straight tube bank)
 
     Returns
@@ -581,33 +581,33 @@ def Nu_ESDU_73031(Re, Pr, tube_rows, pitch_parallel, pitch_normal,
     -----
     The tube-row count correction factor `F2` can be disabled by setting `tube_rows`
     to 10. The property correction factor `F1` can be disabled by not specifying
-    `Pr_wall`. A Prandtl number exponent of 0.26 is recommended in [1]_ for 
+    `Pr_wall`. A Prandtl number exponent of 0.26 is recommended in [1]_ for
     heating and cooling for both liquids and gases.
 
     The pitches are used to determine whhether or not to use data for staggered
     or inline tube banks.
-    
+
     The inline coefficients are valid for a normal pitch to tube diameter ratio
-    from 1.2 to 4; and the staggered ones from 1 to 4. 
+    from 1.2 to 4; and the staggered ones from 1 to 4.
     The overall accuracy of this method is claimed to be 15%.
-    
+
     See Also
     --------
     ESDU_tube_angle_correction
     ESDU_tube_row_correction
-    
+
     Examples
     --------
-    >>> Nu_ESDU_73031(Re=1.32E4, Pr=0.71, tube_rows=8, pitch_parallel=.09, 
+    >>> Nu_ESDU_73031(Re=1.32E4, Pr=0.71, tube_rows=8, pitch_parallel=.09,
     ... pitch_normal=.05)
     98.2563319140594
 
     References
     ----------
     .. [1] "High-Fin Staggered Tube Banks: Heat Transfer and Pressure Drop for
-       Turbulent Single Phase Gas Flow." ESDU 86022 (October 1, 1986). 
+       Turbulent Single Phase Gas Flow." ESDU 86022 (October 1, 1986).
     .. [2] Hewitt, G. L. Shires, T. Reg Bott G. F., George L. Shires, and T.
-       R. Bott. Process Heat Transfer. 1st edition. Boca Raton: CRC Press, 
+       R. Bott. Process Heat Transfer. 1st edition. Boca Raton: CRC Press,
        1994.
     '''
     staggered = abs(1 - pitch_normal/pitch_parallel) > 0.05
@@ -625,12 +625,12 @@ def Nu_ESDU_73031(Re, Pr, tube_rows, pitch_parallel, pitch_normal,
             a, m = 0.211, 0.651
         else:
             a, m = 0.116, 0.700
-    
+
     F2 = ESDU_tube_row_correction(tube_rows=tube_rows, staggered=staggered)
     F3 = ESDU_tube_angle_correction(angle)
     if Pr_wall is not None:
-        F1 = wall_factor(Pr=Pr, Pr_wall=Pr_wall, Pr_heating_coeff=0.26, 
-                         Pr_cooling_coeff=0.26, 
+        F1 = wall_factor(Pr=Pr, Pr_wall=Pr_wall, Pr_heating_coeff=0.26,
+                         Pr_cooling_coeff=0.26,
                          property_option=WALL_FACTOR_PRANDTL)
     else:
         F1 = 1.0
@@ -695,7 +695,7 @@ def Nu_HEDH_tube_bank(Re, Pr, Do, tube_rows, pitch_parallel, pitch_normal):
     Notes
     -----
     Prandtl number correction left to an outside function, although a set
-    of coefficients were specified in [1]_ because they depent on whether 
+    of coefficients were specified in [1]_ because they depent on whether
     heating or cooling is happening, and for gases, use a temperature ratio
     instaed of Prandtl number.
 
@@ -704,13 +704,13 @@ def Nu_HEDH_tube_bank(Re, Pr, Do, tube_rows, pitch_parallel, pitch_normal):
 
     Examples
     --------
-    >>> Nu_HEDH_tube_bank(Re=1E4, Pr=7., tube_rows=10, pitch_normal=.05, 
+    >>> Nu_HEDH_tube_bank(Re=1E4, Pr=7., tube_rows=10, pitch_normal=.05,
     ... pitch_parallel=.05, Do=.03)
     382.4636554404698
-    
+
     Example 3.11 in [2]_:
-    
-    >>> Nu_HEDH_tube_bank(Re=10263.37, Pr=.708, tube_rows=11, pitch_normal=.05, 
+
+    >>> Nu_HEDH_tube_bank(Re=10263.37, Pr=.708, tube_rows=11, pitch_normal=.05,
     ... pitch_parallel=.05, Do=.025)
     149.18735251017594
 
@@ -749,14 +749,14 @@ def Nu_HEDH_tube_bank(Re, Pr, Do, tube_rows, pitch_parallel, pitch_normal):
 '''
 Graph presented in Peters and Timmerhaus uses fanning friction factor.
 This uses Darcy's friction factor.
-These coefficients were generated to speed up loading of this module. 
+These coefficients were generated to speed up loading of this module.
 They are regenerated and checked in the tests.
 
 '''
 Kern_f_Re_tck = implementation_optimize_tck([[9.9524, 9.9524, 9.9524, 9.9524, 17.9105, 27.7862, 47.2083, 83.9573,
-                           281.996, 1122.76, 42999.9, 1012440.0, 1012440.0, 1012440.0, 1012440.0], 
+                           281.996, 1122.76, 42999.9, 1012440.0, 1012440.0, 1012440.0, 1012440.0],
                  [6.040435949178239, 4.64973456285782, 2.95274850806163, 1.9569061885042,
-                           1.1663069946420412, 0.6830549536215098, 0.4588680265447762, 0.22387792331971723, 
+                           1.1663069946420412, 0.6830549536215098, 0.4588680265447762, 0.22387792331971723,
                            0.12721190975530583, 0.1395456548881242, 0.12888895743468684, 0.0, 0.0, 0.0, 0.0],
                  3], force_numpy=IS_NUMBA)
 Kern_f_Re = lambda x: float(splev(x, Kern_f_Re_tck))
@@ -924,7 +924,7 @@ def load_Zukauskas_correlations():
     ])
     _dP_staggered_Re_parameters = np.array([_dP_staggered_Re_125, _dP_staggered_Re_15, _dP_staggered_Re_2, _dP_staggered_Re_25]).T
     dP_staggered_f = RectBivariateSpline(_dP_staggered_Res, np.array([1.25, 1.5, 2, 2.5]), _dP_staggered_Re_parameters, kx=3, ky=3, s=0.002)
-    
+
     # Excellent plot, though it does linear extrapolation on some lines
     #import matplotlib.pyplot as plt
     #dP_staggered_f_zs = np.array([1.25, 1.5, 2, 2.5])
@@ -934,8 +934,8 @@ def load_Zukauskas_correlations():
     #    plt.loglog(_dP_staggered_Res, _dP_staggered_Re_parameters.T[i, :], '.')
     #    plt.loglog(xs, dP_staggered_f(xs, dP_staggered_f_zs[i]), '--')
     #plt.show()
-    
-    
+
+
     _dP_staggered_correction_parameters = np.array([0.4387, 0.470647, 0.494366, 0.52085, 0.542787, 0.583019, 0.609319, 0.659047, 0.685413, 0.729582, 0.800982,
         0.84214, 0.892449, 0.947309, 1.00903, 1.07052, 1.16389, 1.22243, 1.26584, 1.32314, 1.37597, 1.40437, 1.45385, 1.51093, 1.55814, 1.61775, 1.68647,
         1.74589, 1.79853, 1.86586, 1.92335, 1.97322, 2.12053, 2.22751, 2.34521, 2.45793, 2.58193, 2.71226, 2.84909, 2.99282, 3.14389, 3.22668, 3.32915,
@@ -961,7 +961,7 @@ def load_Zukauskas_correlations():
     ])
     _dP_staggered_correction_Re_parameters = np.array([_dP_staggered_correction_Re_100, _dP_staggered_correction_Re_1000, _dP_staggered_correction_Re_10000, _dP_staggered_correction_Re_100000]).T
     dP_staggered_correction = RectBivariateSpline(_dP_staggered_correction_parameters, np.array([1E2, 1E3, 1E4, 1E5]), _dP_staggered_correction_Re_parameters, kx=1, ky=3, s=0.002)
-    
+
     # Maybe good plot - bad around the middle
     #dP_staggered_correction_zs = np.array([1E2, 1E3, 1E4, 1E5])
     #low, high = min(_dP_staggered_correction_parameters), max(_dP_staggered_correction_parameters)
@@ -970,8 +970,8 @@ def load_Zukauskas_correlations():
     #    plt.loglog(_dP_staggered_correction_parameters, _dP_staggered_correction_Re_parameters.T[i, :], '.')
     #    plt.loglog(xs, dP_staggered_correction(xs, dP_staggered_correction_zs[i]), '--')
     #plt.show()
-    
-    
+
+
     _dP_inline_Res = np.array([28.5094, 30.8092, 32.9727, 35.3563, 41.2101, 45.9365, 49.1622, 52.6143, 56.3102, 59.107, 63.7533, 68.3605, 73.1607, 82.9896, 91.2679,
         107.829, 116.528, 124.713, 134.774, 144.237, 157.106, 169.784, 183.484, 202.173, 218.488, 241.163, 278.938, 301.447, 325.772, 352.069, 402.667,
         439.431, 479.551, 528.457, 576.706, 600.39, 654.321, 666.665, 722.026, 795.679, 802.401, 883.594, 965.211, 973.774, 1022.26, 1107.38, 1126.59,
@@ -1048,8 +1048,8 @@ def load_Zukauskas_correlations():
     ])
     _dP_inline_Re_parameters = np.array([_dP_inline_Re_125, _dP_inline_Re_15, _dP_inline_Re_2, _dP_inline_Re_25]).T
     dP_inline_f = RectBivariateSpline(_dP_inline_Res, np.array([1.25, 1.5, 2, 2.5]), _dP_inline_Re_parameters, kx = 3, ky = 3, s = 0.002)
-    
-    
+
+
     _dP_inline_correction_parameters = np.array([0.0661637, 0.0767956, 0.0811521, 0.091014, 0.0965946, 0.102863, 0.114663, 0.117455, 0.132109, 0.135196, 0.152089,
         0.168558, 0.19133, 0.192037, 0.21534, 0.217736, 0.244667, 0.247747, 0.324839, 0.392087, 0.446129, 2.2286, 2.3885, 2.63783, 2.92864, 3.00382,
         4.05259, 4.2551, 4.54434, 4.84314, 5.09577, 5.59171, 5.71411
@@ -1070,12 +1070,12 @@ def load_Zukauskas_correlations():
         2.01899, 1.92414, 1.91509, 1.81755, 1.80738, 1.63471, 1.50647, 1.43004, 0.74756, 0.730366, 0.704554, 0.675458, 0.668194, 0.588052, 0.575945,
         0.563366, 0.551447, 0.540255, 0.520396, 0.515871
     ])
-    
+
     _dP_inline_correction_zs = np.array([1E3, 1E4, 1E5, 1E6])
     _dP_inline_correction_Re_parameters = np.array([_dP_inline_correction_Re_1000, _dP_inline_correction_Re_10000, _dP_inline_correction_Re_100000, _dP_inline_correction_Re_1000000]).T
     dP_inline_correction = RectBivariateSpline(_dP_inline_correction_parameters, _dP_inline_correction_zs, _dP_inline_correction_Re_parameters, kx=1, ky=3, s=0.002) # s=0.002
     # RectBivariateSpline does a terrible job
-    
+
     #import matplotlib.pyplot as plt
     #low, high = min(_dP_inline_correction_parameters), max(_dP_inline_correction_parameters)
     #xs = np.logspace(np.log10(low), np.log10(high), 300000)
@@ -1153,15 +1153,15 @@ def dP_Zukauskas(Re, n, ST, SL, D, rho, Vmax):
     return n*x*f*rho/2*Vmax**2
 
 
-'''Note: the smoothing factor was tunned to keep only 7 knots/9 coeffs while  
+'''Note: the smoothing factor was tunned to keep only 7 knots/9 coeffs while
 getting near to requiring more knots. The fitting for a digitized graph is
-likely to be at the maximum possible accuracy. Any speed increasing fit 
+likely to be at the maximum possible accuracy. Any speed increasing fit
 function should fit the smoothed function, not the raw data.
 '''
 Bell_baffle_configuration_tck = implementation_optimize_tck([[0.0, 0.0, 0.0, 0.0, 0.517361, 0.802083, 0.866319,
-                                           0.934028, 0.977431, 1.0, 1.0, 1.0, 1.0], 
+                                           0.934028, 0.977431, 1.0, 1.0, 1.0, 1.0],
                                  [0.5328447885827443, 0.6821475548927218, 0.9074424740361304,
-                                           1.0828783604984582, 1.1485665329698214, 1.1612486065399008, 
+                                           1.0828783604984582, 1.1485665329698214, 1.1612486065399008,
                                            1.1216591944456349, 1.0762015137576528, 1.0314244120288227,
                                            0.0, 0.0, 0.0, 0.0],
                                 3], force_numpy=IS_NUMBA)
@@ -1178,37 +1178,37 @@ f = Bell_baffle_configuration_obj
 print(max([(f(i)-fit(i*2-1))/f(i) for i in xs]), 'MAX ERR')
 print(np.mean([abs(f(i)-fit(i*2-1))/f(i) for i in xs]), 'MEAN ERR')
 '''
-Bell_baffle_configuration_coeffs = [-17.267087530974095, -17.341072676377735, 
+Bell_baffle_configuration_coeffs = [-17.267087530974095, -17.341072676377735,
     60.38380262590988, 60.78202803861199, -83.86556326987701, -84.74024411236306, 58.66461844872558,
     59.56146082596216, -21.786957547130935, -22.229378707598116, 4.1167302227508, 4.226246012504343,
-    -0.3349723004600481, -0.3685826653263089, -0.0629839069257099, 0.35883309630976157, 
+    -0.3349723004600481, -0.3685826653263089, -0.0629839069257099, 0.35883309630976157,
     0.9345478582873352]
 
 def baffle_correction_Bell(crossflow_tube_fraction, method='spline'):
     r'''Calculate the baffle correction factor `Jc` which accounts for
     the fact that all tubes are not in crossflow to the fluid - some
-    have fluid flowing parallel to them because they are situated in 
+    have fluid flowing parallel to them because they are situated in
     the "window", where the baffle is cut, instead of between the tips
     of adjacent baffles.
-    
+
     Equal to 1 for no tubes in the window, increases to 1.15 when the
     windows are small and velocity there is high; decreases to about 0.52
     for very large baffle cuts. Well designed exchangers should typically
     have a value near 1.0.
-    
+
     Cubic spline interpolation is the default method of retrieving a value
     from the graph, which was digitized with Engauge-Digitizer.
-    
+
     The interpolation can be slightly slow, so a Chebyshev polynomial was fit
     to a maximum error of 0.142%, average error 0.04% - well within the margin
     of error of the digitization of the graph; this is approximately 10 times
     faster, accessible via the 'chebyshev' method.
-    
-    The Heat Exchanger Design Handbook [4]_, [5]_ provides the linear curve 
-    fit, which covers the "practical" range of baffle cuts 15-45% but not the 
-    last dip in the graph. This method is not recommended, but can be used via 
+
+    The Heat Exchanger Design Handbook [4]_, [5]_ provides the linear curve
+    fit, which covers the "practical" range of baffle cuts 15-45% but not the
+    last dip in the graph. This method is not recommended, but can be used via
     the method "HEDH".
-        
+
     .. math::
         J_c = 0.55 + 0.72Fc
     Parameters
@@ -1219,7 +1219,7 @@ def baffle_correction_Bell(crossflow_tube_fraction, method='spline'):
 
     method : str, optional
         One of 'chebyshev', 'spline', or 'HEDH'
-    
+
     Returns
     -------
     Jc : float
@@ -1230,26 +1230,26 @@ def baffle_correction_Bell(crossflow_tube_fraction, method='spline'):
     max: ~1.1536 at ~0.9066
     min: ~0.5328 at 0
     value at 1: ~1.0314
-    
+
     For the 'spline' method, this function takes ~13 us per call.
     The other two methods are approximately 10x faster.
-             
+
     Examples
     --------
-    For a HX with four groups of tube bundles; the top and bottom being 9 
+    For a HX with four groups of tube bundles; the top and bottom being 9
     tubes each, in the window, and the two middle bundles having 41 tubes
     each, for a total of 100 tubes, the fraction between baffle tubes and
     not in the window is 0.82. The correction factor is then:
-    
+
     >>> baffle_correction_Bell(0.82)
     1.1258554691854046
-    
+
     References
     ----------
     .. [1] Bell, Kenneth J. Final Report of the Cooperative Research Program on
        Shell and Tube Heat Exchangers. University of Delaware, Engineering
        Experimental Station, 1963.
-    .. [2] Bell, Kenneth J. Delaware Method for Shell-Side Design. In Heat  
+    .. [2] Bell, Kenneth J. Delaware Method for Shell-Side Design. In Heat
        Transfer Equipment Design, by Shah, R.  K., Eleswarapu Chinna Subbarao,
        and R. A. Mashelkar. CRC Press, 1988.
     .. [3] Green, Don, and Robert Perry. Perry's Chemical Engineers' Handbook,
@@ -1269,48 +1269,48 @@ def baffle_correction_Bell(crossflow_tube_fraction, method='spline'):
     return Jc
 
 
-'''Note: The smoothing factor was hand tuned to not overfit from points which 
+'''Note: The smoothing factor was hand tuned to not overfit from points which
 were clearly wrong in the digitization. It will predict values above 1 however
 for some values; this must be checked!
 '''
-Bell_baffle_leakage_x_max = 0.743614 
+Bell_baffle_leakage_x_max = 0.743614
 
-Bell_baffle_leakage_tck = implementation_optimize_tck([[0.0, 0.0, 0.0, 0.0, 0.0213694, 0.0552542, 0.144818, 
-                                     0.347109, 0.743614, 0.743614, 0.743614, 0.743614], 
+Bell_baffle_leakage_tck = implementation_optimize_tck([[0.0, 0.0, 0.0, 0.0, 0.0213694, 0.0552542, 0.144818,
+                                     0.347109, 0.743614, 0.743614, 0.743614, 0.743614],
                                     [0.0, 0.0, 0.25, 0.5, 0.75, 1.0, 1.0],
-                                    [1.0001228445490002, 0.9988161050974387, 0.9987070557919563, 0.9979385859402731, 
-                                     0.9970983069823832, 0.96602540121758, 0.955136014969614, 0.9476842472211648, 
-                                     0.9351143114374392, 0.9059649602818451, 0.9218915266550902, 0.9086000082864022, 
-                                     0.8934758292610783, 0.8737960765592091, 0.83185251064324, 0.8664296734965998, 
+                                    [1.0001228445490002, 0.9988161050974387, 0.9987070557919563, 0.9979385859402731,
+                                     0.9970983069823832, 0.96602540121758, 0.955136014969614, 0.9476842472211648,
+                                     0.9351143114374392, 0.9059649602818451, 0.9218915266550902, 0.9086000082864022,
+                                     0.8934758292610783, 0.8737960765592091, 0.83185251064324, 0.8664296734965998,
                                      0.8349705397843921, 0.809133298969704, 0.7752206120745123, 0.7344035693011536,
-                                     0.817047920445813, 0.7694560150930563, 0.7250979336267909, 0.6766754605968431, 
-                                     0.629304180420512, 0.7137237030611423, 0.6408238328161417, 0.5772000233279148, 
-                                     0.504889627280836, 0.440579886434288, 0.6239736474980684, 0.5273646894226224, 
-                                     0.43995388722059986, 0.34359277007615313, 0.26986439252143746, 0.5640689738382749, 
+                                     0.817047920445813, 0.7694560150930563, 0.7250979336267909, 0.6766754605968431,
+                                     0.629304180420512, 0.7137237030611423, 0.6408238328161417, 0.5772000233279148,
+                                     0.504889627280836, 0.440579886434288, 0.6239736474980684, 0.5273646894226224,
+                                     0.43995388722059986, 0.34359277007615313, 0.26986439252143746, 0.5640689738382749,
                                      0.4540959882735219, 0.35278120580740957, 0.24364672351604122, 0.1606942128340308],
                            3, 1], force_numpy=IS_NUMBA)
 Bell_baffle_leakage_obj = lambda x, z : float(bisplev(x, z, Bell_baffle_leakage_tck))
-            
-    
+
+
 def baffle_leakage_Bell(Ssb, Stb, Sm, method='spline'):
     r'''Calculate the baffle leakage factor `Jl` which accounts for
     leakage between each baffle.
     Cubic spline interpolation is the default method of retrieving a value
     from the graph, which was digitized with Engauge-Digitizer.
-    
-    The Heat Exchanger Design Handbook [4]_, [5]_ provides a curve 
-    fit as well. This method is not recommended, but can be used via 
+
+    The Heat Exchanger Design Handbook [4]_, [5]_ provides a curve
+    fit as well. This method is not recommended, but can be used via
     the method "HEDH".
-        
+
     .. math::
         J_L = 0.44(1-r_s) + [1 - 0.44(1-r_s)]\exp(-2.2r_{lm})
-        
+
     .. math::
         r_s = \frac{S_{sb}}{S_{sb} + S_{tb}}
-        
+
     .. math::
         r_{lm} = \frac{S_{sb} + S_{tb}}{S_m}
-        
+
     Parameters
     ----------
     Ssb : float
@@ -1321,7 +1321,7 @@ def baffle_leakage_Bell(Ssb, Stb, Sm, method='spline'):
         Crossflow area, [m^2]
     method : str, optional
         One of 'spline', or 'HEDH'
-    
+
     Returns
     -------
     Jl : float
@@ -1331,24 +1331,24 @@ def baffle_leakage_Bell(Ssb, Stb, Sm, method='spline'):
     -----
     Takes ~5 us per call.
     If the `x` parameter is larger than 0.743614, it is clipped to it.
-    
-    The HEDH curve fits are rather poor and only 6x faster to evaluate. 
+
+    The HEDH curve fits are rather poor and only 6x faster to evaluate.
     The HEDH example in [6]_'s spreadsheet has an error and uses 0.044 instead
     of 0.44 in the equation.
-        
+
     Examples
     --------
     >>> baffle_leakage_Bell(1, 3, 8)
-    0.5906621282470395
+    0.5906621282470
     >>> baffle_leakage_Bell(1, 3, 8, 'HEDH')
-    0.5530236260777133
-    
+    0.5530236260777
+
     References
     ----------
     .. [1] Bell, Kenneth J. Final Report of the Cooperative Research Program on
        Shell and Tube Heat Exchangers. University of Delaware, Engineering
        Experimental Station, 1963.
-    .. [2] Bell, Kenneth J. Delaware Method for Shell-Side Design. In Heat  
+    .. [2] Bell, Kenneth J. Delaware Method for Shell-Side Design. In Heat
        Transfer Equipment Design, by Shah, R.  K., Eleswarapu Chinna Subbarao,
        and R. A. Mashelkar. CRC Press, 1988.
     .. [3] Green, Don, and Robert Perry. Perry's Chemical Engineers' Handbook,
@@ -1358,7 +1358,7 @@ def baffle_leakage_Bell(Ssb, Stb, Sm, method='spline'):
        Hemisphere Pub. Corp., 1987.
     .. [5] Serth, R. W., Process Heat Transfer: Principles,
        Applications and Rules of Thumb. 2E. Amsterdam: Academic Press, 2014.
-    .. [6] Hall, Stephen. Rules of Thumb for Chemical Engineers, Fifth Edition. 
+    .. [6] Hall, Stephen. Rules of Thumb for Chemical Engineers, Fifth Edition.
        5th edition. Oxford ; Waltham , MA: Butterworth-Heinemann, 2012.
     '''
     x = (Ssb + Stb)/Sm
@@ -1377,26 +1377,26 @@ def baffle_leakage_Bell(Ssb, Stb, Sm, method='spline'):
 
 
 Bell_bundle_bypass_x_max = 0.69532
-Bell_bundle_bypass_high_spl = implementation_optimize_tck([[0.0, 0.0, 0.0, 0.0, 0.434967, 0.69532, 0.69532, 0.69532, 0.69532], 
-                               [0.0, 0.0, 0.0, 0.0, 0.1, 0.16666666666666666, 0.5, 0.5, 0.5, 0.5], 
-                               [0.9992518012440722, 0.9989007625058475, 1.0018411070735471, 0.9941457497302127, 
+Bell_bundle_bypass_high_spl = implementation_optimize_tck([[0.0, 0.0, 0.0, 0.0, 0.434967, 0.69532, 0.69532, 0.69532, 0.69532],
+                               [0.0, 0.0, 0.0, 0.0, 0.1, 0.16666666666666666, 0.5, 0.5, 0.5, 0.5],
+                               [0.9992518012440722, 0.9989007625058475, 1.0018411070735471, 0.9941457497302127,
                                          1.0054152224744488, 1.0000002120327414, 0.8193710201718651, 0.8906557463728106,
-                                         0.9236476444228989, 0.9466472125718047, 1.002564972451326, 1.0000001328221189, 
-                                         0.6099796629837915, 0.7779198818216049, 0.8128716798013131, 0.935864247770527, 
+                                         0.9236476444228989, 0.9466472125718047, 1.002564972451326, 1.0000001328221189,
+                                         0.6099796629837915, 0.7779198818216049, 0.8128716798013131, 0.935864247770527,
                                          0.932707600057425, 0.9999978349038892, 0.46653330555544065, 0.6543895994806808,
                                          0.7244471950409509, 0.8599376452211228, 0.9622021460141503, 0.9999989177211911,
-                                         0.42206076955873406, 0.6230810793228677, 0.6903177740858685, 0.8544752061829647, 
+                                         0.42206076955873406, 0.6230810793228677, 0.6903177740858685, 0.8544752061829647,
                                          0.9373953303873518, 0.9999983130568033],
                                3, 3], force_numpy=IS_NUMBA)
 Bell_bundle_bypass_high_obj = lambda x, y: float(bisplev(x, y, Bell_bundle_bypass_high_spl))
 
 
 Bell_bundle_bypass_low_spl = implementation_optimize_tck([[0.0, 0.0, 0.0, 0.0, 0.434967, 0.69532, 0.69532, 0.69532, 0.69532],
-                              [0.0, 0.0, 0.0, 0.0, 0.1, 0.16666666666666666, 0.5, 0.5, 0.5, 0.5], 
+                              [0.0, 0.0, 0.0, 0.0, 0.1, 0.16666666666666666, 0.5, 0.5, 0.5, 0.5],
                               [1.0015970586968514, 0.9976793473578099, 1.0037098839305505, 0.9953304170745584,
                                         1.0031587186511541, 1.00000028406872, 0.8027498596582175, 0.9050562101782131,
-                                        0.9133675590990569, 0.9611563766991582, 0.9879481797594364, 0.9999988983171519, 
-                                        0.5813496854191834, 0.7520908533825839, 0.7927234268976187, 0.9090698658126287, 
+                                        0.9133675590990569, 0.9611563766991582, 0.9879481797594364, 0.9999988983171519,
+                                        0.5813496854191834, 0.7520908533825839, 0.7927234268976187, 0.9090698658126287,
                                         0.9857133220039945, 0.9999986096716597, 0.43493461007512263, 0.6478801160783917,
                                         0.6961255921403956, 0.861432071791341, 0.9243020549338703, 0.999997894037133,
                                         0.39110224578093694, 0.606829928454368, 0.6600680810505178, 0.8482579667665061,
@@ -1407,24 +1407,24 @@ Bell_bundle_bypass_low_obj = lambda x, y : float(bisplev(x, y, Bell_bundle_bypas
 
 def bundle_bypassing_Bell(bypass_area_fraction, seal_strips, crossflow_rows,
                           laminar=False, method='spline'):
-    r'''Calculate the bundle bypassing effect `Jb` according to the 
-    Bell-Delaware method for heat exchanger design.   
+    r'''Calculate the bundle bypassing effect `Jb` according to the
+    Bell-Delaware method for heat exchanger design.
     Cubic spline interpolation is the default method of retrieving a value
     from the graph, which was digitized with Engauge-Digitizer.
-    
-    The Heat Exchanger Design Handbook [4]_, [5]_ provides a curve 
-    fit as well. This method is not recommended, but can be used via 
+
+    The Heat Exchanger Design Handbook [4]_, [5]_ provides a curve
+    fit as well. This method is not recommended, but can be used via
     the method "HEDH":
-    
+
     .. math::
         J_b = \exp\left[-1.25 F_{sbp} (1 -  {2r_{ss}}^{1/3} )\right]
-    
+
     For laminar flows, replace 1.25 with 1.35.
-        
+
     Parameters
     ----------
     bypass_area_fraction : float
-        Fraction of the crossflow area which is not blocked by a baffle or 
+        Fraction of the crossflow area which is not blocked by a baffle or
         anything else and available for bypassing, [-]
     seal_strips : int
         Number of seal strips per side of a baffle added to prevent bypassing,
@@ -1440,7 +1440,7 @@ def bundle_bypassing_Bell(bypass_area_fraction, seal_strips, crossflow_rows,
     Returns
     -------
     Jb : float
-        Bundle bypassing effect correction factor in the Bell-Delaware method, 
+        Bundle bypassing effect correction factor in the Bell-Delaware method,
         [-]
 
     Notes
@@ -1453,16 +1453,16 @@ def bundle_bypassing_Bell(bypass_area_fraction, seal_strips, crossflow_rows,
     --------
     >>> bundle_bypassing_Bell(0.5, 5, 25)
     0.8469611760884599
-    
+
     >>> bundle_bypassing_Bell(0.5, 5, 25, method='HEDH')
     0.8483210970579099
-    
+
     References
     ----------
     .. [1] Bell, Kenneth J. Final Report of the Cooperative Research Program on
        Shell and Tube Heat Exchangers. University of Delaware, Engineering
        Experimental Station, 1963.
-    .. [2] Bell, Kenneth J. Delaware Method for Shell-Side Design. In Heat  
+    .. [2] Bell, Kenneth J. Delaware Method for Shell-Side Design. In Heat
        Transfer Equipment Design, by Shah, R.  K., Eleswarapu Chinna Subbarao,
        and R. A. Mashelkar. CRC Press, 1988.
     .. [3] Green, Don, and Robert Perry. Perry's Chemical Engineers' Handbook,
@@ -1473,7 +1473,7 @@ def bundle_bypassing_Bell(bypass_area_fraction, seal_strips, crossflow_rows,
     if method == 'spline':
         if x > Bell_bundle_bypass_x_max:
             x = Bell_bundle_bypass_x_max
-            
+
         if laminar:
             Jb = Bell_bundle_bypass_low_obj(x, z)
         else:
@@ -1485,19 +1485,19 @@ def bundle_bypassing_Bell(bypass_area_fraction, seal_strips, crossflow_rows,
     return Jb
 
 
-def unequal_baffle_spacing_Bell(baffles, baffle_spacing, 
-                                baffle_spacing_in=None, 
-                                baffle_spacing_out=None, 
+def unequal_baffle_spacing_Bell(baffles, baffle_spacing,
+                                baffle_spacing_in=None,
+                                baffle_spacing_out=None,
                                 laminar=False):
     r'''Calculate the correction factor for unequal baffle spacing `Js`,
     which accounts for higher velocity of fluid flow and greater heat transfer
     coefficients when the in and/or out baffle spacing is less than the
     standard spacing.
-            
+
     .. math::
         J_s = \frac{(n_b - 1) + (B_{in}/B)^{(1-n_b)} + (B_{out}/B)^{(1-n_b)}}
         {(n_b - 1) + (B_{in}/B) + (B_{out}/B)}
-        
+
     Parameters
     ----------
     baffles : int
@@ -1520,7 +1520,7 @@ def unequal_baffle_spacing_Bell(baffles, baffle_spacing,
 
     Notes
     -----
-        
+
     Examples
     --------
     >>> unequal_baffle_spacing_Bell(16, .1, .15, 0.15)
@@ -1531,7 +1531,7 @@ def unequal_baffle_spacing_Bell(baffles, baffle_spacing,
     .. [1] Bell, Kenneth J. Final Report of the Cooperative Research Program on
        Shell and Tube Heat Exchangers. University of Delaware, Engineering
        Experimental Station, 1963.
-    .. [2] Bell, Kenneth J. Delaware Method for Shell-Side Design. In Heat  
+    .. [2] Bell, Kenneth J. Delaware Method for Shell-Side Design. In Heat
        Transfer Equipment Design, by Shah, R.  K., Eleswarapu Chinna Subbarao,
        and R. A. Mashelkar. CRC Press, 1988.
     .. [3] Schlünder, Ernst U, and International Center for Heat and Mass
@@ -1539,7 +1539,7 @@ def unequal_baffle_spacing_Bell(baffles, baffle_spacing,
        Hemisphere Pub. Corp., 1987.
     .. [4] Serth, R. W., Process Heat Transfer: Principles,
        Applications and Rules of Thumb. 2E. Amsterdam: Academic Press, 2014.
-    .. [5] Hall, Stephen. Rules of Thumb for Chemical Engineers, Fifth Edition. 
+    .. [5] Hall, Stephen. Rules of Thumb for Chemical Engineers, Fifth Edition.
        5th edition. Oxford ; Waltham , MA: Butterworth-Heinemann, 2012.
     '''
     if baffle_spacing_in is None:
@@ -1547,9 +1547,9 @@ def unequal_baffle_spacing_Bell(baffles, baffle_spacing,
     if baffle_spacing_out is None:
         baffle_spacing_out = baffle_spacing
     n = 1.0/3.0 if laminar else 0.6
-    Js = ((baffles - 1.0) + (baffle_spacing_in/baffle_spacing)**(1.0 - n) 
-          + (baffle_spacing_out/baffle_spacing)**(1.0 - n))/((baffles - 1.0) 
-          + (baffle_spacing_in/baffle_spacing) 
+    Js = ((baffles - 1.0) + (baffle_spacing_in/baffle_spacing)**(1.0 - n)
+          + (baffle_spacing_out/baffle_spacing)**(1.0 - n))/((baffles - 1.0)
+          + (baffle_spacing_in/baffle_spacing)
           + (baffle_spacing_out/baffle_spacing))
     return Js
 
@@ -1557,15 +1557,15 @@ def unequal_baffle_spacing_Bell(baffles, baffle_spacing,
 def laminar_correction_Bell(Re, total_row_passes):
     r'''Calculate the correction factor for adverse temperature gradient built
     up in laminar flow `Jr`.
-    
-    This correction begins at Re = 100, and is interpolated between the value 
+
+    This correction begins at Re = 100, and is interpolated between the value
     of the formula until Re = 20, when it is the value of the formula. It is
     1 for Re >= 100. The value of the formula is not allowed to be less than
     0.4.
 
     .. math::
         Jr^* = \left(\frac{10}{N_{row,passes,tot}}\right)^{0.18}
-        
+
     Parameters
     ----------
     Re : float
@@ -1582,9 +1582,9 @@ def laminar_correction_Bell(Re, total_row_passes):
 
     Notes
     -----
-    [5]_ incorrectly uses the number of tube rows per crosslfow section, not 
+    [5]_ incorrectly uses the number of tube rows per crosslfow section, not
     total.
-        
+
     Examples
     --------
     >>> laminar_correction_Bell(30, 80)
@@ -1595,7 +1595,7 @@ def laminar_correction_Bell(Re, total_row_passes):
     .. [1] Bell, Kenneth J. Final Report of the Cooperative Research Program on
        Shell and Tube Heat Exchangers. University of Delaware, Engineering
        Experimental Station, 1963.
-    .. [2] Bell, Kenneth J. Delaware Method for Shell-Side Design. In Heat  
+    .. [2] Bell, Kenneth J. Delaware Method for Shell-Side Design. In Heat
        Transfer Equipment Design, by Shah, R.  K., Eleswarapu Chinna Subbarao,
        and R. A. Mashelkar. CRC Press, 1988.
     .. [3] Schlünder, Ernst U, and International Center for Heat and Mass
@@ -1603,7 +1603,7 @@ def laminar_correction_Bell(Re, total_row_passes):
        Hemisphere Pub. Corp., 1987.
     .. [4] Serth, R. W., Process Heat Transfer: Principles,
        Applications and Rules of Thumb. 2E. Amsterdam: Academic Press, 2014.
-    .. [5] Hall, Stephen. Rules of Thumb for Chemical Engineers, Fifth Edition. 
+    .. [5] Hall, Stephen. Rules of Thumb for Chemical Engineers, Fifth Edition.
        5th edition. Oxford ; Waltham , MA: Butterworth-Heinemann, 2012.
     '''
     if Re > 100.0:
