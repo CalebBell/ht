@@ -20,10 +20,10 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.'''
 
-from setuptools import setup 
- 
+from setuptools import setup
+
 classifiers=[
-    'Development Status :: 3 - Alpha',
+    'Development Status :: 5 - Production/Stable',
     'Intended Audience :: Developers',
     'Intended Audience :: Education',
     'Intended Audience :: Manufacturing',
@@ -68,17 +68,17 @@ setup(
   name = 'ht',
   packages = ['ht'],
   license='MIT',
-  version = '0.1.57',
+  version = '1.0.0',
   description = description,
   author = 'Caleb Bell',
   long_description = open('README.rst').read(),
   platforms=["Windows", "Linux", "Mac OS", "Unix"],
   author_email = 'Caleb.Andrew.Bell@gmail.com',
   url = 'https://github.com/CalebBell/ht',
-  download_url = 'https://github.com/CalebBell/ht/tarball/0.1.57',
+  download_url = 'https://github.com/CalebBell/ht/tarball/1.0.0',
   keywords = keywords,
   classifiers = classifiers,
-  install_requires=['fluids>=0.1.86', 'numpy>=1.5.0', 'scipy>=0.9.0'],
+  install_requires=['fluids>=1.0.0', 'numpy>=1.5.0', 'scipy>=0.9.0'],
   package_data={'ht': ['data/*']},
   extras_require = {
       'Coverage documentation':  ['wsgiref>=0.1.2', 'coverage>=4.0.3', 'pint']
