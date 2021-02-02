@@ -1124,9 +1124,9 @@ def dP_Zukauskas(Re, n, ST, SL, D, rho, Vmax):
     Examples
     --------
     >>> dP_Zukauskas(Re=13943., n=7, ST=0.0313, SL=0.0343, D=0.0164, rho=1.217, Vmax=12.6)
-    235.22916169118335
+    235.22916169
     >>> dP_Zukauskas(Re=13943., n=7, ST=0.0313, SL=0.0313, D=0.0164, rho=1.217, Vmax=12.6)
-    217.0750033117563
+    217.0750033
 
     References
     ----------
