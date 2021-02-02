@@ -8,6 +8,7 @@ environment:
     - PYTHON: 3.5
     - PYTHON: 3.6
     - PYTHON: 3.7
+    - PYTHON: 3.8
 
 platform:
   - x86
@@ -22,9 +23,8 @@ init:
 
 install:
   - cmd: activate condaenv
-  - cmd: conda install -yq numpy scipy pip pytest mpmath
-  - cmd: pip install pytest-cov coveralls sympy fluids pint
-  - cmd: python setup.py install
+  - cmd: conda install -yq numpy scipy pip pytest pandas numba IPython sphinx
+  - cmd: pip install pytest-cov coveralls sympy fuzzywuzzy pint pytz
 
 test_script:
   - cmd: py.test --cov-report html --cov=ht -m "not slow and not numba"
