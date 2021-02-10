@@ -607,9 +607,12 @@ def Nu_external_cylinder(Re, Pr, Prw=None, mu=None, muw=None, Method=None):
         return Nu_cylinder_Zukauskas(Re=Re, Pr=Pr, Prw=Prw)
     elif Method2 == 'Whitaker':
         return Nu_cylinder_Whitaker(Re=Re, Pr=Pr, mu=mu, muw=muw)
+    elif Method2 == 'Perkins-Leppert 1962':
+        return Nu_cylinder_Perkins_Leppert_1962(Re=Re, Pr=Pr, mu=mu, muw=muw)
     elif Method2 == 'Perkins-Leppert 1964':
         return Nu_cylinder_Perkins_Leppert_1964(Re=Re, Pr=Pr, mu=mu, muw=muw)
     else:
+
         raise ValueError(_missing_external_cylinder_method)
 
 # Horizontal Plate in crossflow

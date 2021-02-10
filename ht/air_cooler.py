@@ -307,8 +307,8 @@ def h_Briggs_Young(m, A, A_min, A_increase, A_fin, A_tube_showing,
                    tube_diameter, fin_diameter, fin_thickness, bare_length,
                    rho, Cp, mu, k, k_fin):
     r'''Calculates the air side heat transfer coefficient for an air cooler
-    or other finned tube bundle with the formulas of Briggs and Young [1], [2]_
-    [3]_.
+    or other finned tube bundle with the formulas of Briggs and Young [1]_,
+    [2]_ [3]_.
 
     .. math::
         Nu = 0.134Re^{0.681} Pr^{0.33}\left(\frac{S}{h}\right)^{0.2}
@@ -360,8 +360,8 @@ def h_Briggs_Young(m, A, A_min, A_increase, A_fin, A_tube_showing,
 
     Notes
     -----
-    The limits on this equation are :math:`1000 < Re < `8000`,
-    11.13 mm :math:`< D_o < ` 40.89 mm, 1.42 mm < fin height < 16.57 mm,
+    The limits on this equation are 1000 < Re < 8000 ,
+    11.13 mm < D_o < 40.89 mm, 1.42 mm < fin height < 16.57 mm,
     0.33 mm < fin thickness < 2.02 mm, 1.30 mm < fin pitch < 4.06 mm, and
     24.49 mm < normal pitch < 111 mm.
 
@@ -989,10 +989,11 @@ def dP_ESDU_low_fin(m, A_min, A_increase, flow_area_contraction_ratio,
     -----
     Low fins are fins which were formed on the tube outside wall, normally
     by the cold rolling process. The data used by the ESDU covered:
-        * fin density 11 to 32/inch
-        * tube outer diameters 0.5 to 1.25 inches
-        * fin heights 0.03 to 0.1 inches
-        * Reynolds numbers 1000 to 80000
+
+    * fin density 11 to 32/inch
+    * tube outer diameters 0.5 to 1.25 inches
+    * fin heights 0.03 to 0.1 inches
+    * Reynolds numbers 1000 to 80000
 
     [1]_ compared this correlation with 81 results and obtained a standard
     deviation of 7.7%.

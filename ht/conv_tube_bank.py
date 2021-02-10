@@ -213,7 +213,7 @@ Zukauskas_Czs_inline = [0.6768, 0.8089, 0.8687, 0.9054, 0.9303, 0.9465, 0.9569,
 
 def Zukauskas_tube_row_correction(tube_rows, staggered=True, Re=1E4):
     r'''Calculates the tube row correction factor according to a graph
-    digitized from [1]_ and also shown in [2]_ for heat transfer across
+    digitized from [1] for heat transfer across
     a tube bundle. The correction factors are slightly different for
     staggered vs. inline configurations; for the staggered configuration,
     factors are available separately for `Re` larger or smaller than 1000.
@@ -1211,12 +1211,12 @@ def baffle_correction_Bell(crossflow_tube_fraction, method='spline'):
 
     .. math::
         J_c = 0.55 + 0.72Fc
+
     Parameters
     ----------
     crossflow_tube_fraction : float
         Fraction of tubes which are between baffle tips and not
         in the window, [-]
-
     method : str, optional
         One of 'chebyshev', 'spline', or 'HEDH'
 
@@ -1412,7 +1412,7 @@ def bundle_bypassing_Bell(bypass_area_fraction, seal_strips, crossflow_rows,
     Cubic spline interpolation is the default method of retrieving a value
     from the graph, which was digitized with Engauge-Digitizer.
 
-    The Heat Exchanger Design Handbook [4]_, [5]_ provides a curve
+    The Heat Exchanger Design Handbook [4]_ provides a curve
     fit as well. This method is not recommended, but can be used via
     the method "HEDH":
 
@@ -1467,6 +1467,9 @@ def bundle_bypassing_Bell(bypass_area_fraction, seal_strips, crossflow_rows,
        and R. A. Mashelkar. CRC Press, 1988.
     .. [3] Green, Don, and Robert Perry. Perry's Chemical Engineers' Handbook,
        Eighth Edition. McGraw-Hill Professional, 2007.
+    .. [4] Schlünder, Ernst U, and International Center for Heat and Mass
+       Transfer. Heat Exchanger Design Handbook. Washington:
+       Hemisphere Pub. Corp., 1987.
     '''
     z = seal_strips/crossflow_rows
     x = bypass_area_fraction

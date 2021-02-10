@@ -44,9 +44,6 @@ Contents:
 
 .. toctree::
    tutorial
-
-   :maxdepth: 10
-
    modules
 
 

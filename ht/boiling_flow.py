@@ -204,7 +204,7 @@ def Li_Wu(m, x, D, rhol, rhog, mul, kl, Hvap, sigma, q=None, Te=None):
 def Sun_Mishima(m, D, rhol, rhog, mul, kl, Hvap, sigma, q=None, Te=None):
     r'''Calculates heat transfer coefficient for film boiling of saturated
     fluid in any orientation of flow. Correlation
-    is as shown in [1]_, and also reviewed in [2]_ and [3]_.
+    is as shown in [1]_, and also reviewed in [2]_.
 
     Either the heat flux or excess temperature is required for the calculation
     of heat transfer coefficient. Uses liquid-only Reynolds number, Weber

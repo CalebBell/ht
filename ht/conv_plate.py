@@ -229,8 +229,7 @@ def Nu_plate_Martin(Re, Pr, plate_enlargement_factor, variant='1999'):
 
 def Nu_plate_Muley_Manglik(Re, Pr, chevron_angle, plate_enlargement_factor):
     r'''Calculates Nusselt number for single-phase flow in a
-    Chevron-style plate heat exchanger according to [1]_, also shown in [2]_
-    and [3]_.
+    Chevron-style plate heat exchanger according to [1]_, also shown in [2]_.
 
     .. math::
         Nu = [0.2668 - 0.006967(\beta) + 7.244\times 10^{-5}(\beta)^2]

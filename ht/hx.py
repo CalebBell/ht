@@ -4690,11 +4690,12 @@ def Ntubes_Phadkeb(DBundle, Do, pitch, Ntp, angle=30):
     for any reason. For 4, 6, 8 pass arrangements, a number of tubes must be
     removed to accommodate pass partition plates. The following assumptions
     are involved with that:
-        * The pass partition plate is where a row of tubes would have been.
-          Only one or two rows are assumed affected.
-        * The thickness of partition plate is < 70% of the tube outer diameter.
-        * The distance between the centerline of the partition plate and the
-          centerline of the nearest row of tubes is equal to the pitch.
+
+    * The pass partition plate is where a row of tubes would have been.
+      Only one or two rows are assumed affected.
+    * The thickness of partition plate is < 70% of the tube outer diameter.
+    * The distance between the centerline of the partition plate and the
+      centerline of the nearest row of tubes is equal to the pitch.
 
     This function will fail when there are more than 100,000 tubes.
     [1]_ tabulated values up to approximately 3,000 tubes derived with
