@@ -262,7 +262,7 @@ def air_cooler_noise_Mukherjee(tip_speed, power, fan_diameter, induced=False):
 
     .. math::
         \text{SPL[dB(A)]} = 46 + 30\log_{10}\text{(tip speed)}[m/s]
-        + 10\log_{10}( \text{power}[hp]) - 20 \log10(D_{fan})
+        + 10\log_{10}( \text{power}[hp]) - 20 \log_{10}(D_{fan})
 
     Parameters
     ----------

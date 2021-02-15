@@ -53,7 +53,7 @@ def Nu_Nusselt_Rayleigh_Holling_Herwig(Pr, Gr, buoyancy=True):
     numbers; [1]_ recommends :math:`10^{5} < Ra < 10^{15}`.
 
     .. math::
-        \text{Nu} = \frac{{Ra}^{1/3}}{[0.05\log(\frac{0.078}{16}{Ra}^{1.323})
+        \text{Nu} = \frac{{Ra}^{1/3}}{[0.05\ln(\frac{0.078}{16}{Ra}^{1.323})
         + 2D]^{4/3}}
 
     .. math::
@@ -196,7 +196,7 @@ def Nu_Nusselt_Rayleigh_Hollands(Pr, Gr, buoyancy=True, Rac=1708):
     .. math::
         \text{Nu} = 1 + \left[1 - \frac{1708}{\text{Ra}} \right]^*
         \left[k_1 + 2 \left(\frac{\text{Ra}^{1/3}}{k_2} \right)^{1
-        - \log({\text{Ra}}^{1/5}/k_2)} \right]^*
+        - \ln({\text{Ra}}^{1/5}/k_2)} \right]^*
         + \left[\left(\frac{\text{Ra}}{5803}\right)^{1/3} - 1\right]^*
 
     .. math::

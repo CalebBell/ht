@@ -3199,25 +3199,25 @@ def NTU_from_P_basic(P1, R1, subtype='crossflow'):
     Counterflow:
 
     .. math::
-        NTU_1 = - \frac{1}{R_{1} - 1} \log{\left (\frac{P_{1} R_{1} - 1}{P_{1}
+        NTU_1 = - \frac{1}{R_{1} - 1} \ln{\left (\frac{P_{1} R_{1} - 1}{P_{1}
         - 1} \right )}
 
     Parallel:
 
     .. math::
-        NTU_1 = \frac{1}{R_{1} + 1} \log{\left (- \frac{1}{P_{1} \left(R_{1}
+        NTU_1 = \frac{1}{R_{1} + 1} \ln{\left (- \frac{1}{P_{1} \left(R_{1}
         + 1\right) - 1} \right )}
 
     Crossflow, single pass, fluid 1 mixed, fluid 2 unmixed:
 
     .. math::
-        NTU_1 = - \frac{1}{R_{1}} \log{\left (R_{1} \log{\left (- \left(P_{1}
+        NTU_1 = - \frac{1}{R_{1}} \ln{\left (R_{1} \ln{\left (- \left(P_{1}
         - 1\right) e^{\frac{1}{R_{1}}} \right )} \right )}
 
     Crossflow, single pass, fluid 2 mixed, fluid 1 unmixed
 
     .. math::
-        NTU_1 = - \log{\left (\frac{1}{R_{1}} \log{\left (- \left(P_{1} R_{1}
+        NTU_1 = - \ln{\left (\frac{1}{R_{1}} \ln{\left (- \left(P_{1} R_{1}
         - 1\right) e^{R_{1}} \right )} \right )}
 
     Parameters
@@ -3468,13 +3468,13 @@ def NTU_from_P_E(P1, R1, Ntp, optimal=True):
     counterflow):
 
     .. math::
-        NTU_1 = - \frac{1}{R_{1} - 1} \log{\left (\frac{P_{1} R_{1} - 1}{P_{1}
+        NTU_1 = - \frac{1}{R_{1} - 1} \ln{\left (\frac{P_{1} R_{1} - 1}{P_{1}
         - 1} \right )}
 
     1-2 TEMA E, shell fluid mixed:
 
     .. math::
-        NTU_1 = \frac{2}{\sqrt{R_{1}^{2} + 1}} \log{\left (\sqrt{\frac{P_{1}
+        NTU_1 = \frac{2}{\sqrt{R_{1}^{2} + 1}} \ln{\left (\sqrt{\frac{P_{1}
         R_{1} - P_{1} \sqrt{R_{1}^{2} + 1} + P_{1} - 2}{P_{1} R_{1} + P_{1}
         \sqrt{R_{1}^{2} + 1} + P_{1} - 2}} \right )}
 
@@ -3658,13 +3658,13 @@ def NTU_from_P_plate(P1, R1, Np1, Np2, counterflow=True,
     1 pass/1 pass counterflow (also 2/2 fully counterflow):
 
     .. math::
-        NTU_1 = - \frac{1}{R_{1} - 1} \log{\left (\frac{P_{1} R_{1} - 1}{P_{1}
+        NTU_1 = - \frac{1}{R_{1} - 1} \ln{\left (\frac{P_{1} R_{1} - 1}{P_{1}
         - 1} \right )}
 
     1 pass/1 pass parallel flow (also 2/2 fully parallelflow):
 
     .. math::
-        NTU_1 = \frac{1}{R_{1} + 1} \log{\left (- \frac{1}{P_{1} \left(R_{1}
+        NTU_1 = \frac{1}{R_{1} + 1} \ln{\left (- \frac{1}{P_{1} \left(R_{1}
         + 1\right) - 1} \right )}
 
     Parameters
