@@ -7,7 +7,8 @@ def pytest_ignore_collect(path):
     if 'manual_runner' in path or 'make_test_stubs' in path or 'plot' in path or 'prerelease' in path:
         return True
     ver_tup = platform.python_version_tuple()[0:2]
-    if ver_tup < ('3', '6') or ver_tup >= ('3', '10') or is_pypy:
+    ver_tup = tuple(int(i) for i in ver_tup)
+    if ver_tup < (3, 6) or ver_tup >= (3, 10) or is_pypy:
         # numba does not yet run under pypy
         if 'numba' in path:
             return True
@@ -16,13 +17,11 @@ def pytest_ignore_collect(path):
     if sys.version[0] == '2':
         if 'numba' in path or 'typing_utils' in path:
             return True
-        #if 'rst' in path:
-        #    if platform.python_version_tuple()[0:2] != ('3', '7'):
-        #        return True
         if 'test' not in path:
             return True
     if 'ipynb' in path and 'bench' in path:
         return True
+    return False
 
 #def pytest_addoption(parser, pluginmanager):
 #    if sys.version[0] == '323523':
