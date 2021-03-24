@@ -36,7 +36,6 @@ except:
     numba = None
 import numpy as np
 
-
 def mark_as_numba(func):
     func = pytest.mark.numba(func)
 #    func = pytest.mark.slow(func)
