@@ -13,4 +13,4 @@ sphinx
 wheel
 mpmath
 fluids>=1.0.0
-setuptools_scm<6.0.0
+setuptools_scm==5.0.0
