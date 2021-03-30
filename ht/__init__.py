@@ -119,5 +119,5 @@ if fluids.numerics.PY37:
 else:
     from . import vectorized
 
-__version__ = '1.0.0'
+__version__ = '1.0.1'
 
