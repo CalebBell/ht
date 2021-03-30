@@ -1,4 +1,4 @@
-fluids>=0.1.64
+fluids>=1.0.2
 numpydoc
 scipy
 pint
