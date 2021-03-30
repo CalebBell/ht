@@ -21,10 +21,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.'''
 
 from __future__ import division
-import types
-import numpy as np
 import ht
-
+from fluids.numerics import numpy as np, FakePackage
 
 '''Basic module which wraps all ht functions with numpy's vectorize.
 All other object - dicts, classes, etc - are not wrapped. Supports star
@@ -56,14 +54,18 @@ __all__ = []
 
 __funcs = {}
 
-for name in dir(ht):
-    obj = getattr(ht, name)
-    if isinstance(obj, types.FunctionType):
-        obj = np.vectorize(obj)
-    elif isinstance(obj, str):
-        continue
-    __all__.append(name)
-    __funcs.update({name: obj})
+if isinstance(np, FakePackage):
+    pass
+else:
+    import types
+    for name in dir(ht):
+        obj = getattr(ht, name)
+        if isinstance(obj, types.FunctionType):
+            obj = np.vectorize(obj)
+        elif isinstance(obj, str):
+            continue
+        __all__.append(name)
+        __funcs.update({name: obj})
 globals().update(__funcs)
 
 

@@ -15,13 +15,3 @@ Inputs do not need to be numpy arrays; they can be any iterable:
 >>> ht.vectorized.LMTD([100, 101], 60., 30., 40.2)
 array([43.20040929, 43.60182765])
 
-Note that because this needs to import ht itself, ht.vectorized
-needs to be imported separately; the following will cause an error:
-
->>> import ht
->>> ht.vectorized  # doctest: +SKIP
-
-The correct syntax is as follows:
-
->>> import ht.vectorized # Necessary
->>> from ht.vectorized import * # May be used without first importing ht

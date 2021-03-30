@@ -12,4 +12,4 @@ IPython
 sphinx
 wheel
 mpmath; python_version>='3'
-fluids>=1.0.01
+fluids>=1.0.1

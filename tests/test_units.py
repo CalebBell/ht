@@ -101,7 +101,10 @@ def test_custom_wraps():
 
 def test_check_signatures():
     from fluids.units import check_args_order
+    bad_names = set(['__getattr__'])
     for name in dir(ht):
+        if name in bad_names:
+            continue
         obj = getattr(ht, name)
         if isinstance(obj, types.FunctionType) and obj not in [ht.get_tube_TEMA, ht.check_tubing_TEMA]:
             check_args_order(obj)

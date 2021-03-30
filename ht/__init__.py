@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 '''Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
-Copyright (C) 2016, 2017, 2018, 2019, 2020, Caleb Bell <Caleb.Andrew.Bell@gmail.com>
+Copyright (C) 2016, 2017, 2018, 2019, 2020, 2021 Caleb Bell <Caleb.Andrew.Bell@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -20,6 +20,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.'''
 
+import fluids
 
 from . import core
 from . import hx
@@ -97,6 +98,26 @@ submodules = (core, hx, conv_internal, boiling_flow, boiling_nucleic, conv_tube_
               air_cooler, radiation, condensation, conduction, conv_jacket, insulation,
               conv_free_immersed, conv_free_enclosed, conv_packed_bed, conv_external,
               conv_supercritical, conv_two_phase, conv_plate, boiling_plate)
+
+global vectorized, numba, units, numba_vectorized
+if fluids.numerics.PY37:
+    def __getattr__(name):
+        global vectorized, numba, units, numba_vectorized
+        if name == 'vectorized':
+            import ht.vectorized as vectorized
+            return vectorized
+        if name == 'numba':
+            import ht.numba as numba
+            return numba
+        if name == 'units':
+            import ht.units as units
+            return units
+        if name == 'numba_vectorized':
+            import ht.numba_vectorized as numba_vectorized
+            return numba_vectorized
+        raise AttributeError("module %s has no attribute %s" %(__name__, name))
+else:
+    from . import vectorized
 
 __version__ = '1.0.0'
 
