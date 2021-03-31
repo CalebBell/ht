@@ -24,9 +24,8 @@ from __future__ import division
 from ht import *
 import numpy as np
 
-from numpy.testing import assert_allclose
 from scipy.interpolate import interp1d, bisplrep, splrep, splev, UnivariateSpline, RectBivariateSpline
-from fluids.numerics import assert_close, assert_close1d
+from fluids.numerics import assert_close, assert_close1d, assert_close2d, linspace
 
 def test_Nu_Grimison_tube_bank_tcks():
     from ht.conv_tube_bank import Grimison_ST_aligned, Grimison_SL_aligned, Grimison_C1_aligned, Grimison_C1_aligned_tck
@@ -35,39 +34,39 @@ def test_Nu_Grimison_tube_bank_tcks():
                                                      np.array(Grimison_C1_aligned))
 
     tck_recalc = Grimison_C1_aligned_interp.tck
-    [assert_allclose(i, j) for i, j in zip(Grimison_C1_aligned_tck, tck_recalc)]
+    [assert_close1d(i, j) for i, j in zip(Grimison_C1_aligned_tck, tck_recalc)]
 
     from ht.conv_tube_bank import Grimison_m_aligned_tck, Grimison_m_aligned
     Grimison_m_aligned_interp = RectBivariateSpline(Grimison_ST_aligned,
                                                     Grimison_SL_aligned,
                                                     np.array(Grimison_m_aligned))
     tck_recalc = Grimison_m_aligned_interp.tck
-    [assert_allclose(i, j) for i, j in zip(Grimison_m_aligned_tck, tck_recalc)]
+    [assert_close1d(i, j) for i, j in zip(Grimison_m_aligned_tck, tck_recalc)]
 
 def test_Nu_Grimison_tube_bank():
     Nu = Nu_Grimison_tube_bank(Re=10263.37, Pr=.708, tube_rows=11,  pitch_normal=.05, pitch_parallel=.05, Do=.025)
-    assert_allclose(Nu, 79.07883866010096)
+    assert_close(Nu, 79.07883866010096)
 
     Nu = Nu_Grimison_tube_bank(Re=10263.37, Pr=.708, tube_rows=11,  pitch_normal=.07, pitch_parallel=.05, Do=.025)
-    assert_allclose(Nu, 79.92721078571385)
+    assert_close(Nu, 79.92721078571385)
 
     Nu = Nu_Grimison_tube_bank(Re=10263.37, Pr=.708, tube_rows=7,  pitch_normal=.05, pitch_parallel=.05, Do=.025)
-    assert_allclose(Nu, 77.49726188689894)
+    assert_close(Nu, 77.49726188689894)
 
     Nu = Nu_Grimison_tube_bank(Re=10263.37, Pr=.708, tube_rows=7,  pitch_normal=.07, pitch_parallel=.05, Do=.025)
-    assert_allclose(Nu, 78.32866656999958)
+    assert_close(Nu, 78.32866656999958)
 
     # Test the negative input
     args = dict(Re=10263.37, Pr=.708, tube_rows=-1, pitch_normal=.07, pitch_parallel=.05, Do=.025)
     Nu_neg = Nu_Grimison_tube_bank(**args)
     args['tube_rows'] = 1
     Nu_pos =  Nu_Grimison_tube_bank(**args)
-    assert_allclose(Nu_neg, Nu_pos)
+    assert_close(Nu_neg, Nu_pos)
 
     # Check all data - for changing interpolations
     Nu_bulk = [[Nu_Grimison_tube_bank(Re=10263.37, Pr=.708, tube_rows=11,  pitch_normal=j, pitch_parallel=i, Do=.025) for i in [.025, .04, .05, .75, .1, .15, .2]] for j in [.025, .04, .05, .75, .1, .15, .2]]
     Nu_bulk_expect = [[83.05244932418451, 152.02626127499462, 92.67853984384722, 80.45909971688272, 80.45909971688272, 80.45909971688272, 80.45909971688272], [81.37409021240403, 75.87989409125535, 88.19403137832364, 90.10492890754932, 90.10492890754932, 90.10492890754932, 90.10492890754932], [80.154658166616, 79.27931854213506, 79.07883866010096, 88.31182349500988, 88.31182349500988, 88.31182349500988, 88.31182349500988], [73.98350370839236, 76.51020564051443, 78.3597838488104, 79.12612063682283, 86.25920529135, 86.25920529135, 86.25920529135], [73.98350370839236, 76.51020564051443, 78.3597838488104, 86.25920529135, 79.12612063682283, 86.25920529135, 86.25920529135], [73.98350370839236, 76.51020564051443, 78.3597838488104, 86.25920529135, 86.25920529135, 79.12612063682283, 86.25920529135], [73.98350370839236, 76.51020564051443, 78.3597838488104, 86.25920529135, 86.25920529135, 86.25920529135, 79.12612063682283]]
-    assert_allclose(Nu_bulk, Nu_bulk_expect)
+    assert_close2d(Nu_bulk, Nu_bulk_expect)
 
 def test_Gimison_coeffs_regeneration():
     # These fits are bad, don't check them
@@ -76,18 +75,18 @@ def test_Gimison_coeffs_regeneration():
                                    Grimson_m_staggered, Grimson_C1_staggered,
                                    tck_Grimson_m_staggered, tck_Grimson_C1_staggered)
 #    tck = bisplrep(Grimson_ST_staggered, Grimson_SL_staggered, Grimson_C1_staggered, kx=1, ky=1, task=0, s=0)
-#    [assert_allclose(i, j) for i, j in zip(tck, tck_Grimson_C1_staggered)]
+#    [assert_close1d(i, j) for i, j in zip(tck, tck_Grimson_C1_staggered)]
 #
 #    tck = bisplrep(Grimson_ST_staggered, Grimson_SL_staggered, Grimson_m_staggered, kx=1, ky=1, task=0, s=0)
-#    [assert_allclose(i, j) for i, j in zip(tck, tck_Grimson_m_staggered)]
+#    [assert_close1d(i, j) for i, j in zip(tck, tck_Grimson_m_staggered)]
 #
 
 
 def test_ESDU_tube_row_correction():
     F2 = ESDU_tube_row_correction(4, staggered=True)
-    assert_allclose(F2, 0.8984, rtol=1e-4)
+    assert_close(F2, 0.8984, rtol=1e-4)
     F2 = ESDU_tube_row_correction(6, staggered=False)
-    assert_allclose(F2, 0.9551, rtol=1E-4)
+    assert_close(F2, 0.9551, rtol=1E-4)
 
     # Test all of the inputs work
     all_values = [ESDU_tube_row_correction(i, staggered=j) for i in range(12) for j in (True, False)]
@@ -170,8 +169,8 @@ def test_ESDU_tube_row_correction_refit():
 
     inline_factors = [round(float(ESDU_in(i)),4) for i in range(3, 10)]
     staggered_factors = [round(float(ESDU_st(i)),4) for i in range(3, 10)]
-    assert_allclose(inline_factors, ESDU_73031_F2_inline)
-    assert_allclose(staggered_factors, ESDU_73031_F2_staggered)
+    assert_close1d(inline_factors, ESDU_73031_F2_inline)
+    assert_close1d(staggered_factors, ESDU_73031_F2_staggered)
 
     #import matplotlib.pyplot as plt
     #plt.plot(ESDU_nrs, ESDU_F_in)
@@ -183,7 +182,7 @@ def test_ESDU_tube_row_correction_refit():
 
 def test_ESDU_tube_angle_correction():
     F3 = ESDU_tube_angle_correction(75)
-    assert_allclose(F3, 0.9794139080247666)
+    assert_close(F3, 0.9794139080247666)
 
     # Digitized data from graph
 #    angles = [19.7349, 20.1856, 20.4268, 20.8778, 21.3597, 21.8404, 22.3523, 22.8326, 23.3148, 23.8252, 24.1867, 24.6375, 25.0891, 25.5697, 26.021, 26.5312, 26.9528, 27.4633, 27.9745, 28.455, 28.8762, 29.3867, 30.0483, 30.5291, 30.9798, 31.4905, 31.9712, 32.4519, 32.9026, 33.3833, 33.8938, 34.3743, 34.855, 35.3655, 35.846, 36.3268, 36.8372, 37.3178, 37.8282, 38.3385, 38.8491, 39.3893, 39.8995, 40.38, 40.9203, 41.4305, 41.9706, 42.511, 43.081, 43.5912, 44.1612, 44.7312, 45.2416, 45.8415, 46.3814, 46.9513, 47.5213, 48.0911, 48.6611, 49.231, 49.8008, 50.4004, 50.9701, 51.5698, 52.1694, 52.7393, 53.3386, 53.9382, 54.5378, 55.1372, 55.7069, 56.3062, 56.9356, 57.5648, 58.1642, 58.7935, 59.4227, 60.0818, 60.711, 61.3103, 61.9694, 62.5986, 63.2573, 63.9163, 64.5752, 65.234, 65.8929, 66.5514, 67.2102, 67.869, 68.5575, 69.2162, 69.9047, 70.5632, 71.2813, 71.94, 72.6284, 73.3464, 74.0346, 74.7526, 75.4706, 76.1587, 76.8765, 77.5944, 78.3122, 79.0299, 79.7476, 80.4952, 81.2129, 81.9305, 82.6479, 83.3952, 84.083, 84.8003, 85.5179, 86.2652, 86.9825, 87.7295, 88.4468, 89.1642, 89.9112, 90]
@@ -198,9 +197,9 @@ def test_ESDU_tube_angle_correction():
 
 def test_Zukauskas_tube_row_correction():
     F = Zukauskas_tube_row_correction(4, staggered=True)
-    assert_allclose(F, 0.8942)
+    assert_close(F, 0.8942)
     F = Zukauskas_tube_row_correction(6, staggered=False)
-    assert_allclose(F, 0.9465)
+    assert_close(F, 0.9465)
 
 def test_Zukauskas_tube_row_correction_refit():
     from scipy.interpolate import UnivariateSpline
@@ -217,54 +216,54 @@ def test_Zukauskas_tube_row_correction_refit():
     Zukauskas_Cz_inline_obj = UnivariateSpline(Zukauskas_Cz_Zs, inline_Cz, s=0.0005)
 
     Zukauskas_Czs_inline2 = np.round(Zukauskas_Cz_inline_obj(range(1, 20)), 4).tolist()
-    assert_allclose(Zukauskas_Czs_inline, Zukauskas_Czs_inline2)
+    assert_close1d(Zukauskas_Czs_inline, Zukauskas_Czs_inline2)
 
     Zukauskas_Czs_low_Re_staggered2 = np.round(Zukauskas_Cz_low_Re_staggered_obj(range(1, 20)), 4).tolist()
-    assert_allclose(Zukauskas_Czs_low_Re_staggered, Zukauskas_Czs_low_Re_staggered2)
+    assert_close1d(Zukauskas_Czs_low_Re_staggered, Zukauskas_Czs_low_Re_staggered2)
 
     Zukauskas_Czs_high_Re_staggered2 = np.round(Zukauskas_Cz_high_Re_staggered_obj(range(1, 20)), 4).tolist()
-    assert_allclose(Zukauskas_Czs_high_Re_staggered, Zukauskas_Czs_high_Re_staggered2)
+    assert_close1d(Zukauskas_Czs_high_Re_staggered, Zukauskas_Czs_high_Re_staggered2)
 
 
 def test_Nu_Zukauskas_Bejan():
     Nu = Nu_Zukauskas_Bejan(Re=1E4, Pr=7., tube_rows=10, pitch_parallel=.05, pitch_normal=.05)
-    assert_allclose(Nu, 175.9202277145248)
+    assert_close(Nu, 175.9202277145248)
 
     Nu = Nu_Zukauskas_Bejan(Re=1E4, Pr=7., tube_rows=10, pitch_parallel=.05, pitch_normal=.05, Pr_wall=9.0)
-    assert_allclose(Nu, 165.2074626671159)
+    assert_close(Nu, 165.2074626671159)
 
     Nus = [Nu_Zukauskas_Bejan(Re=Re, Pr=7., tube_rows=30, pitch_parallel=.05, pitch_normal=.05) for Re in (10, 2000, 1E5, 1E7)]
     Nus_expect = [4.554889061992833, 65.35035570869223, 768.4207053648229, 26469.71311148279]
-    assert_allclose(Nus, Nus_expect)
+    assert_close1d(Nus, Nus_expect)
 
     Nus = [Nu_Zukauskas_Bejan(Re=Re, Pr=7., tube_rows=30, pitch_parallel=.05, pitch_normal=.09) for Re in (10, 2000, 1E5, 1E7)]
     Nus_expect = [5.263427360525052, 75.85353712516013, 793.1545862201796, 27967.361063088636]
-    assert_allclose(Nus, Nus_expect)
+    assert_close1d(Nus, Nus_expect)
 
 def test_Nu_ESDU_73031():
     Nu = Nu_ESDU_73031(Re=1.32E4, Pr=0.71, tube_rows=8, pitch_parallel=.09, pitch_normal=.05)
-    assert_allclose(98.2563319140594, Nu)
+    assert_close(98.2563319140594, Nu)
 
     Nu = Nu_ESDU_73031(Re=1.32E4, Pr=0.71, tube_rows=8, pitch_parallel=.09, pitch_normal=.05, Pr_wall=0.71)
-    assert_allclose(98.2563319140594, Nu)
+    assert_close(98.2563319140594, Nu)
 
     Nu = Nu_ESDU_73031(Re=1.32E4, Pr=0.71, tube_rows=8, pitch_parallel=.05, pitch_normal=.05, Pr_wall=0.75)
-    assert_allclose(87.69324193674449, Nu)
+    assert_close(87.69324193674449, Nu)
 
     Nu = Nu_ESDU_73031(Re=1.32E4, Pr=0.71, tube_rows=3, pitch_parallel=.05, pitch_normal=.05, Pr_wall=0.75)
-    assert_allclose(Nu, 75.57180591337092)
+    assert_close(Nu, 75.57180591337092)
 
     Nus = [Nu_ESDU_73031(Re=Re, Pr=0.71, tube_rows=3, pitch_parallel=pp, pitch_normal=.05, Pr_wall=0.75) for pp in [0.09, 0.05] for Re in [100, 1E5, 1E6]]
     Nus_expect = [5.179925804379317, 307.9970377601136, 1481.8545490578865, 4.0177935875859365, 282.40096167747, 1367.860174719831]
-    assert_allclose(Nus, Nus_expect)
+    assert_close1d(Nus, Nus_expect)
 
 
 def test_Nu_HEDH_tube_bank():
     Nu = Nu_HEDH_tube_bank(Re=1E4, Pr=7., tube_rows=10, pitch_normal=.05, pitch_parallel=.05, Do=.03)
-    assert_allclose(Nu, 382.4636554404698)
+    assert_close(Nu, 382.4636554404698)
 
     Nu = Nu_HEDH_tube_bank(Re=10263.37, Pr=.708, tube_rows=11, pitch_normal=.05, pitch_parallel=.05, Do=.025)
-    assert_allclose(Nu, 149.18735251017594)
+    assert_close(Nu, 149.18735251017594)
 
     Nu =  Nu_HEDH_tube_bank(Re=1E4, Pr=7., tube_rows=5, pitch_normal=.05, pitch_parallel=.05, Do=.03)
     assert_close(Nu, 359.0551204831393)
@@ -272,15 +271,15 @@ def test_Nu_HEDH_tube_bank():
 
 def test_dP_Kern():
     from ht.conv_tube_bank import Kern_f_Re
-    f = [Kern_f_Re(v) for v in np.linspace(10, 1E6, 10)]
+    f = [Kern_f_Re(v) for v in linspace(10, 1E6, 10)]
     f_values = [6.0155491322862771, 0.19881943524161752, 0.1765198121811164, 0.16032260681398205, 0.14912064432650635, 0.14180674990498099, 0.13727374873569789, 0.13441446600494875, 0.13212172689902535, 0.12928835660421958]
-    assert_allclose(f, f_values)
+    assert_close1d(f, f_values)
 
     dP = dP_Kern(11., 995., 0.000803, 0.584, 0.1524, 0.0254, .019, 22, 0.000657)
-    assert_allclose(dP, 18980.58768759033)
+    assert_close(dP, 18980.58768759033)
 
     dP = dP_Kern(m=11., rho=995., mu=0.000803, DShell=0.584, LSpacing=0.1524, pitch=0.0254, Do=.019, NBaffles=22)
-    assert_allclose(dP, 19521.38738647667)
+    assert_close(dP, 19521.38738647667)
 
 def test_dP_Kern_data():
     from ht.conv_tube_bank import Kern_f_Re_tck
@@ -318,14 +317,14 @@ def test_dP_Kern_data():
 #    # s=0.1 is chosen to have 9 knots, a reasonable amount.
 #    Kern_f_Re = UnivariateSpline(_Kern_dP_Res, _Kern_dP_fs, s=0.1)
     tck = splrep(_Kern_dP_Res, _Kern_dP_fs, s=0.1)
-    [assert_allclose(i, j) for i, j in zip(Kern_f_Re_tck, tck)]
+    [assert_close1d(i, j) for i, j in zip(Kern_f_Re_tck[:-1], tck[:-1])]
 
 
 def test_dP_Zukauskas():
     # TODO Splines
     dP1 = dP_Zukauskas(Re=13943., n=7, ST=0.0313, SL=0.0343, D=0.0164, rho=1.217, Vmax=12.6)
     dP2 = dP_Zukauskas(Re=13943., n=7, ST=0.0313, SL=0.0313, D=0.0164, rho=1.217, Vmax=12.6)
-    assert_allclose([dP1, dP2], [235.22916169118335, 217.0750033117563])
+    assert_close1d([dP1, dP2], [235.22916169118335, 217.0750033117563])
 
 Bell_baffle_configuration_Fcs = np.array([0, 0.0138889, 0.0277778, 0.0416667, 0.0538194, 0.0659722, 0.100694, 0.114583,
     0.126736, 0.140625, 0.152778, 0.166667, 0.178819, 0.192708, 0.215278, 0.227431, 0.241319, 0.255208,
@@ -346,29 +345,29 @@ Bell_baffle_configuration_Jcs = np.array([0.534317, 0.544632, 0.556665, 0.566983
 
 def test_baffle_correction_Bell():
     Jc = baffle_correction_Bell(0.82)
-    assert_allclose(Jc, 1.1258554691854046, 5e-4)
+    assert_close(Jc, 1.1258554691854046, 5e-4)
 
     # Check the match is reasonably good
     errs = np.array([(baffle_correction_Bell(float(Fc))-Jc)/Jc for Fc, Jc in zip(Bell_baffle_configuration_Fcs, Bell_baffle_configuration_Jcs)])
     assert np.abs(errs).sum()/len(errs) < 1e-3
 
     Jc = baffle_correction_Bell(0.1, 'chebyshev')
-    assert_allclose(Jc, 0.61868011359447)
+    assert_close(Jc, 0.61868011359447)
 
     Jc = baffle_correction_Bell(0.82, 'HEDH')
-    assert_allclose(Jc, 1.1404)
+    assert_close(Jc, 1.1404)
 
     # Example in spreadsheet 02 - Heat Exchangers, tab Shell htc imperial,
     # Rules of Thumb for Chemical Engineers 5E
     Jc = baffle_correction_Bell(0.67292816689362900, method='HEDH')
-    assert_allclose(1.034508280163413, Jc)
+    assert_close(1.034508280163413, Jc)
 
 
 def test_baffle_correction_Bell_fit():
     from ht.conv_tube_bank import Bell_baffle_configuration_tck
     # 125 us to create.
     spl = splrep(Bell_baffle_configuration_Fcs, Bell_baffle_configuration_Jcs, s=8e-5)
-    [assert_allclose(i, j) for (i, j) in zip(spl, Bell_baffle_configuration_tck)]
+    [assert_close1d(i, j) for (i, j) in zip(spl[:-1], Bell_baffle_configuration_tck[:-1])]
 
     Bell_baffle_configuration_obj = UnivariateSpline(Bell_baffle_configuration_Fcs,
                                                      Bell_baffle_configuration_Jcs,
@@ -451,26 +450,26 @@ Bell_baffle_leakage_obj = RectBivariateSpline(Bell_baffle_leakage_x, Bell_baffle
 
 def test_baffle_leakage_Bell():
     Jl = baffle_leakage_Bell(1, 1, 4)
-    assert_allclose(Jl, 0.5159239501898142, rtol=1e-3)
+    assert_close(Jl, 0.5159239501898142, rtol=1e-3)
 
     Jl = baffle_leakage_Bell(1, 1, 8)
-    assert_allclose(Jl, 0.6820523047494141, rtol=1e-3)
+    assert_close(Jl, 0.6820523047494141, rtol=1e-3)
 
     Jl = baffle_leakage_Bell(1, 3, 8)
-    assert_allclose(Jl, 0.5906621282470395, rtol=1e-3)
+    assert_close(Jl, 0.5906621282470395, rtol=1e-3)
 
     # Silent clipping
     Jl = baffle_leakage_Bell(1, .0001, .00001)
-    assert_allclose(Jl,  0.16072739052053492)
+    assert_close(Jl,  0.16072739052053492)
 
     Jl = baffle_leakage_Bell(1, 3, 8, method='HEDH')
-    assert_allclose(Jl, 0.5530236260777133)
+    assert_close(Jl, 0.5530236260777133)
 
     # Example in spreadsheet 02 - Heat Exchangers, tab Shell htc imperial,
     # Rules of Thumb for Chemical Engineers 5E
     # Has an error
     Jl = baffle_leakage_Bell(Ssb=5.5632369907320000000, Stb=4.7424109055909500, Sm=42.7842616174504, method='HEDH')
-    assert_allclose(Jl, 0.6719386427830639)
+    assert_close(Jl, 0.6719386427830639)
 
 
 def test_baffle_leakage_Bell_refit():
@@ -478,7 +477,7 @@ def test_baffle_leakage_Bell_refit():
     # Test refitting the data
     obj = RectBivariateSpline(Bell_baffle_leakage_x, Bell_baffle_leakage_z_values, Bell_baffle_leakage_zs, kx=3, ky=1, s=0.002)
     new_tck = obj.tck + obj.degrees
-    [assert_allclose(i, j) for (i, j) in zip(Bell_baffle_leakage_tck, new_tck)]
+    [assert_close1d(i, j) for (i, j) in zip(Bell_baffle_leakage_tck[:-2], new_tck[:-2])]
 
 
 #import matplotlib.pyplot as plt
@@ -499,23 +498,23 @@ def test_baffle_leakage_Bell_refit():
 
 def test_bundle_bypassing_Bell():
     Jb = bundle_bypassing_Bell(0.5, 5, 25)
-    assert_allclose(Jb, 0.8469611760884599, rtol=1e-3)
+    assert_close(Jb, 0.8469611760884599, rtol=1e-3)
     Jb = bundle_bypassing_Bell(0.5, 5, 25, laminar=True)
-    assert_allclose(Jb, 0.8327442867825271, rtol=1e-3)
+    assert_close(Jb, 0.8327442867825271, rtol=1e-3)
 
     Jb = bundle_bypassing_Bell(0.99, 5, 25, laminar=True)
-    assert_allclose(Jb, 0.7786963825447165, rtol=1e-3)
+    assert_close(Jb, 0.7786963825447165, rtol=1e-3)
 
     Jb = bundle_bypassing_Bell(0.5, 5, 25, method='HEDH')
-    assert_allclose(Jb, 0.8483210970579099)
+    assert_close(Jb, 0.8483210970579099)
 
     Jb = bundle_bypassing_Bell(0.5, 5, 25, method='HEDH', laminar=True)
-    assert_allclose(0.8372305924553625, Jb)
+    assert_close(0.8372305924553625, Jb)
 
     # Example in spreadsheet 02 - Heat Exchangers, tab Shell htc imperial,
     # Rules of Thumb for Chemical Engineers 5E
     Jb = bundle_bypassing_Bell(bypass_area_fraction=0.331946755407654, seal_strips=2, crossflow_rows=10.6516290726817, method='HEDH')
-    assert_allclose(Jb, 0.8908547260332952)
+    assert_close(Jb, 0.8908547260332952)
 
 
 Bell_bundle_bypass_x = np.array([0.0, 1e-5, 1e-4, 1e-3, 0.0388568, 0.0474941, 0.0572083, 0.0807999, 0.0915735, 0.0959337, 0.118724, 0.128469, 0.134716,
@@ -678,16 +677,16 @@ def test_bundle_bypassing_Bell():
     low_spl = Bell_bundle_bypass_low_obj.tck + Bell_bundle_bypass_low_obj.degrees
     high_spl = Bell_bundle_bypass_high_obj.tck + Bell_bundle_bypass_high_obj.degrees
 
-    [assert_allclose(i, j) for i, j in zip(Bell_bundle_bypass_high_spl, high_spl)]
-    [assert_allclose(i, j) for i, j in zip(Bell_bundle_bypass_low_spl, low_spl)]
+    [assert_close1d(i, j) for i, j in zip(Bell_bundle_bypass_high_spl[:-2], high_spl[:-2])]
+    [assert_close1d(i, j) for i, j in zip(Bell_bundle_bypass_low_spl[:-2], low_spl[:-2])]
 
 
 def test_unequal_baffle_spacing_Bell():
     Js = unequal_baffle_spacing_Bell(16, .1, .15, 0.15)
-    assert_allclose(Js, 0.9640087802805195)
+    assert_close(Js, 0.9640087802805195)
 
 def test_laminar_correction_Bell():
     Jr = laminar_correction_Bell(30.0, 80)
-    assert_allclose(Jr, 0.7267995454361379)
+    assert_close(Jr, 0.7267995454361379)
 
-    assert_allclose(0.4, laminar_correction_Bell(30, 80000))
+    assert_close(0.4, laminar_correction_Bell(30, 80000))

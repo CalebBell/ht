@@ -22,54 +22,54 @@ SOFTWARE.'''
 
 from __future__ import division
 from ht import *
-from numpy.testing import assert_allclose
+from fluids.numerics import assert_close, assert_close1d, assert_close2d
 import pytest
 
 
 def test_conv_jacket():
     # actual example
     h = Lehrer(2.5, 0.6, 0.65, 0.6, 0.025, 995.7, 4178.1, 0.615, 798E-6, 355E-6, dT=20.)
-    assert_allclose(h, 2922.128124761829)
+    assert_close(h, 2922.128124761829)
     # no wall correction
     h = Lehrer(2.5, 0.6, 0.65, 0.6, 0.025, 995.7, 4178.1, 0.615, 798E-6, dT=20.)
-    assert_allclose(h, 2608.8602693706853)
+    assert_close(h, 2608.8602693706853)
 
     # with isobaric expansion, all cases
     h = Lehrer(m=2.5, Dtank=0.6, Djacket=0.65, H=0.6, Dinlet=0.025, dT=20., rho=995.7, Cp=4178.1, k=0.615, mu=798E-6, muw=355E-6, inlettype='radial', isobaric_expansion=0.000303)
-    assert_allclose(h, 3269.4389632666557)
+    assert_close(h, 3269.4389632666557)
 
     h = Lehrer(m=2.5, Dtank=0.6, Djacket=0.65, H=0.6, Dinlet=0.025, dT=20., rho=995.7, Cp=4178.1, k=0.615, mu=798E-6, muw=355E-6, inlettype='radial', inletlocation='top', isobaric_expansion=0.000303)
-    assert_allclose(h, 2566.1198726589996)
+    assert_close(h, 2566.1198726589996)
 
     h = Lehrer(m=2.5, Dtank=0.6, Djacket=0.65, H=0.6, Dinlet=0.025, dT=-20., rho=995.7, Cp=4178.1, k=0.615, mu=798E-6, muw=355E-6, inlettype='radial', isobaric_expansion=0.000303)
-    assert_allclose(h, 3269.4389632666557)
+    assert_close(h, 3269.4389632666557)
 
     h = Lehrer(m=2.5, Dtank=0.6, Djacket=0.65, H=0.6, Dinlet=0.025, dT=-20., rho=995.7, Cp=4178.1, k=0.615, mu=798E-6, muw=355E-6, inlettype='radial', inletlocation='bottom', isobaric_expansion=0.000303)
-    assert_allclose(h, 2566.1198726589996)
+    assert_close(h, 2566.1198726589996)
 
 
     ### Stein Schmidt
 
     h = Stein_Schmidt(2.5, 0.6, 0.65, 0.6, 0.025, 995.7, 4178.1, 0.615, 798E-6, 355E-6, 971.8)
-    assert_allclose(h, 5695.204169808863)
+    assert_close(h, 5695.204169808863)
 
     h = Stein_Schmidt(2.5, 0.6, 0.65, 0.6, 0.025, 995.7, 4178.1, 0.615, 798E-6, 355E-6, 971.8, inlettype='radial')
-    assert_allclose(h, 1217.1449686341773)
+    assert_close(h, 1217.1449686341773)
 
     h = Stein_Schmidt(2.5, 0.6, 0.65, 0.6, 0.025, 995.7, 4178.1, 0.615, 798E-6, 355E-6, 971.8, inletlocation='top')
-    assert_allclose(h, 5675.841635061595)
+    assert_close(h, 5675.841635061595)
 
     h = Stein_Schmidt(2.5, 0.6, 0.65, 0.6, 0.025, 995.7, 4178.1, 0.615, 798E-6, 355E-6, 971.8, inletlocation='bottom')
-    assert_allclose(h, 5695.2041698088633)
+    assert_close(h, 5695.2041698088633)
 
     h = Stein_Schmidt(2.5, 0.6, 0.65, 0.6, 0.025, 971.8, 4178.1, 0.615, 798E-6, 355E-6, 995.7, inletlocation='bottom')
-    assert_allclose(h, 5694.9722658952096)
+    assert_close(h, 5694.9722658952096)
 
     h = Stein_Schmidt(2.5, 0.6, 0.65, 0.6, 0.025, 971.8, 4178.1, 0.615, 798E-6, 355E-6, 995.7, inletlocation='top')
-    assert_allclose(h, 5676.0744960391157)
+    assert_close(h, 5676.0744960391157)
 
     h = Stein_Schmidt(2.5, 0.6, 0.65, 0.6, 0.025, 971.8, 4178.1, 0.615, 798E-6, 355E-6)
-    assert_allclose(h, 5685.532991556428)
+    assert_close(h, 5685.532991556428)
 
     h = Stein_Schmidt(.1, 0.6, 0.65, 0.6, 0.025, 971.8, 4178.1, 0.615, 798E-6)
-    assert_allclose(h, 151.78819106776797)
+    assert_close(h, 151.78819106776797)

@@ -23,7 +23,7 @@ SOFTWARE.'''
 from __future__ import division
 from ht import *
 import numpy as np
-from numpy.testing import assert_allclose
+from fluids.numerics import assert_close, assert_close1d, assert_close2d
 from ht.core import is_heating_temperature, is_heating_property
 import pytest
 from ht.core import WALL_FACTOR_VISCOSITY, WALL_FACTOR_PRANDTL, WALL_FACTOR_TEMPERATURE, WALL_FACTOR_DEFAULT
@@ -31,9 +31,9 @@ from ht.core import WALL_FACTOR_VISCOSITY, WALL_FACTOR_PRANDTL, WALL_FACTOR_TEMP
 
 def test_core():
     dT = LMTD(100., 60., 30., 40.2)
-    assert_allclose(dT, 43.200409294131525)
+    assert_close(dT, 43.200409294131525)
     dT = LMTD(100., 60., 30., 40.2, counterflow=False)
-    assert_allclose(dT, 39.75251118049003)
+    assert_close(dT, 39.75251118049003)
 
     assert LMTD(100., 60., 20., 60) == 40
     assert LMTD(100., 60., 20., 60, counterflow=False) == 0
@@ -122,7 +122,7 @@ def test_fin_efficiency_Kern_Kraus():
     assert type(fin_efficiency_Kern_Kraus(0.0254, 0.05715, 3.8E-4, 200, 58)) is float
 
     eta = fin_efficiency_Kern_Kraus(0.0254, 0.05715, 3.8E-4, 200, 58)
-    assert_allclose(eta, 0.8412588620231153)
+    assert_close(eta, 0.8412588620231153)
     '''Code for comparing against several formulas:
     def fin_efficiency_Kern_Kraus(Do, Dfin, fin_thickness, kfin, h):
         # Should now be about 50/50 function vs special function

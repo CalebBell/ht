@@ -24,7 +24,6 @@ from __future__ import division
 from ht import *
 from ht.boiling_nucleic import _angles_Stephan_Abdelsalam
 from fluids.numerics import assert_close, assert_close1d, assert_close2d
-from numpy.testing import assert_allclose
 import pytest
 
 ### Nucleic boiling

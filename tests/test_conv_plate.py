@@ -23,7 +23,7 @@ SOFTWARE.'''
 from __future__ import division
 from ht import *
 from ht.conv_plate import *
-from numpy.testing import assert_allclose
+from fluids.numerics import assert_close, assert_close1d, assert_close2d
 import numpy as np
 import pytest
 
@@ -41,10 +41,10 @@ def test_Nu_plate_Kumar():
 
 
     Nu = Nu_plate_Kumar(2000.0, 0.7, 30.0)
-    assert_allclose(Nu, 47.757818892853955)
+    assert_close(Nu, 47.757818892853955)
 
     Nu = Nu_plate_Kumar(Re=2000.0, Pr=0.7, chevron_angle=30.0, mu=1E-3, mu_wall=8E-4)
-    assert_allclose(Nu, 49.604284135097544)
+    assert_close(Nu, 49.604284135097544)
 
     all_ans_expected = [[[1.3741604132237337, 1.5167183720237427], [1.3741604132237337, 1.4917469901578877]],
      [[1.3741604132237337, 1.4917469901578877, 5.550501072445418, 5.686809480248301],
@@ -69,20 +69,20 @@ def test_Nu_plate_Kumar():
         all_ans.append(beta_ans)
 
         for row1, row2 in zip(all_ans_expected, all_ans):
-            assert_allclose(row1, row2)
+            assert_close1d(row1, row2)
 
 
 def test_Nu_plate_Martin():
     Nu = Nu_plate_Martin(2000, .7, 1.18)
-    assert_allclose(Nu, 43.5794551998615)
+    assert_close(Nu, 43.5794551998615)
 
     Nu = Nu_plate_Martin(2000.0, .7, 1.18, variant='VDI')
-    assert_allclose(Nu, 46.42246468447807)
+    assert_close(Nu, 46.42246468447807)
 
 
 def test_Nu_plate_Muley_Manglik():
     Nu = Nu_plate_Muley_Manglik(Re=2000.0, Pr=.7, chevron_angle=45.0, plate_enlargement_factor=1.18)
-    assert_allclose(Nu, 36.49087100602062)
+    assert_close(Nu, 36.49087100602062)
 
 
 def test_Nu_plate_Khan_Khan():
@@ -90,7 +90,7 @@ def test_Nu_plate_Khan_Khan():
     # the fourth correlation. beta max is not the largest angle in *your*
     # PHE, but of the ones they tested.
     Nu = Nu_plate_Khan_Khan(Re=1000.0, Pr=4.5, chevron_angle=30.0)
-    assert_allclose(Nu,38.40883639103741 )
+    assert_close(Nu, 38.40883639103741 )
 
 
 

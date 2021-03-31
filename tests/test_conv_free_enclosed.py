@@ -24,8 +24,7 @@ from __future__ import division
 from ht import *
 from ht.conv_free_enclosed import Nu_Nusselt_Rayleigh_Holling_Herwig
 import numpy as np
-from fluids.numerics import assert_close
-from numpy.testing import assert_allclose
+from fluids.numerics import assert_close, assert_close1d, assert_close2d
 import pytest
 from scipy.interpolate import bisplrep, UnivariateSpline
 
@@ -34,7 +33,7 @@ def test_Nu_Nusselt_Rayleigh_Holling_Herwig():
     Ras = [10.0**n for n in range(5, 16)]
     Nus_expect = [4.566, 8.123, 15.689, 31.526, 64.668, 134.135, 279.957, 586.404, 1230.938, 2587.421, 5443.761]
     Nus_calc = [round(Nu_Nusselt_Rayleigh_Holling_Herwig(1., Gr), 3) for Gr in Ras]
-    assert_allclose(Nus_expect, Nus_calc)
+    assert_close1d(Nus_expect, Nus_calc)
 
     assert 1 == Nu_Nusselt_Rayleigh_Holling_Herwig(1., 100., buoyancy=True)
     assert 1 == Nu_Nusselt_Rayleigh_Holling_Herwig(1., 100., buoyancy=False)
@@ -42,15 +41,15 @@ def test_Nu_Nusselt_Rayleigh_Holling_Herwig():
 
 def test_Nu_Nusselt_Rayleigh_Probert():
     Nu =  Nu_Nusselt_Rayleigh_Probert(5.54, 3.21e8, buoyancy=True)
-    assert_allclose(Nu, 111.46181048289132)
+    assert_close(Nu, 111.46181048289132)
 
 
     # Test the boundary
     Nu = Nu_Nusselt_Rayleigh_Probert(1., 2.19999999999999e4, buoyancy=True)
-    assert_allclose(Nu, 2.5331972341122833)
+    assert_close(Nu, 2.5331972341122833)
 
     Nu = Nu_Nusselt_Rayleigh_Probert(1., 2.2e4, buoyancy=True)
-    assert_allclose(Nu, 2.577876184202956)
+    assert_close(Nu, 2.577876184202956)
 
     assert 1 == Nu_Nusselt_Rayleigh_Probert(1., 100., buoyancy=True)
     assert 1 == Nu_Nusselt_Rayleigh_Probert(1., 100., buoyancy=False)
@@ -61,21 +60,21 @@ def test_Rac_Nusselt_Rayleigh():
         for L in (8.0, 9.0, 100.0):
             W_L = .125
             Rac = Rac_Nusselt_Rayleigh(1., L, W_L*L, insulation)
-            assert_allclose(Rac, Rac_expect)
+            assert_close(Rac, Rac_expect)
 
 
 def test_Rac_Nusselt_Rayleigh_disk():
-    assert_allclose(Rac_Nusselt_Rayleigh_disk(4., 1., True), 51800)
-    assert_allclose(Rac_Nusselt_Rayleigh_disk(H=1, D=.4, insulated=True), 51800)
-    assert_allclose(Rac_Nusselt_Rayleigh_disk(H=1, D=.4, insulated=False), 151200)
+    assert_close(Rac_Nusselt_Rayleigh_disk(4., 1., True), 51800)
+    assert_close(Rac_Nusselt_Rayleigh_disk(H=1, D=.4, insulated=True), 51800)
+    assert_close(Rac_Nusselt_Rayleigh_disk(H=1, D=.4, insulated=False), 151200)
 
     for r in (4,10, 100):
-        assert_allclose(Rac_Nusselt_Rayleigh_disk(r, 1., False), 151200)
+        assert_close(Rac_Nusselt_Rayleigh_disk(r, 1., False), 151200)
 
 
     for D in (5.9999999999, 6, 7, 50):
-        assert_allclose(Rac_Nusselt_Rayleigh_disk(H=1., D=D, insulated=False), 1708.)
-        assert_allclose(Rac_Nusselt_Rayleigh_disk(H=1., D=D, insulated=True), 1708.)
+        assert_close(Rac_Nusselt_Rayleigh_disk(H=1., D=D, insulated=False), 1708.)
+        assert_close(Rac_Nusselt_Rayleigh_disk(H=1., D=D, insulated=True), 1708.)
 
 
 def test_Nu_Nusselt_vertical_Thess():
@@ -90,10 +89,10 @@ def test_Nu_Nusselt_vertical_Thess():
 
 
 def test_Nu_Nusselt_Rayleigh_Hollands():
-    assert_allclose(Nu_Nusselt_Rayleigh_Hollands(5.54, 3.21e8, buoyancy=True), 69.02668649510164)
-    assert_allclose(Nu_Nusselt_Rayleigh_Hollands(.7, 3.21e6, buoyancy=True, Rac=Rac_Nusselt_Rayleigh(H=1, L=2, W=.2, insulated=False)), 4.666249131876477)
+    assert_close(Nu_Nusselt_Rayleigh_Hollands(5.54, 3.21e8, buoyancy=True), 69.02668649510164)
+    assert_close(Nu_Nusselt_Rayleigh_Hollands(.7, 3.21e6, buoyancy=True, Rac=Rac_Nusselt_Rayleigh(H=1, L=2, W=.2, insulated=False)), 4.666249131876477)
 
-    assert_allclose(Nu_Nusselt_Rayleigh_Hollands(.7, 3.21e6, buoyancy=True, Rac=Rac_Nusselt_Rayleigh(H=1, L=1, W=1, insulated=False)), 8.786362614129537)
+    assert_close(Nu_Nusselt_Rayleigh_Hollands(.7, 3.21e6, buoyancy=True, Rac=Rac_Nusselt_Rayleigh(H=1, L=1, W=1, insulated=False)), 8.786362614129537)
 
 def test_Rac_Nusselt_Rayleigh_fit_uninsulated():
     from ht.conv_free_enclosed import tck_uninstulated_Catton, ratios_uninsulated_Catton, Racs_uninstulated_Catton
@@ -109,7 +108,7 @@ def test_Rac_Nusselt_Rayleigh_fit_uninsulated():
     tck = bisplrep(all_xs, all_ys, np.log(all_zs), kx=3, ky=3, s=0)
 
     for i in range(len(tck)):
-        assert_allclose(tck[i], tck_uninstulated_Catton[i], rtol=1e-5)
+        assert_close(tck[i], tck_uninstulated_Catton[i], rtol=1e-5)
 
 #    for i, Racs in enumerate(Racs_uninstulated_Catton):
 #        plt.semilogy(ratios_uninsulated_Catton, Racs, label=str(ratios_uninsulated_Catton[i]))
@@ -136,7 +135,7 @@ def test_Rac_Nusselt_Rayleigh_fit_insulated():
     # Do not compare anything.
     tck = bisplrep(all_xs, all_ys, np.log(all_zs), kx=1, ky=2)
 #    for i in range(len(tck)):
-#        assert_allclose(tck[i], tck_insulated_Catton[i], rtol=1e-5)
+#        assert_close1d(tck[i], tck_insulated_Catton[i], rtol=1e-5)
 
 #    for i, Racs in enumerate(Racs_instulated_Catton):
 #        plt.semilogy(ratios_insulated_Catton, Racs, '-', label=str(ratios_insulated_Catton[i]))
@@ -165,8 +164,8 @@ def test_Rac_Nusselt_Rayleigh_disk_fits():
     insulated_coeffs = pychebfun.chebfun_to_poly(insulated_fun)
     uninsulated_coeffs = pychebfun.chebfun_to_poly(uninsulated_fun)
 
-    assert_allclose(insulated_coeffs, insulated_disk_coeffs)
-    assert_allclose(uninsulated_coeffs, uninsulated_disk_coeffs)
+    assert_close1d(insulated_coeffs, insulated_disk_coeffs)
+    assert_close1d(uninsulated_coeffs, uninsulated_disk_coeffs)
 
 #    more_ratios = np.logspace(np.log10(ratios[0]), np.log10(ratios[-1]), 1000)
 #    plt.semilogy(ratios, Ras_insulated)
@@ -180,4 +179,4 @@ def test_Rac_Nusselt_Rayleigh_disk_fits():
 
 def test_Nu_vertical_helical_coil_Ali():
     Nu = Nu_vertical_helical_coil_Ali(4.4, 1E11)
-    assert_allclose(Nu, 1808.5774997297106)
+    assert_close(Nu, 1808.5774997297106)

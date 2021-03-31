@@ -22,26 +22,26 @@ SOFTWARE.'''
 
 from __future__ import division
 from ht import *
-from numpy.testing import assert_allclose
+from fluids.numerics import assert_close, assert_close1d, assert_close2d
 
 
 def test_Nu_packed_bed_Gnielinski():
     Nu = Nu_packed_bed_Gnielinski(8E-4, 0.4, 1.0, 1E3, 1E-3, 0.7)
-    assert_allclose(Nu, 61.37823202546954)
+    assert_close(Nu, 61.37823202546954)
 
     # fa=2 test
     Nu = Nu_packed_bed_Gnielinski(8E-4, 0.4, 1.0, 1E3, 1E-3, 0.7, 2.0)
-    assert_allclose(Nu, 64.60866528996795)
+    assert_close(Nu, 64.60866528996795)
 
 
 def test_Nu_Wakao_Kagei():
     Nu = Nu_Wakao_Kagei(2000., 0.7)
-    assert_allclose(Nu, 95.40641328041248)
+    assert_close(Nu, 95.40641328041248)
 
 def test_Nu_Achenbach():
     Nu = Nu_Achenbach(2000., 0.7, 0.4)
-    assert_allclose(Nu, 117.70343608599121)
+    assert_close(Nu, 117.70343608599121)
 
 def test_Nu_KTA():
     Nu = Nu_KTA(2000., 0.7, 0.4)
-    assert_allclose(Nu, 102.08516480718129)
+    assert_close(Nu, 102.08516480718129)
