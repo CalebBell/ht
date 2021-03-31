@@ -23,6 +23,7 @@ SOFTWARE.'''
 from __future__ import division
 from ht import *
 from ht.conv_plate import *
+from numpy.testing import assert_allclose
 from fluids.numerics import assert_close, assert_close1d, assert_close2d
 import numpy as np
 import pytest
@@ -69,7 +70,8 @@ def test_Nu_plate_Kumar():
         all_ans.append(beta_ans)
 
         for row1, row2 in zip(all_ans_expected, all_ans):
-            assert_close1d(row1, row2)
+            assert_allclose(row1, row2)
+#            assert_close(row1, row2)
 
 
 def test_Nu_plate_Martin():

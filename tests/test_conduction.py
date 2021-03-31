@@ -65,7 +65,10 @@ def test_cylindrical_heat_transfer():
      'q': 123.21239646288495}
 
     for k, v in expect.items():
-        assert_close(v, data[k])
+        if type(v) is float:
+            assert_close(v, data[k])
+        else:
+            assert_close1d(v, data[k])
 
 
 def test_insulation():

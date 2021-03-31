@@ -21,7 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.'''
 
 from __future__ import division
-from numpy.testing import assert_allclose
+from fluids.numerics import assert_close, assert_close1d, assert_close2d
 import ht
 import ht.vectorized
 import numpy as np
@@ -30,4 +30,4 @@ import numpy as np
 def test_LMTD_vect():
     dTlms = [ht.LMTD(T, 60., 30., 40.2) for T in [100, 101]]
     dTlms_vect = ht.vectorized.LMTD([100, 101], 60., 30., 40.2)
-    assert_allclose(dTlms, dTlms_vect)
+    assert_close1d(dTlms, dTlms_vect)

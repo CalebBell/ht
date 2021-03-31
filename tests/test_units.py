@@ -24,6 +24,7 @@ from __future__ import division
 import types
 import numpy as np
 from numpy.testing import assert_allclose
+from fluids.numerics import assert_close, assert_close1d, assert_close2d
 import pytest
 import fluids
 import ht
@@ -32,7 +33,7 @@ from ht.units import *
 
 
 def assert_pint_allclose(value, magnitude, units, rtol=1e-7):
-    assert_allclose(value.to_base_units().magnitude, magnitude, rtol=rtol)
+    assert_close(value.to_base_units().magnitude, magnitude, rtol=rtol)
     assert dict(value.dimensionality) == units
 
 def test_sample_cases():

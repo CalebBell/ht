@@ -107,8 +107,8 @@ def test_Rac_Nusselt_Rayleigh_fit_uninsulated():
 
     tck = bisplrep(all_xs, all_ys, np.log(all_zs), kx=3, ky=3, s=0)
 
-    for i in range(len(tck)):
-        assert_close(tck[i], tck_uninstulated_Catton[i], rtol=1e-5)
+    for i in range(len(tck)-2):
+        assert_close1d(tck[i], tck_uninstulated_Catton[i], rtol=1e-5)
 
 #    for i, Racs in enumerate(Racs_uninstulated_Catton):
 #        plt.semilogy(ratios_uninsulated_Catton, Racs, label=str(ratios_uninsulated_Catton[i]))

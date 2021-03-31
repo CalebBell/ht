@@ -25,7 +25,6 @@ from math import log, exp, sqrt, tanh, factorial, isnan
 from ht import *
 import ht
 import numpy as np
-from numpy.testing import assert_allclose
 from fluids.numerics import assert_close, assert_close1d, assert_close2d
 import pytest
 from random import uniform, randint, seed, choice
@@ -1058,7 +1057,7 @@ def test_NTU_from_P_basic():
         except (ValueError, OverflowError, ZeroDivisionError):
             continue
         P1_calc = temperature_effectiveness_basic(R1=R1, NTU1=NTU1_calc, subtype='parallel')
-        assert_allclose(P1, P1_calc)
+        assert_close(P1, P1_calc)
 
     # Analytical result for 'crossflow, mixed 1'
     for i in range(100):
@@ -1073,7 +1072,7 @@ def test_NTU_from_P_basic():
             continue
         # Again, multiple values of NTU1 can produce the same P1
         P1_calc = temperature_effectiveness_basic(R1=R1, NTU1=NTU1_calc, subtype='crossflow, mixed 1')
-        assert_allclose(P1, P1_calc)
+        assert_close(P1, P1_calc)
 
     # Analytical result for 'crossflow, mixed 2'
     for i in range(100):
@@ -1088,7 +1087,7 @@ def test_NTU_from_P_basic():
             continue
         # Again, multiple values of NTU1 can produce the same P1
         P1_calc = temperature_effectiveness_basic(R1=R1, NTU1=NTU1_calc, subtype='crossflow, mixed 2')
-        assert_allclose(P1, P1_calc)
+        assert_close(P1, P1_calc)
 
 
     # Test 'crossflow, mixed 1&2':
@@ -1110,7 +1109,7 @@ def test_NTU_from_P_basic():
             continue
         # May not get the original NTU1, but the found NTU1 needs to produce the same P1.
         P1_calc = temperature_effectiveness_basic(R1=R1, NTU1=NTU1_calc, subtype='crossflow, mixed 1&2')
-        assert_allclose(P1, P1_calc)
+        assert_close(P1, P1_calc)
         tot +=1
     assert tot == 100
 
@@ -1126,16 +1125,16 @@ def test_NTU_from_P_basic():
         P1_calc = temperature_effectiveness_basic(R1=R1, NTU1=NTU1_calc, subtype='crossflow approximate')
         # In python 2.6 and 3.3 the solver doesn't converge as well, so we need
         # to add a little tolerance
-        assert_allclose(P1, P1_calc, rtol=5E-6)
+        assert_close(P1, P1_calc, rtol=5E-6)
 
     # Crossflow approximate test case
     R1 = .1
     NTU1 = 2
     P1_calc_orig = temperature_effectiveness_basic(R1=R1, NTU1=NTU1, subtype='crossflow approximate')
     P1_expect = 0.8408180737140558
-    assert_allclose(P1_calc_orig, P1_expect)
+    assert_close(P1_calc_orig, P1_expect)
     NTU1_backwards = NTU_from_P_basic(P1=P1_expect, R1=R1, subtype='crossflow approximate')
-    assert_allclose(NTU1, NTU1_backwards)
+    assert_close(NTU1, NTU1_backwards)
 
 
     # Test cross flow - failes VERY OFTEN, should rely on crossflow approximate
@@ -1143,7 +1142,7 @@ def test_NTU_from_P_basic():
     R1 = 0.5
     P1 = temperature_effectiveness_basic(R1=R1, NTU1=NTU1, subtype='crossflow')
     NTU1_calc = NTU_from_P_basic(P1, R1=R1, subtype='crossflow')
-    assert_allclose(NTU1, NTU1_calc)
+    assert_close(NTU1, NTU1_calc)
 
     # bad type of exchanger
     with pytest.raises(Exception):
@@ -1173,7 +1172,7 @@ def test_NTU_from_P_E():
             continue
         # Again, multiple values of NTU1 can produce the same P1
         P1_calc = temperature_effectiveness_TEMA_E(R1=R1, NTU1=NTU1_calc, Ntp=1)
-        assert_allclose(P1, P1_calc)
+        assert_close(P1, P1_calc)
         tot +=1
     assert tot >= 85
 
@@ -1182,9 +1181,9 @@ def test_NTU_from_P_E():
     NTU1 = 10
     P1 = temperature_effectiveness_TEMA_E(R1=R1, NTU1=NTU1, Ntp=2, optimal=True)
     P1_expect = 0.5576299522073297
-    assert_allclose(P1, P1_expect)
+    assert_close(P1, P1_expect)
     NTU1_calc = NTU_from_P_E(P1, R1, Ntp=2, optimal=True)
-    assert_allclose(NTU1_calc, NTU1)
+    assert_close(NTU1_calc, NTU1)
 
     # 2 tube pass (unoptimal)
     tot = 0
@@ -1203,14 +1202,14 @@ def test_NTU_from_P_E():
             P1_calc = temperature_effectiveness_TEMA_E(R1=R1, NTU1=NTU1_calc, Ntp=2, optimal=False)
         except (ZeroDivisionError):
             continue
-        assert_allclose(P1, P1_calc)
+        assert_close(P1, P1_calc)
         tot +=1
     assert tot >= 90
 
     # At the default mpmath precision, the following will predict a value larger
     # than one
     bad_P1 = temperature_effectiveness_TEMA_E(R1=1E-8 , NTU1=19.60414246043446, Ntp=2, optimal=False)
-    assert_allclose(bad_P1, 1.0000000050247593)
+    assert_close(bad_P1, 1.0000000050247593)
 
     # 4 pass
     for Ntp in [4, 6, 8, 10, 12]:
@@ -1226,7 +1225,7 @@ def test_NTU_from_P_E():
                 # the bounded solver to be able to solve it
                 continue
             P1_calc = temperature_effectiveness_TEMA_E(R1=R1, NTU1=NTU1_calc, Ntp=Ntp)
-            assert_allclose(P1, P1_calc)
+            assert_close(P1, P1_calc)
             tot +=1
         assert tot >= 70
 
@@ -1249,7 +1248,7 @@ def test_NTU_from_P_E():
                 continue
             # Again, multiple values of NTU1 can produce the same P1
             P1_calc = temperature_effectiveness_TEMA_E(R1=R1, NTU1=NTU1_calc, Ntp=3, optimal=optimal)
-            assert_allclose(P1, P1_calc)
+            assert_close(P1, P1_calc)
             tot +=1
         assert tot >= 97
 
@@ -1270,7 +1269,7 @@ def test_NTU_from_P_H():
         P1 = temperature_effectiveness_TEMA_H(R1=R1, NTU1=NTU1, Ntp=1)
         NTU1_calc = NTU_from_P_H(P1, R1, Ntp=1)
         P1_calc = temperature_effectiveness_TEMA_H(R1=R1, NTU1=NTU1_calc, Ntp=1)
-        assert_allclose(P1, P1_calc)
+        assert_close(P1, P1_calc)
 
     for i in range(100):
         R1 = float(choice(R1s))
@@ -1278,7 +1277,7 @@ def test_NTU_from_P_H():
         P1 = temperature_effectiveness_TEMA_H(R1=R1, NTU1=NTU1, Ntp=2)
         NTU1_calc = NTU_from_P_H(P1, R1, Ntp=2)
         P1_calc = temperature_effectiveness_TEMA_H(R1=R1, NTU1=NTU1_calc, Ntp=2)
-        assert_allclose(P1, P1_calc)
+        assert_close(P1, P1_calc)
 
     for i in range(100):
         R1 = float(choice(R1s))
@@ -1286,7 +1285,7 @@ def test_NTU_from_P_H():
         P1 = temperature_effectiveness_TEMA_H(R1=R1, NTU1=NTU1, Ntp=2, optimal=False)
         NTU1_calc = NTU_from_P_H(P1, R1, Ntp=2, optimal=False)
         P1_calc = temperature_effectiveness_TEMA_H(R1=R1, NTU1=NTU1_calc, Ntp=2, optimal=False)
-        assert_allclose(P1, P1_calc, rtol=1E-6)
+        assert_close(P1, P1_calc, rtol=1E-6)
 
     with pytest.raises(Exception):
         NTU_from_P_H(P1=0.573, R1=1/3., Ntp=101)
@@ -1300,9 +1299,9 @@ def test_NTU_from_P_G():
     NTU1 = 2
     P1_calc_orig = temperature_effectiveness_TEMA_G(R1=R1, NTU1=NTU1, Ntp=1)
     P1_expect = 0.5868787117241955
-    assert_allclose(P1_calc_orig, P1_expect)
+    assert_close(P1_calc_orig, P1_expect)
     NTU1_backwards = NTU_from_P_G(P1=P1_expect, R1=R1, Ntp=1)
-    assert_allclose(NTU1, NTU1_backwards)
+    assert_close(NTU1, NTU1_backwards)
 
 
     # 2 tube pass, randompoint
@@ -1311,9 +1310,9 @@ def test_NTU_from_P_G():
     P1_calc_orig = temperature_effectiveness_TEMA_G(R1=R1, NTU1=NTU1, Ntp=2)
     P1_calc_orig
     P1_expect = 0.6110347802764724
-    assert_allclose(P1_calc_orig, P1_expect)
+    assert_close(P1_calc_orig, P1_expect)
     NTU1_backwards = NTU_from_P_G(P1=P1_expect, R1=R1, Ntp=2)
-    assert_allclose(NTU1, NTU1_backwards)
+    assert_close(NTU1, NTU1_backwards)
 
 
     # 2 tube pass, not optimal
@@ -1322,9 +1321,9 @@ def test_NTU_from_P_G():
     P1_calc_orig = temperature_effectiveness_TEMA_G(R1=R1, NTU1=NTU1, Ntp=2, optimal=False)
     P1_calc_orig
     P1_expect = 0.8121969945075509
-    assert_allclose(P1_calc_orig, P1_expect)
+    assert_close(P1_calc_orig, P1_expect)
     NTU1_backwards = NTU_from_P_G(P1=P1_expect, R1=R1, Ntp=2, optimal=False)
-    assert_allclose(NTU1, NTU1_backwards)
+    assert_close(NTU1, NTU1_backwards)
 
 
     # Run the gamut testing all the solvers
@@ -1344,7 +1343,7 @@ def test_NTU_from_P_G():
                 continue
             if isnan(P1) or isnan(P1_calc):
                 continue
-            assert_allclose(P1, P1_calc)
+            assert_close(P1, P1_calc)
             tot +=1
     assert tot > 270
 
@@ -1369,7 +1368,7 @@ def test_NTU_from_P_J():
                 P1_calc = temperature_effectiveness_TEMA_J(R1=R1, NTU1=NTU1_calc, Ntp=Ntp)
             except (ValueError, OverflowError, ZeroDivisionError, RuntimeError) as e:
                 continue
-            assert_allclose(P1, P1_calc)
+            assert_close(P1, P1_calc)
             tot +=1
     assert tot > 270
     # Actual individual understandable working test cases
@@ -1379,9 +1378,9 @@ def test_NTU_from_P_J():
     NTU1 = 3
     P1_calc_orig = temperature_effectiveness_TEMA_J(R1=R1, NTU1=NTU1, Ntp=1)
     P1_expect = 0.5996529947927913
-    assert_allclose(P1_calc_orig, P1_expect)
+    assert_close(P1_calc_orig, P1_expect)
     NTU1_backwards = NTU_from_P_J(P1=P1_expect, R1=R1, Ntp=1)
-    assert_allclose(NTU1, NTU1_backwards)
+    assert_close(NTU1, NTU1_backwards)
 
 
     # 2 tube passes
@@ -1389,11 +1388,11 @@ def test_NTU_from_P_J():
     NTU1 = 2.7363888898379249
     P1_calc_orig = temperature_effectiveness_TEMA_J(R1=R1, NTU1=NTU1, Ntp=2)
     P1_expect = 0.53635261090479802
-    assert_allclose(P1_calc_orig, P1_expect)
+    assert_close(P1_calc_orig, P1_expect)
     # The exact P1 is slightly higher than that calculated as the upper limit
     # of the pade approximation, so we multiply it by a small fraction
     NTU1_backwards = NTU_from_P_J(P1=P1_expect*(1-2E-9), R1=R1, Ntp=2)
-    assert_allclose(NTU1, NTU1_backwards, rtol=1E-3)
+    assert_close(NTU1, NTU1_backwards, rtol=1E-3)
     # Unfortunately the derivative is so large we can't compare it exactly
 
 
@@ -1402,11 +1401,11 @@ def test_NTU_from_P_J():
     NTU1 = 2.8702676768833268
     P1_calc_orig = temperature_effectiveness_TEMA_J(R1=R1, NTU1=NTU1, Ntp=4)
     P1_expect = 0.53812561986477236
-    assert_allclose(P1_calc_orig, P1_expect)
+    assert_close(P1_calc_orig, P1_expect)
     # The exact P1 is slightly higher than that calculated as the upper limit
     # of the pade approximation, so we multiply it by a small fraction
     NTU1_backwards = NTU_from_P_J(P1=P1_expect*(1-1E-15), R1=R1, Ntp=4)
-    assert_allclose(NTU1, NTU1_backwards)
+    assert_close(NTU1, NTU1_backwards)
     # The derivative is very large but the pade approximation is really good, ant it works
 
 
@@ -1420,10 +1419,10 @@ def test_NTU_from_P_plate():
     NTU1 = 3.5
     R1 = 0.25
     P1_calc = temperature_effectiveness_plate(R1=R1, NTU1=NTU1, Np1=1, Np2=1)
-    assert_allclose(P1_calc, 0.944668125335067)
+    assert_close(P1_calc, 0.944668125335067)
 
     NTU1_calc = NTU_from_P_plate(P1=P1_calc, R1=R1, Np1=1, Np2=1)
-    assert_allclose(NTU1, NTU1_calc)
+    assert_close(NTU1, NTU1_calc)
 
     with pytest.raises(Exception):
         NTU_from_P_plate(P1=.10001, R1=10, Np1=1, Np2=1, counterflow=True)
@@ -1432,10 +1431,10 @@ def test_NTU_from_P_plate():
     NTU1 = 3.5
     R1 = 0.25
     P1_calc = temperature_effectiveness_plate(R1=R1, NTU1=NTU1, Np1=1, Np2=1, counterflow=False)
-    assert_allclose(P1_calc, 0.7899294862060529)
+    assert_close(P1_calc, 0.7899294862060529)
 
     NTU1_calc = NTU_from_P_plate(P1=P1_calc, R1=R1, Np1=1, Np2=1, counterflow=False)
-    assert_allclose(NTU1, NTU1_calc)
+    assert_close(NTU1, NTU1_calc)
 
     with pytest.raises(Exception):
         NTU_from_P_plate(P1=.091, R1=10, Np1=1, Np2=1, counterflow=False)
@@ -1455,7 +1454,7 @@ def test_NTU_from_P_plate():
             P1_calc = temperature_effectiveness_plate(R1=R1, NTU1=NTU1_calc, Np1=1, Np2=2)
         except (OverflowError, ValueError):
             continue
-        assert_allclose(P1, P1_calc)
+        assert_close(P1, P1_calc)
         tot +=1
     assert tot > 97
 
@@ -1469,7 +1468,7 @@ def test_NTU_from_P_plate():
             P1_calc = temperature_effectiveness_plate(R1=R1, NTU1=NTU1_calc, Np1=1, Np2=3)
         except (OverflowError, ValueError):
             continue
-        assert_allclose(P1, P1_calc)
+        assert_close(P1, P1_calc)
         tot +=1
     assert tot >= 99
 
@@ -1483,7 +1482,7 @@ def test_NTU_from_P_plate():
             P1_calc = temperature_effectiveness_plate(R1=R1, NTU1=NTU1_calc, Np1=1, Np2=3, counterflow=False)
         except (OverflowError, ValueError):
             continue
-        assert_allclose(P1, P1_calc)
+        assert_close(P1, P1_calc)
         tot +=1
     assert tot >= 99
 
@@ -1498,7 +1497,7 @@ def test_NTU_from_P_plate():
         except (OverflowError, ValueError):
             continue
 
-        assert_allclose(P1, P1_calc)
+        assert_close(P1, P1_calc)
         tot +=1
     assert tot >= 99
 
@@ -1516,7 +1515,7 @@ def test_NTU_from_P_plate():
         except (OverflowError, ValueError):
             continue
 
-        assert_allclose(P1, P1_calc)
+        assert_close(P1, P1_calc)
         tot +=1
     assert tot >= 99
 
@@ -1525,9 +1524,9 @@ def test_NTU_from_P_plate():
     NTU1 = 1.1
     R1 = .6
     P1_calc = temperature_effectiveness_plate(R1=R1, NTU1=NTU1, Np1=2, Np2=2, counterflow=False, passes_counterflow=False)
-    assert_allclose(P1_calc, 0.5174719601105934)
+    assert_close(P1_calc, 0.5174719601105934)
     NTU1_calc = NTU_from_P_plate(P1=P1_calc, R1=R1, Np1=2, Np2=2, counterflow=False, passes_counterflow=False)
-    assert_allclose(NTU1, NTU1_calc)
+    assert_close(NTU1, NTU1_calc)
     # methodical test
     tot = 0
     for i in range(100):
@@ -1539,7 +1538,7 @@ def test_NTU_from_P_plate():
             P1_calc = temperature_effectiveness_plate(R1=R1, NTU1=NTU1_calc, Np1=2, Np2=2, counterflow=False, passes_counterflow=False)
         except (ZeroDivisionError, ValueError):
             continue
-        assert_allclose(P1, P1_calc)
+        assert_close(P1, P1_calc)
         tot +=1
     assert tot > 85
 
@@ -1548,9 +1547,9 @@ def test_NTU_from_P_plate():
     NTU1 = 1.1
     R1 = .6
     P1_calc = temperature_effectiveness_plate(R1=R1, NTU1=NTU1, Np1=2, Np2=2, counterflow=False, passes_counterflow=True)
-    assert_allclose(P1_calc, 0.529647502598342)
+    assert_close(P1_calc, 0.529647502598342)
     NTU1_calc = NTU_from_P_plate(P1=P1_calc, R1=R1, Np1=2, Np2=2, counterflow=False, passes_counterflow=True)
-    assert_allclose(NTU1, NTU1_calc)
+    assert_close(NTU1, NTU1_calc)
     # methodical
     for i in range(100):
         R1 = float(choice(R1s))
@@ -1558,7 +1557,7 @@ def test_NTU_from_P_plate():
         P1 = temperature_effectiveness_plate(R1=R1, NTU1=NTU1, Np1=2, Np2=2, counterflow=False, passes_counterflow=True)
         NTU1_calc = NTU_from_P_plate(P1, R1, Np1=2, Np2=2, counterflow=False, passes_counterflow=True)
         P1_calc = temperature_effectiveness_plate(R1=R1, NTU1=NTU1_calc, Np1=2, Np2=2, counterflow=False, passes_counterflow=True)
-        assert_allclose(P1, P1_calc)
+        assert_close(P1, P1_calc)
 
 
     # 2-2 counterflow and passes_counterflow
@@ -1573,7 +1572,7 @@ def test_NTU_from_P_plate():
         except (ValueError, ZeroDivisionError):
             continue
         tot +=1
-        assert_allclose(P1, P1_calc)
+        assert_close(P1, P1_calc)
     assert tot > 90
 
 
@@ -1581,9 +1580,9 @@ def test_NTU_from_P_plate():
     NTU1 = 1.1
     R1 = .6
     P1_calc = temperature_effectiveness_plate(R1=R1, NTU1=NTU1, Np1=2, Np2=3, counterflow=True)
-    assert_allclose(P1_calc, 0.5696402802155714)
+    assert_close(P1_calc, 0.5696402802155714)
     NTU1_calc = NTU_from_P_plate(P1=P1_calc, R1=R1, Np1=2, Np2=3, counterflow=True)
-    assert_allclose(NTU1, NTU1_calc)
+    assert_close(NTU1, NTU1_calc)
     # 2-3 counterflow - methodical
     tot = 0
     for i in range(100):
@@ -1596,16 +1595,16 @@ def test_NTU_from_P_plate():
         except (ValueError, ZeroDivisionError):
             continue
         tot +=1
-        assert_allclose(P1, P1_calc, rtol=5E-4)
+        assert_close(P1, P1_calc, rtol=5E-4)
     assert tot > 85
 
     # 2-3 parallelflow - random example
     NTU1 = 1.1
     R1 = .6
     P1_calc = temperature_effectiveness_plate(R1=R1, NTU1=NTU1, Np1=2, Np2=3, counterflow=False)
-    assert_allclose(P1_calc, 0.5272339114328507)
+    assert_close(P1_calc, 0.5272339114328507)
     NTU1_calc = NTU_from_P_plate(P1=P1_calc, R1=R1, Np1=2, Np2=3, counterflow=False)
-    assert_allclose(NTU1, NTU1_calc)
+    assert_close(NTU1, NTU1_calc)
     # 2-3 parallelflow - methodical (all work for given range)
     for i in range(100):
         R1 = float(choice(R1s))
@@ -1613,16 +1612,16 @@ def test_NTU_from_P_plate():
         P1 = temperature_effectiveness_plate(R1=R1, NTU1=NTU1, Np1=2, Np2=3, counterflow=False)
         NTU1_calc = NTU_from_P_plate(P1, R1, Np1=2, Np2=3, counterflow=False)
         P1_calc = temperature_effectiveness_plate(R1=R1, NTU1=NTU1_calc, Np1=2, Np2=3, counterflow=False)
-        assert_allclose(P1, P1_calc)
+        assert_close(P1, P1_calc)
 
 
     # 2-4 counterflow - random example
     NTU1 = 1.1
     R1 = .6
     P1_calc = temperature_effectiveness_plate(R1=R1, NTU1=NTU1, Np1=2, Np2=4, counterflow=True)
-    assert_allclose(P1_calc, 0.5717083161054717)
+    assert_close(P1_calc, 0.5717083161054717)
     NTU1_calc = NTU_from_P_plate(P1=P1_calc, R1=R1, Np1=2, Np2=4, counterflow=True)
-    assert_allclose(NTU1, NTU1_calc)
+    assert_close(NTU1, NTU1_calc)
     # 2-4 counterflow - methodical
     tot = 0
     for i in range(100):
@@ -1635,16 +1634,16 @@ def test_NTU_from_P_plate():
         except (ValueError, ZeroDivisionError):
             continue
         tot +=1
-        assert_allclose(P1, P1_calc)
+        assert_close(P1, P1_calc)
     assert tot > 95
 
     # 2-4 parallelflow - random example
     NTU1 = 1.1
     R1 = .6
     P1_calc = temperature_effectiveness_plate(R1=R1, NTU1=NTU1, Np1=2, Np2=4, counterflow=False)
-    assert_allclose(P1_calc, 0.5238412695944656)
+    assert_close(P1_calc, 0.5238412695944656)
     NTU1_calc = NTU_from_P_plate(P1=P1_calc, R1=R1, Np1=2, Np2=4, counterflow=False)
-    assert_allclose(NTU1, NTU1_calc)
+    assert_close(NTU1, NTU1_calc)
     # 2-4 counterflow - methodical
     tot = 0
     for i in range(100):
@@ -1657,50 +1656,50 @@ def test_NTU_from_P_plate():
         except (ValueError, ZeroDivisionError):
             continue
         tot +=1
-        assert_allclose(P1, P1_calc)
+        assert_close(P1, P1_calc)
     assert tot > 95
 
 
     # Backwards, only one example in the tests
     # No real point in being exhaustive
     NTU1 = NTU_from_P_plate(P1=0.5743514352720835, R1=1/3., Np1=3, Np2=1)
-    assert_allclose(NTU1, 1)
+    assert_close(NTU1, 1)
 
     # Bad number of plates
     with pytest.raises(Exception):
         NTU_from_P_plate(P1=0.5743, R1=1/3., Np1=3, Np2=13415151213)
 
 def test_DBundle_min():
-    assert_allclose(DBundle_min(0.0254), 1)
-    assert_allclose(DBundle_min(0.005), .1)
-    assert_allclose(DBundle_min(0.014), .3)
-    assert_allclose(DBundle_min(0.015), .5)
-    assert_allclose(DBundle_min(.1), 1.5)
+    assert_close(DBundle_min(0.0254), 1)
+    assert_close(DBundle_min(0.005), .1)
+    assert_close(DBundle_min(0.014), .3)
+    assert_close(DBundle_min(0.015), .5)
+    assert_close(DBundle_min(.1), 1.5)
 
 def test_shell_clearance():
-    assert_allclose(shell_clearance(DBundle=1.245), 0.0064)
-    assert_allclose(shell_clearance(DBundle=4), 0.011)
-    assert_allclose(shell_clearance(DBundle=.2), .0032)
-    assert_allclose(shell_clearance(DBundle=1.778), 0.0095)
+    assert_close(shell_clearance(DBundle=1.245), 0.0064)
+    assert_close(shell_clearance(DBundle=4), 0.011)
+    assert_close(shell_clearance(DBundle=.2), .0032)
+    assert_close(shell_clearance(DBundle=1.778), 0.0095)
 
-    assert_allclose(shell_clearance(DShell=1.245), 0.0064)
-    assert_allclose(shell_clearance(DShell=4), 0.011)
-    assert_allclose(shell_clearance(DShell=.2), .0032)
-    assert_allclose(shell_clearance(DShell=1.778), 0.0095)
+    assert_close(shell_clearance(DShell=1.245), 0.0064)
+    assert_close(shell_clearance(DShell=4), 0.011)
+    assert_close(shell_clearance(DShell=.2), .0032)
+    assert_close(shell_clearance(DShell=1.778), 0.0095)
 
     with pytest.raises(Exception):
         shell_clearance()
 
 def test_L_unsupported_max():
-    assert_allclose(L_unsupported_max(Do=.0254, material='CS'), 1.88)
-    assert_allclose(L_unsupported_max(Do=.0253, material='CS'), 1.753)
-    assert_allclose(L_unsupported_max(Do=1E-5, material='CS'), 0.66)
-    assert_allclose(L_unsupported_max(Do=.00635, material='CS'), 0.66)
+    assert_close(L_unsupported_max(Do=.0254, material='CS'), 1.88)
+    assert_close(L_unsupported_max(Do=.0253, material='CS'), 1.753)
+    assert_close(L_unsupported_max(Do=1E-5, material='CS'), 0.66)
+    assert_close(L_unsupported_max(Do=.00635, material='CS'), 0.66)
 
-    assert_allclose(L_unsupported_max(Do=.00635, material='aluminium'), 0.559)
+    assert_close(L_unsupported_max(Do=.00635, material='aluminium'), 0.559)
 
     with pytest.raises(Exception):
         L_unsupported_max(Do=.0254, material='BADMATERIAL')
 
     # Terribly pessimistic
-    assert_allclose(L_unsupported_max(Do=10, material='CS'), 3.175)
+    assert_close(L_unsupported_max(Do=10, material='CS'), 3.175)
