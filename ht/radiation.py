@@ -25,6 +25,7 @@ from math import exp, e
 import os
 from io import open
 from fluids.constants import sigma, h, c, k, pi
+from fluids.numerics import numpy as np
 
 __all__ = ['blackbody_spectral_radiance', 'q_rad', 'grey_transmittance',
            'solar_spectrum']
@@ -227,14 +228,14 @@ def solar_spectrum(model='SOLAR-ISS'):
     and SSI:
 
     >>> min(wavelengths), max(wavelengths), min(SSI), max(SSI)
-    (5e-10, 2.9999000000000003e-06, 1330.0, 2256817820.0)
+    (5e-10, 2.9999e-06, 1330.0, 2256817820.0)
 
     Integration - calculate the solar constant, in untis of W/m^2 hitting
     earth's atmosphere.
 
     >>> import numpy as np
     >>> np.trapz(SSI, wavelengths)
-    1344.802978238
+    1344.802978
 
     References
     ----------
@@ -251,17 +252,16 @@ def solar_spectrum(model='SOLAR-ISS'):
     '''
     if model == 'SOLAR-ISS':
         folder = os.path.join(os.path.dirname(__file__), 'data')
-        import numpy as np
         pth = os.path.join(folder, 'solar_iss_2018_spectrum.dat')
-        data = np.loadtxt(pth)
+        data = np.genfromtxt(pth, dtype=np.float64, delimiter=' ')
         wavelengths, SSI, uncertainties = data[:, 0], data[:, 1], data[:, 2]
 
-        wavelengths = wavelengths*1E-9
-        SSI = SSI*1E9
+        wavelengths *= 1E-9
+        SSI *= 1E9
 
         # Convert -1 uncertainties to nans
         uncertainties[uncertainties == -1] = np.nan
 
-        uncertainties = uncertainties*1E9
+        uncertainties *= 1E9
     return wavelengths, SSI, uncertainties
 

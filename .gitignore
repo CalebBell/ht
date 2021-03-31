@@ -10,7 +10,8 @@ __pycache__
 .spyproject
 ht.egg-info 
 .idea
- 
+prof
+
 # Compiled source #
 ###################
 *.com
