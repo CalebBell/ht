@@ -25,7 +25,7 @@ from math import exp, log, floor, sqrt, factorial, tanh  # tanh= 1/coth
 import math
 import os
 from fluids.constants import inch, foot, degree_Fahrenheit, hour, Btu
-from fluids.numerics import horner, newton, ridder, quad, secant, quad, bisect
+from fluids.numerics import horner, newton, ridder, quad, secant, quad, bisect, gamma
 from fluids.numerics import iv
 from fluids.piping import BWG_integers, BWG_inch, BWG_SI
 from fluids.numerics import numpy as np
@@ -56,7 +56,6 @@ __numba_additional_funcs__ = ['crossflow_effectiveness_to_int', 'to_solve_Ntubes
                               '_NTU_from_P_solver', '_NTU_from_P_objective', '_NTU_from_P_erf']
 try:
     if IS_NUMBA:
-        from scipy.special import gamma
         __numba_additional_funcs__.append('factorial')
         def factorial(n):
             return gamma(n + 1.0)

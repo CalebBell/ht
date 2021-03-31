@@ -22,31 +22,30 @@ SOFTWARE.'''
 
 from __future__ import division
 from ht import *
-from fluids.numerics import linspace
+from fluids.numerics import linspace, assert_close, assert_close1d, assert_close2d
 from ht.boiling_nucleic import _angles_Stephan_Abdelsalam
 import numpy as np
 
-from numpy.testing import assert_allclose
 import pytest
 
 
 ### conv_internal
 def test_Nu_const():
-    assert_allclose(laminar_T_const(), 3.66)
-    assert_allclose(laminar_Q_const(), 48/11.)
+    assert_close(laminar_T_const(), 3.66)
+    assert_close(laminar_Q_const(), 48/11.)
 
 
 def test_laminar_entry_region():
     Nu = laminar_entry_thermal_Hausen(100000.0, 1.1, 5.0, .5)
-    assert_allclose(Nu, 39.01352358988535)
+    assert_close(Nu, 39.01352358988535)
 
     Nu = laminar_entry_Seider_Tate(Re=100000, Pr=1.1, L=5, Di=.5)
-    assert_allclose(Nu, 41.366029684589265)
+    assert_close(Nu, 41.366029684589265)
     Nu_wall = laminar_entry_Seider_Tate(100000, 1.1, 5, .5, 1E-3, 1.2E-3)
-    assert_allclose(Nu_wall, 40.32352264095969)
+    assert_close(Nu_wall, 40.32352264095969)
 
     Nu = laminar_entry_Baehr_Stephan(100000, 1.1, 5, .5)
-    assert_allclose(Nu, 72.65402046550976)
+    assert_close(Nu, 72.65402046550976)
 
 def test_turbulent_complicated():
     Nu1 = turbulent_Dittus_Boelter(1E5, 1.2, True, False)
@@ -54,92 +53,92 @@ def test_turbulent_complicated():
     Nu3 = turbulent_Dittus_Boelter(Re=1E5, Pr=1.2, heating=False)
     Nu4 = turbulent_Dittus_Boelter(Re=1E5, Pr=1.2)
     Nu_values = [261.3838629346147, 279.89829163640354, 242.9305927410295, 247.40036409449127]
-    assert_allclose([Nu1, Nu2, Nu3, Nu4], Nu_values)
+    assert_close1d([Nu1, Nu2, Nu3, Nu4], Nu_values)
 
     Nu1 = turbulent_Sieder_Tate(Re=1E5, Pr=1.2)
     Nu2 = turbulent_Sieder_Tate(1E5, 1.2, 0.01, 0.067)
-    assert_allclose([Nu1, Nu2], [286.9178136793052, 219.84016455766044])
+    assert_close1d([Nu1, Nu2], [286.9178136793052, 219.84016455766044])
 
     Nus = [turbulent_entry_Hausen(1E5, 1.2, 0.154, i) for i in linspace(1e-3,1,11)]
     Nus_values = [6464.503822124652, 505.67127136455525, 399.6147653094695, 356.6182206114823, 332.39191624636305, 316.53483318707475, 305.21220965431286, 296.6521831991236, 289.91358493027764, 284.4463173972796, 279.90553997822707]
-    assert_allclose(Nus, Nus_values)
+    assert_close1d(Nus, Nus_values)
 
 def test_turbulent_simple():
     Nu = turbulent_Colburn(1E5, 1.2)
-    assert_allclose(Nu, 244.41147091200068)
+    assert_close(Nu, 244.41147091200068)
 
     Nu = turbulent_Drexel_McAdams(1E5, 0.6)
-    assert_allclose(Nu, 171.19055301724387)
+    assert_close(Nu, 171.19055301724387)
 
     Nu = turbulent_von_Karman(1E5, 1.2, 0.0185)
-    assert_allclose(Nu, 255.7243541243272)
+    assert_close(Nu, 255.7243541243272)
 
     Nu = turbulent_Prandtl(1E5, 1.2, 0.0185)
-    assert_allclose(Nu, 256.073339689557)
+    assert_close(Nu, 256.073339689557)
 
     Nu = turbulent_Friend_Metzner(1E5, 100., 0.0185)
-    assert_allclose(Nu, 1738.3356262055322)
+    assert_close(Nu, 1738.3356262055322)
 
     Nu = turbulent_Petukhov_Kirillov_Popov(1E5, 1.2, 0.0185)
-    assert_allclose(Nu, 250.11935088905105)
+    assert_close(Nu, 250.11935088905105)
 
     Nu = turbulent_Webb(1E5, 1.2, 0.0185)
-    assert_allclose(Nu, 239.10130376815872)
+    assert_close(Nu, 239.10130376815872)
 
     Nu = turbulent_Sandall(1E5, 1.2, 0.0185)
-    assert_allclose(Nu, 229.0514352970239)
+    assert_close(Nu, 229.0514352970239)
 
     Nu = turbulent_Gnielinski(1E5, 1.2, 0.0185)
-    assert_allclose(Nu, 254.62682749359632)
+    assert_close(Nu, 254.62682749359632)
 
     Nu = turbulent_Gnielinski_smooth_1(1E5, 1.2)
-    assert_allclose(Nu, 227.88800494373442)
+    assert_close(Nu, 227.88800494373442)
 
     Nu = turbulent_Gnielinski_smooth_2(1E5, 7.)
-    assert_allclose(Nu, 577.7692524513449)
+    assert_close(Nu, 577.7692524513449)
 
     Nu = turbulent_Churchill_Zajic(1E5, 1.2, 0.0185)
-    assert_allclose(Nu, 260.5564907817961)
+    assert_close(Nu, 260.5564907817961)
 
     Nu = turbulent_ESDU(1E5, 1.2)
-    assert_allclose(Nu, 232.3017143430645)
+    assert_close(Nu, 232.3017143430645)
 
 def test_turbulent_rough():
     Nu = turbulent_Martinelli(1E5, 100., 0.0185)
-    assert_allclose(Nu, 887.1710686396347)
+    assert_close(Nu, 887.1710686396347)
 
     Nu = turbulent_Nunner(1E5, 0.7, 0.0185, 0.005)
-    assert_allclose(Nu, 101.15841010919947)
+    assert_close(Nu, 101.15841010919947)
 
     Nu = turbulent_Dipprey_Sabersky(1E5, 1.2, 0.0185, 1E-3)
-    assert_allclose(Nu, 288.33365198566656)
+    assert_close(Nu, 288.33365198566656)
 
     Nu = turbulent_Gowen_Smith(1E5, 1.2, 0.0185)
-    assert_allclose(Nu, 131.72530453824106)
+    assert_close(Nu, 131.72530453824106)
 
     Nu = turbulent_Kawase_Ulbrecht(1E5, 1.2, 0.0185)
-    assert_allclose(Nu, 389.6262247333975)
+    assert_close(Nu, 389.6262247333975)
 
     Nu = turbulent_Kawase_De(1E5, 1.2, 0.0185)
-    assert_allclose(Nu, 296.5019733271324)
+    assert_close(Nu, 296.5019733271324)
 
     Nu = turbulent_Bhatti_Shah(1E5, 1.2, 0.0185, 1E-3)
-    assert_allclose(Nu, 302.7037617414273)
+    assert_close(Nu, 302.7037617414273)
 
 # TODO meta function  Nu internal
 
 
 def test_Morimoto_Hotta():
     Nu = Morimoto_Hotta(1E5, 5.7, .05, .5)
-    assert_allclose(Nu, 634.4879473869859)
+    assert_close(Nu, 634.4879473869859)
 
 
 def test_helical_turbulent_Nu_Mori_Nakayama():
     Nu = helical_turbulent_Nu_Mori_Nakayama(2E5, 0.7, 0.01, .2)
-    assert_allclose(Nu, 496.2522480663327)
+    assert_close(Nu, 496.2522480663327)
     # High Pr
     Nu = helical_turbulent_Nu_Mori_Nakayama(2E5, 4.0, 0.01, .2)
-    assert_allclose(Nu, 889.3060078437253)
+    assert_close(Nu, 889.3060078437253)
 
     # Bad behavior!
     # 1 sun power output per m^2 per K
@@ -151,21 +150,21 @@ def test_helical_turbulent_Nu_Mori_Nakayama():
 
 def test_helical_turbulent_Nu_Schmidt():
     Nu = helical_turbulent_Nu_Schmidt(2E5, 0.7, 0.01, .2)
-    assert_allclose(Nu, 466.2569996832083)
+    assert_close(Nu, 466.2569996832083)
     Nus = [helical_turbulent_Nu_Schmidt(i, 0.7, 0.01, .2) for i in [2.2E4, 2.2E4+1E-9]]
-    assert_allclose(Nus, [80.1111786843, 79.75161984693375])
+    assert_close1d(Nus, [80.1111786843, 79.75161984693375])
 
 
 def test_helical_turbulent_Nu_Xin_Ebadian():
     Nu = helical_turbulent_Nu_Xin_Ebadian(2E5, 0.7, 0.01, .2)
-    assert_allclose(Nu, 474.11413424344755)
+    assert_close(Nu, 474.11413424344755)
 
     # No bad behavior
     # Checked with the original
 
 def test_Nu_laminar_rectangular_Shan_London():
     Nu = Nu_laminar_rectangular_Shan_London(.7)
-    assert_allclose(Nu, 3.751762675455)
+    assert_close(Nu, 3.751762675455)
 
 def test_Nu_conv_internal_methods():
     from fluids.units import func_args
@@ -176,29 +175,29 @@ def test_Nu_conv_internal_methods():
 
 def test_Nu_conv_internal():
     Nu = Nu_conv_internal(1E2, .7)
-    assert_allclose(Nu, laminar_T_const())
+    assert_close(Nu, laminar_T_const())
 
     Nu = Nu_conv_internal(1E2, .7, Method='Laminar - constant Q')
-    assert_allclose(Nu, laminar_Q_const())
+    assert_close(Nu, laminar_Q_const())
 
     Nu = Nu_conv_internal(1E2, .7, x=.01, Di=.1)
-    assert_allclose(Nu, 14.91799128769779)
+    assert_close(Nu, 14.91799128769779)
 
     # test the other laminar entrylength methods
     Nu = Nu_conv_internal(1E2, .7, x=.01, Di=.1, Method='Hausen laminar thermal entry')
-    assert_allclose(Nu, 16.51501443241237)
+    assert_close(Nu, 16.51501443241237)
     Nu = Nu_conv_internal(1E2, .7, x=.01, Di=.1, Method='Seider-Tate laminar thermal entry')
-    assert_allclose(Nu, 21.054212255270848)
+    assert_close(Nu, 21.054212255270848)
 
     # martinili
     Nu = Nu_conv_internal(1E5, .02, eD=0.0)
-    assert_allclose(Nu, 8.246171632616187)
+    assert_close(Nu, 8.246171632616187)
 
     Nu = Nu_conv_internal(1E5, .7, x=.01, Di=.1)
-    assert_allclose(Nu, 978.1729258857774)
+    assert_close(Nu, 978.1729258857774)
 
     Nu = Nu_conv_internal(1E5, .7)
-    assert_allclose(Nu, 183.71057902604906)
+    assert_close(Nu, 183.71057902604906)
 
     other_methods = ['Churchill-Zajic', 'Petukhov-Kirillov-Popov', 'Gnielinski',
                      'Bhatti-Shah', 'Dipprey-Sabersky', 'Sandall', 'Webb',
@@ -218,7 +217,7 @@ def test_Nu_conv_internal():
 
     for method, expect in zip(other_methods, expected):
         Nu = Nu_conv_internal(1E5, .7, fd=.01, Method=method)
-        assert_allclose(Nu, expect)
+        assert_close(Nu, expect)
 
     with pytest.raises(Exception):
         Nu_conv_internal(1E5, .7, Method='NOTAMETHOD')

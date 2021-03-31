@@ -2,3 +2,10 @@ fluids>=1.0.2
 numpydoc
 scipy
 pint
+nbsphinx
+ipython
+numba
+sphinxcontrib-katex
+sphinx-sitemap
+sphinx==3.2.1
+matplotlib
