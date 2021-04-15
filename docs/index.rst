@@ -1,7 +1,11 @@
-Heat transfer component of Chemical Engineering Design Library (ChEDL) ======================================================================
+ht: Heat Transfer component of Chemical Engineering Design Library (ChEDL)
+==========================================================================
 
   .. meta::
       :google-site-verification: wcmDZ88ikLzq1to6urRDGA6R7oIhzya2sN5hOeV1zZw
+
+Introduction
+------------
 
 ht is open-source software for engineers and technicians working in the
 fields of chemical or mechanical engineering. It includes modules
@@ -97,7 +101,7 @@ Citation
 
 To cite ht in publications use::
 
-    Caleb Bell (2016-2021). ht: Heat transfer component of Chemical Engineering Design Library (ChEDL)
+    Caleb Bell and Contributors (2016-2021). ht: Heat transfer component of Chemical Engineering Design Library (ChEDL)
     https://github.com/CalebBell/ht.
 
 

@@ -48,15 +48,33 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.doctest',
     'sphinx.ext.coverage',
-    'sphinx.ext.mathjax',
+    #'sphinx.ext.mathjax',
     'sphinx.ext.viewcode',
-    'sphinx.ext.intersphinx',
+    'sphinx.ext.autosummary',
     'numpydoc',
+    'IPython.sphinxext.ipython_console_highlighting',
+    'IPython.sphinxext.ipython_directive',
+    'sphinx.ext.intersphinx',
     'nbsphinx',
     'matplotlib.sphinxext.plot_directive',
+    'sphinxcontrib.katex',
     'sphinx_sitemap',
 ]
-#    'sphinxcontrib.katex',
+#    
+
+katex_css_path = \
+    'https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css'
+katex_js_path = \
+    'https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js'
+katex_autorender_path = \
+    'https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.12.0/contrib/auto-render.min.js'
+
+
+html_baseurl = 'https://ht.readthedocs.io/'
+sitemap_url_scheme = "{link}"
+sitemap_filename = 'sitemap2.xml' # readthedocs generates its own
+
+
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -74,7 +92,7 @@ master_doc = 'index'
 project = u'Heat Transfer'
 
 import datetime
-copyright = u'2016 - %s, Caleb Bell <Caleb.Andrew.Bell@gmail.com>' %datetime.datetime.now().year
+copyright = u'2016 - %s, Caleb Bell and contributors' %datetime.datetime.now().year
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -98,7 +116,7 @@ release = ht.__version__
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
-exclude_patterns = ['_build']
+exclude_patterns = ['_build', '**.ipynb_checkpoints']
 
 # The reST default role (used for this markup: `text`) to use for all
 # documents.
@@ -129,7 +147,7 @@ pygments_style = 'sphinx'
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = 'default'
+html_theme = 'nature'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -275,6 +293,9 @@ texinfo_documents = [
    u'Caleb Bell', 'Heat Transfer', 'One line description of project.',
    'Miscellaneous'),
 ]
+nbsphinx_requirejs_path = '' # fixes katex not working
+plot_rcparams = {'savefig.bbox': 'tight'}
+plot_apply_rcparams = True  # if context option is used
 
 # Documents to append as an appendix to all manuals.
 #texinfo_appendices = []
@@ -288,10 +309,20 @@ texinfo_documents = [
 # If true, do not generate a @detailmenu in the "Top" node's menu.
 #texinfo_no_detailmenu = False
 
+intersphinx_mapping = {'python': ('https://docs.python.org/3', None),
+                       'numpy': ('http://docs.scipy.org/doc/numpy', None),
+                       'scipy': ('http://docs.scipy.org/doc/scipy/reference', None),
+                       'matplotlib': ('http://matplotlib.sourceforge.net', None),
+                       'thermo': ('https://thermo.readthedocs.io/', None),           		               'chemicals': ('https://chemicals.readthedocs.io/', None),
+                       'fluids': ('https://fluids.readthedocs.io/', None)}
 html_theme = "nature"
 
 from sphinx.ext.autodoc import between
 
+try:
+    import ht.numba
+except:
+    pass
 def setup(app):
     # Register a sphinx.ext.autodoc.between listener to ignore everything
     # between lines that contain the word IGNORE
