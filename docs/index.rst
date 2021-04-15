@@ -1,5 +1,8 @@
-Welcome to ht's documentation!
-==============================
+Heat transfer component of Chemical Engineering Design Library (ChEDL) ======================================================================
+
+  .. meta::
+      :google-site-verification: wcmDZ88ikLzq1to6urRDGA6R7oIhzya2sN5hOeV1zZw
+
 ht is open-source software for engineers and technicians working in the
 fields of chemical or mechanical engineering. It includes modules
 for various heat transfer functions.

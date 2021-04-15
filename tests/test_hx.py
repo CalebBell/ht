@@ -21,11 +21,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.'''
 
 from __future__ import division
-from math import log, exp, sqrt, tanh, factorial, isnan
+from math import log, log10, exp, sqrt, tanh, factorial, isnan
 from ht import *
 import ht
 import numpy as np
-from fluids.numerics import assert_close, assert_close1d, assert_close2d
+from fluids.numerics import assert_close, assert_close1d, assert_close2d, linspace, logspace
 import pytest
 from random import uniform, randint, seed, choice
 seed(0)
