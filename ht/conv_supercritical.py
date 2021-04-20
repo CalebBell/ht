@@ -231,14 +231,16 @@ def Nu_Jackson(Re, Pr, rho_w=None, rho_b=None, Cp_avg=None, Cp_b=None, T_b=None,
         n = 0.4 \text{ for } T_b < T_w < T_{pc} \text{ or } 1.2T_{pc} < T_b < T_w
 
     .. math::
-        n = 0.4 + 0.2(T_w/T_{pc} - 1) \text{ for } T_b < T_{pc} <T_w
-
-    .. math::
         n = 0.4 + 0.2(T_w/T_{pc} - 1)[1 - 5(T_b/T_{pc}-1)]
         \text{ for } T_{pc} < T_b < 1.2T_{pc} \text{ and } T_b < T_w
 
     .. math::
+        n = 0.4 + 0.2(T_w/T_{pc} - 1) \text{ for } T_b < T_{pc} < T_w
+
+    .. math::
         \bar{Cp} = \frac{H_w-H_b}{T_w-T_b}
+        
+        
 
     Parameters
     ----------

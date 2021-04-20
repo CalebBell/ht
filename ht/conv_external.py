@@ -745,7 +745,7 @@ def Nu_horizontal_plate_turbulent_Schlichting(Re, Pr):
     surface friction term to a formulation from Petukhov and Popov.
 
     .. math::
-        \text{Nu}_L = \frac{0.037\text{Re_L}^{0.8} \text{Pr}}
+        \text{Nu}_L = \frac{0.037\text{Re}_L^{0.8} \text{Pr}}
         {1 + 2.443\text{Re}_L^{-0.1}(\text{Pr}^{2/3} - 1)}
 
     Parameters

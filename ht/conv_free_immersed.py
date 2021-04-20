@@ -702,6 +702,7 @@ def Nu_vertical_cylinder_Carne_Morgan(Pr, Gr, turbulent=None):
     .. math::
         Nu_H = 1.07 Ra_H^{0.28},\; 2\times 10^{6} < Ra < 2\times 10^{8}
 
+    .. math::
         Nu_H = 0.152 Ra_H^{0.38},\; 2\times 10^{8} < Ra < 2\times 10^{11}
 
     Parameters
