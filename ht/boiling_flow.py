@@ -730,29 +730,29 @@ def Chen_Bennett(m, x, D, rhol, rhog, mul, mug, kl, Cpl, Hvap, sigma,
     .. math::
         h_{tp} = S\cdot h_{nb} + F \cdot h_{sp,l}
 
-     .. math::
+    .. math::
        h_{sp,l} = 0.023 Re_l^{0.8} Pr_l^{0.4} k_l/D
 
-     .. math::
+    .. math::
        Re_l = \frac{DG(1-x)}{\mu_l}
 
-     .. math::
+    .. math::
        h_{nb} = 0.00122\left( \frac{\lambda_l^{0.79} c_{p,l}^{0.45}
         \rho_l^{0.49}}{\sigma^{0.5} \mu^{0.29} H_{vap}^{0.24} \rho_g^{0.24}}
         \right)\Delta T_{sat}^{0.24} \Delta p_{sat}^{0.75}
 
-     .. math::
+    .. math::
        F = \left(\frac{Pr_1+1}{2}\right)^{0.444}\cdot (1+X_{tt}^{-0.5})^{1.78}
 
-     .. math::
+    .. math::
        S = \frac{1-\exp(-F\cdot h_{conv} \cdot X_0/k_l)}
         {F\cdot h_{conv}\cdot X_0/k_l}
 
-     .. math::
+    .. math::
        X_{tt} = \left( \frac{1-x}{x}\right)^{0.9} \left(\frac{\rho_g}{\rho_l}
         \right)^{0.5}\left( \frac{\mu_l}{\mu_g}\right)^{0.1}
 
-     .. math::
+    .. math::
        X_0 = 0.041 \left(\frac{\sigma}{g \cdot (\rho_l-\rho_v)}\right)^{0.5}
 
     Parameters
@@ -846,19 +846,19 @@ def Liu_Winterton(m, x, D, rhol, rhog, mul, kl, Cpl, MW, P,  Pc, Te):
     .. math::
         h_{tp} = \sqrt{ (F\cdot h_l)^2 + (S\cdot h_{nb})^2}
 
-     .. math::
+    .. math::
        S = \left( 1+0.055F^{0.1} Re_{L}^{0.16}\right)^{-1}
 
-     .. math::
+    .. math::
        h_{l} = 0.023 Re_L^{0.8} Pr_l^{0.4} k_l/D
 
-     .. math::
+    .. math::
        Re_L = \frac{GD}{\mu_l}
 
-     .. math::
+    .. math::
        F = \left[ 1+ xPr_{l}(\rho_l/\rho_g-1)\right]^{0.35}
 
-     .. math::
+    .. math::
        h_{nb} = \left(55\Delta Te^{0.67} \frac{P}{P_c}^{(0.12 - 0.2\log_{10}
          R_p)}(-\log_{10} \frac{P}{P_c})^{-0.55} MW^{-0.5}\right)^{1/0.33}
 
