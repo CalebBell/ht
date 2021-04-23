@@ -3267,7 +3267,6 @@ def NTU_from_P_basic(P1, R1, subtype='crossflow'):
     '''
     NTU_min = 1E-11
     guess = None
-    function = temperature_effectiveness_basic
     if subtype == 'counterflow':
         return -log((P1*R1 - 1.)/(P1 - 1.))/(R1 - 1.)
     elif subtype == 'parallel':
@@ -3285,12 +3284,10 @@ def NTU_from_P_basic(P1, R1, subtype='crossflow'):
         NTU_max = 1E5
     elif subtype == 'crossflow':
         guess = NTU_from_P_basic(P1, R1, subtype='crossflow approximate')
-        NTU_min, NTU_max = None, None
-#        to_solve = lambda NTU1 : _NTU_from_P_objective(NTU1, R1, P1, function, 'crossflow')
-#        return secant(to_solve, guess)
+        return secant(_NTU_from_P_objective, guess, args=(R1, P1, temperature_effectiveness_basic, 'crossflow'))
     else:
         raise ValueError('Subtype not recognized.')
-    return _NTU_from_P_solver(P1, R1, NTU_min, NTU_max, function, guess, subtype)
+    return _NTU_from_P_solver(P1, R1, NTU_min, NTU_max, temperature_effectiveness_basic, guess, subtype)
 
 
 def NTU_from_P_G(P1, R1, Ntp, optimal=True):

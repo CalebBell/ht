@@ -387,7 +387,7 @@ def test_effectiveness_NTU():
     def crossflow_unmixed_sum_infinite(NTU, Cr):
         def Pn(NTU, n):
             tot = sum([(n+1.-j)/factorial(j)*NTU**(n+j) for j in range(1, n+1)])
-            return tot/factorial(n+1.)
+            return tot/factorial(n + 1)
         tot = sum([Cr**n*Pn(NTU, n) for n in range(1, 150)])
         return 1 - exp(-NTU) - exp(-(1+Cr)*NTU)*tot
 
