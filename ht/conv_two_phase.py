@@ -22,7 +22,7 @@ SOFTWARE.'''
 
 from __future__ import division
 from math import pi
-from fluids import Reynolds, Prandtl
+from fluids.core import Reynolds, Prandtl
 from ht.conv_internal import laminar_entry_Seider_Tate
 
 __all__ = ['Davis_David', 'Elamvaluthi_Srinivas', 'Groothuis_Hendal',

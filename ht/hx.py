@@ -21,11 +21,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.'''
 
 from __future__ import division
-from math import exp, log, floor, sqrt, factorial, tanh  # tanh= 1/coth
+from math import exp, log, floor, sqrt, tanh  # tanh= 1/coth
 import math
 import os
 from fluids.constants import inch, foot, degree_Fahrenheit, hour, Btu
-from fluids.numerics import horner, newton, ridder, quad, secant, quad, bisect, gamma
+from fluids.numerics import horner, newton, ridder, quad, secant, quad, bisect, gamma, factorial
 from fluids.numerics import iv
 from fluids.piping import BWG_integers, BWG_inch, BWG_SI
 from fluids.numerics import numpy as np
