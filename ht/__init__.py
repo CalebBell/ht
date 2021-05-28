@@ -22,102 +22,104 @@ SOFTWARE.'''
 
 import fluids
 
-from . import core
-from . import hx
-from . import conv_internal
-from . import boiling_flow
-from . import boiling_nucleic
-from . import conv_tube_bank
-from . import air_cooler
-from . import radiation
-from . import condensation
-from . import conduction
-from . import conv_jacket
-from . import insulation
-from . import conv_free_immersed
-from . import conv_free_enclosed
-from . import conv_packed_bed
-from . import conv_external
-from . import conv_supercritical
-from . import conv_two_phase
-from . import conv_plate
-from . import boiling_plate
+if not fluids.numerics.is_micropython:
 
-
-
-from .core import *
-from .hx import *
-from .conv_internal import *
-from .conv_plate import *
-from .boiling_flow import *
-from .boiling_nucleic import *
-from .air_cooler import *
-from .radiation import *
-from .condensation import *
-from .conduction import *
-from .conv_jacket import *
-from .insulation import *
-from .conv_free_immersed import *
-from .conv_free_enclosed import *
-from .conv_tube_bank import *
-from .conv_packed_bed import *
-from .conv_external import *
-from .conv_supercritical import *
-from .conv_two_phase import *
-from .boiling_plate import *
-
-__all__ = ['core', 'hx', 'conv_internal', 'boiling_nucleic', 'air_cooler',
-'radiation', 'condensation', 'conduction', 'conv_jacket', 'conv_free_immersed',
-'conv_tube_bank', 'insulation', 'conv_packed_bed', 'conv_external',
-'conv_supercritical', 'conv_two_phase', 'boiling_flow', 'boiling_plate',
-'conv_plate', 'conv_free_enclosed']
-
-
-__all__.extend(core.__all__)
-__all__.extend(hx.__all__)
-__all__.extend(conv_internal.__all__)
-__all__.extend(boiling_flow.__all__)
-__all__.extend(boiling_nucleic.__all__)
-__all__.extend(air_cooler.__all__)
-__all__.extend(radiation.__all__)
-__all__.extend(condensation.__all__)
-__all__.extend(conduction.__all__)
-__all__.extend(conv_jacket.__all__)
-__all__.extend(conv_free_immersed.__all__)
-__all__.extend(conv_tube_bank.__all__)
-__all__.extend(insulation.__all__)
-__all__.extend(conv_packed_bed.__all__)
-__all__.extend(conv_external.__all__)
-__all__.extend(conv_supercritical.__all__)
-__all__.extend(conv_two_phase.__all__)
-__all__.extend(boiling_plate.__all__)
-__all__.extend(conv_plate.__all__)
-__all__.extend(conv_free_enclosed.__all__)
-
-submodules = (core, hx, conv_internal, boiling_flow, boiling_nucleic, conv_tube_bank,
-              air_cooler, radiation, condensation, conduction, conv_jacket, insulation,
-              conv_free_immersed, conv_free_enclosed, conv_packed_bed, conv_external,
-              conv_supercritical, conv_two_phase, conv_plate, boiling_plate)
-
-global vectorized, numba, units, numba_vectorized
-if fluids.numerics.PY37:
-    def __getattr__(name):
-        global vectorized, numba, units, numba_vectorized
-        if name == 'vectorized':
-            import ht.vectorized as vectorized
-            return vectorized
-        if name == 'numba':
-            import ht.numba as numba
-            return numba
-        if name == 'units':
-            import ht.units as units
-            return units
-        if name == 'numba_vectorized':
-            import ht.numba_vectorized as numba_vectorized
-            return numba_vectorized
-        raise AttributeError("module %s has no attribute %s" %(__name__, name))
-else:
-    from . import vectorized
-
+    from . import core
+    from . import hx
+    from . import conv_internal
+    from . import boiling_flow
+    from . import boiling_nucleic
+    from . import conv_tube_bank
+    from . import air_cooler
+    from . import radiation
+    from . import condensation
+    from . import conduction
+    from . import conv_jacket
+    from . import insulation
+    from . import conv_free_immersed
+    from . import conv_free_enclosed
+    from . import conv_packed_bed
+    from . import conv_external
+    from . import conv_supercritical
+    from . import conv_two_phase
+    from . import conv_plate
+    from . import boiling_plate
+    
+    
+    
+    from .core import *
+    from .hx import *
+    from .conv_internal import *
+    from .conv_plate import *
+    from .boiling_flow import *
+    from .boiling_nucleic import *
+    from .air_cooler import *
+    from .radiation import *
+    from .condensation import *
+    from .conduction import *
+    from .conv_jacket import *
+    from .insulation import *
+    from .conv_free_immersed import *
+    from .conv_free_enclosed import *
+    from .conv_tube_bank import *
+    from .conv_packed_bed import *
+    from .conv_external import *
+    from .conv_supercritical import *
+    from .conv_two_phase import *
+    from .boiling_plate import *
+    
+    __all__ = ['core', 'hx', 'conv_internal', 'boiling_nucleic', 'air_cooler',
+    'radiation', 'condensation', 'conduction', 'conv_jacket', 'conv_free_immersed',
+    'conv_tube_bank', 'insulation', 'conv_packed_bed', 'conv_external',
+    'conv_supercritical', 'conv_two_phase', 'boiling_flow', 'boiling_plate',
+    'conv_plate', 'conv_free_enclosed']
+    
+    
+    __all__.extend(core.__all__)
+    __all__.extend(hx.__all__)
+    __all__.extend(conv_internal.__all__)
+    __all__.extend(boiling_flow.__all__)
+    __all__.extend(boiling_nucleic.__all__)
+    __all__.extend(air_cooler.__all__)
+    __all__.extend(radiation.__all__)
+    __all__.extend(condensation.__all__)
+    __all__.extend(conduction.__all__)
+    __all__.extend(conv_jacket.__all__)
+    __all__.extend(conv_free_immersed.__all__)
+    __all__.extend(conv_tube_bank.__all__)
+    __all__.extend(insulation.__all__)
+    __all__.extend(conv_packed_bed.__all__)
+    __all__.extend(conv_external.__all__)
+    __all__.extend(conv_supercritical.__all__)
+    __all__.extend(conv_two_phase.__all__)
+    __all__.extend(boiling_plate.__all__)
+    __all__.extend(conv_plate.__all__)
+    __all__.extend(conv_free_enclosed.__all__)
+    
+    submodules = (core, hx, conv_internal, boiling_flow, boiling_nucleic, conv_tube_bank,
+                  air_cooler, radiation, condensation, conduction, conv_jacket, insulation,
+                  conv_free_immersed, conv_free_enclosed, conv_packed_bed, conv_external,
+                  conv_supercritical, conv_two_phase, conv_plate, boiling_plate)
+    
+    global vectorized, numba, units, numba_vectorized
+    if fluids.numerics.PY37:
+        def __getattr__(name):
+            global vectorized, numba, units, numba_vectorized
+            if name == 'vectorized':
+                import ht.vectorized as vectorized
+                return vectorized
+            if name == 'numba':
+                import ht.numba as numba
+                return numba
+            if name == 'units':
+                import ht.units as units
+                return units
+            if name == 'numba_vectorized':
+                import ht.numba_vectorized as numba_vectorized
+                return numba_vectorized
+            raise AttributeError("module %s has no attribute %s" %(__name__, name))
+    else:
+        from . import vectorized
+    
 __version__ = '1.0.2'
 
