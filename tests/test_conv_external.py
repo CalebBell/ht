@@ -22,7 +22,6 @@ SOFTWARE.'''
 
 from __future__ import division
 from ht import *
-import numpy as np
 import pytest
 from fluids.numerics import linspace, logspace, assert_close, assert_close1d, assert_close2d
 from ht.conv_external import conv_horizontal_plate_laminar_methods, conv_horizontal_plate_turbulent_methods

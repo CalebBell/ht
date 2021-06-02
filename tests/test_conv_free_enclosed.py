@@ -23,10 +23,12 @@ SOFTWARE.'''
 from __future__ import division
 from ht import *
 from ht.conv_free_enclosed import Nu_Nusselt_Rayleigh_Holling_Herwig
-import numpy as np
-from fluids.numerics import assert_close, assert_close1d, assert_close2d
+from fluids.numerics import assert_close, assert_close1d, assert_close2d, numpy as np
 import pytest
-from scipy.interpolate import bisplrep, UnivariateSpline
+try:
+    from scipy.interpolate import bisplrep, UnivariateSpline
+except:
+    pass
 
 
 def test_Nu_Nusselt_Rayleigh_Holling_Herwig():

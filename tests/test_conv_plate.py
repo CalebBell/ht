@@ -23,16 +23,15 @@ SOFTWARE.'''
 from __future__ import division
 from ht import *
 from ht.conv_plate import *
-from numpy.testing import assert_allclose
 from fluids.numerics import assert_close, assert_close1d, assert_close2d
-import numpy as np
 import pytest
 
 
 
-
+@pytest.mark.numpy
 def test_Nu_plate_Kumar():
     from fluids.friction import Kumar_beta_list
+    from numpy.testing import assert_allclose
 
     Kumar_Nu_Res = [[10.0],
               [10.0, 100.0],

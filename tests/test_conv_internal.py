@@ -21,11 +21,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.'''
 
 from __future__ import division
-from ht import *
+import ht.conv_internal
+from ht.conv_internal import *
 from fluids.numerics import linspace, assert_close, assert_close1d, assert_close2d
 from ht.boiling_nucleic import _angles_Stephan_Abdelsalam
-import numpy as np
-
 import pytest
 
 

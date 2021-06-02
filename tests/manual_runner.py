@@ -3,8 +3,9 @@
 import sys
 try:
     import test_air_cooler
-except:
+except Exception as e:
     print('run this from the tests directory')
+    print(e)
     exit()
 import test_boiling_flow
 import test_boiling_nucleic

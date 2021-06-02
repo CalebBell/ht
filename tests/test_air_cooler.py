@@ -22,10 +22,9 @@ SOFTWARE.'''
 
 from __future__ import division
 from ht import *
-from random import choice
 from fluids.geometry import *
 from fluids.numerics import assert_close, assert_close1d, assert_close2d
-from scipy.constants import minute, hp, inch, foot
+from fluids.constants import minute, hp, inch, foot
 from ht.boiling_nucleic import _angles_Stephan_Abdelsalam
 import pytest
 
@@ -193,7 +192,8 @@ def test_dP_ESDU_low_fin():
     # vs 414 Pa; Kf, ka almost perfect - A_min is the source of difference
 
 
-
+@pytest.mark.slow
+@pytest.mark.fuzz
 def test_AirCooledExchangerPermutations():
     '''Demonstration of permutating all sorts of different options.
 
@@ -207,6 +207,8 @@ def test_AirCooledExchangerPermutations():
      *len(fin_thicknesses))/2.**31#15E-6/3600
 
     '''
+    from random import choice
+
     tube_rows_options = range(1, 20)
     tube_passes_options = range(1, 20)
     tubes_per_row_options = range(1, 40)
