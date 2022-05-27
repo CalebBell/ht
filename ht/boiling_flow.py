@@ -481,7 +481,7 @@ def Thome(m, x, D, rhol, rhog, mul, mug, kl, kg, Cpl, Cpg, Hvap, sigma, Psat,
     delta0 = D*0.29*(3*(nul/vp/D)**0.5)**0.84*((0.07*Bo**0.41)**-8 + 0.1**-8)**(-1/8.)
 
     tl = tau/(1 + rhol/rhog*(x/(1.-x)))
-    tv = tau/(1 ++ rhog/rhol*((1.-x)/x))
+    tv = tau/(1 + rhog/rhol*((1.-x)/x))
 
     t_dry_film = rhol*Hvap/q*(delta0 - C_delta0)
     if t_dry_film > tv:

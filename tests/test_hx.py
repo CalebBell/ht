@@ -123,7 +123,7 @@ def test_Phadkeb_numbers():
     # in memory as a list
     ht.hx._load_coeffs_Phadkeb()
     from ht.hx import triangular_Ns, triangular_C1s, square_Ns, square_C1s
-    from math import floor, ceil
+    from math import floor, ceil, sqrt
     # Triangular Ns
     # https://oeis.org/A003136
     # Translated expression originally in Wolfram Mathematica
@@ -150,10 +150,11 @@ def test_Phadkeb_numbers():
     # Tested with the online interpreter http://pari.math.u-bordeaux.fr/gp.html
     # This one is very slow, 300 seconds+
     # Used to be 300 + seconds, now 50+ seconds
-
+    
     def a(n):
         tot = 0
         for k in range(0, int(ceil(n/3.))):
+            # numpy could do this
             k3 = k*3.
             tot += floor(n/(k3 + 1.)) - floor(n/(k3 + 2.))
         return 1 + int(6*tot)
@@ -194,9 +195,14 @@ def test_Phadkeb_numbers():
     # a(n)=1+4*sum(k=0, sqrtint(n), sqrtint(n-k^2) ); /* Benoit Cloitre, Oct 08 2012 */
     # Currently 1.8 seconds
     # No numerical issues up to 35000 (confirmed with SymPy to do the root, int)
+    sqrtint = lambda i: int(sqrt(i))
     def a2(n):
-        sqrtint = lambda i: int(i**0.5)
-        return 1 + 4*sum([sqrtint(n - k*k) for k in range(0, sqrtint(n) + 1)])
+        # numpy would be good at this
+        rtf = sqrtint
+        tot = 0.0
+        for k in range(0, sqrtint(n) + 1):
+            tot += rtf(n - k*k)
+        return 1 + 4*tot
 
     ans = set([a2(i) for i in range(35000)])
     ans = sorted(list(ans))
