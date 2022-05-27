@@ -1122,7 +1122,7 @@ def Zuber(sigma, Hvap, rhol, rhog, K=0.18):
     lists a value of 0.18, and so it is the default.
 
     .. math::
-        q_c = 0.149H_{vap} \rho_g^{0.5}\left[\sigma g (\rho_L-\rho_g)\right]^{0.25}
+        q_c = KH_{vap} \rho_g^{0.5}\left[\sigma g (\rho_L-\rho_g)\right]^{0.25}
 
     Parameters
     ----------
