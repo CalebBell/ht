@@ -20,10 +20,6 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.'''
 
-try:
-    import difflib
-except:
-    pass
 from fluids.numerics import interp
 from ht.conduction import R_to_k
 
@@ -613,6 +609,7 @@ def nearest_material(name, complete=False):
     .. [3] Gesellschaft, V. D. I., ed. VDI Heat Atlas. 2nd edition.
        Berlin; New York:: Springer, 2010.
     '''
+    import difflib
     if complete:
         hits = difflib.get_close_matches(name, materials_dict.keys(), n=1000, cutoff=0)
         for hit in hits:
