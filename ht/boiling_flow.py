@@ -932,36 +932,5 @@ def Liu_Winterton(m, x, D, rhol, rhog, mul, kl, Cpl, MW, P,  Pc, Te):
     hl = turbulent_Dittus_Boelter(Re=ReL, Pr=Prl)*kl/D
     F = (1 + x*Prl*(rhol/rhog - 1))**0.35
     S = (1 + 0.055*F**0.1*ReL**0.16)**-1
-#    if horizontal:
-#        Fr = Froude(V=G/rhol, L=D, squared=True)
-#        if Fr < 0.05:
-#            ef = Fr**(0.1 - 2*Fr)
-#            es = Fr**0.5
-#            F *= ef
-#            S *= es
     h_nb = Cooper(Te=Te, P=P, Pc=Pc, MW=MW)
     return ((F*hl)**2 + (S*h_nb)**2)**0.5
-
-
-
-#h = Liu_Winterton(m=1, x=0.4, D=0.3, rhol=567., rhog=18.09, kl=0.086, mul=156E-6, Cpl=2300, P=1E6, Pc=22E6, MW=44.02, Te=7)
-#print(h)
-
-#print(Chen_Bennett(m=0.106, x=0.2, D=0.0212, rhol=567, rhog=18.09, mul=156E-6, mug=7.11E-6, kl=0.086, Cpl=2730, Hvap=2E5, sigma=0.02, dPSat=1E5, Te=3))
-
-
-#q = 1E4
-#h1 = Yun_Heo_Kim(m=1, x=0.4, D=0.3, rhol=567., mul=156E-6, sigma=0.02, Hvap=9E5, q=q)
-#Te = q/h1
-#print('h1', h1, 'Te', Te)
-#print([Yun_Heo_Kim(m=1, x=0.4, D=0.3, rhol=567., mul=156E-6, sigma=0.02, Hvap=9E5, Te=Te)])
-#
-###q = 1E5
-##h = Thome(m=10, x=0.5, D=0.3, rhol=567., rhog=18.09, kl=0.086, kg=0.2, mul=156E-6, mug=1E-5, Cpl=2300, Cpg=1400, sigma=0.02, Hvap=9E5, Psat=1E5, Pc=22E6, q=q)
-##print(h)
-#Te = q/h
-#print(Te)
-#print(Thome(m=10, x=0.5, D=0.3, rhol=567., rhog=18.09, kl=0.086, kg=0.2, mul=156E-6, mug=1E-5, Cpl=2300, Cpg=1400, sigma=0.02, Hvap=9E5, Psat=1E5, Pc=22E6, Te=Te))
-##print('Te', Te)
-#to_sovlve = lambda Te : Thome(m=10, x=0.5, D=0.3, rhol=567., rhog=18.09, kl=0.086, kg=0.2, mul=156E-6, mug=1E-5, Cpl=2300, Cpg=1400, sigma=0.02, Hvap=9E5, Psat=1E5, Pc=22E6, q=q) - Te
-#print(fsolve(to_sovlve, 2E5))
