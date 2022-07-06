@@ -23,10 +23,6 @@ SOFTWARE.'''
 from __future__ import division
 from math import log, pi, acosh, cosh
 from fluids.constants import inch, foot, hour, Btu, degree_Fahrenheit
-try:
-    from pprint import pprint
-except:
-    pass
 
 __all__ = ['R_to_k', 'k_to_R', 'k_to_thermal_resistivity',
 'thermal_resistivity_to_k', 'R_value_to_k', 'k_to_R_value', 'R_cylinder',
@@ -638,6 +634,7 @@ def cylindrical_heat_transfer(Ti, To, hi, ho, Di, ts, ks):
     Examples
     --------
 
+    >>> from pprint import pprint
     >>> pprint(cylindrical_heat_transfer(Ti=453.15, To=301.15, hi=1e12, ho=22.697193, Di=0.0779272, ts=[0.0054864, .05], ks=[56.045, 0.0598535265]))
     {'Q': 73.12000884069367,
      'Rs': [0.00022201030738405449, 1.189361782070256],
