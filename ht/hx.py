@@ -68,7 +68,7 @@ def crossflow_effectiveness_to_int(v, NTU, t0):
     x0 = v*v*t0
     return (1. + NTU - x0)*exp(-x0)*v*float(iv(0.0, v))
 
-def effectiveness_from_NTU(NTU, Cr, subtype='counterflow'):
+def effectiveness_from_NTU(NTU, Cr, subtype='counterflow', n_shell_tube=None):
     r'''Returns the effectiveness of a heat exchanger at a specified heat
     capacity rate, number of transfer units, and configuration. The following
     configurations are supported:
@@ -159,8 +159,9 @@ def effectiveness_from_NTU(NTU, Cr, subtype='counterflow'):
     subtype : str, optional
         The subtype of exchanger; one of 'counterflow', 'parallel', 'crossflow'
         'crossflow approximate', 'crossflow, mixed Cmin',
-        'crossflow, mixed Cmax', 'boiler', 'condenser', 'S&T', or 'nS&T' where
-        n is the number of shell and tube exchangers in a row.
+        'crossflow, mixed Cmax', 'boiler', 'condenser', 'S&T'
+    n_shell_tube : None or int, optional
+        The number of shell and tube exchangers in a row, [-]
 
     Returns
     -------
@@ -233,7 +234,7 @@ def effectiveness_from_NTU(NTU, Cr, subtype='counterflow'):
 
     >>> effectiveness_from_NTU(NTU=5, Cr=0.7, subtype='S&T')
     0.683497704431
-    >>> effectiveness_from_NTU(NTU=5, Cr=0.7, subtype='50S&T')
+    >>> effectiveness_from_NTU(NTU=5, Cr=0.7, subtype='S&T', n_shell_tube=50)
     0.920505870278
 
 
@@ -299,12 +300,12 @@ def effectiveness_from_NTU(NTU, Cr, subtype='counterflow'):
             return NTU/(1. + NTU)
     elif subtype == 'parallel':
             return (1. - exp(-NTU*(1. + Cr)))/(1. + Cr)
-    elif 'S&T' in subtype:
-        str_shells = subtype.split('S&T')[0]
-        shells = int(str_shells) if str_shells else 1
+    elif 'S&T' == subtype:
+        # str_shells = subtype.split('S&T')[0]
+        shells = n_shell_tube if n_shell_tube is not None else 1
         NTU = NTU/shells
 
-        x0 = (1. + Cr*Cr)**.5
+        x0 = sqrt(1. + Cr*Cr)
         x1 = exp(-NTU*x0)
         top = 1. + x1
         bottom = 1. - x1
@@ -316,12 +317,13 @@ def effectiveness_from_NTU(NTU, Cr, subtype='counterflow'):
         return effectiveness
     elif subtype == 'crossflow':
         t0 = 1.0/(4.*Cr*NTU)
-        int_term = quad(crossflow_effectiveness_to_int, 0, 2.*NTU*Cr**0.5, args=(NTU, t0,))[0]
-        return 1./Cr - exp(-Cr*NTU)/(2.*(Cr*NTU)**2)*int_term
+        int_term = quad(crossflow_effectiveness_to_int, 0, 2.*NTU*sqrt(Cr), args=(NTU, t0,))[0]
+        CrNTU = Cr*NTU
+        return 1./Cr - exp(-CrNTU)/(2.*CrNTU*CrNTU)*int_term
     elif subtype == 'crossflow approximate':
         return 1. - exp(1./Cr*NTU**0.22*(exp(-Cr*NTU**0.78) - 1.))
     elif subtype == 'crossflow, mixed Cmin':
-        return 1. -exp(-Cr**-1*(1. - exp(-Cr*NTU)))
+        return 1. -exp(-1.0/Cr*(1. - exp(-Cr*NTU)))
     elif subtype ==  'crossflow, mixed Cmax':
         return (1./Cr)*(1. - exp(-Cr*(1. - exp(-NTU))))
     elif subtype == 'boiler' or subtype == 'condenser':
@@ -330,7 +332,7 @@ def effectiveness_from_NTU(NTU, Cr, subtype='counterflow'):
         raise ValueError('Input heat exchanger type not recognized')
 
 
-def NTU_from_effectiveness(effectiveness, Cr, subtype='counterflow'):
+def NTU_from_effectiveness(effectiveness, Cr, subtype='counterflow', n_shell_tube=None):
     r'''Returns the Number of Transfer Units of a heat exchanger at a specified
     heat capacity rate, effectiveness, and configuration. The following
     configurations are supported:
@@ -419,9 +421,10 @@ def NTU_from_effectiveness(effectiveness, Cr, subtype='counterflow'):
     subtype : str, optional
         The subtype of exchanger; one of 'counterflow', 'parallel', 'crossflow'
         'crossflow approximate', 'crossflow, mixed Cmin',
-        'crossflow, mixed Cmax', 'boiler', 'condenser', 'S&T', or 'nS&T' where
-        n is the number of shell and tube exchangers in a row.
-
+        'crossflow, mixed Cmax', 'boiler', 'condenser', 'S&T'.
+    n_shell_tube : None or int, optional
+        The number of shell and tube exchangers in a row, [-]
+    
     Returns
     -------
     NTU : float
@@ -460,7 +463,7 @@ def NTU_from_effectiveness(effectiveness, Cr, subtype='counterflow'):
 
     >>> NTU_from_effectiveness(effectiveness=0.6834977044311439, Cr=0.7, subtype='S&T')
     5.000000000000
-    >>> NTU_from_effectiveness(effectiveness=0.9205058702789254, Cr=0.7, subtype='50S&T')
+    >>> NTU_from_effectiveness(effectiveness=0.9205058702789254, Cr=0.7, n_shell_tube=50, subtype='S&T')
     4.999999999999
 
 
@@ -519,14 +522,13 @@ def NTU_from_effectiveness(effectiveness, Cr, subtype='counterflow'):
                              'possible is %s.' % (1./(Cr + 1.))) # numba: delete
 #                             ) # numba: uncomment
         return -log(1. - effectiveness*(1. + Cr))/(1. + Cr)
-    elif 'S&T' in subtype:
+    elif 'S&T' == subtype:
         # [2]_ gives the expression
         # D = (1+Cr**2)**0.5
         # 1/D*log((2-eff*(1+Cr-D))/(2-eff*(1+Cr + D)))
         # This is confirmed numerically to be the same equation rearranged
         # differently
-        str_shells = subtype.split('S&T')[0]
-        shells = int(str_shells) if str_shells else 1
+        shells = n_shell_tube if n_shell_tube is not None else 1
 
         F = ((effectiveness*Cr - 1.)/(effectiveness - 1.))**(1./shells)
         e1 = (F - 1.)/(F - Cr)
@@ -896,7 +898,8 @@ def Pc(x, y):
 
 
 def effectiveness_NTU_method(mh, mc, Cph, Cpc, subtype='counterflow', Thi=None,
-                             Tho=None, Tci=None, Tco=None, UA=None):
+                             Tho=None, Tci=None, Tco=None, UA=None, 
+                             n_shell_tube=None):
     r'''Wrapper for the various effectiveness-NTU method function calls,
     which can solve a heat exchanger. The heat capacities and mass flows
     of each stream and the type of the heat exchanger are always required.
@@ -933,6 +936,8 @@ def effectiveness_NTU_method(mh, mc, Cph, Cpc, subtype='counterflow', Thi=None,
         Outlet temperature of cold fluid, [K]
     UA : float, optional
         Combined Area-heat transfer coefficient term, [W/K]
+    n_shell_tube : None or int, optional
+        The number of shell and tube exchangers in a row, [-]
 
     Returns
     -------
@@ -1000,7 +1005,7 @@ def effectiveness_NTU_method(mh, mc, Cph, Cpc, subtype='counterflow', Thi=None,
     Ch = mh*Cph
     if UA is not None:
         NTU = NTU_from_UA(UA=UA, Cmin=Cmin)
-        effectiveness = eff = effectiveness_from_NTU(NTU=NTU, Cr=Cr, subtype=subtype)
+        effectiveness = eff = effectiveness_from_NTU(NTU=NTU, Cr=Cr, n_shell_tube=n_shell_tube, subtype=subtype)
 
         possible_inputs = [(Tci, Thi), (Tci, Tho), (Tco, Thi), (Tco, Tho)]
         if not any([i for i in possible_inputs if None not in i]):
@@ -1059,7 +1064,7 @@ def effectiveness_NTU_method(mh, mc, Cph, Cpc, subtype='counterflow', Thi=None,
                             'when solving for UA')
 
         effectiveness = Q/Cmin/(Thi-Tci)
-        NTU = NTU_from_effectiveness(effectiveness, Cr, subtype=subtype)
+        NTU = NTU_from_effectiveness(effectiveness, Cr, n_shell_tube=n_shell_tube, subtype=subtype)
         UA = UA_from_NTU(NTU, Cmin)
     return {'Q': Q, 'UA': UA, 'Cr':Cr, 'Cmin': Cmin, 'Cmax':Cmax,
             'effectiveness': effectiveness, 'NTU': NTU, 'Thi': Thi, 'Tho': Tho,

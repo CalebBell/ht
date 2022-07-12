@@ -349,12 +349,12 @@ def test_effectiveness_NTU():
         shells = randint(1, 10)
         eff_max = (-((-Cr + sqrt(Cr**2 + 1) + 1)/(Cr + sqrt(Cr**2 + 1) - 1))**shells + 1)/(Cr - ((-Cr + sqrt(Cr**2 + 1) + 1)/(Cr + sqrt(Cr**2 + 1) - 1))**shells)
         eff = uniform(0, eff_max-1E-5)
-        N = NTU_from_effectiveness(eff, Cr=Cr, subtype=str(shells)+'S&T')
-        eff_calc = effectiveness_from_NTU(N, Cr=Cr, subtype=str(shells)+'S&T')
+        N = NTU_from_effectiveness(eff, Cr=Cr, n_shell_tube=shells, subtype='S&T')
+        eff_calc = effectiveness_from_NTU(N, Cr=Cr, n_shell_tube=shells, subtype='S&T')
         assert_close(eff, eff_calc)
 
     with pytest.raises(Exception):
-        NTU_from_effectiveness(.99, Cr=.7, subtype='5S&T')
+        NTU_from_effectiveness(.99, Cr=.7, n_shell_tube=5, subtype='S&T')
 
     # Easy tests
     effectiveness = effectiveness_from_NTU(NTU=5, Cr=0.7, subtype='crossflow, mixed Cmin')
@@ -480,7 +480,7 @@ def test_F_LMTD_Fakheri():
     assert_close(F_calc, 0.9925689447100824)
 
     for i in range(1, 10):
-        ans = effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, subtype=str(i)+'S&T', Tci=15, Tco=85, Thi=130)
+        ans = effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, n_shell_tube=i, subtype='S&T', Tci=15, Tco=85, Thi=130)
         dTlm = LMTD(Thi=130, Tho=110.06100082712986,  Tci=15, Tco=85)
         F_expect = ans['Q']/ans['UA']/dTlm
 
