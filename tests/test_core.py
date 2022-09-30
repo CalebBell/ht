@@ -158,3 +158,9 @@ def test_fin_efficiency_Kern_Kraus():
         # Confirmed with Introduction to Heat Transfer
         # To create a pade approximation of this, it would require f(m, re, ro). Not worth it.
     '''
+    
+def test_countercurrent_hx_temperature_check():
+    assert not countercurrent_hx_temperature_check(T0i=500, T0o=466, T1i=348, T1o=329)
+    assert not countercurrent_hx_temperature_check(T0i=453, T0o=466, T1i=310, T1o=329)
+    assert not countercurrent_hx_temperature_check(T0i=453, T0o=466, T1i=348, T1o=329)
+    assert countercurrent_hx_temperature_check(T0i=500, T0o=466, T1i=310, T1o=329)

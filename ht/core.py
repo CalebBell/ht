@@ -33,7 +33,8 @@ __all__ =['LMTD', 'wall_factor', 'is_heating_property',
 'Kays_Crawford_laminar_gas_Nu',
 'Kays_Crawford_laminar_gas_fd',
 'Kays_Crawford_laminar_liquid_fd',
-'Kays_Crawford_laminar_liquid_Nu', 'fin_efficiency_Kern_Kraus']
+'Kays_Crawford_laminar_liquid_Nu', 'fin_efficiency_Kern_Kraus',
+'countercurrent_hx_temperature_check']
 
 def LMTD(Thi, Tho, Tci, Tco, counterflow=True):
     r'''Returns the log-mean temperature difference of an ideal counterflow
@@ -114,6 +115,46 @@ def LMTD(Thi, Tho, Tci, Tco, counterflow=True):
         return dTF1
     else:
         return (dTF2 - dTF1)/log(dTF2/dTF1)
+
+def countercurrent_hx_temperature_check(T0i, T0o, T1i, T1o):
+    r'''Perform a check on two sets of temperatures that could represent
+    a countercurrent heat exchanger, and return whether they are possible or 
+    not.
+
+    Parameters
+    ----------
+    T0i : float
+        Inlet temperature of one fluid, [K]
+    T0o : float
+        Outlet temperature of one fluid, [K]
+    T1i : float
+        Inlet temperature of another fluid, [K]
+    T1o : float
+        Outlet temperature of another fluid, [K]
+
+    Returns
+    -------
+    plausible : bool
+        Whether the exchange is possilble, [-]
+
+    Notes
+    -----
+
+    Examples
+    --------
+
+    '''
+    if T0i > T1i:
+        Thi, Tho = T0i, T0o
+        Tci, Tco = T1i, T1o
+    else:
+        Thi, Tho = T1i, T1o
+        Tci, Tco = T0i, T0o
+    if Thi < Tho:
+        return False
+    if Tci > Tco:
+        return False
+    return True
 
 
 def is_heating_temperature(T, T_wall):
@@ -499,6 +540,18 @@ def fin_efficiency_Kern_Kraus(Do, D_fin, t_fin, k_fin, h):
     -----
     I0, I1, K0 and K1 are modified Bessel functions of order 0 and 1,
     modified Bessel function of the second kind of order 0 and 1 respectively.
+    
+    
+    A number of assumptions are made in deriving this set of equations [5]_:
+        
+        * 1-D radial conduction
+        * Steady-state operation
+        * No radiative heat transfer
+        * Temperature-independent fin thermal conductivity
+        * Constant heat transfer coefficient across the whole fin
+        * The fin base temperature is a constant value
+        * There is no constant resistance between the tube material and the added fin
+        * The surrounding fluid is at a constant temperature
 
     References
     ----------
@@ -511,6 +564,9 @@ def fin_efficiency_Kern_Kraus(Do, D_fin, t_fin, k_fin, h):
        Wiley, 2011.
     .. [4] Kraus, Allan D., Abdul Aziz, and James Welty. Extended Surface Heat
        Transfer. 1st edition. New York: Wiley-Interscience, 2001.
+    .. [5] Perrotin, Thomas, and Denis Clodic. "Fin Efficiency Calculation in 
+       Enhanced Fin-and-Tube Heat Exchangers in Dry Conditions." In Proc. Int.
+       Congress of Refrigeration 2003, 2003.
     '''
     re = 0.5*D_fin
     ro = 0.5*Do
