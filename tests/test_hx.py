@@ -1718,3 +1718,14 @@ def test_issue_6():
     subtype='counterflow', Ntp=4, T2i=15, T1i=130, UA=3041.75)
     for k, v in at_error.items():
         assert_close(v, before_error[k], rtol=1e-8)
+        
+    Flowh = 5
+    Flowc = 5
+    Cph = 4000
+    Cpc = 4000
+    subtype = 'counterflow'
+    UA = 2500
+    Thi = 90
+    Tci = 0
+    results = effectiveness_NTU_method(Flowh,Flowc,Cph,Cpc,subtype=subtype,UA=UA,
+                                        Thi = Thi, Tci=Tci)

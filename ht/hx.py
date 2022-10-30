@@ -1011,13 +1011,13 @@ def effectiveness_NTU_method(mh, mc, Cph, Cpc, subtype='counterflow', Thi=None,
         if not any([i for i in possible_inputs if None not in i]):
             raise ValueError('One set of (Tci, Thi), (Tci, Tho), (Tco, Thi), or (Tco, Tho) are required along with UA.')
 
-        if Thi and Tci:
+        if Thi is not None and Tci is not None:
             Q = eff*Cmin*(Thi - Tci)
-        elif Tho and Tco :
+        elif Tho is not None and Tco is not None:
             Q = eff*Cmin*Cc*Ch*(Tco - Tho)/(eff*Cmin*(Cc+Ch) - Ch*Cc)
-        elif Thi and Tco:
+        elif Thi is not None and Tco is not None:
             Q = Cmin*Cc*eff*(Tco-Thi)/(eff*Cmin - Cc)
-        elif Tho and Tci:
+        elif Tho is not None and Tci is not None:
             Q = Cmin*Ch*eff*(Tci-Tho)/(eff*Cmin - Ch)
         # The following is not used as it was decided to require complete temperature information
 #        elif Tci and Tco:
@@ -1025,11 +1025,11 @@ def effectiveness_NTU_method(mh, mc, Cph, Cpc, subtype='counterflow', Thi=None,
 #        elif Tho and Thi:
 #            Q = Ch*(Thi-Tho)
         # Compute the remaining temperatures with the fewest lines of code
-        if Tci and not Tco:
+        if Tci is not None and Tco is None:
             Tco = Tci + Q/(Cc)
         else:
             Tci = Tco - Q/(Cc)
-        if Thi and not Tho:
+        if Thi is not None and Tho is None:
             Tho = Thi - Q/(Ch)
         else:
             Thi = Tho + Q/(Ch)
