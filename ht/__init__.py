@@ -121,5 +121,5 @@ if not fluids.numerics.is_micropython:
     else:
         from . import vectorized
     
-__version__ = '1.0.2'
+__version__ = '1.0.3'
 
