@@ -1709,3 +1709,12 @@ def test_L_unsupported_max():
 
     # Terribly pessimistic
     assert_close(L_unsupported_max(Do=10, material='CS'), 3.175)
+    
+    
+def test_issue_6():
+    at_error = P_NTU_method(m1=3, m2=3, Cp1=1860., Cp2=1860,
+    subtype='counterflow', Ntp=4, T2i=15, T1i=130, UA=3041.75)
+    before_error = P_NTU_method(m1=3, m2=3*(1+1e-8), Cp1=1860., Cp2=1860,
+    subtype='counterflow', Ntp=4, T2i=15, T1i=130, UA=3041.75)
+    for k, v in at_error.items():
+        assert_close(v, before_error[k], rtol=1e-8)

@@ -1409,7 +1409,15 @@ def temperature_effectiveness_basic(R1, NTU1, subtype='crossflow'):
     '''
     if subtype == 'counterflow':
         # Same as TEMA 1 pass
-        P1 = (1.0 - exp(-NTU1*(1 - R1)))/(1.0 - R1*exp(-NTU1*(1-R1)))
+        if R1 == 1.0:
+            '''from sympy import *
+            R1, NTU1 = symbols('R1, NTU1')
+            P1 = (1 - exp(-NTU1*(1 - R1)))/(1 - R1*exp(-NTU1*(1-R1)))
+            limit(P1, R1, 1)
+            '''
+            P1 = -NTU1/(-NTU1 - 1.0)
+        else:
+            P1 = (1.0 - exp(-NTU1*(1 - R1)))/(1.0 - R1*exp(-NTU1*(1-R1)))
     elif subtype == 'parallel':
         P1 = (1.0 - exp(-NTU1*(1 + R1)))/(1.0 + R1)
     elif subtype == 'crossflow approximate':
