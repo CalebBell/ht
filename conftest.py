@@ -6,6 +6,8 @@ def pytest_ignore_collect(path):
     path = str(path)
     if 'manual_runner' in path or 'make_test_stubs' in path or 'plot' in path or 'prerelease' in path:
         return True
+    if 'conf.py' in path:
+        return True
     ver_tup = platform.python_version_tuple()[0:2]
     ver_tup = tuple(int(i) for i in ver_tup)
     if ver_tup < (3, 7) or ver_tup >= (3, 10) or is_pypy:
