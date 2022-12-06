@@ -21,7 +21,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.'''
 
 from __future__ import division
-from ht import *
+from ht import (Bier, Cooper, Forster_Zuber, Gorenflo, HEDH_Montinsky, HEDH_Taborek, McNelly,
+                Montinsky, Rohsenow, Serth_HEDH, Stephan_Abdelsalam, Zuber, h_nucleic,
+                h_nucleic_methods, qmax_boiling, qmax_boiling_methods)
 from ht.boiling_nucleic import _angles_Stephan_Abdelsalam
 from fluids.numerics import assert_close, assert_close1d, assert_close2d
 import pytest

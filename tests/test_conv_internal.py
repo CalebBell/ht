@@ -22,7 +22,21 @@ SOFTWARE.'''
 
 from __future__ import division
 import ht.conv_internal
-from ht.conv_internal import *
+from ht.conv_internal import (Morimoto_Hotta, Nu_conv_internal, Nu_conv_internal_methods,
+                              Nu_laminar_rectangular_Shan_London, conv_tube_methods,
+                              helical_turbulent_Nu_Mori_Nakayama, helical_turbulent_Nu_Schmidt,
+                              helical_turbulent_Nu_Xin_Ebadian, laminar_Q_const, laminar_T_const,
+                              laminar_entry_Baehr_Stephan, laminar_entry_Seider_Tate,
+                              laminar_entry_thermal_Hausen, turbulent_Bhatti_Shah,
+                              turbulent_Churchill_Zajic, turbulent_Colburn,
+                              turbulent_Dipprey_Sabersky, turbulent_Dittus_Boelter,
+                              turbulent_Drexel_McAdams, turbulent_ESDU, turbulent_Friend_Metzner,
+                              turbulent_Gnielinski, turbulent_Gnielinski_smooth_1,
+                              turbulent_Gnielinski_smooth_2, turbulent_Gowen_Smith,
+                              turbulent_Kawase_De, turbulent_Kawase_Ulbrecht, turbulent_Martinelli,
+                              turbulent_Nunner, turbulent_Petukhov_Kirillov_Popov,
+                              turbulent_Prandtl, turbulent_Sandall, turbulent_Sieder_Tate,
+                              turbulent_Webb, turbulent_entry_Hausen, turbulent_von_Karman)
 from fluids.numerics import linspace, assert_close, assert_close1d, assert_close2d
 from ht.boiling_nucleic import _angles_Stephan_Abdelsalam
 import pytest

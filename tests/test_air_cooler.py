@@ -21,8 +21,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.'''
 
 from __future__ import division
-from ht import *
-from fluids.geometry import *
+from ht import (Ft_aircooler, air_cooler_noise_GPSA, air_cooler_noise_Mukherjee, dP_ESDU_high_fin,
+                dP_ESDU_low_fin, h_Briggs_Young, h_ESDU_high_fin, h_ESDU_low_fin, h_Ganguli_VDI)
+from fluids.geometry import AirCooledExchanger
 from fluids.numerics import assert_close, assert_close1d, assert_close2d
 from fluids.constants import minute, hp, inch, foot
 from ht.boiling_nucleic import _angles_Stephan_Abdelsalam

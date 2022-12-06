@@ -21,8 +21,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.'''
 
 from __future__ import division
-from fluids import *
-from ht import *
+from fluids import Prandtl
+from math import pi
+from ht import (Akers_Deans_Crosser, Boyko_Kruzhilin, Cavallini_Smith_Zecchin, Nusselt_laminar,
+                Shah, h_kinetic)
 from ht.boiling_nucleic import _angles_Stephan_Abdelsalam
 from fluids.numerics import linspace
 from fluids.numerics import assert_close, assert_close1d, assert_close2d

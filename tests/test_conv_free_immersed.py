@@ -22,7 +22,19 @@ SOFTWARE.'''
 
 from __future__ import division
 import ht
-from ht import *
+from ht import (Nu_coil_Xin_Ebadian, Nu_free_horizontal_plate, Nu_free_horizontal_plate_methods,
+                Nu_free_vertical_plate, Nu_free_vertical_plate_methods, Nu_horizontal_cylinder,
+                Nu_horizontal_cylinder_Churchill_Chu, Nu_horizontal_cylinder_Kuehn_Goldstein,
+                Nu_horizontal_cylinder_Morgan, Nu_horizontal_cylinder_methods,
+                Nu_horizontal_plate_McAdams, Nu_horizontal_plate_Rohsenow, Nu_horizontal_plate_VDI,
+                Nu_sphere_Churchill, Nu_vertical_cylinder, Nu_vertical_cylinder_Al_Arabi_Khamis,
+                Nu_vertical_cylinder_Carne_Morgan, Nu_vertical_cylinder_Eigenson_Morgan,
+                Nu_vertical_cylinder_Griffiths_Davis_Morgan,
+                Nu_vertical_cylinder_Hanesian_Kalish_Morgan,
+                Nu_vertical_cylinder_Jakob_Linke_Morgan, Nu_vertical_cylinder_Kreith_Eckert,
+                Nu_vertical_cylinder_McAdams_Weiss_Saunders, Nu_vertical_cylinder_Popiel_Churchill,
+                Nu_vertical_cylinder_Touloukian_Morgan, Nu_vertical_cylinder_methods,
+                Nu_vertical_helical_coil_Prabhanjan_Rennie_Raghavan, Nu_vertical_plate_Churchill)
 from ht.boiling_nucleic import _angles_Stephan_Abdelsalam
 from fluids.numerics import assert_close, assert_close1d, assert_close2d, linspace, logspace
 import pytest

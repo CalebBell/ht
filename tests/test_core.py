@@ -21,7 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.'''
 
 from __future__ import division
-from ht import *
+from ht import LMTD, countercurrent_hx_temperature_check, fin_efficiency_Kern_Kraus, wall_factor
 import numpy as np
 from fluids.numerics import assert_close, assert_close1d, assert_close2d
 from ht.core import is_heating_temperature, is_heating_property

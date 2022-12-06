@@ -21,7 +21,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.'''
 
 from __future__ import division
-from ht import *
+from ht import (h_boiling_Amalfi, h_boiling_Han_Lee_Kim, h_boiling_Huang_Sheer,
+                h_boiling_Lee_Kang_Kim, h_boiling_Yan_Lin)
 from fluids.numerics import assert_close, assert_close1d, assert_close2d
 import pytest
 

@@ -21,7 +21,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.'''
 
 from __future__ import division
-from ht import *
+from ht import (Nu_Nusselt_Rayleigh_Hollands, Nu_Nusselt_Rayleigh_Probert,
+                Nu_Nusselt_vertical_Thess, Nu_vertical_helical_coil_Ali, Rac_Nusselt_Rayleigh,
+                Rac_Nusselt_Rayleigh_disk)
 from ht.conv_free_enclosed import Nu_Nusselt_Rayleigh_Holling_Herwig
 from fluids.numerics import assert_close, assert_close1d, assert_close2d, numpy as np
 import pytest

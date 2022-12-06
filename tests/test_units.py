@@ -28,7 +28,7 @@ from fluids.numerics import assert_close, assert_close1d, assert_close2d
 import pytest
 import fluids
 import ht
-from ht.units import *
+from ht.units import P_NTU_method, R_to_k, R_value_to_k, effectiveness_NTU_method, k_to_R_value, u
 
 
 

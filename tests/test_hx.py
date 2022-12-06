@@ -22,7 +22,15 @@ SOFTWARE.'''
 
 from __future__ import division
 from math import log, log10, exp, sqrt, tanh, factorial, isnan
-from ht import *
+from ht import (DBundle_for_Ntubes_HEDH, DBundle_for_Ntubes_Phadkeb, DBundle_min, D_for_Ntubes_VDI,
+                F_LMTD_Fakheri, LMTD, L_unsupported_max, NTU_from_P_E, NTU_from_P_G, NTU_from_P_H,
+                NTU_from_P_J, NTU_from_P_basic, NTU_from_P_plate, NTU_from_effectiveness, Ntubes,
+                Ntubes_HEDH, Ntubes_Perrys, Ntubes_Phadkeb, Ntubes_VDI, P_NTU_method,
+                effectiveness_NTU_method, effectiveness_from_NTU, shell_clearance,
+                size_bundle_from_tubecount, temperature_effectiveness_TEMA_E,
+                temperature_effectiveness_TEMA_G, temperature_effectiveness_TEMA_H,
+                temperature_effectiveness_TEMA_J, temperature_effectiveness_air_cooler,
+                temperature_effectiveness_basic, temperature_effectiveness_plate)
 import ht
 import numpy as np
 from fluids.numerics import assert_close, assert_close1d, assert_close2d, linspace, logspace

@@ -21,7 +21,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.'''
 
 from __future__ import division
-from ht import *
+from ht import (ESDU_tube_angle_correction, ESDU_tube_row_correction, Nu_ESDU_73031,
+                Nu_Grimison_tube_bank, Nu_HEDH_tube_bank, Nu_Zukauskas_Bejan,
+                Zukauskas_tube_row_correction, baffle_correction_Bell, baffle_leakage_Bell,
+                bundle_bypassing_Bell, dP_Kern, dP_Zukauskas, laminar_correction_Bell,
+                unequal_baffle_spacing_Bell)
 import numpy as np
 
 from scipy.interpolate import interp1d, bisplrep, splrep, splev, UnivariateSpline, RectBivariateSpline

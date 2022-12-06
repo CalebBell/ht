@@ -21,7 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.'''
 
 from __future__ import division
-from ht import *
+from ht import Nu_Achenbach, Nu_KTA, Nu_Wakao_Kagei, Nu_packed_bed_Gnielinski
 from fluids.numerics import assert_close, assert_close1d, assert_close2d
 
 
