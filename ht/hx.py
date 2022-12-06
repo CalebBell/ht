@@ -22,12 +22,11 @@ SOFTWARE.'''
 
 from __future__ import division
 from math import exp, log, floor, sqrt, tanh  # tanh= 1/coth
-import math
 import os
 from fluids.constants import inch, foot, degree_Fahrenheit, hour, Btu
-from fluids.numerics import horner, newton, ridder, quad, secant, quad, bisect, gamma, factorial
+from fluids.numerics import bisect, factorial, gamma, horner, quad, quad, ridder, secant
 from fluids.numerics import iv
-from fluids.piping import BWG_integers, BWG_inch, BWG_SI
+from fluids.piping import BWG_SI, BWG_integers
 from fluids.numerics import numpy as np
 
 __all__ = ['effectiveness_from_NTU', 'NTU_from_effectiveness', 'calc_Cmin',

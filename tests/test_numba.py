@@ -25,7 +25,7 @@ from fluids import AirCooledExchanger
 from ht import Nu_external_horizontal_plate_methods, h_Ganguli_VDI
 import ht.vectorized
 from fluids.constants import foot, inch
-from fluids.numerics import assert_close, assert_close1d
+from fluids.numerics import assert_close
 import pytest
 try:
     import numba

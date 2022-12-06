@@ -21,7 +21,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.'''
 
 from __future__ import division
-import ht
 from ht import (Nu_coil_Xin_Ebadian, Nu_free_horizontal_plate, Nu_free_horizontal_plate_methods,
                 Nu_free_vertical_plate, Nu_free_vertical_plate_methods, Nu_horizontal_cylinder,
                 Nu_horizontal_cylinder_Churchill_Chu, Nu_horizontal_cylinder_Kuehn_Goldstein,
@@ -35,8 +34,7 @@ from ht import (Nu_coil_Xin_Ebadian, Nu_free_horizontal_plate, Nu_free_horizonta
                 Nu_vertical_cylinder_McAdams_Weiss_Saunders, Nu_vertical_cylinder_Popiel_Churchill,
                 Nu_vertical_cylinder_Touloukian_Morgan, Nu_vertical_cylinder_methods,
                 Nu_vertical_helical_coil_Prabhanjan_Rennie_Raghavan, Nu_vertical_plate_Churchill)
-from ht.boiling_nucleic import _angles_Stephan_Abdelsalam
-from fluids.numerics import assert_close, assert_close1d, assert_close2d, linspace, logspace
+from fluids.numerics import assert_close, assert_close1d, assert_close2d, logspace
 import pytest
 
 

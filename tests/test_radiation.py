@@ -24,7 +24,7 @@ from __future__ import division
 from ht import blackbody_spectral_radiance, grey_transmittance, q_rad, solar_spectrum
 import numpy as np
 import pytest
-from fluids.numerics import assert_close, assert_close1d, assert_close2d
+from fluids.numerics import assert_close, assert_close1d
 
 
 def test_radiation():

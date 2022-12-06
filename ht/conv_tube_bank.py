@@ -21,11 +21,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.'''
 
 from __future__ import division
-from math import pi, sin, acos, radians, exp
-from fluids.constants import g
+from math import exp, pi, radians, sin
 from fluids.numerics import (horner, splev, bisplev, 
-                             implementation_optimize_tck, tck_interp2d_linear, 
-                             numpy as np)
+                             implementation_optimize_tck, numpy as np)
 from ht.core import wall_factor, WALL_FACTOR_PRANDTL
 
 __all__ = ['dP_Kern', 'dP_Zukauskas',

@@ -25,8 +25,7 @@ from ht import (Nu_Nusselt_Rayleigh_Hollands, Nu_Nusselt_Rayleigh_Probert,
                 Nu_Nusselt_vertical_Thess, Nu_vertical_helical_coil_Ali, Rac_Nusselt_Rayleigh,
                 Rac_Nusselt_Rayleigh_disk)
 from ht.conv_free_enclosed import Nu_Nusselt_Rayleigh_Holling_Herwig
-from fluids.numerics import assert_close, assert_close1d, assert_close2d, numpy as np
-import pytest
+from fluids.numerics import assert_close, assert_close1d, numpy as np
 try:
     from scipy.interpolate import bisplrep, UnivariateSpline
 except:
@@ -123,7 +122,7 @@ def test_Rac_Nusselt_Rayleigh_fit_uninsulated():
 #    plt.show()
 
 def test_Rac_Nusselt_Rayleigh_fit_insulated():
-    from ht.conv_free_enclosed import ratios_insulated_Catton, Racs_instulated_Catton, tck_insulated_Catton
+    from ht.conv_free_enclosed import Racs_instulated_Catton, ratios_insulated_Catton
 
     all_zs = []
     all_xs = []

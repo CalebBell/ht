@@ -40,8 +40,8 @@ __all__ = ['laminar_T_const', 'laminar_Q_const',
 'Nu_laminar_rectangular_Shan_London',
 'conv_tube_methods', 'conv_tube_laminar_methods', 'conv_tube_turbulent_methods']
 
-from math import log, log10, exp, tanh
-from fluids.friction import friction_factor, Clamond, LAMINAR_TRANSITION_PIPE
+from math import exp, log, tanh
+from fluids.friction import Clamond, LAMINAR_TRANSITION_PIPE
 
 ### Laminar
 

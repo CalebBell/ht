@@ -23,7 +23,7 @@ SOFTWARE.'''
 from __future__ import division
 from ht.boiling_flow import (Chen_Bennett, Chen_Edelstein, Lazarek_Black, Li_Wu, Liu_Winterton,
                              Sun_Mishima, Thome, Yun_Heo_Kim)
-from fluids.numerics import assert_close, assert_close1d, assert_close2d
+from fluids.numerics import assert_close
 import pytest
 
 

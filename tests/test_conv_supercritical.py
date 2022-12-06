@@ -24,9 +24,7 @@ from __future__ import division
 from ht import (Nu_Bishop, Nu_Bringer_Smith, Nu_Gorban, Nu_Griem, Nu_Gupta, Nu_Jackson, Nu_Kitoh,
                 Nu_Krasnoshchekov, Nu_Krasnoshchekov_Protopopov, Nu_McAdams, Nu_Mokry, Nu_Ornatsky,
                 Nu_Petukhov, Nu_Shitsman, Nu_Swenson, Nu_Xu, Nu_Yamagata, Nu_Zhu)
-import numpy as np
-from fluids.numerics import assert_close, assert_close1d, assert_close2d
-import pytest
+from fluids.numerics import assert_close, assert_close1d
 
 
 def test_Nu_McAdams():

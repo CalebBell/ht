@@ -21,10 +21,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.'''
 
 from __future__ import division
-import sys
-import importlib.util
-import types
-import numpy as np
 
 import fluids
 import fluids.numba

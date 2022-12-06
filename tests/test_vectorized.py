@@ -21,10 +21,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.'''
 
 from __future__ import division
-from fluids.numerics import assert_close, assert_close1d, assert_close2d
+from fluids.numerics import assert_close1d
 import ht
 import ht.vectorized
-import numpy as np
 
 
 def test_LMTD_vect():

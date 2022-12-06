@@ -24,7 +24,7 @@ from __future__ import division
 from math import pi, log10, atan, exp
 from fluids.constants import g
 from fluids.numerics import secant
-from fluids.core import Prandtl, Boiling, Bond, Weber, nu_mu_converter
+from fluids.core import Boiling, Bond, Prandtl, Weber
 from fluids.two_phase_voidage import Lockhart_Martinelli_Xtt
 from ht.conv_internal import turbulent_Gnielinski, turbulent_Dittus_Boelter
 from ht.boiling_nucleic import Forster_Zuber, Cooper

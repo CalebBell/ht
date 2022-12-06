@@ -21,7 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.'''
 
 from __future__ import division
-from math import log, log10, exp, sqrt, tanh, factorial, isnan
+from math import exp, factorial, isnan, sqrt, tanh
 from ht import (DBundle_for_Ntubes_HEDH, DBundle_for_Ntubes_Phadkeb, DBundle_min, D_for_Ntubes_VDI,
                 F_LMTD_Fakheri, LMTD, L_unsupported_max, NTU_from_P_E, NTU_from_P_G, NTU_from_P_H,
                 NTU_from_P_J, NTU_from_P_basic, NTU_from_P_plate, NTU_from_effectiveness, Ntubes,
@@ -33,7 +33,7 @@ from ht import (DBundle_for_Ntubes_HEDH, DBundle_for_Ntubes_Phadkeb, DBundle_min
                 temperature_effectiveness_basic, temperature_effectiveness_plate)
 import ht
 import numpy as np
-from fluids.numerics import assert_close, assert_close1d, assert_close2d, linspace, logspace
+from fluids.numerics import assert_close, assert_close1d, assert_close2d
 import pytest
 from random import uniform, randint, seed, choice
 seed(0)

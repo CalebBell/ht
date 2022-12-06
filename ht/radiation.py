@@ -23,8 +23,7 @@ SOFTWARE.'''
 from __future__ import division
 from math import exp, e
 import os
-from io import open
-from fluids.constants import sigma, h, c, k, pi
+from fluids.constants import c, h, k, sigma
 from fluids.numerics import numpy as np
 
 __all__ = ['blackbody_spectral_radiance', 'q_rad', 'grey_transmittance',

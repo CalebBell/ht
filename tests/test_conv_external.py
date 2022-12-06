@@ -29,7 +29,7 @@ from ht import (Nu_cylinder_Churchill_Bernstein, Nu_cylinder_Fand, Nu_cylinder_M
                 Nu_horizontal_plate_laminar_Churchill_Ozoe, Nu_horizontal_plate_turbulent_Kreith,
                 Nu_horizontal_plate_turbulent_Schlichting)
 import pytest
-from fluids.numerics import linspace, logspace, assert_close, assert_close1d, assert_close2d
+from fluids.numerics import assert_close, assert_close1d, logspace
 from ht.conv_external import conv_horizontal_plate_laminar_methods, conv_horizontal_plate_turbulent_methods
 
 ### Conv external

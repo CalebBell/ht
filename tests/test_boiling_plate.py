@@ -23,8 +23,7 @@ SOFTWARE.'''
 from __future__ import division
 from ht import (h_boiling_Amalfi, h_boiling_Han_Lee_Kim, h_boiling_Huang_Sheer,
                 h_boiling_Lee_Kang_Kim, h_boiling_Yan_Lin)
-from fluids.numerics import assert_close, assert_close1d, assert_close2d
-import pytest
+from fluids.numerics import assert_close
 
 def test_h_boiling_Amalfi():
     h = h_boiling_Amalfi(m=3E-5, x=.4, Dh=0.00172, rhol=567., rhog=18.09, kl=0.086, mul=156E-6, mug=7.11E-6, sigma=0.02, Hvap=9E5, q=1E5, A_channel_flow=0.0003)

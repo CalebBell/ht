@@ -22,8 +22,7 @@ SOFTWARE.'''
 
 from __future__ import division
 from math import atan, sin, log10
-from fluids.constants import hp, minute, inch, foot
-from fluids.geometry import AirCooledExchanger
+from fluids.constants import hp, minute
 from fluids.core import Prandtl, Reynolds
 from ht.core import LMTD, fin_efficiency_Kern_Kraus, wall_factor, WALL_FACTOR_PRANDTL
 from ht.conv_tube_bank import ESDU_tube_row_correction
@@ -367,6 +366,8 @@ def h_Briggs_Young(m, A, A_min, A_increase, A_fin, A_tube_showing,
 
     Examples
     --------
+    >>> from fluids.geometry import AirCooledExchanger
+    >>> from scipy.constants import inch
     >>> AC = AirCooledExchanger(tube_rows=4, tube_passes=4, tubes_per_row=20, tube_length=3,
     ... tube_diameter=1*inch, fin_thickness=0.000406, fin_density=1/0.002309,
     ... pitch_normal=.06033, pitch_parallel=.05207,
@@ -496,6 +497,8 @@ def h_ESDU_high_fin(m, A, A_min, A_increase, A_fin, A_tube_showing,
 
     Examples
     --------
+    >>> from fluids.geometry import AirCooledExchanger
+    >>> from scipy.constants import inch
     >>> AC = AirCooledExchanger(tube_rows=4, tube_passes=4, tubes_per_row=20, tube_length=3,
     ... tube_diameter=1*inch, fin_thickness=0.000406, fin_density=1/0.002309,
     ... pitch_normal=.06033, pitch_parallel=.05207,
@@ -646,6 +649,7 @@ def h_ESDU_low_fin(m, A, A_min, A_increase, A_fin,
 
     Examples
     --------
+    >>> from fluids.geometry import AirCooledExchanger
     >>> AC = AirCooledExchanger(tube_rows=4, tube_passes=4, tubes_per_row=8, tube_length=0.5,
     ... tube_diameter=0.0164, fin_thickness=0.001, fin_density=1/0.003,
     ... pitch_normal=0.0313, pitch_parallel=0.0271, fin_height=0.0041, corbels=True)
@@ -784,6 +788,8 @@ def h_Ganguli_VDI(m, A, A_min, A_increase, A_fin,
     --------
     Example 12.1 in [3]_:
 
+    >>> from fluids.geometry import AirCooledExchanger
+    >>> from scipy.constants import foot, inch
     >>> AC = AirCooledExchanger(tube_rows=4, tube_passes=4, tubes_per_row=56, tube_length=36*foot,
     ... tube_diameter=1*inch, fin_thickness=0.013*inch, fin_density=10/inch,
     ... angle=30, pitch_normal=2.5*inch, fin_height=0.625*inch, corbels=True)
@@ -906,6 +912,7 @@ def dP_ESDU_high_fin(m, A_min, A_increase, flow_area_contraction_ratio,
 
     Examples
     --------
+    >>> from fluids.geometry import AirCooledExchanger
     >>> AC = AirCooledExchanger(tube_rows=4, tube_passes=4, tubes_per_row=8, tube_length=0.5,
     ... tube_diameter=0.0164, fin_thickness=0.001, fin_density=1/0.003,
     ... pitch_normal=0.0313, pitch_parallel=0.0271, fin_height=0.0041, corbels=True)
@@ -1003,6 +1010,7 @@ def dP_ESDU_low_fin(m, A_min, A_increase, flow_area_contraction_ratio,
 
     Examples
     --------
+    >>> from fluids.geometry import AirCooledExchanger
     >>> AC = AirCooledExchanger(tube_rows=4, tube_passes=4, tubes_per_row=8, tube_length=0.5,
     ... tube_diameter=0.0164, fin_thickness=0.001, fin_density=1/0.003,
     ... pitch_normal=0.0313, pitch_parallel=0.0271, fin_height=0.0041, corbels=True)

@@ -21,7 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.'''
 
 from __future__ import division
-from math import log, pi, acosh, cosh
+from math import acosh, log, pi
 from fluids.constants import inch, foot, hour, Btu, degree_Fahrenheit
 
 __all__ = ['R_to_k', 'k_to_R', 'k_to_thermal_resistivity',

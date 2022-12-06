@@ -22,11 +22,8 @@ SOFTWARE.'''
 
 from __future__ import division
 import types
-import numpy as np
-from numpy.testing import assert_allclose
-from fluids.numerics import assert_close, assert_close1d, assert_close2d
+from fluids.numerics import assert_close
 import pytest
-import fluids
 import ht
 from ht.units import P_NTU_method, R_to_k, R_value_to_k, effectiveness_NTU_method, k_to_R_value, u
 

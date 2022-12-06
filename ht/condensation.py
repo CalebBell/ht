@@ -21,7 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.'''
 
 from __future__ import division
-from math import sin, pi, log
+from math import pi, sin
 from fluids.constants import g, R
 from fluids.core import Reynolds, Prandtl
 from ht.conv_internal import turbulent_Dittus_Boelter

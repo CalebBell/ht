@@ -21,7 +21,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.'''
 
 from __future__ import division
-import ht.conv_internal
 from ht.conv_internal import (Morimoto_Hotta, Nu_conv_internal, Nu_conv_internal_methods,
                               Nu_laminar_rectangular_Shan_London, conv_tube_methods,
                               helical_turbulent_Nu_Mori_Nakayama, helical_turbulent_Nu_Schmidt,
@@ -37,8 +36,7 @@ from ht.conv_internal import (Morimoto_Hotta, Nu_conv_internal, Nu_conv_internal
                               turbulent_Nunner, turbulent_Petukhov_Kirillov_Popov,
                               turbulent_Prandtl, turbulent_Sandall, turbulent_Sieder_Tate,
                               turbulent_Webb, turbulent_entry_Hausen, turbulent_von_Karman)
-from fluids.numerics import linspace, assert_close, assert_close1d, assert_close2d
-from ht.boiling_nucleic import _angles_Stephan_Abdelsalam
+from fluids.numerics import assert_close, assert_close1d, linspace
 import pytest
 
 

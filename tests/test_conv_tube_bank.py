@@ -28,7 +28,7 @@ from ht import (ESDU_tube_angle_correction, ESDU_tube_row_correction, Nu_ESDU_73
                 unequal_baffle_spacing_Bell)
 import numpy as np
 
-from scipy.interpolate import interp1d, bisplrep, splrep, splev, UnivariateSpline, RectBivariateSpline
+from scipy.interpolate import RectBivariateSpline, UnivariateSpline, interp1d, splrep
 from fluids.numerics import assert_close, assert_close1d, assert_close2d, linspace
 
 def test_Nu_Grimison_tube_bank_tcks():
@@ -75,9 +75,7 @@ def test_Nu_Grimison_tube_bank():
 def test_Gimison_coeffs_regeneration():
     # These fits are bad, don't check them
     # SciPy has warnings for both of them
-    from ht.conv_tube_bank import (Grimson_SL_staggered, Grimson_ST_staggered,
-                                   Grimson_m_staggered, Grimson_C1_staggered,
-                                   tck_Grimson_m_staggered, tck_Grimson_C1_staggered)
+    pass
 #    tck = bisplrep(Grimson_ST_staggered, Grimson_SL_staggered, Grimson_C1_staggered, kx=1, ky=1, task=0, s=0)
 #    [assert_close1d(i, j) for i, j in zip(tck, tck_Grimson_C1_staggered)]
 #

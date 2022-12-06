@@ -21,7 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.'''
 
 from __future__ import division
-from math import exp, log
+from math import log
 
 __all__ = ['Nu_vertical_plate_Churchill',
            'Nu_free_vertical_plate',

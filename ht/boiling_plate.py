@@ -21,8 +21,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.'''
 
 from __future__ import division
-from math import pi, radians
-from fluids.core import Reynolds, Prandtl, Bond, thermal_diffusivity
+from math import radians
+from fluids.core import Bond, Prandtl, thermal_diffusivity
 from fluids.two_phase_voidage import Lockhart_Martinelli_Xtt
 from fluids.constants import g
 

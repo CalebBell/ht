@@ -22,8 +22,7 @@ SOFTWARE.'''
 
 from __future__ import division
 from ht import Lehrer, Stein_Schmidt
-from fluids.numerics import assert_close, assert_close1d, assert_close2d
-import pytest
+from fluids.numerics import assert_close
 
 
 def test_conv_jacket():

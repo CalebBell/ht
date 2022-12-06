@@ -23,8 +23,7 @@ SOFTWARE.'''
 from __future__ import division
 from ht import (Aggour, Davis_David, Elamvaluthi_Srinivas, Groothuis_Hendal, Hughmark, Knott,
                 Kudirka_Grosh_McFadden, Martin_Sims, Ravipudi_Godbold, h_two_phase)
-from fluids.numerics import assert_close, assert_close1d, assert_close2d
-import pytest
+from fluids.numerics import assert_close
 
 
 def test_Davis_David():

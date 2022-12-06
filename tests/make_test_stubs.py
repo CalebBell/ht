@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import os
-import sys
 
 tests = ['test_air_cooler', 'test_boiling_flow', 'test_boiling_nucleic', 'test_boiling_plate', 'test_condensation', 'test_conduction', 'test_conv_external', 'test_conv_free_immersed', 'test_conv_free_enclosed', 'test_conv_internal', 'test_conv_jacket', 'test_conv_packed_bed', 'test_conv_plate', 'test_conv_supercritical', 'test_conv_tube_bank', 'test_conv_two_phase', 'test_core', 'test_hx', 'test_radiation']
 try:

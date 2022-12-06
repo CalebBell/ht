@@ -28,7 +28,7 @@ from ht import (ASHRAE, ASHRAE_k, Cp_material, R_cylinder, R_to_k, R_value_to_k,
                 cylindrical_heat_transfer, k_material, k_to_R, k_to_R_value,
                 k_to_thermal_resistivity, materials_dict, nearest_material, refractory_VDI_Cp,
                 refractory_VDI_k, rho_material, thermal_resistivity_to_k)
-from fluids.numerics import assert_close, assert_close1d, assert_close2d
+from fluids.numerics import assert_close, assert_close1d
 import pytest
 
 ### Conduction

@@ -22,11 +22,10 @@ SOFTWARE.'''
 
 from __future__ import division
 from ht import LMTD, countercurrent_hx_temperature_check, fin_efficiency_Kern_Kraus, wall_factor
-import numpy as np
-from fluids.numerics import assert_close, assert_close1d, assert_close2d
+from fluids.numerics import assert_close
 from ht.core import is_heating_temperature, is_heating_property
 import pytest
-from ht.core import WALL_FACTOR_VISCOSITY, WALL_FACTOR_PRANDTL, WALL_FACTOR_TEMPERATURE, WALL_FACTOR_DEFAULT
+from ht.core import WALL_FACTOR_PRANDTL, WALL_FACTOR_TEMPERATURE, WALL_FACTOR_VISCOSITY
 
 
 def test_core():
