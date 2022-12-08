@@ -1043,8 +1043,8 @@ def test_temperature_effectiveness_plate():
 @pytest.mark.mpmath
 def test_NTU_from_P_basic():
     # Analytical result for counterflow
-    R1s = np.logspace(np.log10(2E-5), np.log10(1E2), 10000)
-    NTU1s = np.logspace(np.log10(1E-4), np.log10(1E2), 10000)
+    R1s = np.logspace(np.log10(2E-5), np.log10(1E2), 10000).tolist()
+    NTU1s = np.logspace(np.log10(1E-4), np.log10(1E2), 10000).tolist()
 
     for i in range(100):
         R1 = float(choice(R1s))
@@ -1105,8 +1105,8 @@ def test_NTU_from_P_basic():
 
 
     # Test 'crossflow, mixed 1&2':
-    R1s = np.logspace(np.log10(2E-5), np.log10(1E2), 10000)
-    NTU1s = np.logspace(np.log10(1E-4), np.log10(1E2), 10000)
+    R1s = np.logspace(np.log10(2E-5), np.log10(1E2), 10000).tolist()
+    NTU1s = np.logspace(np.log10(1E-4), np.log10(1E2), 10000).tolist()
 
     seed(0)
     tot = 0
@@ -1168,8 +1168,8 @@ def test_NTU_from_P_E():
     # not yet documented
 
     # 1 tube pass AKA counterflow
-    R1s = np.logspace(np.log10(2E-5), np.log10(1E2), 10000)
-    NTU1s = np.logspace(np.log10(1E-4), np.log10(1E2), 10000)
+    R1s = np.logspace(np.log10(2E-5), np.log10(1E2), 10000).tolist()
+    NTU1s = np.logspace(np.log10(1E-4), np.log10(1E2), 10000).tolist()
 
     # Exact same asa as the counterflow basic case
     tot = 0
@@ -1244,8 +1244,8 @@ def test_NTU_from_P_E():
         assert tot >= 70
 
     # 3 pass optimal and not optimal
-    R1s = np.logspace(np.log10(2E-5), np.log10(1E1), 10000)
-    NTU1s = np.logspace(np.log10(1E-4), np.log10(1E1), 10000)
+    R1s = np.logspace(np.log10(2E-5), np.log10(1E1), 10000).tolist()
+    NTU1s = np.logspace(np.log10(1E-4), np.log10(1E1), 10000).tolist()
 
     seed(0)
     for optimal in [True, False]:
@@ -1273,8 +1273,8 @@ def test_NTU_from_P_E():
 @pytest.mark.mpmath
 def test_NTU_from_P_H():
     # Within these limits everything is fund
-    R1s = np.logspace(np.log10(2E-5), np.log10(1E1), 10000)
-    NTU1s = np.logspace(np.log10(1E-4), np.log10(10), 10000)
+    R1s = np.logspace(np.log10(2E-5), np.log10(1E1), 10000).tolist()
+    NTU1s = np.logspace(np.log10(1E-4), np.log10(10), 10000).tolist()
 
     seed(0)
     for i in range(100):
@@ -1341,8 +1341,8 @@ def test_NTU_from_P_G():
 
 
     # Run the gamut testing all the solvers
-    R1s = np.logspace(np.log10(2E-5), np.log10(1E2), 10000)
-    NTU1s = np.logspace(np.log10(1E-4), np.log10(1E2), 10000)
+    R1s = np.logspace(np.log10(2E-5), np.log10(1E2), 10000).tolist()
+    NTU1s = np.logspace(np.log10(1E-4), np.log10(1E2), 10000).tolist()
     seed(0)
     tot = 0
     for Ntp, optimal in zip([1, 2, 2], [True, True, False]):
@@ -1368,8 +1368,8 @@ def test_NTU_from_P_G():
 @pytest.mark.mpmath
 def test_NTU_from_P_J():
     # Run the gamut testing all the solvers
-    R1s = np.logspace(np.log10(2E-5), np.log10(1E2), 10000)
-    NTU1s = np.logspace(np.log10(1E-4), np.log10(1E2), 10000)
+    R1s = np.logspace(np.log10(2E-5), np.log10(1E2), 10000).tolist()
+    NTU1s = np.logspace(np.log10(1E-4), np.log10(1E2), 10000).tolist()
     seed(0)
     tot = 0
     for Ntp in [1, 2, 4]:
@@ -1454,8 +1454,8 @@ def test_NTU_from_P_plate():
         NTU_from_P_plate(P1=.091, R1=10, Np1=1, Np2=1, counterflow=False)
 
     # 1-2 True True
-    R1s = np.logspace(np.log10(2E-5), np.log10(10), 10000) # too high R1 causes overflows
-    NTU1s = np.logspace(np.log10(1E-4), np.log10(99), 10000)
+    R1s = np.logspace(np.log10(2E-5), np.log10(10), 10000).tolist() # too high R1 causes overflows
+    NTU1s = np.logspace(np.log10(1E-4), np.log10(99), 10000).tolist()
 
     tot = 0
     seed(0)
