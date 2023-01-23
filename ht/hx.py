@@ -24,7 +24,7 @@ from __future__ import division
 from math import exp, log, floor, sqrt, tanh  # tanh= 1/coth
 import os
 from fluids.constants import inch, foot, degree_Fahrenheit, hour, Btu
-from fluids.numerics import bisect, factorial, gamma, horner, quad, quad, ridder, secant
+from fluids.numerics import bisect, factorial, gamma, horner, quad, secant, brenth
 from fluids.numerics import iv
 from fluids.piping import BWG_SI, BWG_integers
 from fluids.numerics import numpy as np
@@ -558,7 +558,7 @@ def NTU_from_effectiveness(effectiveness, Cr, subtype='counterflow', n_shell_tub
         # and appears to be monotonic - there is only one solution.
         def to_solve(NTU, Cr, effectiveness):
             return (1. - exp(1./Cr*NTU**0.22*(exp(-Cr*NTU**0.78) - 1.))) - effectiveness
-        return ridder(to_solve, a=1E-7, b=1E5, args=(Cr, effectiveness))
+        return brenth(to_solve, 1E-7, 1E5, args=(Cr, effectiveness))
 
     elif subtype == 'crossflow, mixed Cmin':
         if Cr*log(1. - effectiveness) < -1:
@@ -3175,7 +3175,7 @@ def _NTU_from_P_solver(P1, R1, NTU_min, NTU_max, function, guess, *args):
         # raise ValueError("No solution") # numba: uncomment
         raise ValueError('No solution possible gives such a low P1; minimum P1=%f at NTU1=%f' %(P1_min, NTU_min)) # numba: delete
     # Construct the function as a lambda expression as solvers don't support kwargs
-    return ridder(_NTU_from_P_erf, NTU_min, NTU_max, args=args2)
+    return brenth(_NTU_from_P_erf, NTU_min, NTU_max, args=args2)
 
 
 def _NTU_max_for_P_solver(ps, qs, offsets, R1):
@@ -5380,7 +5380,7 @@ def size_bundle_from_tubecount(N, Do, pitch, Ntp=1, angle=30, Method=None):
     elif Method2 == 'HEDH':
         return DBundle_for_Ntubes_HEDH(N=N, Do=Do, pitch=pitch, angle=angle)
     elif Method2 == 'Perry':
-        return ridder(_tubecount_objf_Perry, Do*5, 1000*Do, args=(Do, Ntp, angle, N))
+        return brenth(_tubecount_objf_Perry, Do*5, 1000*Do, args=(Do, Ntp, angle, N))
     else:
         raise ValueError('Method not recognized; allowable methods are '
                         '"Phadkeb", "HEDH", "VDI", and "Perry"')
