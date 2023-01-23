@@ -37,6 +37,9 @@ jobs:
             architecture: x86
           - os: windows-latest
             architecture: x86
+            python-version: 3.6
+          - os: windows-latest
+            architecture: x86
             python-version: 3.8
           - os: windows-latest
             architecture: x86
