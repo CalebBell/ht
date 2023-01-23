@@ -3,7 +3,7 @@ Support for Numba (ht.numba)
 
 Basic module which wraps most of ht functions and classes to be compatible with the
 `Numba <https://github.com/numba/numba>`_ dynamic Python compiler.
-Numba is only supported on Python 3, and may require the latest version of Numba.
+Support for Numba may require the latest version of Numba.
 Numba is rapidly evolving, and hopefully in the future it will support more of
 the functionality of ht.
 
