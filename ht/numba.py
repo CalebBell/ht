@@ -61,7 +61,7 @@ def transform_complete_ht(replaced, __funcs, __all__, normal, vec=False):
     if vec:
         conv_fun = numba.vectorize
     else:
-        conv_fun = numba.jit
+        conv_fun = numba.njit
 
     to_change_full_output = []
 
