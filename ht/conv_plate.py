@@ -21,7 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.'''
 
 from __future__ import division
-from math import pi, sin
+from math import pi, sin, radians
 from fluids.friction import (friction_plate_Martin_1999,
                              friction_plate_Martin_VDI, Kumar_beta_list)
 
@@ -147,7 +147,7 @@ def Nu_plate_Kumar(Re, Pr, chevron_angle, mu=None, mu_wall=None):
     return Nu
 
 
-def Nu_plate_Martin(Re, Pr, plate_enlargement_factor, variant='1999'):
+def Nu_plate_Martin(Re, Pr, chevron_angle, variant='1999'):
     r'''Calculates Nusselt number for single-phase flow in a
     Chevron-style plate heat exchanger according to [1]_, also shown in [2]_
     and [3]_.
@@ -168,9 +168,11 @@ def Nu_plate_Martin(Re, Pr, plate_enlargement_factor, variant='1999'):
         [-]
     Pr : float
         Prandtl number calculated with bulk fluid properties, [-]
-    plate_enlargement_factor : float
-        The extra surface area multiplier as compared to a flat plate
-        caused the corrugations, [-]
+    chevron_angle : float
+        Angle of the plate corrugations with respect to the vertical axis
+        (the direction of flow if the plates were straight), between 0 and
+        90. Many plate exchangers use two alternating patterns; use their
+        average angle for that situation [degrees]
     variant : str
         One of '1999' or 'VDI'; chooses between the two Martin friction
         factor correlations, [-]
@@ -196,8 +198,8 @@ def Nu_plate_Martin(Re, Pr, plate_enlargement_factor, variant='1999'):
 
     Examples
     --------
-    >>> Nu_plate_Martin(Re=2000, Pr=.7, plate_enlargement_factor=1.18)
-    43.5794551998615
+    >>> Nu_plate_Martin(Re=2000.0, Pr=.7, chevron_angle=45.0)
+    39.68324150363344
 
     References
     ----------
@@ -213,9 +215,9 @@ def Nu_plate_Martin(Re, Pr, plate_enlargement_factor, variant='1999'):
        Berlin; New York:: Springer, 2010.
     '''
     if variant == '1999':
-        fd = friction_plate_Martin_1999(Re, plate_enlargement_factor)
+        fd = friction_plate_Martin_1999(Re, chevron_angle)
     elif variant == 'VDI':
-        fd = friction_plate_Martin_VDI(Re, plate_enlargement_factor)
+        fd = friction_plate_Martin_VDI(Re, chevron_angle)
     else:
         raise ValueError("Supported friction factor correlations are Martin's"
                         " '1999' correlation or his 'VDI' correlation only")
@@ -223,7 +225,7 @@ def Nu_plate_Martin(Re, Pr, plate_enlargement_factor, variant='1999'):
     # VDI, original, and Björn Palm and Joachim Claesson recommend 0.122 leading coeff
     # The 0.205 in some publications is what happens when the friction factor
     # is in a fanning basis; = 4^0.374*1.22 = 2.048944
-    Nu = 0.122*Pr**(1/3.)*(fd*Re*Re*sin(2.0*plate_enlargement_factor))**0.374
+    Nu = 0.122*Pr**(1/3.)*(fd*Re*Re*sin(2.0*radians(chevron_angle)))**0.374
     return Nu
 
 
