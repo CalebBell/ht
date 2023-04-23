@@ -430,8 +430,8 @@ def test_hx_effectiveness():
 
 @mark_as_numba
 def test_conv_plate():
-    kwargs = dict(Re=2000, Pr=0.7, chevron_angle=30, mu=1E-3, mu_wall=8E-4)
+    kwargs = dict(Re=2000, Pr=0.7, chevron_angle=30.0, mu=1E-3, mu_wall=8E-4)
     assert_close(ht.numba.Nu_plate_Kumar(**kwargs), ht.Nu_plate_Kumar(**kwargs))
 
-    kwargs = dict(Re=2000, Pr=.7, plate_enlargement_factor=1.18)
+    kwargs = dict(Re=2000, Pr=.7, chevron_angle=30.0)
     assert_close(ht.numba.Nu_plate_Martin(**kwargs), ht.Nu_plate_Martin(**kwargs))
