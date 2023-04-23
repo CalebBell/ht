@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 '''Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
-Copyright (C) 2020, Caleb Bell <Caleb.Andrew.Bell@gmail.com>
+Copyright (C) 2020, 2021, 2022, 2023 Caleb Bell <Caleb.Andrew.Bell@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -61,7 +61,7 @@ def transform_complete_ht(replaced, __funcs, __all__, normal, vec=False):
     if vec:
         conv_fun = numba.vectorize
     else:
-        conv_fun = numba.jit
+        conv_fun = numba.njit
 
     to_change_full_output = []
 

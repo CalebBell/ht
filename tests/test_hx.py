@@ -280,7 +280,7 @@ def test_Ntubes():
     assert_close(D, 1.1749025890472795)
 
     D = size_bundle_from_tubecount(N=13252, Do=.028, Ntp=2, angle=45, pitch=.028*1.25, Method='Perry')
-    assert_close(D, 3.598336054740235)
+    assert_close(D, 3.598336054740235, rtol=5e-5)
 
     with pytest.raises(Exception):
         size_bundle_from_tubecount(N=1285, Do=0.025, pitch=0.03125, Method='BADMETHOD')

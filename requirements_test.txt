@@ -2,7 +2,7 @@ scipy
 pytest
 pytest-cov
 coveralls
-sympy; python_version>='3'
+sympy
 fuzzywuzzy
 pint
 pytz
@@ -11,6 +11,6 @@ pandas
 IPython
 sphinx
 wheel
-mpmath; python_version>='3'
-fluids>=1.0.2
+mpmath
+fluids>=1.0.23
 matplotlib

@@ -40,9 +40,6 @@ Among the tasks this library can be used for are:
 .. image:: https://img.shields.io/pypi/pyversions/ht.svg?
    :target: https://pypi.python.org/pypi/ht
    :alt: Supported_versions
-.. image:: http://img.shields.io/appveyor/ci/calebbell/ht.svg?
-   :target: https://ci.appveyor.com/project/calebbell/ht/branch/master
-   :alt: Build_status
 .. image:: https://zenodo.org/badge/48963057.svg?
    :alt: Zendo
    :target: https://zenodo.org/badge/latestdoi/48963057
