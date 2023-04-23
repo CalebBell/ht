@@ -75,10 +75,10 @@ def test_Nu_plate_Kumar():
 
 def test_Nu_plate_Martin():
     Nu = Nu_plate_Martin(2000.0, .7, 45.0)
-    assert_close(Nu, 39.68324150363344)
+    assert_close(Nu, 30.427601053757712)
 
     Nu = Nu_plate_Martin(2000.0, .7, 45.0, variant='VDI')
-    assert_close(Nu, 42.36234413348283)
+    assert_close(Nu, 32.385656937741054)
 
 
 def test_Nu_plate_Muley_Manglik():

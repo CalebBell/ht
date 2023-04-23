@@ -199,7 +199,7 @@ def Nu_plate_Martin(Re, Pr, chevron_angle, variant='1999'):
     Examples
     --------
     >>> Nu_plate_Martin(Re=2000.0, Pr=.7, chevron_angle=45.0)
-    39.68324150363344
+    30.427601053757
 
     References
     ----------
