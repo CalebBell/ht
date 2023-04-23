@@ -4,7 +4,7 @@
 
 ## [1.0.4] - 2023-04-23
 ### Added
-- Updated
+- Nothing
 
 ### Changed
 - Internal cleanup
