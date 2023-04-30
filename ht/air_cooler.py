@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 '''Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
 Copyright (C) 2016, Caleb Bell <Caleb.Andrew.Bell@gmail.com>
 
@@ -18,9 +17,9 @@ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.'''
+SOFTWARE.
+'''
 
-from __future__ import division
 from math import atan, sin, log10
 from fluids.constants import hp, minute
 from fluids.core import Prandtl, Reynolds
@@ -1040,7 +1039,7 @@ def dP_ESDU_low_fin(m, A_min, A_increase, flow_area_contraction_ratio,
     return dP
 
 
-'''Three more correlations -
+"""Three more correlations -
 
 Heat Transfer and Pressure Drop Characteristics of Dry Tower Extended Surfaces: Data Analysis and Correlation. Pacific Northwest Laboratory, 1976.
 * said to be in common use in http://www.thermopedia.com/content/551/
@@ -1049,4 +1048,4 @@ Cao, Eduardo. Heat Transfer in Process Engineering. McGraw Hill Professional, 20
 
 Kroger - Mirković
 
-'''
+"""

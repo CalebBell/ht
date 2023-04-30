@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 '''Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
 Copyright (C) 2016, 2017, 2018 Caleb Bell <Caleb.Andrew.Bell@gmail.com>
 
@@ -18,9 +17,9 @@ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.'''
+SOFTWARE.
+'''
 
-from __future__ import division
 from math import pi
 from fluids.core import Reynolds, Prandtl
 from ht.conv_internal import laminar_entry_Seider_Tate
@@ -766,7 +765,7 @@ conv_two_phase_methods_ranked = ['Knott', 'Martin_Sims', 'Kudirka_Grosh_McFadden
                                  'Aggour', 'Hughmark', 'Elamvaluthi_Srinivas', 'Davis-David', 'Ravipudi_Godbold']
 
 conv_two_phase_bad_method = "Correlation name not recognized; the availble methods are %s." %(list(conv_two_phase_methods.keys()))
-'''Generating code:
+"""Generating code:
 for m in conv_two_phase_methods_ranked:
     (f_obj, args) = conv_two_phase_methods[m]
     print('elif method2 == "%s":' %(m))
@@ -786,7 +785,7 @@ for m in conv_two_phase_methods_ranked:
 
     print(t)
     print('    methods.append("%s")' %m)
-'''
+"""
 
 def h_two_phase_methods(m, x, D, Cpl, kl, rhol=None, rhog=None, mul=None,
                         mu_b=None, mu_w=None, mug=None, L=None, alpha=None,

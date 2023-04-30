@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 '''Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
 Copyright (C) 2016, 2017, 2018 Caleb Bell <Caleb.Andrew.Bell@gmail.com>
 
@@ -18,9 +17,9 @@ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.'''
+SOFTWARE.
+'''
 
-from __future__ import division
 from math import exp, log, floor, sqrt, tanh  # tanh= 1/coth
 import os
 from fluids.constants import inch, foot, degree_Fahrenheit, hour, Btu
@@ -423,7 +422,8 @@ def NTU_from_effectiveness(effectiveness, Cr, subtype='counterflow', n_shell_tub
         'crossflow, mixed Cmax', 'boiler', 'condenser', 'S&T'.
     n_shell_tube : None or int, optional
         The number of shell and tube exchangers in a row, [-]
-    
+
+
     Returns
     -------
     NTU : float
@@ -569,7 +569,7 @@ possible for this configuration; the maximum effectiveness possible is %s.' % (1
     elif subtype ==  'crossflow, mixed Cmax':
         if 1./Cr*log(1. - effectiveness*Cr) < -1:
             raise ValueError('The specified effectiveness is not physically \
-possible for this configuration; the maximum effectiveness possible is %s.' % (((exp(Cr) - 1.0)*exp(-Cr)/Cr)))
+possible for this configuration; the maximum effectiveness possible is %s.' % ((exp(Cr) - 1.0)*exp(-Cr)/Cr))
         return -log(1. + 1./Cr*log(1. - effectiveness*Cr))
 
     elif subtype in ['boiler', 'condenser']:
@@ -897,7 +897,7 @@ def Pc(x, y):
 
 
 def effectiveness_NTU_method(mh, mc, Cph, Cpc, subtype='counterflow', Thi=None,
-                             Tho=None, Tci=None, Tco=None, UA=None, 
+                             Tho=None, Tci=None, Tco=None, UA=None,
                              n_shell_tube=None):
     r'''Wrapper for the various effectiveness-NTU method function calls,
     which can solve a heat exchanger. The heat capacities and mass flows
@@ -954,7 +954,7 @@ def effectiveness_NTU_method(mh, mc, Cph, Cpc, subtype='counterflow', Thi=None,
         * Tci : Inlet temperature of cold fluid, [K]
         * Tco : Outlet temperature of cold fluid, [K]
 
-    See also
+    See Also
     --------
     effectiveness_from_NTU
     NTU_from_effectiveness
@@ -1007,7 +1007,7 @@ def effectiveness_NTU_method(mh, mc, Cph, Cpc, subtype='counterflow', Thi=None,
         effectiveness = eff = effectiveness_from_NTU(NTU=NTU, Cr=Cr, n_shell_tube=n_shell_tube, subtype=subtype)
 
         possible_inputs = [(Tci, Thi), (Tci, Tho), (Tco, Thi), (Tco, Tho)]
-        if not any([i for i in possible_inputs if None not in i]):
+        if not any(i for i in possible_inputs if None not in i):
             raise ValueError('One set of (Tci, Thi), (Tci, Tho), (Tco, Thi), or (Tco, Tho) are required along with UA.')
 
         if Thi is not None and Tci is not None:
@@ -1409,11 +1409,11 @@ def temperature_effectiveness_basic(R1, NTU1, subtype='crossflow'):
     if subtype == 'counterflow':
         # Same as TEMA 1 pass
         if R1 == 1.0:
-            '''from sympy import *
+            """from sympy import *
             R1, NTU1 = symbols('R1, NTU1')
             P1 = (1 - exp(-NTU1*(1 - R1)))/(1 - R1*exp(-NTU1*(1-R1)))
             limit(P1, R1, 1)
-            '''
+            """
             P1 = -NTU1/(-NTU1 - 1.0)
         else:
             P1 = (1.0 - exp(-NTU1*(1 - R1)))/(1.0 - R1*exp(-NTU1*(1-R1)))
@@ -3169,11 +3169,11 @@ def _NTU_from_P_solver(P1, R1, NTU_min, NTU_max, function, guess, *args):
     P1_max = _NTU_from_P_erf(NTU_max, *(R1, 0.0, function) + args)
     P1_min = _NTU_from_P_erf(NTU_min, *(R1, 0.0, function) + args)
     if P1 > P1_max:
-        raise ValueError('No solution possible gives such a high P1; maximum P1=%f at NTU1=%f' %(P1_max, NTU_max)) # numba: delete
+        raise ValueError(f'No solution possible gives such a high P1; maximum P1={P1_max:f} at NTU1={NTU_max:f}') # numba: delete
         # raise ValueError("No solution") # numba: uncomment
     if P1 < P1_min:
         # raise ValueError("No solution") # numba: uncomment
-        raise ValueError('No solution possible gives such a low P1; minimum P1=%f at NTU1=%f' %(P1_min, NTU_min)) # numba: delete
+        raise ValueError(f'No solution possible gives such a low P1; minimum P1={P1_min:f} at NTU1={NTU_min:f}') # numba: delete
     # Construct the function as a lambda expression as solvers don't support kwargs
     return brenth(_NTU_from_P_erf, NTU_min, NTU_max, args=args2)
 
@@ -3966,7 +3966,7 @@ def P_NTU_method(m1, m2, Cp1, Cp2, UA=None, T1i=None, T1o=None,
         T_{2,o} = \frac{1}{P_{1}} \left(P_{1} R_{1} \left(T_{1,i}
         - T_{1,o}\right) + P_{1} T_{1,i} - T_{1,i} + T_{1,o}\right)
 
-    See also
+    See Also
     --------
     temperature_effectiveness_basic
     temperature_effectiveness_plate
@@ -4081,7 +4081,7 @@ def P_NTU_method(m1, m2, Cp1, Cp2, UA=None, T1i=None, T1o=None,
             passes_counterflow = True
             Np1, end = subtype.split('/')
             if end[-1] in ['c','p']:
-                passes_counterflow = True if end[-1] == 'c' else False
+                passes_counterflow = end[-1] == 'c'
                 end = end[0:-1]
             Np1, Np2 = int(Np1), int(end)
             P1 = temperature_effectiveness_plate(R1=R1, NTU1=NTU1, Np1=Np1, Np2=Np2, counterflow=optimal, passes_counterflow=passes_counterflow)
@@ -4091,7 +4091,7 @@ def P_NTU_method(m1, m2, Cp1, Cp2, UA=None, T1i=None, T1o=None,
     'crossflow, mixed 1&2', or 'Np1/Np2' for plate exchangers")
 
         possible_inputs = [(T1i, T2i), (T1o, T2o), (T1i, T2o), (T1o, T2i), (T1i, T1o), (T2i, T2o)]
-        if not any([i for i in possible_inputs if None not in i]):
+        if not any(i for i in possible_inputs if None not in i):
             raise ValueError('One set of (T1i, T2i), (T1o, T2o), (T1i, T2o), (T1o, T2i), (T1i, T1o), or (T2i, T2o) is required along with UA.')
 
         # Deal with different temperature inputs, generated with SymPy
@@ -4160,7 +4160,7 @@ def P_NTU_method(m1, m2, Cp1, Cp2, UA=None, T1i=None, T1o=None,
             passes_counterflow = True
             Np1, end = subtype.split('/')
             if end[-1] in ['c','p']:
-                passes_counterflow = True if end[-1] == 'c' else False
+                passes_counterflow = end[-1] == 'c'
                 end = end[0:-1]
             Np1, Np2 = int(Np1), int(end)
             NTU1 = NTU_from_P_plate(P1=P1, R1=R1, Np1=Np1, Np2=Np2, counterflow=optimal, passes_counterflow=passes_counterflow)
@@ -4252,7 +4252,7 @@ def F_LMTD_Fakheri(Thi, Tho, Tci, Tco, shells=1):
     P = (Tco - Tci)/(Thi - Tci)
     if R == 1.0:
         W2 = (shells - shells*P)/(shells - shells*P + P)
-        return (2**0.5*(1. - W2)/W2)/log(((W2/(1. - W2) + 2**-0.5)/(W2/(1. - W2) - 2**-0.5)))
+        return (2**0.5*(1. - W2)/W2)/log((W2/(1. - W2) + 2**-0.5)/(W2/(1. - W2) - 2**-0.5))
     else:
         W = ((1. - P*R)/(1. - P))**(1./shells)
         S = (R*R + 1.)**0.5/(R - 1.)

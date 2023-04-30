@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 '''Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
 Copyright (C) 2017, Caleb Bell <Caleb.Andrew.Bell@gmail.com>
 
@@ -18,13 +17,13 @@ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.'''
+SOFTWARE.
+'''
 
-from __future__ import division
 import ht
 from fluids.numerics import numpy as np, FakePackage
 
-'''Basic module which wraps all ht functions with numpy's vectorize.
+"""Basic module which wraps all ht functions with numpy's vectorize.
 All other object - dicts, classes, etc - are not wrapped. Supports star
 imports; so the same objects exported when importing from the main library
 will be imported from here.
@@ -47,7 +46,7 @@ The correct syntax is as follows:
 
 >>> import ht.vectorized # Necessary
 >>> from ht.vectorized import * # May be used without first importing ht
-'''
+"""
 
 __all__ = []
 

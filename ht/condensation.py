@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 '''Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
 Copyright (C) 2016, Caleb Bell <Caleb.Andrew.Bell@gmail.com>
 
@@ -18,9 +17,9 @@ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.'''
+SOFTWARE.
+'''
 
-from __future__ import division
 from math import pi, sin
 from fluids.constants import g, R
 from fluids.core import Reynolds, Prandtl
@@ -355,13 +354,13 @@ def Cavallini_Smith_Zecchin(m, x, D, rhol, rhog, mul, mug, kl, Cpl):
     Vg = m*x/(rhog*pi/4*D**2)
     Rel = Reynolds(V=Vl, D=D, rho=rhol, mu=mul)
     Reg = Reynolds(V=Vg, D=D, rho=rhog, mu=mug)
-    '''The following was coded, and may be used instead of the above lines,
+    """The following was coded, and may be used instead of the above lines,
     to check that the definitions of parameters here provide the same results
     as those defined in [1]_.
     G = m/(pi/4*D**2)
     Re = G*D/mul
     Rel = Re*(1-x)
-    Reg = Re*x/(mug/mul)'''
+    Reg = Re*x/(mug/mul)"""
     Reeq = Reg*(mug/mul)*(rhol/rhog)**0.5 + Rel
     Nul = 0.05*Reeq**0.8*Prl**0.33
     return Nul*kl/D # confirmed to be with respect to the liquid

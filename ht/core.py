@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 '''Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
 Copyright (C) 2016, 2017, 2018 Caleb Bell <Caleb.Andrew.Bell@gmail.com>
 
@@ -18,9 +17,9 @@ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.'''
+SOFTWARE.
+'''
 
-from __future__ import division
 from math import log
 from fluids.numerics import i1, i0, k1, k0
 
@@ -118,7 +117,7 @@ def LMTD(Thi, Tho, Tci, Tco, counterflow=True):
 
 def countercurrent_hx_temperature_check(T0i, T0o, T1i, T1o):
     r'''Perform a check on two sets of temperatures that could represent
-    a countercurrent heat exchanger, and return whether they are possible or 
+    a countercurrent heat exchanger, and return whether they are possible or
     not.
 
     Parameters
@@ -540,10 +539,10 @@ def fin_efficiency_Kern_Kraus(Do, D_fin, t_fin, k_fin, h):
     -----
     I0, I1, K0 and K1 are modified Bessel functions of order 0 and 1,
     modified Bessel function of the second kind of order 0 and 1 respectively.
-    
-    
+
+
     A number of assumptions are made in deriving this set of equations [5]_:
-        
+
         * 1-D radial conduction
         * Steady-state operation
         * No radiative heat transfer
@@ -564,7 +563,7 @@ def fin_efficiency_Kern_Kraus(Do, D_fin, t_fin, k_fin, h):
        Wiley, 2011.
     .. [4] Kraus, Allan D., Abdul Aziz, and James Welty. Extended Surface Heat
        Transfer. 1st edition. New York: Wiley-Interscience, 2001.
-    .. [5] Perrotin, Thomas, and Denis Clodic. "Fin Efficiency Calculation in 
+    .. [5] Perrotin, Thomas, and Denis Clodic. "Fin Efficiency Calculation in
        Enhanced Fin-and-Tube Heat Exchangers in Dry Conditions." In Proc. Int.
        Congress of Refrigeration 2003, 2003.
     '''

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 '''Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
 Copyright (C) 2020, 2021, 2022, 2023 Caleb Bell <Caleb.Andrew.Bell@gmail.com>
 
@@ -18,9 +17,9 @@ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.'''
+SOFTWARE.
+'''
 
-from __future__ import division
 import inspect
 import numba
 import ht
@@ -31,10 +30,10 @@ normal = ht
 
 orig_file = __file__
 caching = False
-'''
+"""
 
 
-'''
+"""
 __all__ = []
 __funcs = {}
 
@@ -43,7 +42,7 @@ replaced = fluids.numba.numerics_dict.copy()
 
 
 def transform_complete_ht(replaced, __funcs, __all__, normal, vec=False):
-    cache_blacklist = set(['h_Ganguli_VDI', 'fin_efficiency_Kern_Kraus', 'h_Briggs_Young',
+    cache_blacklist = {'h_Ganguli_VDI', 'fin_efficiency_Kern_Kraus', 'h_Briggs_Young',
                            'h_ESDU_high_fin', 'h_ESDU_low_fin', 'Nu_Nusselt_Rayleigh_Holling_Herwig',
                            'DBundle_for_Ntubes_Phadkeb', 'Thome', 'to_solve_q_Thome',
                        'temperature_effectiveness_air_cooler', 'factorial',
@@ -54,7 +53,7 @@ def transform_complete_ht(replaced, __funcs, __all__, normal, vec=False):
                        'NTU_from_P_H', 'NTU_from_P_plate',
                        '_NTU_from_P_objective',
                        'temperature_effectiveness_plate', # dies on recursion
-                       ])
+                       }
     __funcs.update(normal_fluids.numba.numbafied_fluids_functions.copy())
     new_mods = normal_fluids.numba.transform_module(normal, __funcs, replaced, vec=vec,
                                                     cache_blacklist=cache_blacklist)

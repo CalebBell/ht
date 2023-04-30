@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 '''Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
 Copyright (C) 2016, 2017, 2018 Caleb Bell <Caleb.Andrew.Bell@gmail.com>
 
@@ -18,11 +17,11 @@ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.'''
+SOFTWARE.
+'''
 
-from __future__ import division
 from math import exp, pi, radians, sin
-from fluids.numerics import (horner, splev, bisplev, 
+from fluids.numerics import (horner, splev, bisplev,
                              implementation_optimize_tck, numpy as np)
 from ht.core import wall_factor, WALL_FACTOR_PRANDTL
 
@@ -101,9 +100,9 @@ Grimson_C1_staggered = [0.518, 0.451, 0.404, 0.31, 0.497, 0.505, 0.46,
                                  0.482, 0.44, 0.213, 0.401, 0.518, 0.522,
                                  0.488, 0.449, 0.428]
 
-'''`interp2d` creates warnings when used on these. They are avoided by
+"""`interp2d` creates warnings when used on these. They are avoided by
 pre-generating the splines, and interfacing with fitpack at a lower level.
-'''
+"""
 tck_Grimson_m_staggered = implementation_optimize_tck([[1.25, 1.25, 1.8667584356619125, 2.0, 2.8366905775206916, 3.0, 3.0],
      [0.6, 0.6, 1.0085084989709654, 1.340729148958038, 1.5154196399508033, 3.0, 3.0],
      [1.731351706314169, 0.3675823638826614, 0.6267891238439347, 0.5623083927989683, 0.5920000000000982, 1.180171700201992,
@@ -746,13 +745,13 @@ def Nu_HEDH_tube_bank(Re, Pr, Do, tube_rows, pitch_parallel, pitch_normal):
     return Nu
 
 
-'''
+"""
 Graph presented in Peters and Timmerhaus uses fanning friction factor.
 This uses Darcy's friction factor.
 These coefficients were generated to speed up loading of this module.
 They are regenerated and checked in the tests.
 
-'''
+"""
 Kern_f_Re_tck = implementation_optimize_tck([[9.9524, 9.9524, 9.9524, 9.9524, 17.9105, 27.7862, 47.2083, 83.9573,
                            281.996, 1122.76, 42999.9, 1012440.0, 1012440.0, 1012440.0, 1012440.0],
                  [6.040435949178239, 4.64973456285782, 2.95274850806163, 1.9569061885042,
@@ -1153,11 +1152,11 @@ def dP_Zukauskas(Re, n, ST, SL, D, rho, Vmax):
     return n*x*f*rho/2*Vmax**2
 
 
-'''Note: the smoothing factor was tunned to keep only 7 knots/9 coeffs while
+"""Note: the smoothing factor was tunned to keep only 7 knots/9 coeffs while
 getting near to requiring more knots. The fitting for a digitized graph is
 likely to be at the maximum possible accuracy. Any speed increasing fit
 function should fit the smoothed function, not the raw data.
-'''
+"""
 Bell_baffle_configuration_tck = implementation_optimize_tck([[0.0, 0.0, 0.0, 0.0, 0.517361, 0.802083, 0.866319,
                                            0.934028, 0.977431, 1.0, 1.0, 1.0, 1.0],
                                  [0.5328447885827443, 0.6821475548927218, 0.9074424740361304,
@@ -1168,7 +1167,7 @@ Bell_baffle_configuration_tck = implementation_optimize_tck([[0.0, 0.0, 0.0, 0.0
 
 Bell_baffle_configuration_obj = lambda x : float(splev(x, Bell_baffle_configuration_tck))
 
-'''Derived with:
+"""Derived with:
 
 fit = Chebfun.from_function(lambda x: Bell_baffle_configuration_obj(0.5*(x+1)), domain=[-1,1], N=8)
 cheb2poly(fit.coefficients())[::-1].tolist()
@@ -1177,7 +1176,7 @@ xs = np.linspace(0, 1, 3000)
 f = Bell_baffle_configuration_obj
 print(max([(f(i)-fit(i*2-1))/f(i) for i in xs]), 'MAX ERR')
 print(np.mean([abs(f(i)-fit(i*2-1))/f(i) for i in xs]), 'MEAN ERR')
-'''
+"""
 Bell_baffle_configuration_coeffs = [-17.267087530974095, -17.341072676377735,
     60.38380262590988, 60.78202803861199, -83.86556326987701, -84.74024411236306, 58.66461844872558,
     59.56146082596216, -21.786957547130935, -22.229378707598116, 4.1167302227508, 4.226246012504343,
@@ -1269,10 +1268,10 @@ def baffle_correction_Bell(crossflow_tube_fraction, method='spline'):
     return Jc
 
 
-'''Note: The smoothing factor was hand tuned to not overfit from points which
+"""Note: The smoothing factor was hand tuned to not overfit from points which
 were clearly wrong in the digitization. It will predict values above 1 however
 for some values; this must be checked!
-'''
+"""
 Bell_baffle_leakage_x_max = 0.743614
 
 Bell_baffle_leakage_tck = implementation_optimize_tck([[0.0, 0.0, 0.0, 0.0, 0.0213694, 0.0552542, 0.144818,

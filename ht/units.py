@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 '''Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
 Copyright (C) 2017, Caleb Bell <Caleb.Andrew.Bell@gmail.com>
 
@@ -18,19 +17,16 @@ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.'''
+SOFTWARE.
+'''
 
-from __future__ import division
 import types
-import numpy as np
 import ht
 
 __all__ = ['wraps_numpydoc', 'u']
 
 try:
-    import pint
     from pint import _DEFAULT_REGISTRY as u
-    from pint import DimensionalityError
 
 except ImportError: # pragma: no cover
     raise ImportError('The unit handling in fluids requires the installation '
@@ -39,10 +35,10 @@ except ImportError: # pragma: no cover
 from fluids.units import wraps_numpydoc
 
 
-'''
+"""
 Functions which will need custom wrappers:
 ht.get_tube_TEMA, ht.check_tubing_TEMA
-'''
+"""
 
 __funcs = {}
 
