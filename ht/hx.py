@@ -4738,7 +4738,8 @@ def Ntubes_Phadkeb(DBundle, Do, pitch, Ntp, angle=30):
     .. [1] Phadke, P. S., Determining tube counts for shell and tube
        exchangers, Chem. Eng., September, 91, 65-68 (1984).
     '''
-    if square_C1s is None: _load_coeffs_Phadkeb() # numba: delete
+    if square_C1s is None: # numba: delete
+         _load_coeffs_Phadkeb() # numba: delete
     if DBundle <= Do*Ntp:
         return 0
 
@@ -4935,7 +4936,8 @@ def DBundle_for_Ntubes_Phadkeb(Ntubes, Do, pitch, Ntp, angle=30):
     .. [1] Phadke, P. S., Determining tube counts for shell and tube
        exchangers, Chem. Eng., September, 91, 65-68 (1984).
     '''
-    if square_C1s is None: _load_coeffs_Phadkeb() # numba: delete
+    if square_C1s is None: # numba: delete
+        _load_coeffs_Phadkeb() # numba: delete
     if angle == 30 or angle == 60:
         Ns = triangular_Ns[-1]
     elif angle == 45 or angle == 90:
