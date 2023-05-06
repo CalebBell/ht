@@ -470,7 +470,7 @@ def Thome(m, x, D, rhol, rhog, mul, mug, kl, kg, Cpl, Cpg, Hvap, sigma, Psat,
     Rel = G*D*(1-x)/mul
     Reg = G*D*x/mug
     qref = 3328*(Psat/Pc)**-0.5
-    if q is None: 
+    if q is None:
         q = 1e4 # Make numba happy, their bug, never gets ran
     fopt = (q/qref)**1.74
     tau = 1./fopt

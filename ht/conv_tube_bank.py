@@ -31,7 +31,7 @@ __all__ = ['dP_Kern', 'dP_Zukauskas',
            'Zukauskas_tube_row_correction',
            'ESDU_tube_row_correction',
            'ESDU_tube_angle_correction',
-	   'baffle_correction_Bell', 'baffle_leakage_Bell',
+           'baffle_correction_Bell', 'baffle_leakage_Bell',
            'bundle_bypassing_Bell', 'unequal_baffle_spacing_Bell',
            'laminar_correction_Bell']
 
