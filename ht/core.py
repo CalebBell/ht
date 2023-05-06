@@ -393,7 +393,7 @@ def wall_factor_Nu(mu, mu_wall, turbulent=True, liquid=False):
     return wall_factor(mu=mu, mu_wall=mu_wall, **params)
 
 
-wall_factor_bad_option_msg = 'Supported options are %s' %(
+wall_factor_bad_option_msg = 'Supported options are: '+ str(
         [WALL_FACTOR_VISCOSITY, WALL_FACTOR_PRANDTL, WALL_FACTOR_TEMPERATURE,
          WALL_FACTOR_DEFAULT])
 
