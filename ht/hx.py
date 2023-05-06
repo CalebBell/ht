@@ -315,7 +315,8 @@ def effectiveness_from_NTU(NTU, Cr, subtype='counterflow', n_shell_tube=None):
         return effectiveness
     elif subtype == 'crossflow':
         t0 = 1.0/(4.*Cr*NTU)
-        int_term = quad(crossflow_effectiveness_to_int, 0, 2.*NTU*sqrt(Cr), args=(NTU, t0,))[0]
+        res, err = quad(crossflow_effectiveness_to_int, 0, 2.*NTU*sqrt(Cr), args=(NTU, t0,))
+        int_term = res
         CrNTU = Cr*NTU
         return 1./Cr - exp(-CrNTU)/(2.*CrNTU*CrNTU)*int_term
     elif subtype == 'crossflow approximate':

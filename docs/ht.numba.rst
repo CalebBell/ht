@@ -51,6 +51,12 @@ Today, the list of things known not to work is as follows:
 - :py:func:`~.DBundle_min` and :py:func:`~.shell_clearance` (needs work)
 - :py:func:`~.wall_factor_Nu` and :py:func:`~.wall_factor_fd` (dictionary lookups)
 - :py:func:`~.solar_spectrum` (external file reading)
+- :py:func:`~.NTU_from_P_basic` (used to work but broke in 0.57 numba release)
+- :py:func:`~.NTU_from_P_J` (used to work but broke in 0.57 numba release)
+- :py:func:`~.NTU_from_P_G` (used to work but broke in 0.57 numba release)
+- :py:func:`~.NTU_from_P_E` (used to work but broke in 0.57 numba release)
+- :py:func:`~.NTU_from_P_H` (used to work but broke in 0.57 numba release)
+- :py:func:`~.NTU_from_P_plate` (used to work but broke in 0.57 numba release)
 - Everything in :py:mod:`ht.insulation`
 
 

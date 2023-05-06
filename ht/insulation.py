@@ -281,12 +281,11 @@ ASHRAE_roofing = {'Asbestos/cement shingles': [1120.0, 1000.0, None, 0.037, 6],
 'Wood shingles, plain and plastic-film-faced': [None, 1300.0, None, 0.166, 10]}
 
 ASHRAE_plastering = {'Cement plaster, sand aggregate': [1860.0, 840.0, 0.72, None, None],
-'Sand aggregate': [None, 840.0, None, 0.013, 10],
 'Gypsum plaster, 1120 kg/m^3': [1120.0, None, 0.38, None, None],
 'Gypsum plaster, 1280 kg/m^3': [1280.0, None, 0.46, None, None],
 'Lightweight aggregate': [720.0, None, None, 0.056, 13],
 'Perlite aggregate': [720.0, 1340.0, 0.22, None, None],
-'Sand aggregate': [1680.0, 840.0, 0.81, None, None],
+'Sand aggregate': [1680.0, 840.0, 0.81, 0.013, 10],
 'Vermiculite aggregate, 480 kg/m^3': [480.0, None, 0.14, None, None],
 'Vermiculite aggregate, 600 kg/m^3': [600.0, None, 0.2, None, None],
 'Vermiculite aggregate, 720 kg/m^3': [720.0, None, 0.25, None, None],
