@@ -20,8 +20,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 '''
 
-from math import exp, e
 import os
+from math import e, exp
+
 from fluids.constants import c, h, k, sigma
 from fluids.numerics import numpy as np
 

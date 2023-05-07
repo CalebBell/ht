@@ -20,9 +20,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 '''
 
-from math import pi, sin, radians
-from fluids.friction import (friction_plate_Martin_1999,
-                             friction_plate_Martin_VDI, Kumar_beta_list)
+from math import pi, radians, sin
+
+from fluids.friction import Kumar_beta_list, friction_plate_Martin_1999, friction_plate_Martin_VDI
 
 __all__ = ['Nu_plate_Kumar', 'Nu_plate_Martin', 'Nu_plate_Muley_Manglik',
            'Nu_plate_Khan_Khan']

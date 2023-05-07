@@ -21,6 +21,7 @@ SOFTWARE.
 '''
 
 from math import log10
+
 from fluids.constants import g
 
 __all__ = ['Rohsenow', 'McNelly', 'Forster_Zuber', 'Montinsky',
@@ -99,7 +100,7 @@ def Rohsenow(rhol, rhog, mul, kl, Cpl, Hvap, sigma, Te=None, q=None, Csf=0.013,
     .. [1] Cao, Eduardo. Heat Transfer in Process Engineering.
        McGraw Hill Professional, 2009.
     .. [2] Rohsenow, Warren M. "A Method of Correlating Heat Transfer Data for
-       Surface Boiling of Liquids." Technical Report. Cambridge, Mass. : M.I.T.
+       Surface Boiling of Liquids." Technical Report. Cambridge, Mass. : M.I.T.
        Division of Industrial Cooporation, 1951
     '''
     if Te is not None:

@@ -21,10 +21,10 @@ SOFTWARE.
 '''
 
 from math import radians
+
+from fluids.constants import g
 from fluids.core import Bond, Prandtl, thermal_diffusivity
 from fluids.two_phase_voidage import Lockhart_Martinelli_Xtt
-from fluids.constants import g
-
 
 __all__ = ['h_boiling_Amalfi', 'h_boiling_Lee_Kang_Kim',
            'h_boiling_Han_Lee_Kim', 'h_boiling_Huang_Sheer',

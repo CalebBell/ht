@@ -21,6 +21,7 @@ SOFTWARE.
 '''
 
 import types
+
 import ht
 
 __all__ = ['wraps_numpydoc', 'u']
@@ -33,7 +34,6 @@ except ImportError: # pragma: no cover
                       'of the package pint, available on pypi or from '
                       'https://github.com/hgrecco/pint')
 from fluids.units import wraps_numpydoc
-
 
 """
 Functions which will need custom wrappers:

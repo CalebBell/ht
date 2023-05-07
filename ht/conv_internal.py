@@ -40,7 +40,8 @@ __all__ = ['laminar_T_const', 'laminar_Q_const',
 'conv_tube_methods', 'conv_tube_laminar_methods', 'conv_tube_turbulent_methods']
 
 from math import exp, log, tanh
-from fluids.friction import Clamond, LAMINAR_TRANSITION_PIPE
+
+from fluids.friction import LAMINAR_TRANSITION_PIPE, Clamond
 
 ### Laminar
 
@@ -64,12 +65,12 @@ def laminar_T_const():
 
     References
     ----------
-    .. [1] Green, Don, and Robert Perry. Perry’s Chemical Engineers’ Handbook,
+    .. [1] Green, Don, and Robert Perry. Perry`s Chemical Engineers` Handbook,
        Eighth Edition. New York: McGraw-Hill Education, 2007.
     .. [2] Bergman, Theodore L., Adrienne S. Lavine, Frank P. Incropera, and
        David P. DeWitt. Introduction to Heat Transfer. 6E. Hoboken, NJ: Wiley, 2011.
     .. [3] Gesellschaft, V. D. I., ed. VDI Heat Atlas. 2nd ed. 2010 edition.
-       Berlin ; New York: Springer, 2010.
+       Berlin ; New York: Springer, 2010.
     '''
     return 3.66
 
@@ -94,12 +95,12 @@ def laminar_Q_const():
 
     References
     ----------
-    .. [1] Green, Don, and Robert Perry. Perry’s Chemical Engineers’ Handbook,
+    .. [1] Green, Don, and Robert Perry. Perry`s Chemical Engineers` Handbook,
        Eighth Edition. New York: McGraw-Hill Education, 2007.
     .. [2] Bergman, Theodore L., Adrienne S. Lavine, Frank P. Incropera, and
        David P. DeWitt. Introduction to Heat Transfer. 6E. Hoboken, NJ: Wiley, 2011.
     .. [3] Gesellschaft, V. D. I., ed. VDI Heat Atlas. 2nd ed. 2010 edition.
-        Berlin ; New York: Springer, 2010.
+        Berlin ; New York: Springer, 2010.
     '''
     return 48/11.
 
@@ -717,7 +718,7 @@ def turbulent_Webb(Re, Pr, fd):
     .. [2] Webb, Dr R. L. “A Critical Evaluation of Analytical Solutions and
        Reynolds Analogy Equations for Turbulent Heat and Mass Transfer in
        Smooth Tubes.” Wärme - Und Stoffübertragung 4, no. 4
-       (December 1, 1971): 197–204. doi:10.1007/BF01002474.
+       (December 1, 1971): 197-204. doi:10.1007/BF01002474.
     '''
     return (fd/8.)*Re*Pr/(1.07 + 9.*(fd/8.)**0.5*(Pr - 1.)*Pr**0.25)
 
@@ -760,7 +761,7 @@ def turbulent_Sandall(Re, Pr, fd):
     .. [2] Sandall, O. C., O. T. Hanna, and P. R. Mazet. “A New Theoretical
        Formula for Turbulent Heat and Mass Transfer with Gases or Liquids in
        Tube Flow.” The Canadian Journal of Chemical Engineering 58, no. 4
-       (August 1, 1980): 443–47. doi:10.1002/cjce.5450580404.
+       (August 1, 1980): 443-47. doi:10.1002/cjce.5450580404.
     '''
     C = 2.78*log((fd/8.)**0.5*Re/45.)
     return (fd/8.)**0.5*Re*Pr/(12.48*Pr**(2/3.) - 7.853*Pr**(1/3.)
@@ -804,7 +805,7 @@ def turbulent_Gnielinski(Re, Pr, fd):
        Transfer, 3E. New York: McGraw-Hill, 1998.
     .. [2] Gnielinski, V. (1976). New Equation for Heat and Mass Transfer in
        Turbulent Pipe and Channel Flow, International Chemical Engineering,
-       Vol. 16, pp. 359–368.
+       Vol. 16, pp. 359-368.
     '''
     return (fd/8.)*(Re - 1E3)*Pr/(1. + 12.7*(fd/8.)**0.5*(Pr**(2/3.) - 1.))
 
@@ -844,7 +845,7 @@ def turbulent_Gnielinski_smooth_1(Re, Pr):
        Transfer, 3E. New York: McGraw-Hill, 1998.
     .. [2] Gnielinski, V. (1976). New Equation for Heat and Mass Transfer in
        Turbulent Pipe and Channel Flow, International Chemical Engineering,
-       Vol. 16, pp. 359–368.
+       Vol. 16, pp. 359-368.
     '''
     return 0.0214*(Re**0.8 - 100.)*Pr**0.4
 
@@ -884,7 +885,7 @@ def turbulent_Gnielinski_smooth_2(Re, Pr):
        Transfer, 3E. New York: McGraw-Hill, 1998.
     .. [2] Gnielinski, V. (1976). New Equation for Heat and Mass Transfer in
        Turbulent Pipe and Channel Flow, International Chemical Engineering,
-       Vol. 16, pp. 359–368.
+       Vol. 16, pp. 359-368.
     '''
     return 0.012*(Re**0.87 - 280.)*Pr**0.4
 
@@ -936,7 +937,7 @@ def turbulent_Churchill_Zajic(Re, Pr, fd):
     ----------
     .. [1] Churchill, Stuart W., and Stefan C. Zajic. “Prediction of Fully
        Developed Turbulent Convection with Minimal Explicit Empiricism.”
-       AIChE Journal 48, no. 5 (May 1, 2002): 927–40. doi:10.1002/aic.690480503.
+       AIChE Journal 48, no. 5 (May 1, 2002): 927-40. doi:10.1002/aic.690480503.
     .. [2] Plawsky, Joel L. Transport Phenomena Fundamentals, Third Edition.
        CRC Press, 2014.
     '''
@@ -1108,7 +1109,7 @@ def turbulent_Dipprey_Sabersky(Re, Pr, fd, eD):
        Transfer, 3E. New York: McGraw-Hill, 1998.
     .. [2] Dipprey, D. F., and R. H. Sabersky. “Heat and Momentum Transfer in
        Smooth and Rough Tubes at Various Prandtl Numbers.” International
-       Journal of Heat and Mass Transfer 6, no. 5 (May 1963): 329–53.
+       Journal of Heat and Mass Transfer 6, no. 5 (May 1963): 329-53.
        doi:10.1016/0017-9310(63)90097-8
     '''
     Re_e = Re*eD*(fd/8.)**0.5
@@ -1152,7 +1153,7 @@ def turbulent_Gowen_Smith(Re, Pr, fd):
        Transfer, 3E. New York: McGraw-Hill, 1998.
     .. [2] Gowen, R. A., and J. W. Smith. “Turbulent Heat Transfer from Smooth
        and Rough Surfaces.” International Journal of Heat and Mass Transfer 11,
-       no. 11 (November 1968): 1657–74. doi:10.1016/0017-9310(68)90046-X.
+       no. 11 (November 1968): 1657-74. doi:10.1016/0017-9310(68)90046-X.
     '''
     return Re*Pr*(fd/8.)**0.5/(4.5 + (0.155*(Re*(fd/8.)**0.5)**0.54 + (8./fd)**0.5)*Pr**0.5)
 
@@ -1193,7 +1194,7 @@ def turbulent_Kawase_Ulbrecht(Re, Pr, fd):
        Transfer, 3E. New York: McGraw-Hill, 1998.
     .. [2] Kawase, Yoshinori, and Jaromir J. Ulbrecht. “Turbulent Heat and Mass
        Transfer in Dilute Polymer Solutions.” Chemical Engineering Science 37,
-       no. 7 (1982): 1039–46. doi:10.1016/0009-2509(82)80134-6.
+       no. 7 (1982): 1039-46. doi:10.1016/0009-2509(82)80134-6.
     '''
     return 0.0523*Re*Pr**0.5*(fd/4.)**0.5
 
@@ -1235,7 +1236,7 @@ def turbulent_Kawase_De(Re, Pr, fd):
     .. [2] Kawase, Yoshinori, and Addie De. “Turbulent Heat and Mass Transfer
        in Newtonian and Dilute Polymer Solutions Flowing through Rough Pipes.”
        International Journal of Heat and Mass Transfer 27, no. 1
-       (January 1984): 140–42. doi:10.1016/0017-9310(84)90246-1.
+       (January 1984): 140-42. doi:10.1016/0017-9310(84)90246-1.
     '''
     return 0.0471*Re*Pr**0.5*(fd/4.)**0.5*(1.11 + 0.44*Pr**(-1/3.) - 0.7*Pr**(-1/6.))
 

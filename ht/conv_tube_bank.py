@@ -21,9 +21,11 @@ SOFTWARE.
 '''
 
 from math import exp, pi, radians, sin
-from fluids.numerics import (horner, splev, bisplev,
-                             implementation_optimize_tck, numpy as np)
-from ht.core import wall_factor, WALL_FACTOR_PRANDTL
+
+from fluids.numerics import bisplev, horner, implementation_optimize_tck, splev
+from fluids.numerics import numpy as np
+
+from ht.core import WALL_FACTOR_PRANDTL, wall_factor
 
 __all__ = ['dP_Kern', 'dP_Zukauskas',
            'Nu_ESDU_73031', 'Nu_Zukauskas_Bejan','Nu_HEDH_tube_bank',
@@ -1358,7 +1360,7 @@ def baffle_leakage_Bell(Ssb, Stb, Sm, method='spline'):
     .. [5] Serth, R. W., Process Heat Transfer: Principles,
        Applications and Rules of Thumb. 2E. Amsterdam: Academic Press, 2014.
     .. [6] Hall, Stephen. Rules of Thumb for Chemical Engineers, Fifth Edition.
-       5th edition. Oxford ; Waltham , MA: Butterworth-Heinemann, 2012.
+       5th edition. Oxford ; Waltham , MA: Butterworth-Heinemann, 2012.
     '''
     x = (Ssb + Stb)/Sm
     if x > Bell_baffle_leakage_x_max:
@@ -1542,7 +1544,7 @@ def unequal_baffle_spacing_Bell(baffles, baffle_spacing,
     .. [4] Serth, R. W., Process Heat Transfer: Principles,
        Applications and Rules of Thumb. 2E. Amsterdam: Academic Press, 2014.
     .. [5] Hall, Stephen. Rules of Thumb for Chemical Engineers, Fifth Edition.
-       5th edition. Oxford ; Waltham , MA: Butterworth-Heinemann, 2012.
+       5th edition. Oxford ; Waltham , MA: Butterworth-Heinemann, 2012.
     '''
     if baffle_spacing_in is None:
         baffle_spacing_in = baffle_spacing
@@ -1606,7 +1608,7 @@ def laminar_correction_Bell(Re, total_row_passes):
     .. [4] Serth, R. W., Process Heat Transfer: Principles,
        Applications and Rules of Thumb. 2E. Amsterdam: Academic Press, 2014.
     .. [5] Hall, Stephen. Rules of Thumb for Chemical Engineers, Fifth Edition.
-       5th edition. Oxford ; Waltham , MA: Butterworth-Heinemann, 2012.
+       5th edition. Oxford ; Waltham , MA: Butterworth-Heinemann, 2012.
     '''
     if Re > 100.0:
         return 1.0

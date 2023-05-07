@@ -21,7 +21,8 @@ SOFTWARE.
 '''
 
 from math import log
-from fluids.numerics import i1, i0, k1, k0
+
+from fluids.numerics import i0, i1, k0, k1
 
 __all__ =['LMTD', 'wall_factor', 'is_heating_property',
 'is_heating_temperature', 'wall_factor_fd', 'wall_factor_Nu',

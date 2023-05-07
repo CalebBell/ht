@@ -20,7 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 '''
 
-from math import pi, log
+from math import log, pi
+
 from fluids.constants import g
 from fluids.friction import friction_factor
 

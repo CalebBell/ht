@@ -20,8 +20,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 '''
 
+from fluids.numerics import FakePackage
+from fluids.numerics import numpy as np
+
 import ht
-from fluids.numerics import numpy as np, FakePackage
 
 """Basic module which wraps all ht functions with numpy's vectorize.
 All other object - dicts, classes, etc - are not wrapped. Supports star

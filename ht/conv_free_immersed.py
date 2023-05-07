@@ -311,7 +311,7 @@ def Nu_horizontal_plate_VDI(Pr, Gr, buoyancy=True):
     References
     ----------
     .. [1] Gesellschaft, V. D. I., ed. VDI Heat Atlas. 2nd ed. 2010 edition.
-       Berlin ; New York: Springer, 2010.
+       Berlin ; New York: Springer, 2010.
     .. [2] Stewartson, Keith. "On the Free Convection from a Horizontal Plate."
        Zeitschrift Für Angewandte Mathematik Und Physik ZAMP 9, no. 3
        (September 1, 1958): 276-82. https://doi.org/10.1007/BF02033031.

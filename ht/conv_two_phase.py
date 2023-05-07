@@ -21,7 +21,9 @@ SOFTWARE.
 '''
 
 from math import pi
-from fluids.core import Reynolds, Prandtl
+
+from fluids.core import Prandtl, Reynolds
+
 from ht.conv_internal import laminar_entry_Seider_Tate
 
 __all__ = ['Davis_David', 'Elamvaluthi_Srinivas', 'Groothuis_Hendal',

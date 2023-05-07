@@ -20,13 +20,13 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 '''
 
-from math import atan, sin, log10
+from math import atan, log10, sin
+
 from fluids.constants import hp, minute
 from fluids.core import Prandtl, Reynolds
-from ht.core import LMTD, fin_efficiency_Kern_Kraus, wall_factor, WALL_FACTOR_PRANDTL
+
 from ht.conv_tube_bank import ESDU_tube_row_correction
-
-
+from ht.core import LMTD, WALL_FACTOR_PRANDTL, fin_efficiency_Kern_Kraus, wall_factor
 
 __all__ = ['Ft_aircooler', 'air_cooler_noise_GPSA',
            'air_cooler_noise_Mukherjee', 'h_Briggs_Young',

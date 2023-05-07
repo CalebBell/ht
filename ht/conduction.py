@@ -21,7 +21,8 @@ SOFTWARE.
 '''
 
 from math import acosh, log, pi
-from fluids.constants import inch, foot, hour, Btu, degree_Fahrenheit
+
+from fluids.constants import Btu, degree_Fahrenheit, foot, hour, inch
 
 __all__ = ['R_to_k', 'k_to_R', 'k_to_thermal_resistivity',
 'thermal_resistivity_to_k', 'R_value_to_k', 'k_to_R_value', 'R_cylinder',

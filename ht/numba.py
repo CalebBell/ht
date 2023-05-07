@@ -21,10 +21,13 @@ SOFTWARE.
 '''
 
 import inspect
-import numba
-import ht
+
 import fluids
 import fluids.numba
+import numba
+
+import ht
+
 normal_fluids = fluids
 normal = ht
 

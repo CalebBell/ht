@@ -23,8 +23,10 @@ SOFTWARE.
 
 import fluids
 import fluids.numba
+
 import ht as normal_ht
 import ht.numba
+
 orig_file = __file__
 normal = normal_ht
 __all__ = []

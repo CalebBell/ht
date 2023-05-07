@@ -21,7 +21,8 @@ SOFTWARE.
 '''
 
 from math import exp, log
-from fluids.numerics import secant, implementation_optimize_tck, bisplev, horner
+
+from fluids.numerics import bisplev, horner, implementation_optimize_tck, secant
 
 __all__ = ['Nu_Nusselt_Rayleigh_Holling_Herwig', 'Nu_Nusselt_Rayleigh_Probert',
            'Nu_Nusselt_Rayleigh_Hollands',
@@ -95,11 +96,11 @@ def Nu_Nusselt_Rayleigh_Holling_Herwig(Pr, Gr, buoyancy=True):
     References
     ----------
     .. [1] Hölling, M., and H. Herwig. "Asymptotic Analysis of Heat Transfer in
-       Turbulent Rayleigh–Bénard Convection." International Journal of Heat and
+       Turbulent Rayleigh-Bénard Convection." International Journal of Heat and
        Mass Transfer 49, no. 5 (March 1, 2006): 1129-36.
        https://doi.org/10.1016/j.ijheatmasstransfer.2005.09.002.
     .. [2] Gesellschaft, V. D. I., ed. VDI Heat Atlas. 2nd ed. 2010 edition.
-       Berlin ; New York: Springer, 2010.
+       Berlin ; New York: Springer, 2010.
     '''
     if not buoyancy:
         return 1.0
@@ -168,7 +169,7 @@ def Nu_Nusselt_Rayleigh_Probert(Pr, Gr, buoyancy=True):
     .. [1] Probert, SD, RG Brooks, and M Dixon. "Heat Transfer across
        Rectangular Cavities." CHEMICAL AND PROCESS ENGINEERING, 1970, 35.
     .. [2] Gesellschaft, V. D. I., ed. VDI Heat Atlas. 2nd ed. 2010 edition.
-       Berlin ; New York: Springer, 2010.
+       Berlin ; New York: Springer, 2010.
     '''
     if not buoyancy:
         return 1.0
@@ -247,7 +248,7 @@ def Nu_Nusselt_Rayleigh_Hollands(Pr, Gr, buoyancy=True, Rac=1708):
        Heat and Mass Transfer 27, no. 3 (March 1, 1984): 466-68.
        https://doi.org/10.1016/0017-9310(84)90295-3.
     .. [2] Gesellschaft, V. D. I., ed. VDI Heat Atlas. 2nd ed. 2010 edition.
-       Berlin ; New York: Springer, 2010.
+       Berlin ; New York: Springer, 2010.
     '''
     if not buoyancy:
         return 1.0
@@ -319,7 +320,7 @@ def Nu_Nusselt_vertical_Thess(Pr, Gr, H=None, L=None):
     References
     ----------
     .. [1] Gesellschaft, V. D. I., ed. VDI Heat Atlas. 2nd ed. 2010 edition.
-       Berlin ; New York: Springer, 2010.
+       Berlin ; New York: Springer, 2010.
     '''
     Ra = Gr*Pr
     if Ra < 1e7 and H is not None and L is not None:

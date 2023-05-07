@@ -115,7 +115,7 @@ def Nu_Shitsman(Re, Pr_b, Pr_w):
     ----------
     .. [1] M. E Shitsman, Impairment of the heat transmission at supercritical
        pressures, High. Temperature, 1963, 1(2): 237-244
-    .. [2] Miropol’skiy ZL, Shitsman ME (1957). Heat transfer to water and
+    .. [2] Miropol`skiy ZL, Shitsman ME (1957). Heat transfer to water and
        steam at variable specific heat. J Tech Phys XXVII(10): 2359-2372
     .. [3] Chen, Weiwei, Xiande Fang, Yu Xu, and Xianghui Su. "An Assessment of
        Correlations of Forced Convection Heat Transfer to Water at
@@ -769,7 +769,7 @@ def Nu_Gorban(Re, Pr):
 
     References
     ----------
-    .. [1] Gorban LM, Pomet’ko RS, Khryaschev OA (1990) Modeling of water heat
+    .. [1] Gorban LM, Pomet`ko RS, Khryaschev OA (1990) Modeling of water heat
        transfer with Freon of supercritical pressure, 1766, Institute of
        Physics and Power Engineering, Obninsk
     .. [2] Chen, Weiwei, Xiande Fang, Yu Xu, and Xianghui Su. "An Assessment of

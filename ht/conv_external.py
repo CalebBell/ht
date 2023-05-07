@@ -676,7 +676,7 @@ def Nu_horizontal_plate_laminar_Baehr(Re, Pr):
        David P. DeWitt. Introduction to Heat Transfer. 6E.
        Hoboken, NJ: Wiley, 2011.
     .. [3] Gesellschaft, V. D. I., ed. VDI Heat Atlas. 2nd ed. 2010 edition.
-       Berlin ; New York: Springer, 2010.
+       Berlin ; New York: Springer, 2010.
     '''
     if Pr < 0.005:
         return 1.128*(Re*Pr)**0.5
@@ -776,7 +776,7 @@ def Nu_horizontal_plate_turbulent_Schlichting(Re, Pr):
        Berlin Heidelberg: Springer-Verlag, 1997.
        http://www.springer.com/de/book/9783662075548.
     .. [2] Gesellschaft, V. D. I., ed. VDI Heat Atlas. 2nd ed. 2010 edition.
-       Berlin ; New York: Springer, 2010.
+       Berlin ; New York: Springer, 2010.
     '''
     num = 0.037*Re**0.8*Pr
     den = (1.0 + 2.443*Re**-0.1*(Pr**(2.0/3.0) - 1.0))

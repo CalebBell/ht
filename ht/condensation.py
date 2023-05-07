@@ -21,8 +21,10 @@ SOFTWARE.
 '''
 
 from math import pi, sin
-from fluids.constants import g, R
-from fluids.core import Reynolds, Prandtl
+
+from fluids.constants import R, g
+from fluids.core import Prandtl, Reynolds
+
 from ht.conv_internal import turbulent_Dittus_Boelter
 
 __all__ = ['Boyko_Kruzhilin', 'Nusselt_laminar', 'h_kinetic',
@@ -342,7 +344,7 @@ def Cavallini_Smith_Zecchin(m, x, D, rhol, rhog, mul, mug, kl, Cpl):
        Heat Transfer Conference., Tokyo, Japan (1974) 309-313.
     .. [2] Kakaç, Sadik, ed. Boilers, Evaporators, and Condensers. 1st.
        Wiley-Interscience, 1991.
-    .. [3] Balcılar, Muhammet, Ahmet Selim Dalkılıç, Berna Bolat, and Somchai
+    .. [3] Balcilar, Muhammet, Ahmet Selim Dalkiliç, Berna Bolat, and Somchai
        Wongwises. "Investigation of Empirical Correlations on the Determination
        of Condensation Heat Transfer Characteristics during Downward Annular
        Flow of R134a inside a Vertical Smooth Tube Using Artificial
