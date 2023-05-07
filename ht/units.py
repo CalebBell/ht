@@ -23,6 +23,7 @@ SOFTWARE.
 import types
 
 import ht
+from ht import R_to_k, k_to_R, k_to_thermal_resistivity, thermal_resistivity_to_k
 
 __all__ = ['wraps_numpydoc', 'u']
 
@@ -57,7 +58,6 @@ for name in dir(ht):
     __funcs.update({name: obj})
 
 globals().update(__funcs)
-
 
 wrapped_R_to_k = R_to_k
 wrapped_k_to_R = k_to_R

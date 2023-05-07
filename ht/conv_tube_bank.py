@@ -43,7 +43,7 @@ __numba_additional_funcs__ = ['Grimison_C1_aligned_interp', 'Grimison_m_aligned_
                               'Bell_bundle_bypass_low_obj', 'Bell_bundle_bypass_high_obj']
 
 try:
-    IS_NUMBA
+    IS_NUMBA # type: ignore # noqa: F821
 except:
     IS_NUMBA = False
 # Applies for row 1-9.

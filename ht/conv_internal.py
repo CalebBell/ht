@@ -1541,7 +1541,6 @@ def Nu_conv_internal(Re, Pr, eD=0.0, Di=None, x=None, fd=None, Method=None):
     else:
         raise ValueError("Correlation name not recognized; see the "
                         "documentation for the available options.")
-    return Nu
 
 
 ## Comparison

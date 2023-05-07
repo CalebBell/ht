@@ -727,7 +727,7 @@ h0_Gorenflow_1993 = {'74-82-8': 7000.0, '74-84-0': 4500.0, '74-98-6': 4000.0,
 '7727-37-9': 10000.0, '7440-37-1': 8200.0, '7440-01-9': 20000.0, '1333-74-0': 24000.0,
 '7440-59-7': 2000.0}
 try:
-    if IS_NUMBA:
+    if IS_NUMBA: # type: ignore # noqa: F821
         h0_Gorenflow_1993_keys = tuple(h0_Gorenflow_1993.keys())
         h0_Gorenflow_1993_values = tuple(h0_Gorenflow_1993.values())
 except:

@@ -53,7 +53,7 @@ __numba_additional_funcs__ = ['crossflow_effectiveness_to_int', 'to_solve_Ntubes
                               '_tubecount_objf_Perry', '_NTU_max_for_P_solver',
                               '_NTU_from_P_solver', '_NTU_from_P_objective', '_NTU_from_P_erf']
 try:
-    if IS_NUMBA:
+    if IS_NUMBA: # type: ignore # noqa: F821
         __numba_additional_funcs__.append('factorial')
         def factorial(n): # noqa: F811
             return gamma(n + 1.0)
