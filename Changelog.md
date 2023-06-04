@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+
+## [1.0.5] - 2023-06-04
+
+### Changed
+- Code cleanup with ruff (experiment)
+
 ## [1.0.4] - 2023-04-23
 ### Added
 - Nothing
