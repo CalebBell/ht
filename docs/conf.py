@@ -319,6 +319,7 @@ intersphinx_mapping = {'python': ('https://docs.python.org/3', None),
                        'chemicals': ('https://chemicals.readthedocs.io/', None),
                        'fluids': ('https://fluids.readthedocs.io/', None)}
 html_theme = "nature"
+katex_prerender = True
 
 from sphinx.ext.autodoc import between
 
