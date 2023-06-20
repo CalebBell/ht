@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 '''Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
 Copyright (C) 2016, 2017, 2018, 2019, Caleb Bell <Caleb.Andrew.Bell@gmail.com>
 
@@ -18,13 +17,31 @@ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.'''
+SOFTWARE.
+'''
 
-from __future__ import division
-from ht import (Nu_Bishop, Nu_Bringer_Smith, Nu_Gorban, Nu_Griem, Nu_Gupta, Nu_Jackson, Nu_Kitoh,
-                Nu_Krasnoshchekov, Nu_Krasnoshchekov_Protopopov, Nu_McAdams, Nu_Mokry, Nu_Ornatsky,
-                Nu_Petukhov, Nu_Shitsman, Nu_Swenson, Nu_Xu, Nu_Yamagata, Nu_Zhu)
 from fluids.numerics import assert_close, assert_close1d
+
+from ht import (
+    Nu_Bishop,
+    Nu_Bringer_Smith,
+    Nu_Gorban,
+    Nu_Griem,
+    Nu_Gupta,
+    Nu_Jackson,
+    Nu_Kitoh,
+    Nu_Krasnoshchekov,
+    Nu_Krasnoshchekov_Protopopov,
+    Nu_McAdams,
+    Nu_Mokry,
+    Nu_Ornatsky,
+    Nu_Petukhov,
+    Nu_Shitsman,
+    Nu_Swenson,
+    Nu_Xu,
+    Nu_Yamagata,
+    Nu_Zhu,
+)
 
 
 def test_Nu_McAdams():

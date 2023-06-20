@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 '''Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
 Copyright (C) 2017, 2018, 2019, Caleb Bell <Caleb.Andrew.Bell@gmail.com>
 
@@ -18,12 +17,13 @@ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.'''
+SOFTWARE.
+'''
 
-from __future__ import division
-from ht import (h_boiling_Amalfi, h_boiling_Han_Lee_Kim, h_boiling_Huang_Sheer,
-                h_boiling_Lee_Kang_Kim, h_boiling_Yan_Lin)
 from fluids.numerics import assert_close
+
+from ht import h_boiling_Amalfi, h_boiling_Han_Lee_Kim, h_boiling_Huang_Sheer, h_boiling_Lee_Kang_Kim, h_boiling_Yan_Lin
+
 
 def test_h_boiling_Amalfi():
     h = h_boiling_Amalfi(m=3E-5, x=.4, Dh=0.00172, rhol=567., rhog=18.09, kl=0.086, mul=156E-6, mug=7.11E-6, sigma=0.02, Hvap=9E5, q=1E5, A_channel_flow=0.0003)

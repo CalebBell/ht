@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # Heat Transfer documentation build configuration file, created by
 # sphinx-quickstart on Sat Jan  2 17:15:23 2016.
@@ -59,12 +58,12 @@ extensions = [
     'sphinxcontrib.katex',
     'sphinx_sitemap',
 ]
-#    
+#
 
 katex_css_path = \
     'https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css'
 katex_js_path = 'katex.min.js'
-katex_autorender_path = 'auto-render.min.js'    
+katex_autorender_path = 'auto-render.min.js'
 
 
 html_baseurl = 'https://ht.readthedocs.io/'
@@ -86,14 +85,14 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'Heat Transfer'
+project = 'Heat Transfer'
 
 import datetime
 
 build_date = datetime.datetime.utcfromtimestamp(
     int(os.environ.get('SOURCE_DATE_EPOCH', time.time()))
 )
-copyright = u'2016 - %s, Caleb Bell and contributors' %build_date.year
+copyright = '2016 - %s, Caleb Bell and contributors' %build_date.year
 
 
 # The version info for the project you're documenting, acts as replacement for
@@ -102,6 +101,7 @@ copyright = u'2016 - %s, Caleb Bell and contributors' %build_date.year
 #
 # The short X.Y version.
 import ht
+
 version = ht.__version__
 # The full version, including alpha/beta/rc tags.
 release = ht.__version__
@@ -247,8 +247,8 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-  ('index', 'Heat Transfer.tex', u'Heat Transfer Documentation',
-   u'Caleb Bell', 'manual'),
+  ('index', 'Heat Transfer.tex', 'Heat Transfer Documentation',
+   'Caleb Bell', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -277,8 +277,8 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'ht', u'Heat Transfer Documentation',
-     [u'Caleb Bell'], 1)
+    ('index', 'ht', 'Heat Transfer Documentation',
+     ['Caleb Bell'], 1)
 ]
 
 # If true, show URL addresses after external links.
@@ -291,8 +291,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'Heat Transfer', u'Heat Transfer Documentation',
-   u'Caleb Bell', 'Heat Transfer', 'One line description of project.',
+  ('index', 'Heat Transfer', 'Heat Transfer Documentation',
+   'Caleb Bell', 'Heat Transfer', 'One line description of project.',
    'Miscellaneous'),
 ]
 nbsphinx_requirejs_path = '' # fixes katex not working

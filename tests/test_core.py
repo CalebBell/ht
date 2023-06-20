@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 '''Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
 Copyright (C) 2016, 2017 Caleb Bell <Caleb.Andrew.Bell@gmail.com>
 
@@ -18,14 +17,14 @@ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.'''
+SOFTWARE.
+'''
 
-from __future__ import division
-from ht import LMTD, countercurrent_hx_temperature_check, fin_efficiency_Kern_Kraus, wall_factor
-from fluids.numerics import assert_close
-from ht.core import is_heating_temperature, is_heating_property
 import pytest
-from ht.core import WALL_FACTOR_PRANDTL, WALL_FACTOR_TEMPERATURE, WALL_FACTOR_VISCOSITY
+from fluids.numerics import assert_close
+
+from ht import LMTD, countercurrent_hx_temperature_check, fin_efficiency_Kern_Kraus, wall_factor
+from ht.core import WALL_FACTOR_PRANDTL, WALL_FACTOR_TEMPERATURE, WALL_FACTOR_VISCOSITY, is_heating_property, is_heating_temperature
 
 
 def test_core():
@@ -36,7 +35,7 @@ def test_core():
 
     assert LMTD(100., 60., 20., 60) == 40
     assert LMTD(100., 60., 20., 60, counterflow=False) == 0
-    '''Test code for limits
+    """Test code for limits
     from sympy import *
     Thi, Tho, Tci, Tco = symbols('Thi, Tho, Tci, Tco')
     Thi = 100
@@ -58,7 +57,7 @@ def test_core():
     N(limit(expression, Tco, Rational('60')-Rational('1e-50000')))
     limit(expression, Tco, 60)
     # evaluates to zero
-    '''
+    """
 
 
 def test_is_heating_temperature():
@@ -122,7 +121,7 @@ def test_fin_efficiency_Kern_Kraus():
 
     eta = fin_efficiency_Kern_Kraus(0.0254, 0.05715, 3.8E-4, 200, 58)
     assert_close(eta, 0.8412588620231153)
-    '''Code for comparing against several formulas:
+    """Code for comparing against several formulas:
     def fin_efficiency_Kern_Kraus(Do, Dfin, fin_thickness, kfin, h):
         # Should now be about 50/50 function vs special function
         kf = kfin
@@ -156,8 +155,8 @@ def test_fin_efficiency_Kern_Kraus():
         return eta
         # Confirmed with Introduction to Heat Transfer
         # To create a pade approximation of this, it would require f(m, re, ro). Not worth it.
-    '''
-    
+    """
+
 def test_countercurrent_hx_temperature_check():
     assert not countercurrent_hx_temperature_check(T0i=500, T0o=466, T1i=348, T1o=329)
     assert not countercurrent_hx_temperature_check(T0i=453, T0o=466, T1i=310, T1o=329)

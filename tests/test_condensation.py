@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 '''Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
 Copyright (C) 2016, 2017, 2018, 2019, Caleb Bell <Caleb.Andrew.Bell@gmail.com>
 
@@ -18,17 +17,15 @@ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.'''
+SOFTWARE.
+'''
 
-from __future__ import division
-from fluids import Prandtl
 from math import pi
-from ht import (Akers_Deans_Crosser, Boyko_Kruzhilin, Cavallini_Smith_Zecchin, Nusselt_laminar,
-                Shah, h_kinetic)
-from fluids.numerics import linspace
-from fluids.numerics import assert_close, assert_close1d
 
+from fluids import Prandtl
+from fluids.numerics import assert_close, assert_close1d, linspace
 
+from ht import Akers_Deans_Crosser, Boyko_Kruzhilin, Cavallini_Smith_Zecchin, Nusselt_laminar, Shah, h_kinetic
 
 ### Condensation
 

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 '''Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
 Copyright (C) 2016, 2017, 2018, 2019, Caleb Bell <Caleb.Andrew.Bell@gmail.com>
 
@@ -18,15 +17,25 @@ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.'''
+SOFTWARE.
+'''
 
-from __future__ import division
-from ht import (Ft_aircooler, air_cooler_noise_GPSA, air_cooler_noise_Mukherjee, dP_ESDU_high_fin,
-                dP_ESDU_low_fin, h_Briggs_Young, h_ESDU_high_fin, h_ESDU_low_fin, h_Ganguli_VDI)
+import pytest
+from fluids.constants import foot, hp, inch, minute
 from fluids.geometry import AirCooledExchanger
 from fluids.numerics import assert_close, assert_close2d
-from fluids.constants import minute, hp, inch, foot
-import pytest
+
+from ht import (
+    Ft_aircooler,
+    air_cooler_noise_GPSA,
+    air_cooler_noise_Mukherjee,
+    dP_ESDU_high_fin,
+    dP_ESDU_low_fin,
+    h_Briggs_Young,
+    h_ESDU_high_fin,
+    h_ESDU_low_fin,
+    h_Ganguli_VDI,
+)
 
 ### Air Cooler
 
@@ -48,7 +57,7 @@ def test_air_cooler_noise_GPSA():
 
 
 def test_air_cooler_noise_Mukherjee():
-    '''    # Confirmed to be log10's because of example tip speed reduction
+    '''# Confirmed to be log10's because of example tip speed reduction
     # of 60 m/s to 40 m/s saves 5.3 dB.
     # hp in shaft horse power
     # d in meters
@@ -213,10 +222,10 @@ def test_AirCooledExchangerPermutations():
     tube_passes_options = range(1, 20)
     tubes_per_row_options = range(1, 40)
 
-    from ht.hx import HTRI_Ls, HEDH_pitches
-    from ht.air_cooler import fin_densities, fin_heights, ODs
+    from ht.air_cooler import ODs, fin_densities, fin_heights
+    from ht.hx import HEDH_pitches, HTRI_Ls
     angles = [30, 45, 60, 90]
-    pitches = sorted((set([j for k in HEDH_pitches.values() for j in k])))
+    pitches = sorted({j for k in HEDH_pitches.values() for j in k})
     pitches = [1.25, 1.312, 1.33, 1.375, 1.4, 1.5]
 
     fin_thicknesses = [3E-4, 4E-4, 5E-4, 6E-4, 7E-4] # made up

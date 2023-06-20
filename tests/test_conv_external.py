@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 '''Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
 Copyright (C) 2016, 2017, 2018, 2019, Caleb Bell <Caleb.Andrew.Bell@gmail.com>
 
@@ -18,18 +17,30 @@ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.'''
+SOFTWARE.
+'''
 
-from __future__ import division
-from ht import (Nu_cylinder_Churchill_Bernstein, Nu_cylinder_Fand, Nu_cylinder_McAdams,
-                Nu_cylinder_Perkins_Leppert_1962, Nu_cylinder_Perkins_Leppert_1964,
-                Nu_cylinder_Sanitjai_Goldstein, Nu_cylinder_Whitaker, Nu_cylinder_Zukauskas,
-                Nu_external_cylinder, Nu_external_cylinder_methods, Nu_external_horizontal_plate,
-                Nu_external_horizontal_plate_methods, Nu_horizontal_plate_laminar_Baehr,
-                Nu_horizontal_plate_laminar_Churchill_Ozoe, Nu_horizontal_plate_turbulent_Kreith,
-                Nu_horizontal_plate_turbulent_Schlichting)
 import pytest
 from fluids.numerics import assert_close, assert_close1d, logspace
+
+from ht import (
+    Nu_cylinder_Churchill_Bernstein,
+    Nu_cylinder_Fand,
+    Nu_cylinder_McAdams,
+    Nu_cylinder_Perkins_Leppert_1962,
+    Nu_cylinder_Perkins_Leppert_1964,
+    Nu_cylinder_Sanitjai_Goldstein,
+    Nu_cylinder_Whitaker,
+    Nu_cylinder_Zukauskas,
+    Nu_external_cylinder,
+    Nu_external_cylinder_methods,
+    Nu_external_horizontal_plate,
+    Nu_external_horizontal_plate_methods,
+    Nu_horizontal_plate_laminar_Baehr,
+    Nu_horizontal_plate_laminar_Churchill_Ozoe,
+    Nu_horizontal_plate_turbulent_Kreith,
+    Nu_horizontal_plate_turbulent_Schlichting,
+)
 from ht.conv_external import conv_horizontal_plate_laminar_methods, conv_horizontal_plate_turbulent_methods
 
 ### Conv external

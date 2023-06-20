@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 '''Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
 Copyright (C) 2016, 2017, 2018, 2019, Caleb Bell <Caleb.Andrew.Bell@gmail.com>
 
@@ -18,13 +17,13 @@ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.'''
+SOFTWARE.
+'''
 
-from __future__ import division
-from ht.boiling_flow import (Chen_Bennett, Chen_Edelstein, Lazarek_Black, Li_Wu, Liu_Winterton,
-                             Sun_Mishima, Thome, Yun_Heo_Kim)
-from fluids.numerics import assert_close
 import pytest
+from fluids.numerics import assert_close
+
+from ht.boiling_flow import Chen_Bennett, Chen_Edelstein, Lazarek_Black, Li_Wu, Liu_Winterton, Sun_Mishima, Thome, Yun_Heo_Kim
 
 
 def test_Lazarek_Black():
@@ -37,7 +36,7 @@ def test_Lazarek_Black():
 
     with pytest.raises(Exception):
         Lazarek_Black(m=10, D=0.3, mul=1E-3, kl=0.6, Hvap=2E6)
-    '''
+    """
     The code to derive the form with `Te` specified is
     as follows:
 
@@ -47,7 +46,7 @@ def test_Lazarek_Black():
     >>> solve(Eq(h, 30*Relo**Rational(857,1000)*(Bgish*h*Te)**Rational(714,
     ... 1000)*kl/D), h)
     [27000*30**(71/143)*Bgish**(357/143)*Relo**(857/286)*Te**(357/143)*kl**(500/143)/D**(500/143)]
-    '''
+    """
 
 
 def test_Li_Wu():
@@ -61,7 +60,7 @@ def test_Li_Wu():
     with pytest.raises(Exception):
          Li_Wu(m=1, x=0.2, D=0.3, rhol=567., rhog=18.09, kl=0.086, mul=156E-6, sigma=0.02, Hvap=9E5)
 
-    '''
+    """
     The code to derive the form with `Te` specified is
     as follows:
 
@@ -69,7 +68,7 @@ def test_Li_Wu():
     >>> h, A, Te, G, Hvap = symbols('h, A, Te, G, Hvap', positive=True, real=True)
     >>> solve(Eq(h, A*(h*Te/G/Hvap)**0.3), h)
     [A**(10/7)*Te**(3/7)/(G**(3/7)*Hvap**(3/7))]
-    '''
+    """
 
 def test_Sun_Mishima():
     h = Sun_Mishima(m=1.0, D=0.3, rhol=567., rhog=18.09, kl=0.086, mul=156E-6, sigma=0.02, Hvap=9E5, Te=10)
@@ -85,7 +84,7 @@ def test_Sun_Mishima():
     with pytest.raises(Exception):
         Sun_Mishima(m=1, D=0.3, rhol=567., rhog=18.09, kl=0.086, mul=156E-6, sigma=0.02, Hvap=9E5)
 
-    '''
+    """
     The code to derive the form with `Te` specified is
     as follows:
 
@@ -93,7 +92,7 @@ def test_Sun_Mishima():
     >>> h, A, Te, G, Hvap = symbols('h, A, Te, G, Hvap', positive=True, real=True)
     >>> solve(Eq(h, A*(h*Te/G/Hvap)**0.54), h)
     [A**(50/23)*Te**(27/23)/(G**(27/23)*Hvap**(27/23))]
-    '''
+    """
 
 def test_Thome():
     h = Thome(m=1.0, x=0.4, D=0.3, rhol=567., rhog=18.09, kl=0.086, kg=0.2, mul=156E-6, mug=1E-5, Cpl=2300.0, Cpg=1400, sigma=0.02, Hvap=9E5, Psat=1E5, Pc=22E6, q=1E5)
@@ -120,7 +119,7 @@ def test_Yun_Heo_Kim():
     with pytest.raises(Exception):
         Yun_Heo_Kim(m=1, x=0.4, D=0.3, rhol=567., mul=156E-6, sigma=0.02, Hvap=9E5)
 
-    '''
+    """
     The code to derive the form with `Te` specified is
     as follows:
 
@@ -128,7 +127,7 @@ def test_Yun_Heo_Kim():
     >>> h, A = symbols('h, A', positive=True, real=True)
     >>> solve(Eq(h, A*(h)**0.1993), h)
     [A**(10000/8707)]
-    '''
+    """
 
 def test_Liu_Winterton():
     h = Liu_Winterton(m=1.0, x=0.4, D=0.3, rhol=567., rhog=18.09, kl=0.086, mul=156E-6, Cpl=2300.0, P=1E6, Pc=22E6, MW=44.02, Te=7.0)

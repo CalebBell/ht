@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 '''Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
 Copyright (C) 2016, 2017 Caleb Bell <Caleb.Andrew.Bell@gmail.com>
 
@@ -18,24 +17,51 @@ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.'''
+SOFTWARE.
+'''
 
-from __future__ import division
 from math import exp, factorial, isnan, sqrt, tanh
-from ht import (DBundle_for_Ntubes_HEDH, DBundle_for_Ntubes_Phadkeb, DBundle_min, D_for_Ntubes_VDI,
-                F_LMTD_Fakheri, LMTD, L_unsupported_max, NTU_from_P_E, NTU_from_P_G, NTU_from_P_H,
-                NTU_from_P_J, NTU_from_P_basic, NTU_from_P_plate, NTU_from_effectiveness, Ntubes,
-                Ntubes_HEDH, Ntubes_Perrys, Ntubes_Phadkeb, Ntubes_VDI, P_NTU_method,
-                effectiveness_NTU_method, effectiveness_from_NTU, shell_clearance,
-                size_bundle_from_tubecount, temperature_effectiveness_TEMA_E,
-                temperature_effectiveness_TEMA_G, temperature_effectiveness_TEMA_H,
-                temperature_effectiveness_TEMA_J, temperature_effectiveness_air_cooler,
-                temperature_effectiveness_basic, temperature_effectiveness_plate)
-import ht
+from random import choice, randint, seed, uniform
+
 import numpy as np
-from fluids.numerics import assert_close, assert_close1d, assert_close2d
 import pytest
-from random import uniform, randint, seed, choice
+from fluids.numerics import assert_close, assert_close1d, assert_close2d
+
+import ht
+from ht import (
+    LMTD,
+    D_for_Ntubes_VDI,
+    DBundle_for_Ntubes_HEDH,
+    DBundle_for_Ntubes_Phadkeb,
+    DBundle_min,
+    F_LMTD_Fakheri,
+    L_unsupported_max,
+    NTU_from_effectiveness,
+    NTU_from_P_basic,
+    NTU_from_P_E,
+    NTU_from_P_G,
+    NTU_from_P_H,
+    NTU_from_P_J,
+    NTU_from_P_plate,
+    Ntubes,
+    Ntubes_HEDH,
+    Ntubes_Perrys,
+    Ntubes_Phadkeb,
+    Ntubes_VDI,
+    P_NTU_method,
+    effectiveness_from_NTU,
+    effectiveness_NTU_method,
+    shell_clearance,
+    size_bundle_from_tubecount,
+    temperature_effectiveness_air_cooler,
+    temperature_effectiveness_basic,
+    temperature_effectiveness_plate,
+    temperature_effectiveness_TEMA_E,
+    temperature_effectiveness_TEMA_G,
+    temperature_effectiveness_TEMA_H,
+    temperature_effectiveness_TEMA_J,
+)
+
 seed(0)
 
 
@@ -130,8 +156,9 @@ def test_Phadkeb_numbers():
     # One pain point of this code is that it takes 880 kb to store the results
     # in memory as a list
     ht.hx._load_coeffs_Phadkeb()
-    from ht.hx import triangular_Ns, triangular_C1s, square_Ns, square_C1s
-    from math import floor, ceil, sqrt
+    from math import ceil, floor, sqrt
+
+    from ht.hx import square_C1s, square_Ns, triangular_C1s, triangular_Ns
     # Triangular Ns
     # https://oeis.org/A003136
     # Translated expression originally in Wolfram Mathematica
@@ -158,7 +185,7 @@ def test_Phadkeb_numbers():
     # Tested with the online interpreter http://pari.math.u-bordeaux.fr/gp.html
     # This one is very slow, 300 seconds+
     # Used to be 300 + seconds, now 50+ seconds
-    
+
     def a(n):
         tot = 0
         for k in range(0, int(ceil(n/3.))):
@@ -212,7 +239,7 @@ def test_Phadkeb_numbers():
             tot += rtf(n - k*k)
         return 1 + 4*tot
 
-    ans = set([a2(i) for i in range(35000)])
+    ans = {a2(i) for i in range(35000)}
     ans = sorted(list(ans))
     nums = ans[0:len(square_C1s)]
     assert_close1d(nums, square_C1s)
@@ -931,7 +958,7 @@ def test_P_NTU_method_backwards():
 
 
 def test_Pp():
-    from ht.hx import Pp, Pc
+    from ht.hx import Pc, Pp
     # randomly chosen test value
     ans = Pp(5, .4)
     assert_close(ans, 0.713634370024604)
@@ -1717,8 +1744,8 @@ def test_L_unsupported_max():
 
     # Terribly pessimistic
     assert_close(L_unsupported_max(Do=10, material='CS'), 3.175)
-    
-    
+
+
 def test_issue_6():
     at_error = P_NTU_method(m1=3, m2=3, Cp1=1860., Cp2=1860,
     subtype='counterflow', Ntp=4, T2i=15, T1i=130, UA=3041.75)
@@ -1726,7 +1753,7 @@ def test_issue_6():
     subtype='counterflow', Ntp=4, T2i=15, T1i=130, UA=3041.75)
     for k, v in at_error.items():
         assert_close(v, before_error[k], rtol=1e-8)
-        
+
     Flowh = 5
     Flowc = 5
     Cph = 4000

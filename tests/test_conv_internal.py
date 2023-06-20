@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 '''Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
 Copyright (C) 2016, 2017, 2018, 2019, Caleb Bell <Caleb.Andrew.Bell@gmail.com>
 
@@ -18,26 +17,50 @@ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.'''
+SOFTWARE.
+'''
 
-from __future__ import division
-from ht.conv_internal import (Morimoto_Hotta, Nu_conv_internal, Nu_conv_internal_methods,
-                              Nu_laminar_rectangular_Shan_London, conv_tube_methods,
-                              helical_turbulent_Nu_Mori_Nakayama, helical_turbulent_Nu_Schmidt,
-                              helical_turbulent_Nu_Xin_Ebadian, laminar_Q_const, laminar_T_const,
-                              laminar_entry_Baehr_Stephan, laminar_entry_Seider_Tate,
-                              laminar_entry_thermal_Hausen, turbulent_Bhatti_Shah,
-                              turbulent_Churchill_Zajic, turbulent_Colburn,
-                              turbulent_Dipprey_Sabersky, turbulent_Dittus_Boelter,
-                              turbulent_Drexel_McAdams, turbulent_ESDU, turbulent_Friend_Metzner,
-                              turbulent_Gnielinski, turbulent_Gnielinski_smooth_1,
-                              turbulent_Gnielinski_smooth_2, turbulent_Gowen_Smith,
-                              turbulent_Kawase_De, turbulent_Kawase_Ulbrecht, turbulent_Martinelli,
-                              turbulent_Nunner, turbulent_Petukhov_Kirillov_Popov,
-                              turbulent_Prandtl, turbulent_Sandall, turbulent_Sieder_Tate,
-                              turbulent_Webb, turbulent_entry_Hausen, turbulent_von_Karman)
-from fluids.numerics import assert_close, assert_close1d, linspace
 import pytest
+from fluids.numerics import assert_close, assert_close1d, linspace
+
+from ht.conv_internal import (
+    Morimoto_Hotta,
+    Nu_conv_internal,
+    Nu_conv_internal_methods,
+    Nu_laminar_rectangular_Shan_London,
+    conv_tube_methods,
+    helical_turbulent_Nu_Mori_Nakayama,
+    helical_turbulent_Nu_Schmidt,
+    helical_turbulent_Nu_Xin_Ebadian,
+    laminar_entry_Baehr_Stephan,
+    laminar_entry_Seider_Tate,
+    laminar_entry_thermal_Hausen,
+    laminar_Q_const,
+    laminar_T_const,
+    turbulent_Bhatti_Shah,
+    turbulent_Churchill_Zajic,
+    turbulent_Colburn,
+    turbulent_Dipprey_Sabersky,
+    turbulent_Dittus_Boelter,
+    turbulent_Drexel_McAdams,
+    turbulent_entry_Hausen,
+    turbulent_ESDU,
+    turbulent_Friend_Metzner,
+    turbulent_Gnielinski,
+    turbulent_Gnielinski_smooth_1,
+    turbulent_Gnielinski_smooth_2,
+    turbulent_Gowen_Smith,
+    turbulent_Kawase_De,
+    turbulent_Kawase_Ulbrecht,
+    turbulent_Martinelli,
+    turbulent_Nunner,
+    turbulent_Petukhov_Kirillov_Popov,
+    turbulent_Prandtl,
+    turbulent_Sandall,
+    turbulent_Sieder_Tate,
+    turbulent_von_Karman,
+    turbulent_Webb,
+)
 
 
 ### conv_internal

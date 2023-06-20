@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 '''Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
 Copyright (C) 2020, 2021, 2022 Caleb Bell <Caleb.Andrew.Bell@gmail.com>
 
@@ -18,22 +17,26 @@ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.'''
+SOFTWARE.
+'''
 
-from __future__ import division
+import pytest
 from fluids import AirCooledExchanger
-from ht import Nu_external_horizontal_plate_methods, h_Ganguli_VDI
-import ht.vectorized
 from fluids.constants import foot, inch
 from fluids.numerics import assert_close
-import pytest
+
+import ht.vectorized
+from ht import Nu_external_horizontal_plate_methods, h_Ganguli_VDI
+
 try:
     import numba
+
     import ht.numba
     import ht.numba_vectorized
 except:
     numba = None
 import numpy as np
+
 
 def mark_as_numba(func):
     func = pytest.mark.numba(func)

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 '''Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
 Copyright (C) 2019, Caleb Bell <Caleb.Andrew.Bell@gmail.com>
 
@@ -18,16 +17,24 @@ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.'''
+SOFTWARE.
+'''
 
-from __future__ import division
-from ht import (Nu_Nusselt_Rayleigh_Hollands, Nu_Nusselt_Rayleigh_Probert,
-                Nu_Nusselt_vertical_Thess, Nu_vertical_helical_coil_Ali, Rac_Nusselt_Rayleigh,
-                Rac_Nusselt_Rayleigh_disk)
+from fluids.numerics import assert_close, assert_close1d
+from fluids.numerics import numpy as np
+
+from ht import (
+    Nu_Nusselt_Rayleigh_Hollands,
+    Nu_Nusselt_Rayleigh_Probert,
+    Nu_Nusselt_vertical_Thess,
+    Nu_vertical_helical_coil_Ali,
+    Rac_Nusselt_Rayleigh,
+    Rac_Nusselt_Rayleigh_disk,
+)
 from ht.conv_free_enclosed import Nu_Nusselt_Rayleigh_Holling_Herwig
-from fluids.numerics import assert_close, assert_close1d, numpy as np
+
 try:
-    from scipy.interpolate import bisplrep, UnivariateSpline
+    from scipy.interpolate import UnivariateSpline, bisplrep
 except:
     pass
 
@@ -98,7 +105,7 @@ def test_Nu_Nusselt_Rayleigh_Hollands():
     assert_close(Nu_Nusselt_Rayleigh_Hollands(.7, 3.21e6, buoyancy=True, Rac=Rac_Nusselt_Rayleigh(H=1, L=1, W=1, insulated=False)), 8.786362614129537)
 
 def test_Rac_Nusselt_Rayleigh_fit_uninsulated():
-    from ht.conv_free_enclosed import tck_uninstulated_Catton, ratios_uninsulated_Catton, Racs_uninstulated_Catton
+    from ht.conv_free_enclosed import Racs_uninstulated_Catton, ratios_uninsulated_Catton, tck_uninstulated_Catton
     all_zs = []
     all_xs = []
     all_ys = []
@@ -151,6 +158,7 @@ def test_Rac_Nusselt_Rayleigh_fit_insulated():
 
 def test_Rac_Nusselt_Rayleigh_disk_fits():
     from fluids.optional import pychebfun
+
     from ht.conv_free_enclosed import insulated_disk_coeffs, uninsulated_disk_coeffs
     ratios = [0.4, 0.5, 0.7, 1.0, 1.4, 2.0, 3.0, 4.0, 6]
     Ras_uninsulated = [151200, 66600, 21300, 8010, 4350, 2540, 2010, 1880, 1708]

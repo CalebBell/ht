@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 '''Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
 Copyright (C) 2016, 2017 Caleb Bell <Caleb.Andrew.Bell@gmail.com>
 
@@ -18,21 +17,33 @@ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.'''
+SOFTWARE.
+'''
 
-from __future__ import division
-from ht import (ESDU_tube_angle_correction, ESDU_tube_row_correction, Nu_ESDU_73031,
-                Nu_Grimison_tube_bank, Nu_HEDH_tube_bank, Nu_Zukauskas_Bejan,
-                Zukauskas_tube_row_correction, baffle_correction_Bell, baffle_leakage_Bell,
-                bundle_bypassing_Bell, dP_Kern, dP_Zukauskas, laminar_correction_Bell,
-                unequal_baffle_spacing_Bell)
 import numpy as np
-
-from scipy.interpolate import RectBivariateSpline, UnivariateSpline, interp1d, splrep
 from fluids.numerics import assert_close, assert_close1d, assert_close2d, linspace
+from scipy.interpolate import RectBivariateSpline, UnivariateSpline, interp1d, splrep
+
+from ht import (
+    ESDU_tube_angle_correction,
+    ESDU_tube_row_correction,
+    Nu_ESDU_73031,
+    Nu_Grimison_tube_bank,
+    Nu_HEDH_tube_bank,
+    Nu_Zukauskas_Bejan,
+    Zukauskas_tube_row_correction,
+    baffle_correction_Bell,
+    baffle_leakage_Bell,
+    bundle_bypassing_Bell,
+    dP_Kern,
+    dP_Zukauskas,
+    laminar_correction_Bell,
+    unequal_baffle_spacing_Bell,
+)
+
 
 def test_Nu_Grimison_tube_bank_tcks():
-    from ht.conv_tube_bank import Grimison_ST_aligned, Grimison_SL_aligned, Grimison_C1_aligned, Grimison_C1_aligned_tck
+    from ht.conv_tube_bank import Grimison_C1_aligned, Grimison_C1_aligned_tck, Grimison_SL_aligned, Grimison_ST_aligned
     Grimison_C1_aligned_interp = RectBivariateSpline(Grimison_ST_aligned,
                                                      Grimison_SL_aligned,
                                                      np.array(Grimison_C1_aligned))
@@ -40,7 +51,7 @@ def test_Nu_Grimison_tube_bank_tcks():
     tck_recalc = Grimison_C1_aligned_interp.tck
     [assert_close1d(i, j) for i, j in zip(Grimison_C1_aligned_tck, tck_recalc)]
 
-    from ht.conv_tube_bank import Grimison_m_aligned_tck, Grimison_m_aligned
+    from ht.conv_tube_bank import Grimison_m_aligned, Grimison_m_aligned_tck
     Grimison_m_aligned_interp = RectBivariateSpline(Grimison_ST_aligned,
                                                     Grimison_SL_aligned,
                                                     np.array(Grimison_m_aligned))
@@ -205,7 +216,8 @@ def test_Zukauskas_tube_row_correction():
 
 def test_Zukauskas_tube_row_correction_refit():
     from scipy.interpolate import UnivariateSpline
-    from ht.conv_tube_bank import Zukauskas_Czs_low_Re_staggered, Zukauskas_Czs_high_Re_staggered, Zukauskas_Czs_inline
+
+    from ht.conv_tube_bank import Zukauskas_Czs_high_Re_staggered, Zukauskas_Czs_inline, Zukauskas_Czs_low_Re_staggered
     # Commands used to obtain the fitted data:
     Zukauskas_Cz_Zs = [0.968219, 1.01968, 1.04164, 1.04441, 1.07539, 1.09332, 1.13914, 1.16636, 1.23636, 1.2394, 1.24505, 1.3125, 1.33358, 1.38554, 1.43141, 1.48282, 1.4876, 1.55352, 1.58004, 1.60466, 1.65726, 1.67493, 1.70188, 1.79682, 1.91823, 1.99323, 1.99665, 2.04002, 2.16306, 2.18556, 2.19045, 2.30691, 2.3086, 2.36006, 2.45272, 2.45413, 2.57543, 2.59826, 2.72341, 2.7451, 2.8896, 2.91482, 2.98759, 3.1572, 3.23203, 3.25334, 3.3511, 3.42295, 3.4499, 3.52072, 3.6168, 3.83565, 3.9076, 3.9826, 4.02939, 4.17411, 4.20042, 4.44242, 4.48937, 4.61023, 4.82811, 4.95071, 5.07038, 5.28825, 5.31232, 5.3621, 5.50606, 5.53014, 5.60405, 5.74801, 5.74807, 5.82181, 5.99012, 5.99017, 6.13636, 6.23207, 6.23212, 6.37826, 6.44983, 6.44988, 6.62015, 6.69183, 6.69188, 6.95807, 6.95812, 6.98312, 7.1767, 7.20001, 7.41772, 7.41848, 7.65967, 7.87743, 7.90156, 7.95003, 7.97416, 7.97476, 8.21606, 8.2166, 8.45795, 8.60365, 8.67571, 8.79712, 8.91809, 8.96597, 9.18368, 9.20824, 9.42551, 9.45013, 9.66741, 9.69197, 10.0786, 10.3208, 10.5623, 10.5626, 10.7803, 10.9737, 10.9978, 11.2398, 11.2399, 11.4574, 11.4575, 11.6993, 11.7478, 11.9653, 11.9896, 12.2072, 12.2315, 12.4491, 12.691, 12.7152, 12.9812, 13.2231, 13.2715, 13.465, 13.7068, 13.9246, 13.9487, 14.1905, 14.4324, 14.6743, 14.9161, 14.9887, 15.2305, 15.4724, 15.7142, 15.787, 15.811, 15.8835, 16.0046, 16.0287, 16.2465, 16.3673, 16.4883, 16.5124, 16.706, 16.7301, 16.9477, 16.9479, 17.1897, 17.2138, 17.4315, 17.6734, 17.9152, 17.9636, 18.2054, 18.2055, 18.4473, 18.6891, 18.9068, 18.931, 18.9793, 19.2212, 19.4631, 19.5599, 19.7049, 19.9467, 19.9952]
     low_Re_staggered_Cz = [0.828685, 0.831068, 0.832085, 0.832213, 0.833647, 0.834478, 0.836599, 0.83786, 0.8411, 0.841241, 0.841503, 0.845561, 0.84683, 0.849956, 0.852715, 0.855808, 0.856096, 0.859148, 0.860376, 0.861516, 0.863952, 0.864828, 0.866165, 0.870874, 0.876897, 0.880617, 0.880787, 0.882293, 0.886566, 0.887348, 0.887517, 0.89214, 0.892207, 0.894249, 0.897396, 0.897444, 0.901563, 0.902338, 0.906589, 0.907258, 0.911719, 0.912497, 0.914744, 0.91998, 0.92229, 0.922729, 0.92474, 0.926218, 0.926772, 0.928561, 0.930987, 0.936514, 0.938332, 0.940226, 0.940947, 0.943179, 0.943584, 0.946941, 0.947769, 0.9499, 0.95374, 0.955902, 0.957529, 0.960492, 0.96082, 0.961497, 0.962826, 0.963048, 0.96373, 0.965208, 0.965208, 0.965965, 0.967759, 0.96776, 0.969318, 0.969757, 0.969758, 0.970428, 0.970757, 0.970757, 0.971538, 0.972422, 0.972422, 0.975703, 0.975704, 0.976012, 0.978249, 0.978139, 0.977115, 0.977111, 0.977585, 0.978013, 0.97806, 0.978155, 0.978202, 0.978204, 0.97819, 0.97819, 0.979578, 0.980416, 0.980411, 0.980405, 0.981521, 0.981333, 0.980478, 0.980382, 0.981379, 0.981492, 0.981479, 0.981478, 0.982147, 0.982566, 0.982553, 0.982553, 0.98254, 0.981406, 0.98171, 0.98476, 0.984762, 0.98475, 0.98475, 0.984736, 0.984733, 0.985732, 0.985843, 0.986842, 0.986953, 0.985817, 0.986825, 0.986926, 0.986911, 0.987834, 0.988018, 0.988008, 0.987994, 0.991353, 0.991148, 0.98909, 0.9902, 0.990187, 0.991297, 0.991293, 0.991279, 0.991266, 0.992054, 0.992292, 0.99237, 0.992366, 0.992359, 0.992358, 0.993068, 0.993463, 0.993456, 0.993454, 0.994443, 0.994566, 0.994553, 0.994553, 0.99454, 0.994539, 0.996774, 0.99676, 0.996746, 0.996744, 0.99673, 0.99673, 0.997466, 0.998201, 0.998863, 0.998936, 0.99902, 0.999439, 0.999857, 1.00002, 1.00002, 1, 1]

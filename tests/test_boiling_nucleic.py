@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 '''Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
 Copyright (C) 2016, 2017, 2018, 2019, Caleb Bell <Caleb.Andrew.Bell@gmail.com>
 
@@ -18,14 +17,30 @@ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.'''
+SOFTWARE.
+'''
 
-from __future__ import division
-from ht import (Bier, Cooper, Forster_Zuber, Gorenflo, HEDH_Montinsky, HEDH_Taborek, McNelly,
-                Montinsky, Rohsenow, Serth_HEDH, Stephan_Abdelsalam, Zuber, h_nucleic,
-                h_nucleic_methods, qmax_boiling, qmax_boiling_methods)
-from fluids.numerics import assert_close, assert_close1d
 import pytest
+from fluids.numerics import assert_close, assert_close1d
+
+from ht import (
+    Bier,
+    Cooper,
+    Forster_Zuber,
+    Gorenflo,
+    HEDH_Montinsky,
+    HEDH_Taborek,
+    McNelly,
+    Montinsky,
+    Rohsenow,
+    Serth_HEDH,
+    Stephan_Abdelsalam,
+    Zuber,
+    h_nucleic,
+    h_nucleic_methods,
+    qmax_boiling,
+    qmax_boiling_methods,
+)
 
 ### Nucleic boiling
 

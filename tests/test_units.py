@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 '''Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
 Copyright (C) 2017 Caleb Bell <Caleb.Andrew.Bell@gmail.com>
 
@@ -18,15 +17,16 @@ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.'''
+SOFTWARE.
+'''
 
-from __future__ import division
 import types
-from fluids.numerics import assert_close
+
 import pytest
+from fluids.numerics import assert_close
+
 import ht
 from ht.units import P_NTU_method, R_to_k, R_value_to_k, effectiveness_NTU_method, k_to_R_value, u
-
 
 
 def assert_pint_allclose(value, magnitude, units, rtol=1e-7):
@@ -99,7 +99,7 @@ def test_custom_wraps():
 
 def test_check_signatures():
     from fluids.units import check_args_order
-    bad_names = set(['__getattr__'])
+    bad_names = {'__getattr__'}
     for name in dir(ht):
         if name in bad_names:
             continue

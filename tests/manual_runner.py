@@ -1,20 +1,20 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 import sys
+
 try:
     import test_air_cooler
 except Exception as e:
     print('run this from the tests directory')
     print(e)
-    exit()
+    sys.exit()
 import test_boiling_flow
 import test_boiling_nucleic
 import test_boiling_plate
 import test_condensation
 import test_conduction
 import test_conv_external
-import test_conv_free_immersed
 import test_conv_free_enclosed
+import test_conv_free_immersed
 import test_conv_internal
 import test_conv_jacket
 import test_conv_packed_bed
@@ -25,6 +25,7 @@ import test_conv_two_phase
 import test_core
 import test_hx
 import test_radiation
+
 # dynamically generated code - numba, units, vectorize - not part of this test suite
 to_test = [test_air_cooler, test_boiling_flow, test_boiling_nucleic, test_boiling_plate, test_condensation, test_conduction, test_conv_external, test_conv_free_immersed, test_conv_free_enclosed, test_conv_internal, test_conv_jacket, test_conv_packed_bed, test_conv_plate, test_conv_supercritical, test_conv_tube_bank, test_conv_two_phase, test_core, test_hx, test_radiation]
 

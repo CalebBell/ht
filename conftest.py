@@ -1,5 +1,6 @@
-import sys
 import platform
+import sys
+
 is_pypy = 'PyPy' in sys.version
 
 def pytest_ignore_collect(path):
