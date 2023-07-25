@@ -789,7 +789,7 @@ def Nu_horizontal_plate_turbulent_Kreith(Re, Pr):
     temperature. The formulation of Kreith is used.
 
     .. math::
-        \text{Nu}_L = 0.036\text{Re}_L^{0.8} \text{Pr}^{2/3}
+        \text{Nu}_L = 0.036\text{Re}_L^{0.8} \text{Pr}^{1/3}
 
     Parameters
     ----------
