@@ -68,7 +68,7 @@ def test_tube_bank():
     kwargs = dict(m=11., rho=995., mu=0.000803, mu_w=0.000657, DShell=0.584, LSpacing=0.1524, pitch=0.0254, Do=.019, NBaffles=22)
     assert_close(ht.numba.dP_Kern(**kwargs), ht.dP_Kern(**kwargs))
 
-    assert_close(ht.numba.baffle_correction_Bell(0.82, 'Chebyshev'), ht.numba.baffle_correction_Bell(0.82, 'Chebyshev'))
+    assert_close(ht.numba.baffle_correction_Bell(0.82, 'chebyshev'), ht.numba.baffle_correction_Bell(0.82, 'chebyshev'))
     assert_close(ht.numba.baffle_correction_Bell(0.82), ht.numba.baffle_correction_Bell(0.82))
 
     assert_close(ht.numba.baffle_leakage_Bell(1, 3, 8), ht.baffle_leakage_Bell(1, 3, 8))
