@@ -109,5 +109,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Coveralls Finished
+      if: ${{ matrix.python-version != 'pypy3.9'}}
       run: |
         curl https://coveralls.io/webhook?repo_token=${{ secrets.coveralls }} -d "payload[build_num]=${{ github.sha }}&payload[status]=done"
