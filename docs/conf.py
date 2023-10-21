@@ -298,7 +298,7 @@ texinfo_documents = [
 nbsphinx_requirejs_path = '' # fixes katex not working
 plot_rcparams = {'savefig.bbox': 'tight'}
 plot_apply_rcparams = True  # if context option is used
-
+numpydoc_xref_param_type = True
 # Documents to append as an appendix to all manuals.
 #texinfo_appendices = []
 
