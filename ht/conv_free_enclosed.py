@@ -584,7 +584,7 @@ def Nu_vertical_helical_coil_Ali(Pr, Gr):
     Examples
     --------
     >>> Nu_vertical_helical_coil_Ali(4.4, 1E11)
-    1808.5774997297106
+    1808.57749972
 
     References
     ----------
