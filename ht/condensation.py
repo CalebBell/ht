@@ -43,7 +43,7 @@ def Nusselt_laminar(Tsat, Tw, rhog, rhol, kl, mul, Hvap, L, angle=90.):
     Parameters
     ----------
     Tsat : float
-        Saturation temperature at operating pressure [Pa]
+        Saturation temperature at operating pressure [K]
     Tw : float
         Wall temperature, [K]
     rhog : float
