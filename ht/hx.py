@@ -559,7 +559,7 @@ def NTU_from_effectiveness(effectiveness, Cr, subtype='counterflow', n_shell_tub
         # and appears to be monotonic - there is only one solution.
         def to_solve(NTU, Cr, effectiveness):
             return (1. - exp(1./Cr*NTU**0.22*(exp(-Cr*NTU**0.78) - 1.))) - effectiveness
-        return brenth(to_solve, 1E-7, 1E5, args=(Cr, effectiveness))
+        return secant(to_solve, x0=2.5, low=1e-7, high=1e5, bisection=True, require_eval=True, args=(Cr, effectiveness))
 
     elif subtype == 'crossflow, mixed Cmin':
         if Cr*log(1. - effectiveness) < -1:
