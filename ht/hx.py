@@ -4989,31 +4989,30 @@ def Ntubes_Perrys(DBundle, Do, Ntp, angle=30):
        Eighth Edition. New York: McGraw-Hill Education, 2007.
     '''
     if angle == 30 or angle == 60:
-        C = 0.75*DBundle/Do - 36.
+        C = 0.75 * DBundle / Do - 36.
         if Ntp == 1:
-            Nt = 1298. + 74.86*C + 1.283*C**2 - .0078*C**3 - .0006*C**4
+            Nt = (((-0.0006 * C - 0.0078) * C + 1.283) * C + 74.86) * C + 1298.
         elif Ntp == 2:
-            Nt = 1266. + 73.58*C + 1.234*C**2 - .0071*C**3 - .0005*C**4
+            Nt = (((-0.0005 * C - 0.0071) * C + 1.234) * C + 73.58) * C + 1266.
         elif Ntp == 4:
-            Nt = 1196. + 70.79*C + 1.180*C**2 - .0059*C**3 - .0004*C**4
+            Nt = (((-0.0004 * C - 0.0059) * C + 1.180) * C + 70.79) * C + 1196.
         elif Ntp == 6:
-            Nt = 1166. + 70.72*C + 1.269*C**2 - .0074*C**3 - .0006*C**4
+            Nt = (((-0.0006 * C - 0.0074) * C + 1.269) * C + 70.72) * C + 1166.
         else:
             raise ValueError('N passes not 1, 2, 4 or 6')
     elif angle == 45 or angle == 90:
-        C = DBundle/Do - 36.
+        C = DBundle / Do - 36.
         if Ntp == 1:
-            Nt = 593.6 + 33.52*C + .3782*C**2 - .0012*C**3 + .0001*C**4
+            Nt = (((0.0001 * C - 0.0012) * C + 0.3782) * C + 33.52) * C + 593.6
         elif Ntp == 2:
-            Nt = 578.8 + 33.36*C + .3847*C**2 - .0013*C**3 + .0001*C**4
+            Nt = (((0.0001 * C - 0.0013) * C + 0.3847) * C + 33.36) * C + 578.8
         elif Ntp == 4:
-            Nt = 562.0 + 33.04*C + .3661*C**2 - .0016*C**3 + .0002*C**4
+            Nt = (((0.0002 * C - 0.0016) * C + 0.3661) * C + 33.04) * C + 562.0
         elif Ntp == 6:
-            Nt = 550.4 + 32.49*C + .3873*C**2 - .0013*C**3 + .0001*C**4
+            Nt = (((0.0001 * C - 0.0013) * C + 0.3873) * C + 32.49) * C + 550.4
         else:
             raise ValueError('N passes not 1, 2, 4 or 6')
     return int(Nt)
-
 
 def Ntubes_VDI(DBundle=None, Ntp=None, Do=None, pitch=None, angle=30.):
     r'''A rough equation presented in the VDI Heat Atlas for estimating

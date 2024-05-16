@@ -1144,12 +1144,12 @@ def dP_Zukauskas(Re, n, ST, SL, D, rho, Vmax):
     b = SL/D
     if a == b:
         parameter = (a-1.)/(b-1.)
-        f = float(dP_inline_f(Re, b))
-        x = float(dP_inline_correction(parameter, Re))
+        f = float(dP_inline_f(Re, b)[0][0])
+        x = float(dP_inline_correction(parameter, Re)[0][0])
     else:
         parameter = a/b
-        f = float(dP_staggered_f(Re, a))
-        x = float(dP_staggered_correction(parameter, Re))
+        f = float(dP_staggered_f(Re, a)[0][0])
+        x = float(dP_staggered_correction(parameter, Re)[0][0])
 
     return n*x*f*rho/2*Vmax**2
 
