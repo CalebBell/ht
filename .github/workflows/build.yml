@@ -122,7 +122,10 @@ jobs:
     - name: Test with pytest
       run: |
         pytest . -v --cov-report html --cov=ht --cov-report term-missing -m "not online and not thermo"
+    - name: Coveralls
+      run: |
         coveralls
+      if: ${{ matrix.python-version != 'pypy3.9'}}
       env:
         COVERALLS_REPO_TOKEN: ${{ secrets.coveralls }}
         COVERALLS_PARALLEL: true
