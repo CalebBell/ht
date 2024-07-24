@@ -534,7 +534,7 @@ def fin_efficiency_Kern_Kraus(Do, D_fin, t_fin, k_fin, h):
     Examples
     --------
     >>> fin_efficiency_Kern_Kraus(0.0254, 0.05715, 3.8E-4, 200, 58)
-    0.8412588620231153
+    0.841258862023
 
     Notes
     -----

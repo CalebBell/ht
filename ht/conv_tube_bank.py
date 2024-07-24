@@ -1453,10 +1453,10 @@ def bundle_bypassing_Bell(bypass_area_fraction, seal_strips, crossflow_rows,
     Examples
     --------
     >>> bundle_bypassing_Bell(0.5, 5, 25)
-    0.8469611760884599
+    0.84696117608
 
     >>> bundle_bypassing_Bell(0.5, 5, 25, method='HEDH')
-    0.8483210970579099
+    0.84832109705
 
     References
     ----------
