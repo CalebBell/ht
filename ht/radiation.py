@@ -226,14 +226,14 @@ def solar_spectrum(model='SOLAR-ISS'):
     Calculate the minimum and maximum values of the wavelengths (0.5 nm/3000nm)
     and SSI:
 
-    >>> min(wavelengths), max(wavelengths), min(SSI), max(SSI)
+    >>> float(min(wavelengths)), float(max(wavelengths)), float(min(SSI)), float(max(SSI))
     (5e-10, 2.9999e-06, 1330.0, 2256817820.0)
 
     Integration - calculate the solar constant, in untis of W/m^2 hitting
     earth's atmosphere.
 
-    >>> import numpy as np
-    >>> np.trapz(SSI, wavelengths)
+    >>> from scipy.integrate import trapezoid
+    >>> float(trapezoid(SSI, wavelengths))
     1344.802978
 
     References

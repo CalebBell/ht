@@ -4946,7 +4946,7 @@ def DBundle_for_Ntubes_Phadkeb(Ntubes, Do, pitch, Ntp, angle=30):
     s = Ns + 1
     r = s**0.5
     DBundle_max = (Do + 2.*pitch*r)*(1. - 1E-8) # Cannot be exact or floor(s) will give an int too high
-    return bisect(to_solve_Ntubes_Phadkeb, 0, DBundle_max, args=(Do, pitch, Ntp, angle, Ntubes))
+    return float(bisect(to_solve_Ntubes_Phadkeb, 0, DBundle_max, args=(Do, pitch, Ntp, angle, Ntubes)))
 
 
 def Ntubes_Perrys(DBundle, Do, Ntp, angle=30):

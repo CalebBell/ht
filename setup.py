@@ -44,6 +44,7 @@ classifiers=[
     'Programming Language :: Python :: 3.10',
     'Programming Language :: Python :: 3.11',
     'Programming Language :: Python :: 3.12',
+    'Programming Language :: Python :: 3.13',
     'Programming Language :: Python :: Implementation :: CPython',
     'Programming Language :: Python :: Implementation :: PyPy',
     'Programming Language :: Python :: Implementation :: MicroPython',
@@ -75,7 +76,7 @@ setup(
   download_url = 'https://github.com/CalebBell/ht/tarball/1.0.5',
   keywords = keywords,
   classifiers = classifiers,
-  install_requires=['fluids>=1.0.24', 'numpy>=1.5.0', 'scipy>=0.9.0'],
+  install_requires=['fluids>=1.0.24', 'numpy>=1.5.0', "scipy>=1.6.0"],
   package_data={'ht': ['data/*']},
   extras_require = {
       'Coverage documentation':  ['wsgiref>=0.1.2', 'coverage>=4.0.3', 'pint']

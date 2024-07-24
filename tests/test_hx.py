@@ -147,6 +147,7 @@ def test_Ntubes_Phadkeb_fuzz():
                 N = Ntubes_Phadkeb(DBundle=DBundle, Do=D_main, pitch=pitch, Ntp=Ntp, angle=angle)
                 if N > 2:
                     DBundle2 = DBundle_for_Ntubes_Phadkeb(Ntubes=N, Do=D_main, pitch=pitch, Ntp=Ntp, angle=angle)
+                    assert type(DBundle2) is float
                     N2 = Ntubes_Phadkeb(DBundle=DBundle2, Do=D_main, pitch=pitch, Ntp=Ntp, angle=angle)
                     assert N2 == N
 
@@ -300,13 +301,17 @@ def test_Ntubes():
         Ntubes(DBundle=1.2, Do=0.025, pitch=.025*1.25, Method='failure')
 
     D = size_bundle_from_tubecount(N=1285, Do=0.025, pitch=0.03125)
+    assert type(D) is float
     assert_close(D, 1.1985676402390355)
     D = size_bundle_from_tubecount(N=1285, Do=0.025, pitch=0.03125, Method='HEDH')
+    assert type(D) is float
     assert_close(D, 1.205810838411941)
     D = size_bundle_from_tubecount(N=1285, Do=0.025, pitch=0.03125, Method='VDI')
+    assert type(D) is float
     assert_close(D, 1.1749025890472795)
 
     D = size_bundle_from_tubecount(N=13252, Do=.028, Ntp=2, angle=45, pitch=.028*1.25, Method='Perry')
+    assert type(D) is float
     assert_close(D, 3.598336054740235, rtol=5e-5)
 
     with pytest.raises(Exception):

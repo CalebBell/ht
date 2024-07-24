@@ -98,7 +98,7 @@ Citation
 
 To cite ht in publications use::
 
-    Caleb Bell and Contributors (2016-2023). ht: Heat transfer component of Chemical Engineering Design Library (ChEDL)
+    Caleb Bell and Contributors (2016-2024). ht: Heat transfer component of Chemical Engineering Design Library (ChEDL)
     https://github.com/CalebBell/ht.
 
 
