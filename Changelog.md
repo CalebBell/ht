@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## [1.0.6] - 2024-07-26
+
+### Changed
+- Compatibility with NumPy 2.0 and SciPy 1.14
+- Fluids version dependency now >= 1.0.26
+
 
 ## [1.0.5] - 2023-06-04
 
