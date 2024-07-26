@@ -45,7 +45,7 @@ __funcs = {}
 
 
 for name in dir(ht):
-    if name == '__getattr__' or name == '__test__':
+    if name in ('__getattr__', '__test__'):
         continue
     obj = getattr(ht, name)
     if isinstance(obj, types.FunctionType) and obj not in [ht.get_tube_TEMA, ht.check_tubing_TEMA]:

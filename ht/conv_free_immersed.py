@@ -908,6 +908,7 @@ def Nu_vertical_cylinder_McAdams_Weiss_Saunders(Pr, Gr, turbulent=None):
         Whether or not to force the correlation to return the turbulent
         result; will return the laminar regime if False; leave as None for
         automatic selection
+
     Returns
     -------
     Nu : float

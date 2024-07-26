@@ -152,9 +152,7 @@ def countercurrent_hx_temperature_check(T0i, T0o, T1i, T1o):
         Tci, Tco = T0i, T0o
     if Thi < Tho:
         return False
-    if Tci > Tco:
-        return False
-    return True
+    return not Tci > Tco
 
 
 def is_heating_temperature(T, T_wall):

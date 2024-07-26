@@ -132,12 +132,12 @@ def Lehrer(m, Dtank, Djacket, H, Dinlet, rho, Cp, k, mu, muw=None,
     vo = Q/(pi/4*Dinlet**2)
     if dT is not None and isobaric_expansion is not None and inlettype == 'radial' and inletlocation is not None:
         if dT > 0: # Heating jacket fluid
-            if inletlocation == 'auto' or inletlocation == 'bottom':
+            if inletlocation in ('auto', 'bottom'):
                 va = 0.5*(2*g*H*isobaric_expansion*abs(dT))**0.5
             else:
                 va = -0.5*(2*g*H*isobaric_expansion*abs(dT))**0.5
         else: # cooling fluid
-            if inletlocation == 'auto' or inletlocation == 'top':
+            if inletlocation in ('auto', 'top'):
                 va = 0.5*(2*g*H*isobaric_expansion*abs(dT))**0.5
             else:
                 va = -0.5*(2*g*H*isobaric_expansion*abs(dT))**0.5
@@ -331,12 +331,12 @@ def Stein_Schmidt(m, Dtank, Djacket, H, Dinlet,
     if inletlocation and rhow:
         GrJ = g*rho*(rho-rhow)*dch**3/mu**2
         if rhow < rho: # Heating jacket fluid
-            if inletlocation == 'auto' or inletlocation == 'bottom':
+            if inletlocation in ('auto', 'bottom'):
                 ReJeq = (ReJ**2 + GrJ*H/dch/50.)**0.5
             else:
                 ReJeq = (ReJ**2 - GrJ*H/dch/50.)**0.5
         else: # Cooling jacket fluid
-            if inletlocation == 'auto' or inletlocation == 'top':
+            if inletlocation in ('auto', 'top'):
                 ReJeq = (ReJ**2 + GrJ*H/dch/50.)**0.5
             else:
                 ReJeq = (ReJ**2 - GrJ*H/dch/50.)**0.5
