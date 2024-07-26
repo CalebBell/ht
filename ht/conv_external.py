@@ -497,7 +497,7 @@ conv_external_cylinder_turbulent_methods_ranked = ['Sanitjai-Goldstein',
 
 conv_external_cylinder_methods = conv_external_cylinder_turbulent_methods.copy()
 
-_missing_external_cylinder_method = "Correlation name not recognized; the availble methods are %s." %(list(conv_external_cylinder_methods.keys()))
+_missing_external_cylinder_method = f"Correlation name not recognized; the availble methods are {list(conv_external_cylinder_methods.keys())}."
 
 
 def Nu_external_cylinder_methods(Re, Pr, Prw=None, mu=None, muw=None, check_ranges=True):

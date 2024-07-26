@@ -766,7 +766,7 @@ conv_two_phase_methods = {
 conv_two_phase_methods_ranked = ['Knott', 'Martin_Sims', 'Kudirka_Grosh_McFadden', 'Groothuis_Hendal',
                                  'Aggour', 'Hughmark', 'Elamvaluthi_Srinivas', 'Davis-David', 'Ravipudi_Godbold']
 
-conv_two_phase_bad_method = "Correlation name not recognized; the availble methods are %s." %(list(conv_two_phase_methods.keys()))
+conv_two_phase_bad_method = f"Correlation name not recognized; the availble methods are {list(conv_two_phase_methods.keys())}."
 """Generating code:
 for m in conv_two_phase_methods_ranked:
     (f_obj, args) = conv_two_phase_methods[m]

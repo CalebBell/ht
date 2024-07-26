@@ -55,7 +55,7 @@ __numba_additional_funcs__ = ['crossflow_effectiveness_to_int', 'to_solve_Ntubes
 try:
     if IS_NUMBA: # type: ignore # noqa: F821
         __numba_additional_funcs__.append('factorial')
-        def factorial(n): # noqa: F811
+        def factorial(n):
             return gamma(n + 1.0)
 
 except:
@@ -325,7 +325,7 @@ def effectiveness_from_NTU(NTU, Cr, subtype='counterflow', n_shell_tube=None):
         return 1. -exp(-1.0/Cr*(1. - exp(-Cr*NTU)))
     elif subtype ==  'crossflow, mixed Cmax':
         return (1./Cr)*(1. - exp(-Cr*(1. - exp(-NTU))))
-    elif subtype == 'boiler' or subtype == 'condenser':
+    elif subtype in ('boiler', 'condenser'):
         return  1. - exp(-NTU)
     else:
         raise ValueError('Input heat exchanger type not recognized')
@@ -538,7 +538,7 @@ def NTU_from_effectiveness(effectiveness, Cr, subtype='counterflow', n_shell_tub
             # Derived with SymPy
             max_effectiveness = (-((-Cr + sqrt(Cr**2 + 1) + 1)/(Cr + sqrt(Cr**2 + 1) - 1))**shells + 1)/(Cr - ((-Cr + sqrt(Cr**2 + 1) + 1)/(Cr + sqrt(Cr**2 + 1) - 1))**shells)
             raise ValueError('The specified effectiveness is not physically ' # numba: delete
-'possible for this configuration; the maximum effectiveness possible is %s.' % (max_effectiveness)) # numba: delete
+f'possible for this configuration; the maximum effectiveness possible is {max_effectiveness}.') # numba: delete
 #            raise ValueError("Fail") # numba: uncomment
 
         NTU = -(1. + Cr*Cr)**-0.5*log((E - 1.)/(E + 1.))
@@ -1217,8 +1217,8 @@ def temperature_effectiveness_air_cooler(R1, NTU1, rows, passes, coerce=True):
         # https://stackoverflow.com/questions/62056035/how-to-call-math-factorial-from-numba-with-nopython-mode
         Np1 = N+1
         factorials = [factorial(i) for i in range(N)]
-        K_powers = [K**j for j in range(0, N+1)]
-        NKR1_powers = [NKR1**k for k in range(0, N+1)]
+        K_powers = [K**j for j in range(N+1)]
+        NKR1_powers = [NKR1**k for k in range(N+1)]
         exp_terms = [exp(i*NTU1_N) for i in range(-N+1, 1)] # Only need to compute one exp, then multiply
         NKR1_powers_over_factorials = [NKR1_powers[k]/factorials[k]
                                        for k in range(N)]
@@ -1236,7 +1236,7 @@ def temperature_effectiveness_air_cooler(R1, NTU1, rows, passes, coerce=True):
 
         tot = 0.
         for i in range(1, N):
-            for j in range(0, i+1):
+            for j in range(i+1):
                 # can't optimize the factorial
                 prod = factorials[i]/(factorials[i-j]*factorials[j])
                 tot1 = prod*exp_terms[j-i-1]
@@ -1285,7 +1285,7 @@ def temperature_effectiveness_air_cooler(R1, NTU1, rows, passes, coerce=True):
                 new_rows = rows = 5
             if rows -1 == passes:
                 new_rows, new_passes = rows -1, passes
-            elif (passes == 2 or passes == 3 or passes == 5) and rows >= 4:
+            elif (passes in (2, 3, 5)) and rows >= 4:
                 new_rows, new_passes = 4, 2
 
             return temperature_effectiveness_air_cooler(R1=R1, NTU1=NTU1, rows=new_rows, passes=new_passes)
@@ -3736,7 +3736,7 @@ def NTU_from_P_plate(P1, R1, Np1, Np2, counterflow=True,
             return log(-1./(P1*(R1 + 1.) - 1.))/(R1 + 1.)
         except:
 #            raise ValueError("impossible") # numba: uncomment
-            raise ValueError('The maximum P1 obtainable at the specified R1 is %f at the limit of NTU1=inf.' %Pp(1E10, R1)) # numba: delete
+            raise ValueError(f'The maximum P1 obtainable at the specified R1 is {Pp(1E10, R1):f} at the limit of NTU1=inf.') # numba: delete
     elif Np1 == 1 and Np2 == 2:
         NTU_max = 100.
     elif Np1 == 1 and Np2 == 3 and counterflow:
@@ -4534,7 +4534,7 @@ def baffle_thickness(Dshell, L_unsupported, service='C'):
             i = 4
         t = _TEMA_baffles_refinery[j][i]
 
-    elif service == 'C' or service == 'B':
+    elif service in ('C', 'B'):
         if L_unsupported <= 0.305:
             i = 0
         elif 0.305 < L_unsupported <= 0.610:
@@ -4648,7 +4648,7 @@ def L_unsupported_max(Do, material='CS'):
         elif _L_unsupported_Do[i] > Do:
             i -= 1 # too big, go down a length
             break
-    i = i if i < 11 else 11
+    i = min(11, i)
     i = 0 if i == -1 else i
     if material == 'CS':
         return _L_unsupported_steel[i]
@@ -4756,17 +4756,17 @@ def Ntubes_Phadkeb(DBundle, Do, pitch, Ntp, angle=30):
     Ns, Nr = floor(s), floor(r)
     # If Ns is between two numbers, take the smaller one
     # C1 is the number of tubes for a single pass arrangement.
-    if angle == 30 or angle == 60:
+    if angle in (30, 60):
         i = np.searchsorted(triangular_Ns, Ns, side='right')
         C1 = int(triangular_C1s[i-1])
-    elif angle == 45 or angle == 90:
+    elif angle in (45, 90):
         i = np.searchsorted(square_Ns, Ns, side='right')
         C1 = int(square_C1s[i-1])
 
     Cx = 2*Nr + 1.
 
     # triangular and rotated triangular
-    if (angle == 30 or angle == 60):
+    if (angle in (30, 60)):
         w = 2*r/3**0.5
         Nw = floor(w)
         if Nw % 2 == 0:
@@ -4781,7 +4781,7 @@ def Ntubes_Phadkeb(DBundle, Do, pitch, Ntp, angle=30):
         else: # 4 passes, or 8; this value is needed
             C4 = C1 - Cx - Cy
 
-    if (angle == 30 or angle == 60) and (Ntp == 6 or Ntp == 8):
+    if (angle in (30, 60)) and (Ntp in (6, 8)):
         if angle == 30: # triangular
             v = 2*e*r/3**0.5 + 0.5
             Nv = floor(v)
@@ -4818,7 +4818,7 @@ def Ntubes_Phadkeb(DBundle, Do, pitch, Ntp, angle=30):
             else: # 8
                 C8 = C4 - 4.*(Nz1 + Nz2)
 
-    if (angle == 45 or angle == 90):
+    if (angle in (45, 90)):
         if angle == 90:
             Cy = Cx - 1.
             # eq 6 or 8 for c2 or c4
@@ -4836,7 +4836,7 @@ def Ntubes_Phadkeb(DBundle, Do, pitch, Ntp, angle=30):
             else: # 4 passes, or 8; this value is needed
                 C4 = C1 - Cx - Cy
 
-    if (angle == 45 or angle == 90) and (Ntp == 6 or Ntp == 8):
+    if (angle in (45, 90)) and (Ntp in (6, 8)):
         if angle == 90:
             v = e*r + 0.5
             Nv = floor(v)
@@ -4939,9 +4939,9 @@ def DBundle_for_Ntubes_Phadkeb(Ntubes, Do, pitch, Ntp, angle=30):
     '''
     if square_C1s is None: # numba: delete
         _load_coeffs_Phadkeb() # numba: delete
-    if angle == 30 or angle == 60:
+    if angle in (30, 60):
         Ns = triangular_Ns[-1]
-    elif angle == 45 or angle == 90:
+    elif angle in (45, 90):
         Ns = square_Ns[-1]
     s = Ns + 1
     r = s**0.5
@@ -4988,7 +4988,7 @@ def Ntubes_Perrys(DBundle, Do, Ntp, angle=30):
     .. [1] Green, Don, and Robert Perry. Perry's Chemical Engineers' Handbook,
        Eighth Edition. New York: McGraw-Hill Education, 2007.
     '''
-    if angle == 30 or angle == 60:
+    if angle in (30, 60):
         C = 0.75 * DBundle / Do - 36.
         if Ntp == 1:
             Nt = (((-0.0006 * C - 0.0078) * C + 1.283) * C + 74.86) * C + 1298.
@@ -5000,7 +5000,7 @@ def Ntubes_Perrys(DBundle, Do, Ntp, angle=30):
             Nt = (((-0.0006 * C - 0.0074) * C + 1.269) * C + 70.72) * C + 1166.
         else:
             raise ValueError('N passes not 1, 2, 4 or 6')
-    elif angle == 45 or angle == 90:
+    elif angle in (45, 90):
         C = DBundle / Do - 36.
         if Ntp == 1:
             Nt = (((0.0001 * C - 0.0012) * C + 0.3782) * C + 33.52) * C + 593.6
@@ -5066,9 +5066,9 @@ def Ntubes_VDI(DBundle=None, Ntp=None, Do=None, pitch=None, angle=30.):
         f2 = 90. # Estimated!
     else:
         raise ValueError('Only 1, 2, 4 and 8 passes are supported')
-    if angle == 30 or angle == 60:
+    if angle in (30, 60):
         f1 = 1.1
-    elif angle == 45 or angle == 90:
+    elif angle in (45, 90):
         f1 = 1.3
     else:
         raise ValueError('Only 30, 60, 45 and 90 degree layouts are supported')
@@ -5137,9 +5137,9 @@ def D_for_Ntubes_VDI(N, Ntp, Do, pitch, angle=30):
         f2 = 105.
     else:
         raise ValueError('Only 1, 2, 4 and 8 passes are supported')
-    if angle == 30 or angle == 60:
+    if angle in (30, 60):
         f1 = 1.1
-    elif angle == 45 or angle == 90:
+    elif angle in (45, 90):
         f1 = 1.3
     else:
         raise ValueError('Only 30, 60, 45 and 90 degree layouts are supported')
@@ -5189,9 +5189,9 @@ def Ntubes_HEDH(DBundle=None, Do=None, pitch=None, angle=30):
        Transfer. Heat Exchanger Design Handbook. Washington:
        Hemisphere Pub. Corp., 1983.
     '''
-    if angle == 30 or angle == 60:
+    if angle in (30, 60):
         C1 = 13/15.
-    elif angle == 45 or angle == 90:
+    elif angle in (45, 90):
         C1 = 1.
     else:
         raise ValueError('Only 30, 60, 45 and 90 degree layouts are supported')
@@ -5243,9 +5243,9 @@ def DBundle_for_Ntubes_HEDH(N, Do, pitch, angle=30):
        Transfer. Heat Exchanger Design Handbook. Washington:
        Hemisphere Pub. Corp., 1983.
     '''
-    if angle == 30 or angle == 60:
+    if angle in (30, 60):
         C1 = 13/15.
-    elif angle == 45 or angle == 90:
+    elif angle in (45, 90):
         C1 = 1.
     else:
         raise ValueError('Only 30, 60, 45 and 90 degree layouts are supported')
