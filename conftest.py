@@ -12,7 +12,7 @@ def pytest_ignore_collect(path):
         return True
     ver_tup = platform.python_version_tuple()[0:2]
     ver_tup = tuple(int(i) for i in ver_tup)
-    if ver_tup < (3, 7) or ver_tup >= (3, 13) or is_pypy or is_x86_or_x86_64:
+    if ver_tup < (3, 7) or ver_tup >= (3, 13) or is_pypy or not is_x86_or_x86_64:
         # numba does not yet run under pypy
         if 'numba' in path:
             return True
