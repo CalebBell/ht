@@ -1,0 +1,10 @@
+pytest
+sympy
+fuzzywuzzy
+pint
+pytz
+IPython
+sphinx
+wheel
+mpmath
+fluids>=1.0.23
