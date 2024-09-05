@@ -214,10 +214,10 @@ def R_value_to_k(R_value, SI=True):
     Examples
     --------
     >>> R_value_to_k(0.12), R_value_to_k(0.71, SI=False)
-    (0.2116666666666667, 0.20313787163983468)
+    (0.2116666666, 0.2031378716)
 
     >>> R_value_to_k(1., SI=False)/R_value_to_k(1.)
-    5.678263341113488
+    5.6782633411
 
     References
     ----------
@@ -227,7 +227,7 @@ def R_value_to_k(R_value, SI=True):
     if SI:
         r = R_value/inch
     else:
-        r = R_value*foot**2*degree_Fahrenheit*hour/Btu/inch
+        r = R_value*(foot*foot*degree_Fahrenheit*hour/Btu/inch)
     return thermal_resistivity_to_k(r)
 
 
@@ -255,7 +255,7 @@ def k_to_R_value(k, SI=True):
     Examples
     --------
     >>> k_to_R_value(R_value_to_k(0.12)), k_to_R_value(R_value_to_k(0.71, SI=False), SI=False)
-    (0.11999999999999998, 0.7099999999999999)
+    (0.12, 0.71)
 
     References
     ----------
@@ -266,7 +266,7 @@ def k_to_R_value(k, SI=True):
     if SI:
         return r*inch
     else:
-        return r/(foot**2*degree_Fahrenheit*hour/Btu/inch)
+        return r/(foot*foot*degree_Fahrenheit*hour/Btu/inch)
 
 
 def R_cylinder(Di, Do, k, L):
@@ -487,7 +487,7 @@ def S_isothermal_pipe_to_isothermal_pipe(D1, D2, W, L=1.):
        David P. DeWitt. Introduction to Heat Transfer. 6E. Hoboken, NJ:
        Wiley, 2011.
     '''
-    return 2.*pi*L/acosh((4*W**2 - D1**2 - D2**2)/(2.*D1*D2))
+    return 2.*pi*L/acosh((4*W*W - D1*D1 - D2*D2)/(2.*D1*D2))
 
 
 def S_isothermal_pipe_to_two_planes(D, Z, L=1.):
@@ -584,7 +584,7 @@ def S_isothermal_pipe_eccentric_to_isothermal_pipe(D1, D2, Z, L=1.):
        David P. DeWitt. Introduction to Heat Transfer. 6E. Hoboken, NJ:
        Wiley, 2011.
     '''
-    return 2.*pi*L/acosh((D2**2 + D1**2 - 4.*Z**2)/(2.*D1*D2))
+    return 2.*pi*L/acosh((D2*D2 + D1*D1 - 4.*Z*Z)/(2.*D1*D2))
 
 
 # Specific heat transfer problems of conduction
