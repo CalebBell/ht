@@ -703,7 +703,7 @@ def calc_Cr(mh, mc, Cph, Cpc):
     -------
     Cr : float
         The heat capacity rate ratio, of the smaller fluid to the larger
-        fluid, [W/K]
+        fluid, [-]
 
     Notes
     -----
@@ -945,7 +945,7 @@ def effectiveness_NTU_method(mh, mc, Cph, Cpc, subtype='counterflow', Thi=None,
         * Q : Heat exchanged in the heat exchanger, [W]
         * UA : Combined area-heat transfer coefficient term, [W/K]
         * Cr : The heat capacity rate ratio, of the smaller fluid to the larger
-          fluid, [W/K]
+          fluid, [-]
         * Cmin : The heat capacity rate of the smaller fluid, [W/K]
         * Cmax : The heat capacity rate of the larger fluid, [W/K]
         * effectiveness : The thermal effectiveness of the heat exchanger, [-]
