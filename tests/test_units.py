@@ -41,7 +41,7 @@ def test_sample_cases():
 
     assert_pint_allclose(ans['Cmax'], 9672.0, {'[length]': 2.0, '[mass]': 1.0, '[temperature]': -1.0, '[time]': -3.0})
     assert_pint_allclose(ans['Cmin'], 2755.0, {'[length]': 2.0, '[mass]': 1.0, '[temperature]': -1.0, '[time]': -3.0})
-    assert_pint_allclose(ans['Cr'], 0.2848428453267163, {'[length]': 2.0, '[mass]': 1.0, '[temperature]': -1.0, '[time]': -3.0})
+    assert_pint_allclose(ans['Cr'], 0.2848428453267163, {})
     assert_pint_allclose(ans['UA'], 3041.751170834494, {'[length]': 2.0, '[mass]': 1.0, '[temperature]': -1.0, '[time]': -3.0})
     assert_pint_allclose(ans['Q'], 192850, {'[length]': 2.0, '[mass]': 1.0, '[time]': -3.0})
     assert_pint_allclose(ans['NTU'], 1.1040839095588, {})
