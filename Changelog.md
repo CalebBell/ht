@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+## [1.0.7] - 2024-11-10
+
+### Changed
+- Code cleanup and minor optimizations
+- Fix Issue #54 https://github.com/CalebBell/fluids/issues/54
+- Fluids version dependency now >= 1.0.27
+
 ## [1.0.6] - 2024-07-26
 
 ### Changed
