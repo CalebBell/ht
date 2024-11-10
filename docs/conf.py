@@ -314,7 +314,7 @@ numpydoc_xref_param_type = True
 intersphinx_mapping = {'python': ('https://docs.python.org/3', None),
                        'numpy': ('http://docs.scipy.org/doc/numpy', None),
                        'scipy': ('http://docs.scipy.org/doc/scipy/reference', None),
-                       'matplotlib': ('http://matplotlib.sourceforge.net', None),
+                       'matplotlib': ('http://matplotlib.org/stable/', None),
                        'thermo': ('https://thermo.readthedocs.io/', None),
                        'chemicals': ('https://chemicals.readthedocs.io/', None),
                        'fluids': ('https://fluids.readthedocs.io/', None)}
