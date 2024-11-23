@@ -454,6 +454,53 @@ def test_dP_Zukauskas_dP_dP_staggered_f_spline():
             errors.append(abs(abs(original_value - interpolated) / original_value))
     assert np.mean(errors) < 0.01
 
+def test_dP_Zukauskas_dP_staggered_correction_spline():
+    _dP_staggered_correction_parameters = np.array([0.4387, 0.470647, 0.494366, 0.52085, 0.542787, 0.583019, 0.609319, 0.659047, 0.685413, 0.729582, 0.800982,
+        0.84214, 0.892449, 0.947309, 1.00903, 1.07052, 1.16389, 1.22243, 1.26584, 1.32314, 1.37597, 1.40437, 1.45385, 1.51093, 1.55814, 1.61775, 1.68647,
+        1.74589, 1.79853, 1.86586, 1.92335, 1.97322, 2.12053, 2.22751, 2.34521, 2.45793, 2.58193, 2.71226, 2.84909, 2.99282, 3.14389, 3.22668, 3.32915,
+        3.54351
+    ])
+    _dP_staggered_correction_Re_100 = np.array([0.996741, 0.996986, 0.997157, 0.997339, 0.997482, 0.997731, 0.997885, 0.998158, 0.998294, 0.998512, 0.998836,
+        0.999011, 0.999213, 0.99942, 0.99964, 0.999846, 1.00241, 1.02216, 1.0392, 1.06545, 1.08705, 1.0995, 1.1206, 1.14708, 1.16583, 1.18871, 1.21407,
+        1.23518, 1.25628, 1.27868, 1.29996, 1.31593, 1.36025, 1.39055, 1.42224, 1.45114, 1.48144, 1.51175, 1.54205, 1.57235, 1.60267, 1.62032, 1.64208,
+        1.68552
+    ])
+    _dP_staggered_correction_Re_1000 = np.array([1.03576, 1.02714, 1.02111, 1.01712, 1.01206, 1.00798, 1.00547, 1.001, 0.999839, 0.999378, 0.998689, 0.998319,
+        0.997891, 0.997451, 0.996985, 0.999249, 1.00245, 1.0135, 1.02415, 1.03618, 1.04682, 1.0534, 1.06478, 1.07524, 1.0836, 1.09539, 1.10811, 1.11825,
+        1.12833, 1.13858, 1.1481, 1.15678, 1.17941, 1.19487, 1.21106, 1.22398, 1.24068, 1.25657, 1.27109, 1.28706, 1.30317, 1.31111, 1.3196, 1.33956
+    ])
+    _dP_staggered_correction_Re_10000 = np.array([1.20211, 1.18293, 1.16951, 1.15527, 1.14308, 1.12148, 1.10821, 1.09069, 1.08213, 1.06633, 1.04824, 1.04041,
+        1.03015, 1.02269, 1.01509, 1.00905, 1.00302, 1.00302, 1.00304, 1.00623, 1.00905, 1.0103, 1.01246, 1.01508, 1.01696, 1.01926, 1.0225, 1.02674,
+        1.03074, 1.03432, 1.03618, 1.03931, 1.04813, 1.05451, 1.05855, 1.0674, 1.07355, 1.08006, 1.08719, 1.09572, 1.10324, 1.10854, 1.11428, 1.12663
+    ])
+    _dP_staggered_correction_Re_100000 = np.array([1.45829, 1.42587, 1.40486, 1.38291, 1.36389, 1.32864, 1.30754, 1.27136, 1.25327, 1.22447, 1.18203, 1.15678,
+        1.12845, 1.10251, 1.07182, 1.04763, 1.00824, 0.984925, 0.975402, 0.965711, 0.960152, 0.957646, 0.9534, 0.948334, 0.945015, 0.942714, 0.940164,
+        0.937857, 0.936683, 0.936683, 0.934823, 0.933668, 0.933668, 0.933668, 0.933668, 0.933668, 0.933668, 0.936683, 0.936683, 0.936683, 0.939698,
+        0.939698, 0.939698, 0.939698
+    ])
+    _dP_staggered_correction_Re_parameters = np.array([_dP_staggered_correction_Re_100, _dP_staggered_correction_Re_1000, _dP_staggered_correction_Re_10000, _dP_staggered_correction_Re_100000]).T
+    others = np.array([1E2, 1E3, 1E4, 1E5])
+    # do not delete
+    dP_staggered_correction = RectBivariateSpline(_dP_staggered_correction_parameters, others, _dP_staggered_correction_Re_parameters, kx=1, ky=3, s=0.002)
+
+    # Maybe good plot - bad around the middle
+    #dP_staggered_correction_zs = np.array([1E2, 1E3, 1E4, 1E5])
+    #low, high = min(_dP_staggered_correction_parameters), max(_dP_staggered_correction_parameters)
+    #xs = np.linspace(low, high, 50000)
+    #for i in range(4):
+    #    plt.loglog(_dP_staggered_correction_parameters, _dP_staggered_correction_Re_parameters.T[i, :], '.')
+    #    plt.loglog(xs, dP_staggered_correction(xs, dP_staggered_correction_zs[i]), '--')
+    #plt.show()
+
+    errors = []
+    for i, param in enumerate(_dP_staggered_correction_parameters):
+        for j, z in enumerate(others):
+            original_value = _dP_staggered_correction_Re_parameters[i][j]
+            interpolated = bisplev(param, z, dP_staggered_correction_tck)
+            errors.append(abs(abs(original_value - interpolated) / original_value))
+    assert np.mean(errors) < 0.01
+
+
 def test_dP_Zukauskas_dP_inline_correction_spline():
     """Test that the pre-computed spline correctly reproduces the original data points"""
     _dP_inline_correction_parameters = np.array([0.02, 0.04, 0.066164, 0.08, 0.16, 0.32, 0.64, 1.28, 2.56, 5.12, 5.7141, 
