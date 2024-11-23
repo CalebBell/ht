@@ -23,7 +23,6 @@ SOFTWARE.
 from math import exp, pi, radians, sin
 
 from fluids.numerics import bisplev, horner, implementation_optimize_tck, splev
-from fluids.numerics import numpy as np
 
 from ht.core import WALL_FACTOR_PRANDTL, wall_factor
 
@@ -1075,7 +1074,6 @@ def dP_Zukauskas(Re, n, ST, SL, D, rho, Vmax):
         x = float(bisplev(parameter, Re, dP_inline_correction_tck))
 
     else:
-        # 
         parameter = a/b
         f = float(bisplev(Re, a, dP_staggered_f_tck))
         x = float(bisplev(parameter, Re, dP_staggered_correction_tck))
