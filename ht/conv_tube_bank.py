@@ -1049,33 +1049,23 @@ def load_Zukauskas_correlations():
     ])
     _dP_inline_Re_parameters = np.array([_dP_inline_Re_125, _dP_inline_Re_15, _dP_inline_Re_2, _dP_inline_Re_25]).T
     dP_inline_f = RectBivariateSpline(_dP_inline_Res, np.array([1.25, 1.5, 2, 2.5]), _dP_inline_Re_parameters, kx = 3, ky = 3, s = 0.002)
+    #this fit is very good
 
-
-    _dP_inline_correction_parameters = np.array([0.0661637, 0.0767956, 0.0811521, 0.091014, 0.0965946, 0.102863, 0.114663, 0.117455, 0.132109, 0.135196, 0.152089,
-        0.168558, 0.19133, 0.192037, 0.21534, 0.217736, 0.244667, 0.247747, 0.324839, 0.392087, 0.446129, 2.2286, 2.3885, 2.63783, 2.92864, 3.00382,
-        4.05259, 4.2551, 4.54434, 4.84314, 5.09577, 5.59171, 5.71411
+    _dP_inline_correction_parameters = np.array([0.02, 0.04, 0.066164, 0.08, 0.16, 0.32, 0.64, 1.28, 2.56, 5.12, 5.7141, 
     ])
-    _dP_inline_correction_Re_1000 = np.array([7.53832, 6.86113, 6.54006, 6.09616, 5.93568, 5.34629, 5.0612, 4.9696, 4.55428, 4.48266, 4.13474, 3.85306, 3.53216,
-        3.52323, 3.22988, 3.19898, 2.89667, 2.86799, 2.31194, 1.99054, 1.798, 0.557156, 0.529536, 0.491093, 0.453615, 0.444813, 0.351914, 0.339127,
-        0.322613, 0.30739, 0.295752, 0.27562, 0.271127
+    _dP_inline_correction_Re_1000 = np.array([16.05, 10.359, 7.538, 6.6218, 3.9933, 2.3397, 1.3794, 0.8336, 0.50239, 0.29469, 0.27113, 
     ])
-    _dP_inline_correction_Re_10000 = np.array([6.19059, 5.63447, 5.44146, 5.0612, 4.86597, 4.66786, 4.34453, 4.27598, 3.95623, 3.88747, 3.57369, 3.37337, 3.09718,
-        3.08911, 2.83271, 2.81518, 2.63689, 2.61495, 2.18225, 1.92462, 1.76564, 0.603218, 0.575945, 0.534133, 0.499018, 0.491093, 0.401321, 0.388344,
-        0.370649, 0.353159, 0.339788, 0.316659, 0.311496
+    _dP_inline_correction_Re_10000 = np.array([13.181, 8.507, 6.1906, 5.4908, 3.4734, 2.2042, 1.3876, 0.8735, 0.54642, 0.33857, 0.3115
     ])
-    _dP_inline_correction_Re_100000 = np.array([4.50727, 4.13004, 3.99851, 3.73838, 3.61014, 3.47942, 3.31256, 3.27702, 3.10877, 3.0728, 2.87638, 2.71515, 2.52473,
-        2.52055, 2.39441, 2.38256, 2.23167, 2.21606, 1.89994, 1.70733, 1.58802, 0.668818, 0.644362, 0.610869, 0.577472, 0.569658, 0.484948, 0.4719,
-        0.454805, 0.438843, 0.426501, 0.404846, 0.399958
+    _dP_inline_correction_Re_100000 = np.array([9.092, 6.0549, 4.5073, 4.0322, 2.7957, 1.9162, 1.308, 0.9011, 0.62078, 0.42537, 0.39996, 
     ])
-    _dP_inline_correction_Re_1000000 = np.array([3.14214, 2.9391, 2.8673, 2.72361, 2.64416, 2.56157, 2.46985, 2.45024, 2.36473, 2.34829, 2.22756, 2.1327, 2.02212,
-        2.01899, 1.92414, 1.91509, 1.81755, 1.80738, 1.63471, 1.50647, 1.43004, 0.74756, 0.730366, 0.704554, 0.675458, 0.668194, 0.588052, 0.575945,
-        0.563366, 0.551447, 0.540255, 0.520396, 0.515871
+    _dP_inline_correction_Re_1000000 = np.array([5.3722, 3.9373, 3.1421, 2.8857, 2.1799, 1.6421, 1.2364, 0.9349, 0.7131, 0.53922, 0.51587, 
     ])
 
     _dP_inline_correction_zs = np.array([1E3, 1E4, 1E5, 1E6])
     _dP_inline_correction_Re_parameters = np.array([_dP_inline_correction_Re_1000, _dP_inline_correction_Re_10000, _dP_inline_correction_Re_100000, _dP_inline_correction_Re_1000000]).T
-    dP_inline_correction = RectBivariateSpline(_dP_inline_correction_parameters, _dP_inline_correction_zs, _dP_inline_correction_Re_parameters, kx=1, ky=3, s=0.002) # s=0.002
-    # RectBivariateSpline does a terrible job
+    dP_inline_correction = RectBivariateSpline(_dP_inline_correction_parameters, _dP_inline_correction_zs, _dP_inline_correction_Re_parameters, kx=3, ky=3, s=0.0) # s=0.002
+    # 2024 cleaned up the fit
 
     #import matplotlib.pyplot as plt
     #low, high = min(_dP_inline_correction_parameters), max(_dP_inline_correction_parameters)
@@ -1125,9 +1115,9 @@ def dP_Zukauskas(Re, n, ST, SL, D, rho, Vmax):
     Examples
     --------
     >>> dP_Zukauskas(Re=13943., n=7, ST=0.0313, SL=0.0343, D=0.0164, rho=1.217, Vmax=12.6)
-    235.22916169
+    235.2291
     >>> dP_Zukauskas(Re=13943., n=7, ST=0.0313, SL=0.0313, D=0.0164, rho=1.217, Vmax=12.6)
-    217.0750033
+    161.147
 
     References
     ----------
