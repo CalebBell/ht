@@ -36,10 +36,6 @@ except ImportError: # pragma: no cover
                       'https://github.com/hgrecco/pint')
 from fluids.units import wraps_numpydoc
 
-"""
-Functions which will need custom wrappers:
-ht.get_tube_TEMA, ht.check_tubing_TEMA
-"""
 
 __funcs = {}
 
@@ -48,7 +44,7 @@ for name in dir(ht):
     if name in ('__getattr__', '__test__'):
         continue
     obj = getattr(ht, name)
-    if isinstance(obj, types.FunctionType) and obj not in [ht.get_tube_TEMA, ht.check_tubing_TEMA]:
+    if isinstance(obj, types.FunctionType):
         obj = wraps_numpydoc(u)(obj)
     elif isinstance(obj, str):
         continue

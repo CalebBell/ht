@@ -29,7 +29,7 @@ from fluids.numerics import numpy as np
 from fluids.piping import BWG_SI, BWG_integers
 
 __all__ = ['effectiveness_from_NTU', 'NTU_from_effectiveness', 'calc_Cmin',
-'calc_Cmax', 'calc_Cr', 'Pp', 'Pc',
+'calc_Cmax', 'calc_Cr', 'P_NTU_Pp', 'P_NTU_Pc',
 'NTU_from_UA', 'UA_from_NTU', 'effectiveness_NTU_method', 'F_LMTD_Fakheri',
 'temperature_effectiveness_basic', 'temperature_effectiveness_TEMA_J',
 'temperature_effectiveness_TEMA_H', 'temperature_effectiveness_TEMA_G',
@@ -37,7 +37,7 @@ __all__ = ['effectiveness_from_NTU', 'NTU_from_effectiveness', 'calc_Cmin',
 'temperature_effectiveness_air_cooler',
 'P_NTU_method',  'NTU_from_P_basic',
 'NTU_from_P_J', 'NTU_from_P_G', 'NTU_from_P_E', 'NTU_from_P_H',
-'NTU_from_P_plate', 'check_tubing_TEMA', 'get_tube_TEMA',
+'NTU_from_P_plate',
 'DBundle_min', 'shell_clearance', 'baffle_thickness', 'D_baffle_holes',
 'L_unsupported_max', 'Ntubes', 'size_bundle_from_tubecount',
 'Ntubes_Perrys', 'Ntubes_VDI', 'Ntubes_Phadkeb',
@@ -804,7 +804,7 @@ def UA_from_NTU(NTU, Cmin):
     return NTU*Cmin
 
 
-def Pp(x, y):
+def P_NTU_Pp(x, y):
     r'''Basic helper calculator which accepts a transformed R1 and NTU1 as
     inputs for a common term used in the calculation of the P-NTU method for
     plate exchangers.
@@ -835,7 +835,7 @@ def Pp(x, y):
 
     Examples
     --------
-    >>> Pp(5, .4)
+    >>> P_NTU_Pp(5, .4)
     0.713634370024
 
     References
@@ -850,7 +850,7 @@ def Pp(x, y):
     return (1. - exp(-x*(1. + y)))/(1. + y)
 
 
-def Pc(x, y):
+def P_NTU_Pc(x, y):
     r'''Basic helper calculator which accepts a transformed R1 and NTU1 as
     inputs for a common term used in the calculation of the P-NTU method for
     plate exchangers.
@@ -881,7 +881,7 @@ def Pc(x, y):
 
     Examples
     --------
-    >>> Pc(5, .7)
+    >>> P_NTU_Pc(5, .7)
     0.920670368605
 
     References
@@ -2434,45 +2434,45 @@ def temperature_effectiveness_plate(R1, NTU1, Np1, Np2, counterflow=True,
        300-313. doi:10.1115/1.3250678.
     '''
     if Np1 == 1 and Np2 == 1 and counterflow:
-        return Pc(NTU1, R1)
+        return P_NTU_Pc(NTU1, R1)
     elif Np1 == 1 and Np2 == 1 and not counterflow:
-        return Pp(NTU1, R1)
+        return P_NTU_Pp(NTU1, R1)
     elif Np1 == 1 and Np2 == 2:
         # There are four configurations but all have the same formula
         # They do behave different depending on the number of available plates
         # but this model assues infinity
         # There are four more arrangements that are equivalent as well
-        A = Pp(NTU1, 0.5*R1)
-        B = Pc(NTU1, 0.5*R1)
+        A = P_NTU_Pp(NTU1, 0.5*R1)
+        B = P_NTU_Pc(NTU1, 0.5*R1)
         return 0.5*(A + B - 0.5*A*B*R1)
     elif Np1 == 1 and Np2 == 3 and counterflow:
         # There are six configurations, two formulas
         # Each behaves differently though as a function of number of plates
-        A = Pp(NTU1, R1/3.)
-        B = Pc(NTU1, R1/3.)
+        A = P_NTU_Pp(NTU1, R1/3.)
+        B = P_NTU_Pc(NTU1, R1/3.)
         return 1/3.*(A + B*(1. - R1*A/3.)*(2. - R1*B/3.))
     elif Np1 == 1 and Np2 == 3 and not counterflow:
-        A = Pp(NTU1, R1/3.)
-        B = Pc(NTU1, R1/3.)
+        A = P_NTU_Pp(NTU1, R1/3.)
+        B = P_NTU_Pc(NTU1, R1/3.)
         return 1/3.*(B + A*(1. - R1*B/3.)*(2. - R1*A/3.))
     elif Np1 == 1 and Np2 == 4:
         # four configurations
         # Again a function of number of plates, but because expressions assume
         # infinity it gets ignored and they're the same
-        A = Pp(NTU1, 0.25*R1)
-        B = Pc(NTU1, 0.25*R1)
+        A = P_NTU_Pp(NTU1, 0.25*R1)
+        B = P_NTU_Pc(NTU1, 0.25*R1)
         t1 = (1. - 0.25*A*R1)
         t2 = (1. - 0.25*B*R1)
         t3 = t1*t2 # minor optimization
         return (1. - t3*t3)/R1
     elif Np1 == 2 and Np2 == 2:
         if counterflow and passes_counterflow:
-            return Pc(NTU1, R1)
+            return P_NTU_Pc(NTU1, R1)
         elif counterflow and not passes_counterflow:
-            A = Pp(0.5*NTU1, R1)
+            A = P_NTU_Pp(0.5*NTU1, R1)
             return (2.*A - A*A*(1. + R1))/(1. - R1*A*A)
         elif not counterflow and passes_counterflow:
-            B = Pc(0.5*NTU1, R1)
+            B = P_NTU_Pc(0.5*NTU1, R1)
             return B*(2. - B*(1. + R1))
         elif not counterflow and not passes_counterflow:
             return temperature_effectiveness_plate(R1, NTU1, Np1=1, Np2=1,
@@ -2483,8 +2483,8 @@ def temperature_effectiveness_plate(R1, NTU1, Np1, Np2, counterflow=True,
         # One place says there are four configurations; no other discussion is
         # presented
         if counterflow:
-            H = Pp(0.5*NTU1, 2./3.*R1)
-            G = Pc(0.5*NTU1, 2./3.*R1)
+            H = P_NTU_Pp(0.5*NTU1, 2./3.*R1)
+            G = P_NTU_Pc(0.5*NTU1, 2./3.*R1)
             E = 1./(2./3.*R1*G)
             F = 1./(2./3.*R1*H)
             E2 = E*E
@@ -2496,8 +2496,8 @@ def temperature_effectiveness_plate(R1, NTU1, Np1, Np2, counterflow=True,
             return (A + 0.5*B + 0.5*C + D)/R1
         elif not counterflow:
             D = 2*R1/3.
-            A = Pp(NTU1/2, D)
-            B = Pc(NTU1/2, D)
+            A = P_NTU_Pp(NTU1/2, D)
+            B = P_NTU_Pc(NTU1/2, D)
             return (A + B - (2/9. + D/3.)*(A*A + B*B)
                     -(5./9. + 4./3.*D)*A*B
                     + D*(1. + D)*A*B*(A + B)/3.
@@ -2505,13 +2505,13 @@ def temperature_effectiveness_plate(R1, NTU1, Np1, Np2, counterflow=True,
     elif Np1 == 2 and Np2 == 4:
         # Both cases are correct for passes_counterflow=True or False
         if counterflow:
-            A = Pp(0.5*NTU1, 0.5*R1)
-            B = Pc(0.5*NTU1, 0.5*R1)
+            A = P_NTU_Pp(0.5*NTU1, 0.5*R1)
+            B = P_NTU_Pc(0.5*NTU1, 0.5*R1)
             D = 0.5*(A + B - 0.5*A*B*R1)
             return (2.*D - (1. + R1)*D*D)/(1. - D*D*R1)
         elif not counterflow:
-            A = Pp(0.5*NTU1, 0.5*R1)
-            B = Pc(0.5*NTU1, 0.5*R1)
+            A = P_NTU_Pp(0.5*NTU1, 0.5*R1)
+            B = P_NTU_Pc(0.5*NTU1, 0.5*R1)
             D = 0.5*(A + B - 0.5*A*B*R1)
             return 2.*D - ((1. + R1)*D*D)
     if not reverse:
@@ -3736,7 +3736,7 @@ def NTU_from_P_plate(P1, R1, Np1, Np2, counterflow=True,
             return log(-1./(P1*(R1 + 1.) - 1.))/(R1 + 1.)
         except:
 #            raise ValueError("impossible") # numba: uncomment
-            raise ValueError(f'The maximum P1 obtainable at the specified R1 is {Pp(1E10, R1):f} at the limit of NTU1=inf.') # numba: delete
+            raise ValueError(f'The maximum P1 obtainable at the specified R1 is {P_NTU_Pp(1E10, R1):f} at the limit of NTU1=inf.') # numba: delete
     elif Np1 == 1 and Np2 == 2:
         NTU_max = 100.
     elif Np1 == 1 and Np2 == 3 and counterflow:
@@ -4552,13 +4552,13 @@ def baffle_thickness(Dshell, L_unsupported, service='C'):
 
 
 
-def D_baffle_holes(do, L_unsupported):
+def D_baffle_holes(Do, L_unsupported):
     r'''Determines the diameter of holes in baffles for tubes according to
     TEMA [1]_. Applies for all geometries.
 
     Parameters
     ----------
-    do : float
+    Do : float
         Tube outer diameter, [m]
     L_unsupported : float
         Distance between tube supports, [m]
@@ -4573,11 +4573,11 @@ def D_baffle_holes(do, L_unsupported):
 
     Examples
     --------
-    >>> D_baffle_holes(do=.0508, L_unsupported=0.75)
+    >>> D_baffle_holes(Do=.0508, L_unsupported=0.75)
     0.0516
-    >>> D_baffle_holes(do=0.01905, L_unsupported=0.3)
+    >>> D_baffle_holes(Do=0.01905, L_unsupported=0.3)
     0.01985
-    >>> D_baffle_holes(do=0.01905, L_unsupported=1.5)
+    >>> D_baffle_holes(Do=0.01905, L_unsupported=1.5)
     0.019450000000000002
 
     References
@@ -4585,11 +4585,11 @@ def D_baffle_holes(do, L_unsupported):
     .. [1] Standards of the Tubular Exchanger Manufacturers Association,
        Ninth edition, 2007, TEMA, New York.
     '''
-    if do > 0.0318 or L_unsupported <= 0.914: # 1-1/4 inches and 36 inches
+    if Do > 0.0318 or L_unsupported <= 0.914: # 1-1/4 inches and 36 inches
         extra = 0.0008
     else:
         extra = 0.0004
-    d = do + extra
+    d = Do + extra
     return d
 
 

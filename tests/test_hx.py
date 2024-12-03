@@ -963,18 +963,18 @@ def test_P_NTU_method_backwards():
 
 
 def test_Pp():
-    from ht.hx import Pc, Pp
+    from ht.hx import P_NTU_Pc, P_NTU_Pp
     # randomly chosen test value
-    ans = Pp(5, .4)
+    ans = P_NTU_Pp(5, .4)
     assert_close(ans, 0.713634370024604)
 
     # Test the limit works with a small difference
-    assert_close(Pp(2, -1), Pp(2, -1+1E-9))
+    assert_close(P_NTU_Pp(2, -1), P_NTU_Pp(2, -1+1E-9))
 
     # randomly chosen test value
-    assert_close(Pc(5, .7), 0.9206703686051108)
+    assert_close(P_NTU_Pc(5, .7), 0.9206703686051108)
     # Test the limit works with a small difference
-    assert_close(Pc(5, 1), Pc(5, 1-1E-8))
+    assert_close(P_NTU_Pc(5, 1), P_NTU_Pc(5, 1-1E-8))
 
 
 def test_temperature_effectiveness_plate():

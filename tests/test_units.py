@@ -27,6 +27,7 @@ from fluids.numerics import assert_close
 
 import ht
 from ht.units import P_NTU_method, R_to_k, R_value_to_k, effectiveness_NTU_method, k_to_R_value, u
+from fluids.units import check_module_docstring_parameters
 
 
 def assert_pint_allclose(value, magnitude, units, rtol=1e-7):
@@ -104,5 +105,9 @@ def test_check_signatures():
         if name in bad_names:
             continue
         obj = getattr(ht, name)
-        if isinstance(obj, types.FunctionType) and obj not in [ht.get_tube_TEMA, ht.check_tubing_TEMA]:
+        if isinstance(obj, types.FunctionType):
             check_args_order(obj)
+
+def test_parse_numpydoc_variables_units():
+    import ht
+    check_module_docstring_parameters(ht)
