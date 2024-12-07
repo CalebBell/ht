@@ -398,8 +398,8 @@ def test_hx_effectiveness_still_working():
     assert_close(ht.numba.temperature_effectiveness_air_cooler(.5, 2, rows=10, passes=10),
                  ht.temperature_effectiveness_air_cooler(.5, 2, rows=10, passes=10))
 
-    assert_close(ht.numba.hx.Pp(5, .4),  ht.hx.Pp(5, .4))
-    assert_close(ht.numba.hx.Pc(5, .4),  ht.hx.Pc(5, .4))
+    assert_close(ht.numba.hx.P_NTU_Pp(5, .4),  ht.hx.P_NTU_Pp(5, .4))
+    assert_close(ht.numba.hx.P_NTU_Pc(5, .4),  ht.hx.P_NTU_Pc(5, .4))
 
 
 # broken by numba in the 0.57 release

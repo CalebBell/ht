@@ -229,7 +229,7 @@ def solar_spectrum(model='SOLAR-ISS'):
     >>> float(min(wavelengths)), float(max(wavelengths)), float(min(SSI)), float(max(SSI))
     (5e-10, 2.9999e-06, 1330.0, 2256817820.0)
 
-    Integration - calculate the solar constant, in untis of W/m^2 hitting
+    Integration - calculate the solar constant, in units of W/m^2 hitting
     earth's atmosphere.
 
     >>> from scipy.integrate import trapezoid
