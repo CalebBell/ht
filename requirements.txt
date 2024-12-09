@@ -1,2 +1,2 @@
-fluids>=1.0.27
+fluids>=1.1.0
 scipy>=1.6.0
