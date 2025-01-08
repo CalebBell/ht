@@ -1139,7 +1139,7 @@ def Zuber(sigma, Hvap, rhol, rhog, K=0.18):
 
     Returns
     -------
-    q: float
+    q : float
         Critical heat flux [W/m^2]
 
     Notes
@@ -1203,7 +1203,7 @@ def Serth_HEDH(D, sigma, Hvap, rhol, rhog):
 
     Returns
     -------
-    q: float
+    q : float
         Critical heat flux [W/m^2]
 
     Notes
