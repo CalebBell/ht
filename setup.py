@@ -21,6 +21,59 @@ SOFTWARE.
 '''
 
 from setuptools import setup
+from wheel.bdist_wheel import bdist_wheel
+import os
+import shutil
+from pathlib import Path
+import tempfile
+
+class bdist_wheel_light(bdist_wheel):
+    description = "Build a light wheel package without large data files"
+    
+    def run(self):
+        pkg_dir = Path(os.path.abspath('ht'))
+        
+        # Files to exclude (relative to ht directory)
+        exclude_files = [
+            'data',
+        ]
+        
+        # Create temporary directory
+        with tempfile.TemporaryDirectory() as temp_dir:
+            moved_files = []
+            
+            try:
+                # Move files to temporary location
+                for rel_path in exclude_files:
+                    orig_path = pkg_dir / rel_path
+                    if orig_path.exists():
+                        # Create path in temp dir maintaining structure
+                        temp_path = Path(temp_dir) / rel_path
+                        temp_path.parent.mkdir(parents=True, exist_ok=True)
+                        
+                        if orig_path.is_dir():
+                            shutil.move(str(orig_path), str(temp_path))
+                        else:
+                            shutil.move(str(orig_path), str(temp_path))
+                        moved_files.append((orig_path, temp_path))
+
+                # Handle .pyi files
+                for pyi_file in pkg_dir.rglob('*.pyi'):
+                    rel_path = pyi_file.relative_to(pkg_dir)
+                    temp_path = Path(temp_dir) / rel_path
+                    temp_path.parent.mkdir(parents=True, exist_ok=True)
+                    shutil.move(str(pyi_file), str(temp_path))
+                    moved_files.append((pyi_file, temp_path))
+
+                # Build the wheel
+                super().run()
+                
+            finally:
+                # Restore moved files
+                for orig_path, temp_path in moved_files:
+                    if temp_path.exists():
+                        orig_path.parent.mkdir(parents=True, exist_ok=True)
+                        shutil.move(str(temp_path), str(orig_path))
 
 classifiers=[
     'Development Status :: 5 - Production/Stable',
@@ -81,4 +134,7 @@ setup(
   extras_require = {
       'Coverage documentation':  ['wsgiref>=0.1.2', 'coverage>=4.0.3', 'pint']
   },
+    cmdclass={
+        'bdist_wheel_light': bdist_wheel_light,
+    }  
 )
