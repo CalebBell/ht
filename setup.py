@@ -28,7 +28,14 @@ from pathlib import Path
 import tempfile
 
 class bdist_wheel_light(bdist_wheel):
-    description = "Build a light wheel package without large data files"
+    description = "Build a light wheel package with minified Python files and without type stubs"
+    
+    def minify_python_file(self, file_path):
+        """Minify a Python file and return the minified content"""
+        with open(file_path, 'r', encoding='utf-8') as f:
+            content = f.read()
+        import python_minifier
+        return python_minifier.minify(content, remove_annotations=True, remove_pass=True, remove_literal_statements=True)
     
     def run(self):
         pkg_dir = Path(os.path.abspath('ht'))
@@ -41,6 +48,7 @@ class bdist_wheel_light(bdist_wheel):
         # Create temporary directory
         with tempfile.TemporaryDirectory() as temp_dir:
             moved_files = []
+            minified_files = []
             
             try:
                 # Move files to temporary location
@@ -65,10 +73,30 @@ class bdist_wheel_light(bdist_wheel):
                     shutil.move(str(pyi_file), str(temp_path))
                     moved_files.append((pyi_file, temp_path))
 
+                
+                # Minify .py files
+                for py_file in pkg_dir.rglob('*.py'):
+                    # Store original content and minify
+                    with open(py_file, 'r', encoding='utf-8') as f:
+                        original_content = f.read()
+                    minified_content = self.minify_python_file(py_file)
+                    
+                    # Write minified content
+                    with open(py_file, 'w', encoding='utf-8') as f:
+                        f.write(minified_content)
+                    
+                    # Store original content for restoration
+                    minified_files.append((py_file, original_content))
+                
                 # Build the wheel
                 super().run()
                 
             finally:
+                
+                # Restore original Python files
+                for file_path, original_content in minified_files:
+                    with open(file_path, 'w', encoding='utf-8') as f:
+                        f.write(original_content)
                 # Restore moved files
                 for orig_path, temp_path in moved_files:
                     if temp_path.exists():
