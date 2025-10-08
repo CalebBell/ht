@@ -1,4 +1,4 @@
-'''Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
+"""Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
 Copyright (C) 2016, Caleb Bell <Caleb.Andrew.Bell@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -18,19 +18,19 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-'''
+"""
 
 from math import log, pi
 
 from fluids.constants import g
 from fluids.friction import friction_factor
 
-__all__ = ['Lehrer', 'Stein_Schmidt']
+__all__ = ["Lehrer", "Stein_Schmidt"]
 
 def Lehrer(m, Dtank, Djacket, H, Dinlet, rho, Cp, k, mu, muw=None,
-           isobaric_expansion=None, dT=None, inlettype='tangential',
-           inletlocation='auto'):
-    r'''Calculates average heat transfer coefficient for a jacket around a
+           isobaric_expansion=None, dT=None, inlettype="tangential",
+           inletlocation="auto"):
+    r"""Calculates average heat transfer coefficient for a jacket around a
     vessel according to [1]_ as described in [2]_.
 
     .. math::
@@ -124,20 +124,20 @@ def Lehrer(m, Dtank, Djacket, H, Dinlet, rho, Cp, k, mu, muw=None,
        (October 1, 1970): 553-58. doi:10.1021/i260036a010.
     .. [2] Gesellschaft, V. D. I., ed. VDI Heat Atlas. 2nd edition.
        Berlin; New York:: Springer, 2010.
-    '''
+    """
     delta = (Djacket-Dtank)/2.
     Q = m/rho
     Pr = Cp*mu/k
     vs = Q/H/delta
     vo = Q/(pi/4*Dinlet**2)
-    if dT is not None and isobaric_expansion is not None and inlettype == 'radial' and inletlocation is not None:
+    if dT is not None and isobaric_expansion is not None and inlettype == "radial" and inletlocation is not None:
         if dT > 0: # Heating jacket fluid
-            if inletlocation in ('auto', 'bottom'):
+            if inletlocation in ("auto", "bottom"):
                 va = 0.5*(2*g*H*isobaric_expansion*abs(dT))**0.5
             else:
                 va = -0.5*(2*g*H*isobaric_expansion*abs(dT))**0.5
         else: # cooling fluid
-            if inletlocation in ('auto', 'top'):
+            if inletlocation in ("auto", "top"):
                 va = 0.5*(2*g*H*isobaric_expansion*abs(dT))**0.5
             else:
                 va = -0.5*(2*g*H*isobaric_expansion*abs(dT))**0.5
@@ -155,8 +155,8 @@ def Lehrer(m, Dtank, Djacket, H, Dinlet, rho, Cp, k, mu, muw=None,
 
 def Stein_Schmidt(m, Dtank, Djacket, H, Dinlet,
                   rho, Cp, k, mu, muw=None, rhow=None,
-                  inlettype='tangential', inletlocation='auto', roughness=0.0):
-    r'''Calculates average heat transfer coefficient for a jacket around a
+                  inlettype="tangential", inletlocation="auto", roughness=0.0):
+    r"""Calculates average heat transfer coefficient for a jacket around a
     vessel according to [1]_ as described in [2]_.
 
     .. math::
@@ -304,19 +304,19 @@ def Stein_Schmidt(m, Dtank, Djacket, H, Dinlet,
        (May 1993): 73-90. doi:10.1007/BF02561203.
     .. [2] Gesellschaft, V. D. I., ed. VDI Heat Atlas. 2nd edition.
        Berlin; New York:: Springer, 2010.
-    '''
+    """
     delta = (Djacket-Dtank)/2.
     Q = m/rho
     Pr = Cp*mu/k
     lch = (pi**2/4*Dtank**2 + H**2)**0.5
     dch = 2*delta
-    if inlettype == 'radial':
+    if inlettype == "radial":
         bEin = pi/8*Dinlet**2/delta
         bMit = pi/2*Dtank*(1 + pi**2/4*Dtank**2/H**2)**0.5
         vMit = Q/(2*delta*bMit)
         vch = vMit*log(bMit/bEin)/(1 - bEin/bMit)
         ReJ = vch*dch*rho/mu
-    elif inlettype == 'tangential':
+    elif inlettype == "tangential":
         f = friction_factor(1E5, roughness/dch)
         for run in range(5):
             vinlet = Q/(pi/4*Dinlet**2)
@@ -331,12 +331,12 @@ def Stein_Schmidt(m, Dtank, Djacket, H, Dinlet,
     if inletlocation and rhow:
         GrJ = g*rho*(rho-rhow)*dch**3/mu**2
         if rhow < rho: # Heating jacket fluid
-            if inletlocation in ('auto', 'bottom'):
+            if inletlocation in ("auto", "bottom"):
                 ReJeq = (ReJ**2 + GrJ*H/dch/50.)**0.5
             else:
                 ReJeq = (ReJ**2 - GrJ*H/dch/50.)**0.5
         else: # Cooling jacket fluid
-            if inletlocation in ('auto', 'top'):
+            if inletlocation in ("auto", "top"):
                 ReJeq = (ReJ**2 + GrJ*H/dch/50.)**0.5
             else:
                 ReJeq = (ReJ**2 - GrJ*H/dch/50.)**0.5

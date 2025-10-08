@@ -1,4 +1,4 @@
-'''Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
+"""Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
 Copyright (C) 2016, 2017, 2018 Caleb Bell <Caleb.Andrew.Bell@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -18,26 +18,33 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-'''
+"""
 
 from math import log
 
 from fluids.numerics import i0, i1, k0, k1
 
-__all__ =['LMTD', 'wall_factor', 'is_heating_property',
-'is_heating_temperature', 'wall_factor_fd', 'wall_factor_Nu',
-'Kays_Crawford_turbulent_gas_Nu',
-'Kays_Crawford_turbulent_gas_fd',
-'Kays_Crawford_turbulent_liquid_Nu',
-'Kays_Crawford_turbulent_liquid_fd',
-'Kays_Crawford_laminar_gas_Nu',
-'Kays_Crawford_laminar_gas_fd',
-'Kays_Crawford_laminar_liquid_fd',
-'Kays_Crawford_laminar_liquid_Nu', 'fin_efficiency_Kern_Kraus',
-'countercurrent_hx_temperature_check']
+__all__ =[
+    "LMTD",
+    "Kays_Crawford_laminar_gas_Nu",
+    "Kays_Crawford_laminar_gas_fd",
+    "Kays_Crawford_laminar_liquid_Nu",
+    "Kays_Crawford_laminar_liquid_fd",
+    "Kays_Crawford_turbulent_gas_Nu",
+    "Kays_Crawford_turbulent_gas_fd",
+    "Kays_Crawford_turbulent_liquid_Nu",
+    "Kays_Crawford_turbulent_liquid_fd",
+    "countercurrent_hx_temperature_check",
+    "fin_efficiency_Kern_Kraus",
+    "is_heating_property",
+    "is_heating_temperature",
+    "wall_factor",
+    "wall_factor_Nu",
+    "wall_factor_fd",
+]
 
 def LMTD(Thi, Tho, Tci, Tco, counterflow=True):
-    r'''Returns the log-mean temperature difference of an ideal counterflow
+    r"""Returns the log-mean temperature difference of an ideal counterflow
     or co-current heat exchanger.
 
     .. math::
@@ -100,7 +107,7 @@ def LMTD(Thi, Tho, Tci, Tco, counterflow=True):
     .. [1] Bergman, Theodore L., Adrienne S. Lavine, Frank P. Incropera, and
        David P. DeWitt. Introduction to Heat Transfer. 6E. Hoboken, NJ:
        Wiley, 2011.
-    '''
+    """
     if counterflow:
         dTF1 = Thi-Tco
         dTF2 = Tho-Tci
@@ -117,7 +124,7 @@ def LMTD(Thi, Tho, Tci, Tco, counterflow=True):
         return (dTF2 - dTF1)/log(dTF2/dTF1)
 
 def countercurrent_hx_temperature_check(T0i, T0o, T1i, T1o):
-    r'''Perform a check on two sets of temperatures that could represent
+    r"""Perform a check on two sets of temperatures that could represent
     a countercurrent heat exchanger, and return whether they are possible or
     not.
 
@@ -143,7 +150,7 @@ def countercurrent_hx_temperature_check(T0i, T0o, T1i, T1o):
     Examples
     --------
 
-    '''
+    """
     if T0i > T1i:
         Thi, Tho = T0i, T0o
         Tci, Tco = T1i, T1o
@@ -156,7 +163,7 @@ def countercurrent_hx_temperature_check(T0i, T0o, T1i, T1o):
 
 
 def is_heating_temperature(T, T_wall):
-    r'''Checks whether or not a fluid side is being heated or cooled, from
+    r"""Checks whether or not a fluid side is being heated or cooled, from
     the temperature of the wall and the bulk temperature. Returns True for
     heating the bulk fluid, and False for cooling the bulk fluid.
 
@@ -176,11 +183,11 @@ def is_heating_temperature(T, T_wall):
     --------
     >>> is_heating_temperature(298.15, 350)
     True
-    '''
+    """
     return T_wall > T
 
 def is_heating_property(prop, prop_wall):
-    r'''Checks whether or not a fluid side is being heated or cooled, from
+    r"""Checks whether or not a fluid side is being heated or cooled, from
     a property of the fluid at the wall and the bulk temperature. Returns True
     for heating the bulk fluid, and False for cooling the bulk fluid.
 
@@ -201,53 +208,53 @@ def is_heating_property(prop, prop_wall):
     --------
     >>> is_heating_property(1E-3, 1.2E-3)
     False
-    '''
+    """
     return prop_wall < prop
 
 
-WALL_FACTOR_VISCOSITY = 'Viscosity'
-WALL_FACTOR_PRANDTL = 'Prandtl'
-WALL_FACTOR_TEMPERATURE = 'Temperature'
-WALL_FACTOR_DEFAULT = 'Default'
+WALL_FACTOR_VISCOSITY = "Viscosity"
+WALL_FACTOR_PRANDTL = "Prandtl"
+WALL_FACTOR_TEMPERATURE = "Temperature"
+WALL_FACTOR_DEFAULT = "Default"
 
 # All powers were originally for (wall/bulk)^power, but have been negated here.
 
 # Results for Deissler
 # -0.11 is also an option from another presented correlation
-Kays_Crawford_laminar_liquid_Nu = {'mu_heating_coeff': 0.14,
-                                   'mu_cooling_coeff': 0.14,
-                                   'property_option': WALL_FACTOR_VISCOSITY}
+Kays_Crawford_laminar_liquid_Nu = {"mu_heating_coeff": 0.14,
+                                   "mu_cooling_coeff": 0.14,
+                                   "property_option": WALL_FACTOR_VISCOSITY}
 
-Kays_Crawford_laminar_liquid_fd = {'mu_heating_coeff': -0.58,
-                                   'mu_cooling_coeff': -0.5,
-                                   'property_option': WALL_FACTOR_VISCOSITY}
+Kays_Crawford_laminar_liquid_fd = {"mu_heating_coeff": -0.58,
+                                   "mu_cooling_coeff": -0.5,
+                                   "property_option": WALL_FACTOR_VISCOSITY}
 
 # 1.35 as a result suggested by an experiment byt the analysis is "preferred"
-Kays_Crawford_laminar_gas_fd = {'mu_heating_coeff': -1,
-                                'mu_cooling_coeff': -1,
-                                'property_option': WALL_FACTOR_VISCOSITY}
+Kays_Crawford_laminar_gas_fd = {"mu_heating_coeff": -1,
+                                "mu_cooling_coeff": -1,
+                                "property_option": WALL_FACTOR_VISCOSITY}
 # This is uncertain
-Kays_Crawford_laminar_gas_Nu = {'mu_heating_coeff': 0.0,
-                                'mu_cooling_coeff': 0.0,
-                                'property_option': WALL_FACTOR_VISCOSITY}
+Kays_Crawford_laminar_gas_Nu = {"mu_heating_coeff": 0.0,
+                                "mu_cooling_coeff": 0.0,
+                                "property_option": WALL_FACTOR_VISCOSITY}
 
 # These seem fairly well measured
-Kays_Crawford_turbulent_liquid_fd = {'mu_heating_coeff': -0.25,
-                                     'mu_cooling_coeff': -0.25,
-                                     'property_option': WALL_FACTOR_VISCOSITY}
+Kays_Crawford_turbulent_liquid_fd = {"mu_heating_coeff": -0.25,
+                                     "mu_cooling_coeff": -0.25,
+                                     "property_option": WALL_FACTOR_VISCOSITY}
 # This is uncertain
-Kays_Crawford_turbulent_liquid_Nu = {'mu_heating_coeff': 0.11,
-                                     'mu_cooling_coeff': 0.25,
-                                     'property_option': WALL_FACTOR_VISCOSITY}
+Kays_Crawford_turbulent_liquid_Nu = {"mu_heating_coeff": 0.11,
+                                     "mu_cooling_coeff": 0.25,
+                                     "property_option": WALL_FACTOR_VISCOSITY}
 
 # These see pretty accurate
-Kays_Crawford_turbulent_gas_fd = {'mu_heating_coeff': 0.1,
-                                  'mu_cooling_coeff': 0.1,
-                                  'property_option': WALL_FACTOR_VISCOSITY}
+Kays_Crawford_turbulent_gas_fd = {"mu_heating_coeff": 0.1,
+                                  "mu_cooling_coeff": 0.1,
+                                  "property_option": WALL_FACTOR_VISCOSITY}
 
-Kays_Crawford_turbulent_gas_Nu = {'mu_heating_coeff': 0.5,
-                                  'mu_cooling_coeff': 0.0,
-                                  'property_option': WALL_FACTOR_VISCOSITY}
+Kays_Crawford_turbulent_gas_Nu = {"mu_heating_coeff": 0.5,
+                                  "mu_cooling_coeff": 0.0,
+                                  "property_option": WALL_FACTOR_VISCOSITY}
 
 
 # is_turbulent, is_liquid
@@ -263,7 +270,7 @@ wall_factor_Nu_defaults = {(True, True): Kays_Crawford_turbulent_liquid_Nu,
 
 
 def wall_factor_fd(mu, mu_wall, turbulent=True, liquid=False):
-    r'''Computes the wall correction factor for pressure drop due to friction
+    r"""Computes the wall correction factor for pressure drop due to friction
     between a fluid and a wall. These coefficients were derived for internal
     flow inside a pipe, but can be used elsewhere where appropriate data is
     missing.
@@ -317,13 +324,13 @@ def wall_factor_fd(mu, mu_wall, turbulent=True, liquid=False):
     .. [1] Kays, William M., and Michael E. Crawford. Convective Heat and Mass
        Transfer. 3rd edition. New York: McGraw-Hill Science/Engineering/Math,
        1993.
-    '''
+    """
     params = wall_factor_fd_defaults[(turbulent, liquid)]
     return wall_factor(mu=mu, mu_wall=mu_wall, **params)
 
 
 def wall_factor_Nu(mu, mu_wall, turbulent=True, liquid=False):
-    r'''Computes the wall correction factor for heat transfer between a fluid
+    r"""Computes the wall correction factor for heat transfer between a fluid
     and a wall. These coefficients were derived for internal flow inside a
     pipe, but can be used elsewhere where appropriate data is missing. It is
     also useful to compare these results with the coefficients used in various
@@ -387,12 +394,12 @@ def wall_factor_Nu(mu, mu_wall, turbulent=True, liquid=False):
     .. [1] Kays, William M., and Michael E. Crawford. Convective Heat and Mass
        Transfer. 3rd edition. New York: McGraw-Hill Science/Engineering/Math,
        1993.
-    '''
+    """
     params = wall_factor_Nu_defaults[(turbulent, liquid)]
     return wall_factor(mu=mu, mu_wall=mu_wall, **params)
 
 
-wall_factor_bad_option_msg = 'Supported options are: '+ str(
+wall_factor_bad_option_msg = "Supported options are: "+ str(
         [WALL_FACTOR_VISCOSITY, WALL_FACTOR_PRANDTL, WALL_FACTOR_TEMPERATURE,
          WALL_FACTOR_DEFAULT])
 
@@ -401,7 +408,7 @@ def wall_factor(mu=None, mu_wall=None, Pr=None, Pr_wall=None, T=None,
                 Pr_heating_coeff=0.11, Pr_cooling_coeff=0.25,
                 T_heating_coeff=0.11, T_cooling_coeff=0.25,
                 property_option=WALL_FACTOR_PRANDTL):
-    r'''Computes the wall correction factor for heat transfer, mass transfer,
+    r"""Computes the wall correction factor for heat transfer, mass transfer,
     or momentum transfer between a fluid and a wall. Utility function; the
     coefficients for the phenomenon must be provided to this method. The
     default coefficients are for heat transfer of a turbulent liquid.
@@ -456,13 +463,13 @@ def wall_factor(mu=None, mu_wall=None, Pr=None, Pr_wall=None, T=None,
     >>> wall_factor(mu=8E-4, mu_wall=3E-4, Pr=1.2, Pr_wall=1.1, T=300,
     ... T_wall=350, property_option='Prandtl')
     1.0096172023817749
-    '''
+    """
     if property_option == WALL_FACTOR_DEFAULT:
         property_option = WALL_FACTOR_PRANDTL
     if property_option == WALL_FACTOR_VISCOSITY:
         if mu is None or mu_wall is None:
-            raise TypeError('Viscosity wall correction specified but both '
-                            'viscosity values are not available.')
+            raise TypeError("Viscosity wall correction specified but both "
+                            "viscosity values are not available.")
         heating = is_heating_property(mu, mu_wall)
         if heating:
             return (mu/mu_wall)**mu_heating_coeff
@@ -470,8 +477,8 @@ def wall_factor(mu=None, mu_wall=None, Pr=None, Pr_wall=None, T=None,
             return (mu/mu_wall)**mu_cooling_coeff
     elif property_option == WALL_FACTOR_TEMPERATURE:
         if T is None or T_wall is None:
-            raise TypeError('Temperature wall correction specified but both '
-                            'temperature values are not available.')
+            raise TypeError("Temperature wall correction specified but both "
+                            "temperature values are not available.")
         heating = is_heating_temperature(T, T_wall)
         if heating:
             return (T/T_wall)**T_heating_coeff
@@ -479,8 +486,8 @@ def wall_factor(mu=None, mu_wall=None, Pr=None, Pr_wall=None, T=None,
             return (T/T_wall)**T_cooling_coeff
     elif property_option == WALL_FACTOR_PRANDTL:
         if Pr is None or Pr_wall is None:
-            raise TypeError('Prandtl number wall correction specified but both'
-                            ' Prandtl number values are not available.')
+            raise TypeError("Prandtl number wall correction specified but both"
+                            " Prandtl number values are not available.")
         heating = is_heating_property(Pr, Pr_wall)
         if heating:
             return (Pr/Pr_wall)**Pr_heating_coeff
@@ -491,7 +498,7 @@ def wall_factor(mu=None, mu_wall=None, Pr=None, Pr_wall=None, T=None,
 
 
 def fin_efficiency_Kern_Kraus(Do, D_fin, t_fin, k_fin, h):
-    r'''Returns the efficiency `eta_f` of a circular fin of constant thickness
+    r"""Returns the efficiency `eta_f` of a circular fin of constant thickness
     attached to a circular tube, based on the tube diameter `Do`, fin
     diameter `D_fin`, fin thickness `t_fin`, fin thermal conductivity `k_fin`,
     and heat transfer coefficient `h`.
@@ -565,7 +572,7 @@ def fin_efficiency_Kern_Kraus(Do, D_fin, t_fin, k_fin, h):
     .. [5] Perrotin, Thomas, and Denis Clodic. "Fin Efficiency Calculation in
        Enhanced Fin-and-Tube Heat Exchangers in Dry Conditions." In Proc. Int.
        Congress of Refrigeration 2003, 2003.
-    '''
+    """
     re = 0.5*D_fin
     ro = 0.5*Do
     m = (2.0*h/(k_fin*t_fin))**0.5

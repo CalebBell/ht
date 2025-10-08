@@ -1,4 +1,4 @@
-'''Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
+"""Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
 Copyright (C) 2016, Caleb Bell <Caleb.Andrew.Bell@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -18,7 +18,7 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-'''
+"""
 
 import os
 from math import e, exp
@@ -26,12 +26,16 @@ from math import e, exp
 from fluids.constants import c, h, k, sigma
 from fluids.numerics import numpy as np
 
-__all__ = ['blackbody_spectral_radiance', 'q_rad', 'grey_transmittance',
-           'solar_spectrum']
+__all__ = [
+    "blackbody_spectral_radiance",
+    "grey_transmittance",
+    "q_rad",
+    "solar_spectrum",
+]
 
 
 def blackbody_spectral_radiance(T, wavelength):
-    r'''Returns the spectral radiance, in units of W/m^2/sr/µm.
+    r"""Returns the spectral radiance, in units of W/m^2/sr/µm.
 
     .. math::
         I_{\lambda,blackbody,e}(\lambda,T)=\frac{2hc_o^2}
@@ -76,7 +80,7 @@ def blackbody_spectral_radiance(T, wavelength):
        Wiley, 2011.
     .. [2] Spectral-calc.com. Blackbody Calculator, 2015.
        http://www.spectralcalc.com/blackbody_calculator/blackbody.php
-    '''
+    """
     to_exp = h*c/(wavelength*T*k)
     if to_exp > 709.7:
         return 0.0
@@ -86,7 +90,7 @@ def blackbody_spectral_radiance(T, wavelength):
 
 
 def q_rad(emissivity, T, T2=0):
-    r'''Returns the radiant heat flux of a surface, optionally including
+    r"""Returns the radiant heat flux of a surface, optionally including
     assuming radiant heat transfer back to the surface.
 
     .. math::
@@ -123,14 +127,14 @@ def q_rad(emissivity, T, T2=0):
     .. [1] Bergman, Theodore L., Adrienne S. Lavine, Frank P. Incropera, and
        David P. DeWitt. Introduction to Heat Transfer. 6E. Hoboken, NJ:
        Wiley, 2011.
-    '''
+    """
     T_T = T*T
     T2_T2 = T2*T2
     return sigma*emissivity*(T_T*T_T - T2_T2*T2_T2)
 
 
 def grey_transmittance(extinction_coefficient, molar_density, length, base=e):
-    r'''Calculates the transmittance of a grey body, given the extinction
+    r"""Calculates the transmittance of a grey body, given the extinction
     coefficient of the material, its molar density, and the path length of the
     radiation.
 
@@ -177,13 +181,13 @@ def grey_transmittance(extinction_coefficient, molar_density, length, base=e):
     .. [2] Eldridge, Ralph G. "Water Vapor Absorption of Visible and Near
        Infrared Radiation." Applied Optics 6, no. 4 (April 1, 1967): 709-13.
        https://doi.org/10.1364/AO.6.000709.
-    '''
+    """
     transmittance = molar_density*extinction_coefficient*length
     return base**(-transmittance)
 
 
-def solar_spectrum(model='SOLAR-ISS'):
-    r'''Returns the solar spectrum of the sun according to the specified model.
+def solar_spectrum(model="SOLAR-ISS"):
+    r"""Returns the solar spectrum of the sun according to the specified model.
     Only the 'SOLAR-ISS' model is supported.
 
     Parameters
@@ -248,11 +252,11 @@ def solar_spectrum(model='SOLAR-ISS'):
        (SIRS) for the 2008 Whole Heliosphere Interval (WHI)." Geophysical
        Research Letters 36, no. 1 (January 1, 2009).
        https://doi.org/10.1029/2008GL036373.
-    '''
-    if model == 'SOLAR-ISS':
-        folder = os.path.join(os.path.dirname(__file__), 'data')
-        pth = os.path.join(folder, 'solar_iss_2018_spectrum.dat')
-        data = np.genfromtxt(pth, dtype=np.float64, delimiter=' ')
+    """
+    if model == "SOLAR-ISS":
+        folder = os.path.join(os.path.dirname(__file__), "data")
+        pth = os.path.join(folder, "solar_iss_2018_spectrum.dat")
+        data = np.genfromtxt(pth, dtype=np.float64, delimiter=" ")
         wavelengths, SSI, uncertainties = data[:, 0], data[:, 1], data[:, 2]
 
         wavelengths *= 1E-9

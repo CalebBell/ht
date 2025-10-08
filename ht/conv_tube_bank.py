@@ -1,4 +1,4 @@
-'''Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
+"""Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
 Copyright (C) 2016, 2017, 2018 Caleb Bell <Caleb.Andrew.Bell@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -18,7 +18,7 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-'''
+"""
 
 from math import exp, pi, radians, sin
 
@@ -26,25 +26,29 @@ from fluids.numerics import bisplev, horner, implementation_optimize_tck, splev
 
 from ht.core import WALL_FACTOR_PRANDTL, wall_factor
 
-__all__ = ['dP_Kern', 'dP_Zukauskas',
-           'Nu_ESDU_73031', 'Nu_Zukauskas_Bejan','Nu_HEDH_tube_bank',
-           'Nu_Grimison_tube_bank',
-           'Zukauskas_tube_row_correction',
-           'ESDU_tube_row_correction',
-           'ESDU_tube_angle_correction',
-           'baffle_correction_Bell', 'baffle_leakage_Bell',
-           'bundle_bypassing_Bell', 'unequal_baffle_spacing_Bell',
-           'laminar_correction_Bell']
+__all__ = [
+    "ESDU_tube_angle_correction",
+    "ESDU_tube_row_correction",
+    "Nu_ESDU_73031",
+    "Nu_Grimison_tube_bank",
+    "Nu_HEDH_tube_bank",
+    "Nu_Zukauskas_Bejan",
+    "Zukauskas_tube_row_correction",
+    "baffle_correction_Bell",
+    "baffle_leakage_Bell",
+    "bundle_bypassing_Bell",
+    "dP_Kern",
+    "dP_Zukauskas",
+    "laminar_correction_Bell",
+    "unequal_baffle_spacing_Bell",
+]
 
-__numba_additional_funcs__ = ['Grimison_C1_aligned_interp', 'Grimison_m_aligned_interp',
-                              'Grimson_C1_staggered_interp', 'Grimson_m_staggered_interp',
-                              'Kern_f_Re', 'Bell_baffle_configuration_obj', 'Bell_baffle_leakage_obj',
-                              'Bell_bundle_bypass_low_obj', 'Bell_bundle_bypass_high_obj']
+__numba_additional_funcs__ = ["Grimison_C1_aligned_interp", "Grimison_m_aligned_interp",
+                              "Grimson_C1_staggered_interp", "Grimson_m_staggered_interp",
+                              "Kern_f_Re", "Bell_baffle_configuration_obj", "Bell_baffle_leakage_obj",
+                              "Bell_bundle_bypass_low_obj", "Bell_bundle_bypass_high_obj"]
 
-try:
-    IS_NUMBA # type: ignore # noqa: F821
-except:
-    IS_NUMBA = False
+IS_NUMBA = "IS_NUMBA" in globals()
 # Applies for row 1-9.
 Grimson_Nl_aligned = [0.64, 0.8, 0.87, 0.9, 0.92, 0.94, 0.96, 0.98, 0.99]
 Grimson_Nl_staggered = [0.68, 0.75, 0.83, 0.89, 0.92, 0.95, 0.97, 0.98, 0.99]
@@ -126,7 +130,7 @@ Grimson_C1_staggered_interp = lambda x, y: float(bisplev(x, y, tck_Grimson_C1_st
 
 
 def Nu_Grimison_tube_bank(Re, Pr, Do, tube_rows, pitch_parallel, pitch_normal):
-    r'''Calculates Nusselt number for crossflow across a tube bank
+    r"""Calculates Nusselt number for crossflow across a tube bank
     of tube rows at a specified `Re`, `Pr`, and `D` using the Grimison
     methodology as described in [1]_.
 
@@ -176,7 +180,7 @@ def Nu_Grimison_tube_bank(Re, Pr, Do, tube_rows, pitch_parallel, pitch_normal):
     .. [1] Grimson, E. D. (1937) Correlation and Utilisation of New Data on
        Flow Resistance and Heat Transfer for Cross Flow of Gases over Tube
        Banks. Trans. ASME. 59 583-594
-    '''
+    """
     staggered = abs(1 - pitch_normal/pitch_parallel) > 0.05
     a = pitch_normal/Do # sT
     b = pitch_parallel/Do
@@ -212,7 +216,7 @@ Zukauskas_Czs_inline = [0.6768, 0.8089, 0.8687, 0.9054, 0.9303, 0.9465, 0.9569,
     0.9953, 0.9969, 0.9986]
 
 def Zukauskas_tube_row_correction(tube_rows, staggered=True, Re=1E4):
-    r'''Calculates the tube row correction factor according to a graph
+    r"""Calculates the tube row correction factor according to a graph
     digitized from [1] for heat transfer across
     a tube bundle. The correction factors are slightly different for
     staggered vs. inline configurations; for the staggered configuration,
@@ -253,7 +257,7 @@ def Zukauskas_tube_row_correction(tube_rows, staggered=True, Re=1E4):
     .. [1] Zukauskas, A. Heat transfer from tubes in crossflow. In T.F. Irvine,
        Jr. and J. P. Hartnett, editors, Advances in Heat Transfer, volume 8,
        pages 93-160. Academic Press, Inc., New York, 1972.
-    '''
+    """
     tube_rows = int(tube_rows) # sanity for indexing
     if tube_rows < 1:
         tube_rows = 1
@@ -273,7 +277,7 @@ def Zukauskas_tube_row_correction(tube_rows, staggered=True, Re=1E4):
 
 def Nu_Zukauskas_Bejan(Re, Pr, tube_rows, pitch_parallel, pitch_normal,
                        Pr_wall=None):
-    r'''Calculates Nusselt number for crossflow across a tube bank
+    r"""Calculates Nusselt number for crossflow across a tube bank
     of tube number n at a specified `Re` according to the method of Zukauskas
     [1]_. A fit to graphs from [1]_ published in [2]_ is used for the
     correlation. The tube row correction factor is obtained from digitized
@@ -363,7 +367,7 @@ def Nu_Zukauskas_Bejan(Re, Pr, tube_rows, pitch_parallel, pitch_normal,
        pages 93-160. Academic Press, Inc., New York, 1972.
     .. [2] Bejan, Adrian. "Convection Heat Transfer", 4E. Hoboken,
        New Jersey: Wiley, 2013.
-    '''
+    """
     staggered = abs(1 - pitch_normal/pitch_parallel) > 0.05
 
     f = 1.0
@@ -401,8 +405,8 @@ def Nu_Zukauskas_Bejan(Re, Pr, tube_rows, pitch_parallel, pitch_normal,
 ESDU_73031_F2_inline = [0.8479, 0.8957, 0.9306, 0.9551, 0.9724, 0.9839, 0.9902]
 ESDU_73031_F2_staggered = [0.8593, 0.8984, 0.9268, 0.9482, 0.965, 0.9777, 0.9868]
 
-def ESDU_tube_row_correction(tube_rows, staggered=True, Re=3000.0, method='Hewitt'):
-    r'''Calculates the tube row correction factor according to [1]_ as shown in
+def ESDU_tube_row_correction(tube_rows, staggered=True, Re=3000.0, method="Hewitt"):
+    r"""Calculates the tube row correction factor according to [1]_ as shown in
     [2]_ for heat transfer across a tube bundle. This is also used for finned
     bundles. The correction factors are slightly different for staggered vs.
     inline configurations.
@@ -455,8 +459,8 @@ def ESDU_tube_row_correction(tube_rows, staggered=True, Re=3000.0, method='Hewit
        Heat Transfer and Pressure Drop Characteristics of Low-Finned Tube Banks
        in Cross Flow."  Heat Transfer Engineering 8, no. 2 (January 1987):
        49-62.
-    '''
-    if method == 'Hewitt':
+    """
+    if method == "Hewitt":
         if staggered: # in-line, with a tolerance of 0.05 proximity
             if tube_rows <= 2:
                 correction = ESDU_73031_F2_staggered[0]
@@ -475,7 +479,7 @@ def ESDU_tube_row_correction(tube_rows, staggered=True, Re=3000.0, method='Hewit
 
 
 def ESDU_tube_angle_correction(angle):
-    r'''Calculates the tube bank inclination correction factor according to
+    r"""Calculates the tube bank inclination correction factor according to
     [1]_ for heat transfer across a tube bundle.
 
     .. math::
@@ -510,13 +514,13 @@ def ESDU_tube_angle_correction(angle):
     ----------
     .. [1] "Convective Heat Transfer During Crossflow of Fluids Over Plain Tube
        Banks." ESDU 73031 (November 1, 1973).
-    '''
+    """
     return sin(radians(angle))**0.6
 
 
 def Nu_ESDU_73031(Re, Pr, tube_rows, pitch_parallel, pitch_normal,
                   Pr_wall=None, angle=90.0):
-    r'''Calculates the Nusselt number for crossflow across a tube bank
+    r"""Calculates the Nusselt number for crossflow across a tube bank
     with a specified number of tube rows, at a specified `Re` according to
     [1]_, also shown in [2]_.
 
@@ -609,7 +613,7 @@ def Nu_ESDU_73031(Re, Pr, tube_rows, pitch_parallel, pitch_normal,
     .. [2] Hewitt, G. L. Shires, T. Reg Bott G. F., George L. Shires, and T.
        R. Bott. Process Heat Transfer. 1st edition. Boca Raton: CRC Press,
        1994.
-    '''
+    """
     staggered = abs(1 - pitch_normal/pitch_parallel) > 0.05
     if staggered:
         if Re <= 300:
@@ -638,7 +642,7 @@ def Nu_ESDU_73031(Re, Pr, tube_rows, pitch_parallel, pitch_normal,
 
 
 def Nu_HEDH_tube_bank(Re, Pr, Do, tube_rows, pitch_parallel, pitch_normal):
-    r'''Calculates Nusselt number for crossflow across a tube bank
+    r"""Calculates Nusselt number for crossflow across a tube bank
     of tube rows at a specified `Re`, `Pr`, and `D` using the Heat Exchanger
     Design Handbook (HEDH) methodology, presented in [1]_.
 
@@ -721,7 +725,7 @@ def Nu_HEDH_tube_bank(Re, Pr, Do, tube_rows, pitch_parallel, pitch_normal):
        Hemisphere Pub. Corp., 1987.
     .. [2] Baehr, Hans Dieter, and Karl Stephan. Heat and Mass Transfer.
        Springer, 2013.
-    '''
+    """
     staggered = abs(1 - pitch_normal/pitch_parallel) > 0.05
     a = pitch_normal/Do
     b = pitch_parallel/Do
@@ -763,7 +767,7 @@ Kern_f_Re = lambda x: float(splev(x, Kern_f_Re_tck))
 
 
 def dP_Kern(m, rho, mu, DShell, LSpacing, pitch, Do, NBaffles, mu_w=None):
-    r'''Calculates pressure drop for crossflow across a tube bank
+    r"""Calculates pressure drop for crossflow across a tube bank
     according to the equivalent-diameter method developed by Kern [1]_,
     presented in [2]_.
 
@@ -819,7 +823,7 @@ def dP_Kern(m, rho, mu, DShell, LSpacing, pitch, Do, NBaffles, mu_w=None):
     .. [1] Kern, Donald Quentin. Process Heat Transfer. McGraw-Hill, 1950.
     .. [2] Peters, Max, Klaus Timmerhaus, and Ronald West. Plant Design and
        Economics for Chemical Engineers. 5E. New York: McGraw-Hill, 2002.
-    '''
+    """
     # Adjustment for viscosity performed if given
     Ss = DShell*(pitch-Do)*LSpacing/pitch
     De = 4*(pitch*pitch - pi*Do*Do/4.)/pi/Do
@@ -1014,7 +1018,7 @@ dP_inline_correction_tck = implementation_optimize_tck([
 
 
 def dP_Zukauskas(Re, n, ST, SL, D, rho, Vmax):
-    r'''Calculates pressure drop for crossflow across a tube bank
+    r"""Calculates pressure drop for crossflow across a tube bank
     of tube number n at a specified Re. Method presented in [1]_.
     Also presented in [2]_.
 
@@ -1065,7 +1069,7 @@ def dP_Zukauskas(Re, n, ST, SL, D, rho, Vmax):
     .. [2] Bergman, Theodore L., Adrienne S. Lavine, Frank P. Incropera, and
        David P. DeWitt. Introduction to Heat Transfer. 6E. Hoboken, NJ:
        Wiley, 2011.
-    '''
+    """
     a = ST/D
     b = SL/D
     if a == b:
@@ -1111,8 +1115,8 @@ Bell_baffle_configuration_coeffs = [-17.267087530974095, -17.341072676377735,
     -0.3349723004600481, -0.3685826653263089, -0.0629839069257099, 0.35883309630976157,
     0.9345478582873352]
 
-def baffle_correction_Bell(crossflow_tube_fraction, method='spline'):
-    r'''Calculate the baffle correction factor `Jc` which accounts for
+def baffle_correction_Bell(crossflow_tube_fraction, method="spline"):
+    r"""Calculate the baffle correction factor `Jc` which accounts for
     the fact that all tubes are not in crossflow to the fluid - some
     have fluid flowing parallel to them because they are situated in
     the "window", where the baffle is cut, instead of between the tips
@@ -1186,12 +1190,12 @@ def baffle_correction_Bell(crossflow_tube_fraction, method='spline'):
        Hemisphere Pub. Corp., 1987.
     .. [5] Serth, R. W., Process Heat Transfer: Principles,
        Applications and Rules of Thumb. 2E. Amsterdam: Academic Press, 2014.
-    '''
-    if method == 'spline':
+    """
+    if method == "spline":
         Jc = Bell_baffle_configuration_obj(crossflow_tube_fraction)
-    elif method == 'chebyshev':
+    elif method == "chebyshev":
         return horner(Bell_baffle_configuration_coeffs, 2.0*crossflow_tube_fraction - 1.0)
-    elif method == 'HEDH':
+    elif method == "HEDH":
         Jc = 0.55 + 0.72*crossflow_tube_fraction
     return Jc
 
@@ -1219,8 +1223,8 @@ Bell_baffle_leakage_tck = implementation_optimize_tck([[0.0, 0.0, 0.0, 0.0, 0.02
 Bell_baffle_leakage_obj = lambda x, z : float(bisplev(x, z, Bell_baffle_leakage_tck))
 
 
-def baffle_leakage_Bell(Ssb, Stb, Sm, method='spline'):
-    r'''Calculate the baffle leakage factor `Jl` which accounts for
+def baffle_leakage_Bell(Ssb, Stb, Sm, method="spline"):
+    r"""Calculate the baffle leakage factor `Jl` which accounts for
     leakage between each baffle.
     Cubic spline interpolation is the default method of retrieving a value
     from the graph, which was digitized with Engauge-Digitizer.
@@ -1287,17 +1291,17 @@ def baffle_leakage_Bell(Ssb, Stb, Sm, method='spline'):
        Applications and Rules of Thumb. 2E. Amsterdam: Academic Press, 2014.
     .. [6] Hall, Stephen. Rules of Thumb for Chemical Engineers, Fifth Edition.
        5th edition. Oxford ; Waltham , MA: Butterworth-Heinemann, 2012.
-    '''
+    """
     x = (Ssb + Stb)/Sm
     if x > Bell_baffle_leakage_x_max:
         x = Bell_baffle_leakage_x_max
     z = Ssb/(Ssb + Stb)
     if z > 1.0 or z < 0.0:
-        raise ValueError('Ssb/(Ssb + Stb) must be between 0 and 1')
-    if method == 'spline':
+        raise ValueError("Ssb/(Ssb + Stb) must be between 0 and 1")
+    if method == "spline":
         Jl = Bell_baffle_leakage_obj(x, z)
         Jl = min(float(Jl), 1.0)
-    elif method == 'HEDH':
+    elif method == "HEDH":
         # Hemisphere uses 0.44 as coefficient, rules of thumb uses 0.044 in spreadsheet
         Jl = 0.44*(1.0 - z) + (1.0 - 0.44*(1.0 - z))*exp(-2.2*x)
     return Jl
@@ -1333,8 +1337,8 @@ Bell_bundle_bypass_low_obj = lambda x, y : float(bisplev(x, y, Bell_bundle_bypas
 
 
 def bundle_bypassing_Bell(bypass_area_fraction, seal_strips, crossflow_rows,
-                          laminar=False, method='spline'):
-    r'''Calculate the bundle bypassing effect `Jb` according to the
+                          laminar=False, method="spline"):
+    r"""Calculate the bundle bypassing effect `Jb` according to the
     Bell-Delaware method for heat exchanger design.
     Cubic spline interpolation is the default method of retrieving a value
     from the graph, which was digitized with Engauge-Digitizer.
@@ -1397,10 +1401,10 @@ def bundle_bypassing_Bell(bypass_area_fraction, seal_strips, crossflow_rows,
     .. [4] Schlünder, Ernst U, and International Center for Heat and Mass
        Transfer. Heat Exchanger Design Handbook. Washington:
        Hemisphere Pub. Corp., 1987.
-    '''
+    """
     z = seal_strips/crossflow_rows
     x = bypass_area_fraction
-    if method == 'spline':
+    if method == "spline":
         if x > Bell_bundle_bypass_x_max:
             x = Bell_bundle_bypass_x_max
 
@@ -1409,7 +1413,7 @@ def bundle_bypassing_Bell(bypass_area_fraction, seal_strips, crossflow_rows,
         else:
             Jb = Bell_bundle_bypass_high_obj(x, z)
         Jb = min(Jb, 1.0)
-    elif method == 'HEDH':
+    elif method == "HEDH":
         c = 1.35 if laminar else 1.25
         Jb = exp(-c*x*(1.0 - (2.0*z)**(1/3.)))
     return Jb
@@ -1419,7 +1423,7 @@ def unequal_baffle_spacing_Bell(baffles, baffle_spacing,
                                 baffle_spacing_in=None,
                                 baffle_spacing_out=None,
                                 laminar=False):
-    r'''Calculate the correction factor for unequal baffle spacing `Js`,
+    r"""Calculate the correction factor for unequal baffle spacing `Js`,
     which accounts for higher velocity of fluid flow and greater heat transfer
     coefficients when the in and/or out baffle spacing is less than the
     standard spacing.
@@ -1471,7 +1475,7 @@ def unequal_baffle_spacing_Bell(baffles, baffle_spacing,
        Applications and Rules of Thumb. 2E. Amsterdam: Academic Press, 2014.
     .. [5] Hall, Stephen. Rules of Thumb for Chemical Engineers, Fifth Edition.
        5th edition. Oxford ; Waltham , MA: Butterworth-Heinemann, 2012.
-    '''
+    """
     if baffle_spacing_in is None:
         baffle_spacing_in = baffle_spacing
     if baffle_spacing_out is None:
@@ -1485,7 +1489,7 @@ def unequal_baffle_spacing_Bell(baffles, baffle_spacing,
 
 
 def laminar_correction_Bell(Re, total_row_passes):
-    r'''Calculate the correction factor for adverse temperature gradient built
+    r"""Calculate the correction factor for adverse temperature gradient built
     up in laminar flow `Jr`.
 
     This correction begins at Re = 100, and is interpolated between the value
@@ -1535,7 +1539,7 @@ def laminar_correction_Bell(Re, total_row_passes):
        Applications and Rules of Thumb. 2E. Amsterdam: Academic Press, 2014.
     .. [5] Hall, Stephen. Rules of Thumb for Chemical Engineers, Fifth Edition.
        5th edition. Oxford ; Waltham , MA: Butterworth-Heinemann, 2012.
-    '''
+    """
     if Re > 100.0:
         return 1.0
     Jrr = (10.0/total_row_passes)**0.18

@@ -1,4 +1,4 @@
-'''Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
+"""Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
 Copyright (C) 2016, Caleb Bell <Caleb.Andrew.Bell@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -18,20 +18,35 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-'''
+"""
 
 from math import log10
 
-__all__ = ['Nu_McAdams', 'Nu_Shitsman', 'Nu_Griem', 'Nu_Jackson', 'Nu_Gupta',
-           'Nu_Swenson', 'Nu_Xu', 'Nu_Mokry', 'Nu_Bringer_Smith',
-           'Nu_Ornatsky', 'Nu_Gorban', 'Nu_Zhu', 'Nu_Bishop', 'Nu_Yamagata',
-           'Nu_Kitoh', 'Nu_Krasnoshchekov_Protopopov', 'Nu_Petukhov',
-           'Nu_Krasnoshchekov']
+__all__ = [
+    "Nu_Bishop",
+    "Nu_Bringer_Smith",
+    "Nu_Gorban",
+    "Nu_Griem",
+    "Nu_Gupta",
+    "Nu_Jackson",
+    "Nu_Kitoh",
+    "Nu_Krasnoshchekov",
+    "Nu_Krasnoshchekov_Protopopov",
+    "Nu_McAdams",
+    "Nu_Mokry",
+    "Nu_Ornatsky",
+    "Nu_Petukhov",
+    "Nu_Shitsman",
+    "Nu_Swenson",
+    "Nu_Xu",
+    "Nu_Yamagata",
+    "Nu_Zhu",
+]
 
 ### Vertical upflow only
 
 def Nu_McAdams(Re, Pr):
-    r'''Calculates internal convection Nusselt number for turbulent vertical
+    r"""Calculates internal convection Nusselt number for turbulent vertical
     upward flow in a pipe under supercritical conditions according to [1]_.
 
     Found in [2]_ to fit the enhanced heat transfer regime with a MAD of 10.3%
@@ -70,12 +85,12 @@ def Nu_McAdams(Re, Pr):
        Correlations of Forced Convection Heat Transfer to Water at
        Supercritical Pressure." Annals of Nuclear Energy 76 (February 2015):
        451-60. doi:10.1016/j.anucene.2014.10.027.
-    '''
+    """
     return 0.0243*Re**0.8*Pr**0.4
 
 
 def Nu_Shitsman(Re, Pr_b, Pr_w):
-    r'''Calculates internal convection Nusselt number for turbulent vertical
+    r"""Calculates internal convection Nusselt number for turbulent vertical
     upward flow in a pipe under supercritical conditions according to [1]_ and
     [2] as shown in both [3]_ and [4]_.
 
@@ -125,12 +140,12 @@ def Nu_Shitsman(Re, Pr_b, Pr_w):
        Heat Transfer Coefficient Correlation at Supercritical Pressure Using
        Genetic Algorithms." Heat and Mass Transfer 45, no. 6 (January 8, 2009):
        757-66. doi:10.1007/s00231-008-0475-4.
-    '''
+    """
     return 0.023*Re**0.8*min(Pr_b, Pr_w)**0.8
 
 
 def Nu_Griem(Re, Pr, H=None):
-    r'''Calculates internal convection Nusselt number for turbulent vertical
+    r"""Calculates internal convection Nusselt number for turbulent vertical
     upward flow in a pipe under supercritical conditions according to [1]_,
     also shown in [2]_, [3]_ and [4]_. Has complicated rules regarding where
     properties should be evaluated.
@@ -202,7 +217,7 @@ def Nu_Griem(Re, Pr, H=None):
        Symposium: What Where When? Multi-dimensional Advances for Industrial
        Process Monitoring, 241, no. 6 (June 2011): 2184-2203.
        doi:10.1016/j.nucengdes.2011.03.022.
-    '''
+    """
     if H is not None:
         if H < 1.54E6:
             w = 0.82
@@ -218,7 +233,7 @@ def Nu_Griem(Re, Pr, H=None):
 
 def Nu_Jackson(Re, Pr, rho_w=None, rho_b=None, Cp_avg=None, Cp_b=None, T_b=None,
                T_w=None, T_pc=None):
-    r'''Calculates internal convection Nusselt number for turbulent vertical
+    r"""Calculates internal convection Nusselt number for turbulent vertical
     upward flow in a pipe under supercritical conditions according to [1]_.
 
     .. math::
@@ -307,7 +322,7 @@ def Nu_Jackson(Re, Pr, rho_w=None, rho_b=None, Cp_avg=None, Cp_b=None, T_b=None,
        Symposium: What Where When? Multi-dimensional Advances for Industrial
        Process Monitoring, 241, no. 6 (June 2011): 2184-2203.
        doi:10.1016/j.nucengdes.2011.03.022.
-    '''
+    """
     if T_b is not None and T_w is not None and T_pc is not None:
         if T_b < T_w < T_pc or 1.2*T_pc < T_b < T_w:
             n = 0.4
@@ -326,7 +341,7 @@ def Nu_Jackson(Re, Pr, rho_w=None, rho_b=None, Cp_avg=None, Cp_b=None, T_b=None,
 
 
 def Nu_Gupta(Re, Pr, rho_w=None, rho_b=None, mu_w=None, mu_b=None):
-    r'''Calculates internal convection Nusselt number for turbulent vertical
+    r"""Calculates internal convection Nusselt number for turbulent vertical
     upward flow in a pipe under supercritical conditions according to [1]_.
 
     .. math::
@@ -388,7 +403,7 @@ def Nu_Gupta(Re, Pr, rho_w=None, rho_b=None, mu_w=None, mu_b=None):
        Correlations of Forced Convection Heat Transfer to Water at
        Supercritical Pressure." Annals of Nuclear Energy 76 (February 2015):
        451-60. doi:10.1016/j.anucene.2014.10.027.
-    '''
+    """
     Nu = 0.004*Re**0.923*Pr**0.773
     if rho_w is not None and rho_b is not None:
         Nu *= (rho_w/rho_b)**0.186
@@ -399,7 +414,7 @@ def Nu_Gupta(Re, Pr, rho_w=None, rho_b=None, mu_w=None, mu_b=None):
 
 
 def Nu_Swenson(Re, Pr, rho_w=None, rho_b=None):
-    r'''Calculates internal convection Nusselt number for turbulent vertical
+    r"""Calculates internal convection Nusselt number for turbulent vertical
     upward flow in a pipe under supercritical conditions according to [1]_.
 
     .. math::
@@ -467,7 +482,7 @@ def Nu_Swenson(Re, Pr, rho_w=None, rho_b=None):
        Symposium: What Where When? Multi-dimensional Advances for Industrial
        Process Monitoring, 241, no. 6 (June 2011): 2184-2203.
        doi:10.1016/j.nucengdes.2011.03.022.
-    '''
+    """
     Nu = 0.00459*Re**0.923*Pr**0.613
     if rho_w is not None and rho_b is not None:
         Nu *= (rho_w/rho_b)**0.231
@@ -475,7 +490,7 @@ def Nu_Swenson(Re, Pr, rho_w=None, rho_b=None):
 
 
 def Nu_Xu(Re, Pr, rho_w=None, rho_b=None, mu_w=None, mu_b=None):
-    r'''Calculates internal convection Nusselt number for turbulent vertical
+    r"""Calculates internal convection Nusselt number for turbulent vertical
     upward flow in a pipe under supercritical conditions according to [1]_.
 
     .. math::
@@ -537,7 +552,7 @@ def Nu_Xu(Re, Pr, rho_w=None, rho_b=None, mu_w=None, mu_b=None):
        Correlations of Forced Convection Heat Transfer to Water at
        Supercritical Pressure." Annals of Nuclear Energy 76 (February 2015):
        451-60. doi:10.1016/j.anucene.2014.10.027.
-    '''
+    """
     Nu = 0.02269*Re**0.8079*Pr**0.9213
     if rho_w is not None and rho_b is not None:
         Nu *= (rho_w/rho_b)**0.6638
@@ -547,7 +562,7 @@ def Nu_Xu(Re, Pr, rho_w=None, rho_b=None, mu_w=None, mu_b=None):
 
 
 def Nu_Mokry(Re, Pr, rho_w=None, rho_b=None):
-    r'''Calculates internal convection Nusselt number for turbulent vertical
+    r"""Calculates internal convection Nusselt number for turbulent vertical
     upward flow in a pipe under supercritical conditions according to [1]_,
     and reviewed in [2]_.
 
@@ -609,7 +624,7 @@ def Nu_Mokry(Re, Pr, rho_w=None, rho_b=None):
        Correlations of Forced Convection Heat Transfer to Water at
        Supercritical Pressure." Annals of Nuclear Energy 76 (February 2015):
        451-60. doi:10.1016/j.anucene.2014.10.027.
-    '''
+    """
     Nu = 0.0061*Re**0.904*Pr**0.684
     if rho_w is not None and rho_b is not None:
         Nu *= (rho_w/rho_b)**0.564
@@ -617,7 +632,7 @@ def Nu_Mokry(Re, Pr, rho_w=None, rho_b=None):
 
 
 def Nu_Bringer_Smith(Re, Pr):
-    r'''Calculates internal convection Nusselt number for turbulent vertical
+    r"""Calculates internal convection Nusselt number for turbulent vertical
     upward flow in a pipe under near-supercritical conditions according to
     [1]_ and as shown in [2]_ and [3]_.
 
@@ -671,12 +686,12 @@ def Nu_Bringer_Smith(Re, Pr):
        Heat Transfer Coefficient Correlation at Supercritical Pressure Using
        Genetic Algorithms." Heat and Mass Transfer 45, no. 6 (January 8, 2009):
        757-66. doi:10.1007/s00231-008-0475-4.
-    '''
+    """
     return 0.0266*Re**0.77*Pr**0.55
 
 
 def Nu_Ornatsky(Re, Pr_b, Pr_w, rho_w=None, rho_b=None):
-    r'''Calculates internal convection Nusselt number for turbulent vertical
+    r"""Calculates internal convection Nusselt number for turbulent vertical
     upward flow in a pipe under supercritical conditions according to [1]_ as
     shown in both [2]_ and [3]_.
 
@@ -730,7 +745,7 @@ def Nu_Ornatsky(Re, Pr_b, Pr_w, rho_w=None, rho_b=None):
        Heat Transfer Coefficient Correlation at Supercritical Pressure Using
        Genetic Algorithms." Heat and Mass Transfer 45, no. 6 (January 8, 2009):
        757-66. doi:10.1007/s00231-008-0475-4.
-    '''
+    """
     Nu = 0.023*Re**0.8*min(Pr_b, Pr_w)**0.8
     if rho_w is not None and rho_b is not None:
         Nu *= (rho_w/rho_b)**0.3
@@ -738,7 +753,7 @@ def Nu_Ornatsky(Re, Pr_b, Pr_w, rho_w=None, rho_b=None):
 
 
 def Nu_Gorban(Re, Pr):
-    r'''Calculates internal convection Nusselt number for turbulent vertical
+    r"""Calculates internal convection Nusselt number for turbulent vertical
     upward flow in a pipe under supercritical conditions according to [1]_.
     Not recommended.
 
@@ -780,12 +795,12 @@ def Nu_Gorban(Re, Pr):
        Heat Transfer Coefficient Correlation at Supercritical Pressure Using
        Genetic Algorithms." Heat and Mass Transfer 45, no. 6 (January 8, 2009):
        757-66. doi:10.1007/s00231-008-0475-4.
-    '''
+    """
     return 0.0059*Re**0.90*Pr**-0.12
 
 
 def Nu_Zhu(Re, Pr, rho_w=None, rho_b=None, k_w=None, k_b=None):
-    r'''Calculates internal convection Nusselt number for turbulent vertical
+    r"""Calculates internal convection Nusselt number for turbulent vertical
     upward flow in a pipe under supercritical conditions according to [1]_.
 
     .. math::
@@ -847,7 +862,7 @@ def Nu_Zhu(Re, Pr, rho_w=None, rho_b=None, k_w=None, k_b=None):
        Correlations of Forced Convection Heat Transfer to Water at
        Supercritical Pressure." Annals of Nuclear Energy 76 (February 2015):
        451-60. doi:10.1016/j.anucene.2014.10.027.
-    '''
+    """
     Nu = 0.0068*Re**0.9*Pr**0.63
     if rho_w is not None and rho_b is not None:
         Nu *= (rho_w/rho_b)**0.17
@@ -857,7 +872,7 @@ def Nu_Zhu(Re, Pr, rho_w=None, rho_b=None, k_w=None, k_b=None):
 
 
 def Nu_Bishop(Re, Pr, rho_w=None, rho_b=None, D=None, x=None):
-    r'''Calculates internal convection Nusselt number for turbulent vertical
+    r"""Calculates internal convection Nusselt number for turbulent vertical
     upward flow in a pipe under supercritical conditions according to [1]_.
     Correlation includes an adjustment for the thermal entry length.
     One of the most common correlations for supercritical convection.
@@ -934,7 +949,7 @@ def Nu_Bishop(Re, Pr, rho_w=None, rho_b=None, D=None, x=None):
        Symposium: What Where When? Multi-dimensional Advances for Industrial
        Process Monitoring, 241, no. 6 (June 2011): 2184-2203.
        doi:10.1016/j.nucengdes.2011.03.022.
-    '''
+    """
     Nu = 0.0069*Re**0.9*Pr**0.66
     if rho_w is not None and rho_b is not None:
         Nu *= (rho_w/rho_b)**0.43
@@ -945,7 +960,7 @@ def Nu_Bishop(Re, Pr, rho_w=None, rho_b=None, D=None, x=None):
 
 def Nu_Yamagata(Re, Pr, Pr_pc=None, Cp_avg=None, Cp_b=None, T_b=None,
                T_w=None, T_pc=None):
-    r'''Calculates internal convection Nusselt number for turbulent vertical
+    r"""Calculates internal convection Nusselt number for turbulent vertical
     upward flow in a pipe under supercritical conditions according to [1]_.
 
     .. math::
@@ -1039,7 +1054,7 @@ def Nu_Yamagata(Re, Pr, Pr_pc=None, Cp_avg=None, Cp_b=None, T_b=None,
        Symposium: What Where When? Multi-dimensional Advances for Industrial
        Process Monitoring, 241, no. 6 (June 2011): 2184-2203.
        doi:10.1016/j.nucengdes.2011.03.022.
-    '''
+    """
     F = 1.0
     if (T_b is not None and T_w is not None and T_pc is not None
         and Pr_pc is not None and Cp_avg is not None and Cp_b is not None):
@@ -1054,7 +1069,7 @@ def Nu_Yamagata(Re, Pr, Pr_pc=None, Cp_avg=None, Cp_b=None, T_b=None,
 
 
 def Nu_Kitoh(Re, Pr, H=None, G=None, q=None):
-    r'''Calculates internal convection Nusselt number for turbulent vertical
+    r"""Calculates internal convection Nusselt number for turbulent vertical
     upward flow in a pipe under supercritical conditions according to [1]_,
     also shown in [2]_, [3]_ and [4]_. Depends on fluid enthalpy, mass flux,
     and heat flux.
@@ -1143,7 +1158,7 @@ def Nu_Kitoh(Re, Pr, H=None, G=None, q=None):
        Symposium: What Where When? Multi-dimensional Advances for Industrial
        Process Monitoring, 241, no. 6 (June 2011): 2184-2203.
        doi:10.1016/j.nucengdes.2011.03.022.
-    '''
+    """
     if H is not None and G is not None and q is not None:
         qht = 200.*G**1.2
         if H < 1.5E6:
@@ -1160,7 +1175,7 @@ def Nu_Kitoh(Re, Pr, H=None, G=None, q=None):
 
 def Nu_Krasnoshchekov_Protopopov(Re, Pr, Cp_avg=None, Cp_b=None, k_w=None,
                                  k_b=None, mu_w=None, mu_b=None):
-    r'''Calculates internal convection Nusselt number for turbulent vertical
+    r"""Calculates internal convection Nusselt number for turbulent vertical
     upward flow in a pipe under supercritical conditions according to [1]_.
 
     .. math::
@@ -1236,7 +1251,7 @@ def Nu_Krasnoshchekov_Protopopov(Re, Pr, Cp_avg=None, Cp_b=None, k_w=None,
        Symposium: What Where When? Multi-dimensional Advances for Industrial
        Process Monitoring, 241, no. 6 (June 2011): 2184-2203.
        doi:10.1016/j.nucengdes.2011.03.022.
-    '''
+    """
     fd = (1.82*log10(Re) - 1.64)**-2
     Nu = (fd/8.)*Re*Pr/(1.07 + 12.7*(fd/8.)**0.5*(Pr**(2/3.)-1))
     if mu_w is not None and mu_b is not None:
@@ -1249,7 +1264,7 @@ def Nu_Krasnoshchekov_Protopopov(Re, Pr, Cp_avg=None, Cp_b=None, k_w=None,
 
 
 def Nu_Petukhov(Re, Pr, rho_w=None, rho_b=None, mu_w=None, mu_b=None):
-    r'''Calculates internal convection Nusselt number for turbulent vertical
+    r"""Calculates internal convection Nusselt number for turbulent vertical
     upward flow in a pipe under supercritical conditions according to [1]_.
 
     .. math::
@@ -1307,7 +1322,7 @@ def Nu_Petukhov(Re, Pr, rho_w=None, rho_b=None, mu_w=None, mu_b=None):
        Correlations of Forced Convection Heat Transfer to Water at
        Supercritical Pressure." Annals of Nuclear Energy 76 (February 2015):
        451-60. doi:10.1016/j.anucene.2014.10.027.
-    '''
+    """
     fd = (1.82*log10(Re) - 1.64)**-2
     if rho_w is not None and rho_b is not None:
         fd *= (rho_w/rho_b)**0.4
@@ -1318,7 +1333,7 @@ def Nu_Petukhov(Re, Pr, rho_w=None, rho_b=None, mu_w=None, mu_b=None):
 
 def Nu_Krasnoshchekov(Re, Pr, rho_w=None, rho_b=None, Cp_avg=None, Cp_b=None,
                       T_b=None, T_w=None, T_pc=None):
-    r'''Calculates internal convection Nusselt number for turbulent vertical
+    r"""Calculates internal convection Nusselt number for turbulent vertical
     upward flow in a pipe under supercritical conditions according to [1]_.
 
     .. math::
@@ -1394,7 +1409,7 @@ def Nu_Krasnoshchekov(Re, Pr, rho_w=None, rho_b=None, Cp_avg=None, Cp_b=None,
        Correlations of Forced Convection Heat Transfer to Water at
        Supercritical Pressure." Annals of Nuclear Energy 76 (February 2015):
        451-60. doi:10.1016/j.anucene.2014.10.027.
-    '''
+    """
     if T_b is not None and T_w is not None and T_pc is not None:
         n1 = 0.22 + 0.18*T_w/T_pc
         if T_b < T_w < T_pc or 1.2*T_pc < T_b < T_w:

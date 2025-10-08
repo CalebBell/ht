@@ -1,4 +1,4 @@
-'''Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
+"""Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
 Copyright (C) 2019, Caleb Bell <Caleb.Andrew.Bell@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -18,21 +18,24 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-'''
+"""
 
 from math import exp, log
 
 from fluids.numerics import bisplev, horner, implementation_optimize_tck, secant
 
-__all__ = ['Nu_Nusselt_Rayleigh_Holling_Herwig', 'Nu_Nusselt_Rayleigh_Probert',
-           'Nu_Nusselt_Rayleigh_Hollands',
-           'Rac_Nusselt_Rayleigh', 'Rac_Nusselt_Rayleigh_disk',
-           'Nu_Nusselt_vertical_Thess',
-           'Nu_vertical_helical_coil_Ali',
-           'Nu_vertical_helical_coil_Prabhanjan_Rennie_Raghavan',
-           ]
+__all__ = [
+    "Nu_Nusselt_Rayleigh_Hollands",
+    "Nu_Nusselt_Rayleigh_Holling_Herwig",
+    "Nu_Nusselt_Rayleigh_Probert",
+    "Nu_Nusselt_vertical_Thess",
+    "Nu_vertical_helical_coil_Ali",
+    "Nu_vertical_helical_coil_Prabhanjan_Rennie_Raghavan",
+    "Rac_Nusselt_Rayleigh",
+    "Rac_Nusselt_Rayleigh_disk",
+]
 
-__numba_additional_funcs__ = ['Nu_Nusselt_Rayleigh_Holling_Herwig_err']
+__numba_additional_funcs__ = ["Nu_Nusselt_Rayleigh_Holling_Herwig_err"]
 
 
 def Nu_Nusselt_Rayleigh_Holling_Herwig_err(Nu, Ra, Ra_third, D2):
@@ -41,7 +44,7 @@ def Nu_Nusselt_Rayleigh_Holling_Herwig_err(Nu, Ra, Ra_third, D2):
 
 
 def Nu_Nusselt_Rayleigh_Holling_Herwig(Pr, Gr, buoyancy=True):
-    r'''Calculates the Nusselt number for natural convection between two
+    r"""Calculates the Nusselt number for natural convection between two
     theoretical flat horizontal plates. The height between the plates is infinite, and
     one of the other dimensions of the plates is much larger than the other.
 
@@ -101,7 +104,7 @@ def Nu_Nusselt_Rayleigh_Holling_Herwig(Pr, Gr, buoyancy=True):
        https://doi.org/10.1016/j.ijheatmasstransfer.2005.09.002.
     .. [2] Gesellschaft, V. D. I., ed. VDI Heat Atlas. 2nd ed. 2010 edition.
        Berlin ; New York: Springer, 2010.
-    '''
+    """
     if not buoyancy:
         return 1.0
     Rac = 1708 # Constant
@@ -117,7 +120,7 @@ def Nu_Nusselt_Rayleigh_Holling_Herwig(Pr, Gr, buoyancy=True):
 
 
 def Nu_Nusselt_Rayleigh_Probert(Pr, Gr, buoyancy=True):
-    r'''Calculates the Nusselt number for natural convection between two
+    r"""Calculates the Nusselt number for natural convection between two
     theoretical flat plates. The height between the plates is infinite, and
     one of the other dimensions of the plates is much larger than the other.
 
@@ -170,7 +173,7 @@ def Nu_Nusselt_Rayleigh_Probert(Pr, Gr, buoyancy=True):
        Rectangular Cavities." CHEMICAL AND PROCESS ENGINEERING, 1970, 35.
     .. [2] Gesellschaft, V. D. I., ed. VDI Heat Atlas. 2nd ed. 2010 edition.
        Berlin ; New York: Springer, 2010.
-    '''
+    """
     if not buoyancy:
         return 1.0
     Rac = 1708 # Constant
@@ -185,7 +188,7 @@ def Nu_Nusselt_Rayleigh_Probert(Pr, Gr, buoyancy=True):
 
 
 def Nu_Nusselt_Rayleigh_Hollands(Pr, Gr, buoyancy=True, Rac=1708):
-    r'''Calculates the Nusselt number for natural convection between two
+    r"""Calculates the Nusselt number for natural convection between two
     theoretical flat horizontal plates using the Hollands [1]_ correlation recommended
     in [2]_. This correlation supports different aspect ratios,
     so the plates can be real, finite objects and have their heat transfer
@@ -249,7 +252,7 @@ def Nu_Nusselt_Rayleigh_Hollands(Pr, Gr, buoyancy=True, Rac=1708):
        https://doi.org/10.1016/0017-9310(84)90295-3.
     .. [2] Gesellschaft, V. D. I., ed. VDI Heat Atlas. 2nd ed. 2010 edition.
        Berlin ; New York: Springer, 2010.
-    '''
+    """
     if not buoyancy:
         return 1.0
     Ra = Gr*Pr
@@ -274,7 +277,7 @@ def Nu_Nusselt_Rayleigh_Hollands(Pr, Gr, buoyancy=True, Rac=1708):
 
 
 def Nu_Nusselt_vertical_Thess(Pr, Gr, H=None, L=None):
-    r'''Calculates the Nusselt number for natural convection between two
+    r"""Calculates the Nusselt number for natural convection between two
     theoretical vertical flat plates using the correlation by Thess [1]
     in [1]_. This is a variant on the horizontal Rayleigh-Benard classic heat
     transfer problem.
@@ -321,7 +324,7 @@ def Nu_Nusselt_vertical_Thess(Pr, Gr, H=None, L=None):
     ----------
     .. [1] Gesellschaft, V. D. I., ed. VDI Heat Atlas. 2nd ed. 2010 edition.
        Berlin ; New York: Springer, 2010.
-    '''
+    """
     Ra = Gr*Pr
     if Ra < 1e7 and H is not None and L is not None:
         return 0.42*Pr**0.012*Ra**0.25*(L/H)**0.25
@@ -410,7 +413,7 @@ tck_insulated_Catton = implementation_optimize_tck([[0.125, 0.125, 0.21657639794
 
 
 def Rac_Nusselt_Rayleigh(H, L, W, insulated=True):
-    r'''Calculates the critical Rayleigh number for free convection to begin
+    r"""Calculates the critical Rayleigh number for free convection to begin
     in the Nusselt-Rayleigh parallel horizontal plate scenario. There are
     actually two cases - one for the top plate to be insulated (adiabatic) and
     the other where it has infinite thermal conductivity/is infinitely thin or
@@ -456,7 +459,7 @@ def Rac_Nusselt_Rayleigh(H, L, W, insulated=True):
        186-88. https://doi.org/10.1115/1.3449626.
     .. [3] Rohsenow, Warren and James Hartnett and Young Cho. Handbook of Heat
        Transfer, 3E. New York: McGraw-Hill, 1998.
-    '''
+    """
     H_L_ratio = min(max(H/L, 0.125), 12.0)
     W_L_ratio = min(max(W/L, 0.125), 12.0)
 
@@ -484,7 +487,7 @@ insulated_disk_coeffs = [0.2173851248644496, 0.09672312658254612, -1.08004949683
 
 
 def Rac_Nusselt_Rayleigh_disk(H, D, insulated=True):
-    r'''Calculates the critical Rayleigh number for free convection to begin
+    r"""Calculates the critical Rayleigh number for free convection to begin
     in the parallel horizontal disk scenario. There are
     actually two cases - one for the top plate to be insulated (adiabatic) and
     the other where it has infinite thermal conductivity/is infinitely thin or
@@ -534,7 +537,7 @@ def Rac_Nusselt_Rayleigh_disk(H, D, insulated=True):
        Stability of a Fluid in a Right Circular Cylinder Heated From Below."
        Journal of Heat Transfer 105, no. 2 (May 1, 1983): 255-60.
        https://doi.org/10.1115/1.3245571.
-    '''
+    """
     x = min(max(D/H, 0.4), 6.0)
     if insulated:
         coeffs = insulated_disk_coeffs
@@ -546,7 +549,7 @@ def Rac_Nusselt_Rayleigh_disk(H, D, insulated=True):
 ### Free convection vertical helical coil
 
 def Nu_vertical_helical_coil_Ali(Pr, Gr):
-    r'''Calculates Nusselt number for natural convection around a vertical
+    r"""Calculates Nusselt number for natural convection around a vertical
     helical coil inside a tank or other vessel according to the Ali [1]_
     correlation.
 
@@ -591,12 +594,12 @@ def Nu_vertical_helical_coil_Ali(Pr, Gr):
     .. [1] Ali, Mohamed E. "Natural Convection Heat Transfer from Vertical
        Helical Coils in Oil." Heat Transfer Engineering 27, no. 3 (April 1,
        2006): 79-85.
-    '''
+    """
     return 0.555*Gr**0.301*Pr**0.314
 
 
 def Nu_vertical_helical_coil_Prabhanjan_Rennie_Raghavan(Pr, Gr):
-    r'''Calculates Nusselt number for natural convection around a vertical
+    r"""Calculates Nusselt number for natural convection around a vertical
     helical coil inside a tank or other vessel according to the Prabhanjan,
     Rennie, and Raghavan [1]_ correlation.
 
@@ -640,6 +643,6 @@ def Nu_vertical_helical_coil_Prabhanjan_Rennie_Raghavan(Pr, Gr):
        Raghavan. "Natural Convection Heat Transfer from Helical Coiled Tubes."
        International Journal of Thermal Sciences 43, no. 4 (April 1, 2004):
        359-65.
-    '''
+    """
     Ra = Pr*Gr
     return 0.0749*Ra**0.3421

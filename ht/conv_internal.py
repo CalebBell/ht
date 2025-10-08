@@ -1,4 +1,4 @@
-'''Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
+"""Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
 Copyright (C) 2016, 2017 Caleb Bell <Caleb.Andrew.Bell@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -18,26 +18,49 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-'''
+"""
 
 
-__all__ = ['laminar_T_const', 'laminar_Q_const',
-'laminar_entry_thermal_Hausen', 'laminar_entry_Seider_Tate',
-'laminar_entry_Baehr_Stephan', 'turbulent_Dittus_Boelter',
-'turbulent_Sieder_Tate', 'turbulent_entry_Hausen', 'turbulent_Colburn',
-'turbulent_Drexel_McAdams', 'turbulent_von_Karman', 'turbulent_Prandtl',
-'turbulent_Friend_Metzner', 'turbulent_Petukhov_Kirillov_Popov',
-'turbulent_Webb', 'turbulent_Sandall', 'turbulent_Gnielinski',
-'turbulent_Gnielinski_smooth_1', 'turbulent_Gnielinski_smooth_2',
-'turbulent_Churchill_Zajic', 'turbulent_ESDU', 'turbulent_Martinelli',
-'turbulent_Nunner', 'turbulent_Dipprey_Sabersky', 'turbulent_Gowen_Smith',
-'turbulent_Kawase_Ulbrecht', 'turbulent_Kawase_De', 'turbulent_Bhatti_Shah',
-'Nu_conv_internal', 'Nu_conv_internal_methods',
-
-'Morimoto_Hotta', 'helical_turbulent_Nu_Mori_Nakayama',
-'helical_turbulent_Nu_Schmidt', 'helical_turbulent_Nu_Xin_Ebadian',
-'Nu_laminar_rectangular_Shan_London',
-'conv_tube_methods', 'conv_tube_laminar_methods', 'conv_tube_turbulent_methods']
+__all__ = [
+    "Morimoto_Hotta",
+    "Nu_conv_internal",
+    "Nu_conv_internal_methods",
+    "Nu_laminar_rectangular_Shan_London",
+    "conv_tube_laminar_methods",
+    "conv_tube_methods",
+    "conv_tube_turbulent_methods",
+    "helical_turbulent_Nu_Mori_Nakayama",
+    "helical_turbulent_Nu_Schmidt",
+    "helical_turbulent_Nu_Xin_Ebadian",
+    "laminar_Q_const",
+    "laminar_T_const",
+    "laminar_entry_Baehr_Stephan",
+    "laminar_entry_Seider_Tate",
+    "laminar_entry_thermal_Hausen",
+    "turbulent_Bhatti_Shah",
+    "turbulent_Churchill_Zajic",
+    "turbulent_Colburn",
+    "turbulent_Dipprey_Sabersky",
+    "turbulent_Dittus_Boelter",
+    "turbulent_Drexel_McAdams",
+    "turbulent_ESDU",
+    "turbulent_Friend_Metzner",
+    "turbulent_Gnielinski",
+    "turbulent_Gnielinski_smooth_1",
+    "turbulent_Gnielinski_smooth_2",
+    "turbulent_Gowen_Smith",
+    "turbulent_Kawase_De",
+    "turbulent_Kawase_Ulbrecht",
+    "turbulent_Martinelli",
+    "turbulent_Nunner",
+    "turbulent_Petukhov_Kirillov_Popov",
+    "turbulent_Prandtl",
+    "turbulent_Sandall",
+    "turbulent_Sieder_Tate",
+    "turbulent_Webb",
+    "turbulent_entry_Hausen",
+    "turbulent_von_Karman",
+]
 
 from math import exp, log, tanh
 
@@ -46,7 +69,7 @@ from fluids.friction import LAMINAR_TRANSITION_PIPE, Clamond
 ### Laminar
 
 def laminar_T_const():
-    r'''Returns internal convection Nusselt number for laminar flows
+    r"""Returns internal convection Nusselt number for laminar flows
     in pipe according to [1]_, [2]_ and [3]_. Wall temperature is assumed
     constant.
     This is entirely theoretically derived and reproduced experimentally.
@@ -71,12 +94,12 @@ def laminar_T_const():
        David P. DeWitt. Introduction to Heat Transfer. 6E. Hoboken, NJ: Wiley, 2011.
     .. [3] Gesellschaft, V. D. I., ed. VDI Heat Atlas. 2nd ed. 2010 edition.
        Berlin ; New York: Springer, 2010.
-    '''
+    """
     return 3.66
 
 
 def laminar_Q_const():
-    r'''Returns internal convection Nusselt number for laminar flows
+    r"""Returns internal convection Nusselt number for laminar flows
     in pipe according to [1]_, [2]_, and [3]_. Heat flux is assumed constant.
     This is entirely theoretically derived and reproduced experimentally.
 
@@ -101,13 +124,13 @@ def laminar_Q_const():
        David P. DeWitt. Introduction to Heat Transfer. 6E. Hoboken, NJ: Wiley, 2011.
     .. [3] Gesellschaft, V. D. I., ed. VDI Heat Atlas. 2nd ed. 2010 edition.
         Berlin ; New York: Springer, 2010.
-    '''
+    """
     return 48/11.
 
 ### Laminar - entry region
 
 def laminar_entry_thermal_Hausen(Re, Pr, L, Di):
-    r'''Calculates average internal convection Nusselt number for laminar flows
+    r"""Calculates average internal convection Nusselt number for laminar flows
     in pipe during the thermal entry region according to [1]_ as shown in
     [2]_ and cited by [3]_.
 
@@ -153,13 +176,13 @@ def laminar_entry_thermal_Hausen(Re, Pr, L, Di):
     .. [3] Bergman, Theodore L., Adrienne S. Lavine, Frank P. Incropera, and
        David P. DeWitt. Introduction to Heat Transfer. 6E.
        Hoboken, NJ: Wiley, 2011.
-    '''
+    """
     Gz = Di/L*Re*Pr
     return 3.66 + (0.0668*Gz)/(1+0.04*(Gz)**(2/3.))
 
 
 def laminar_entry_Seider_Tate(Re, Pr, L, Di, mu=None, mu_w=None):
-    r'''Calculates average internal convection Nusselt number for laminar flows
+    r"""Calculates average internal convection Nusselt number for laminar flows
     in pipe during the thermal entry region as developed in [1]_, also
     shown in [2]_.
 
@@ -208,7 +231,7 @@ def laminar_entry_Seider_Tate(Re, Pr, L, Di, mu=None, mu_w=None):
        (December 1, 1936): 1429-35. doi:10.1021/ie50324a027.
     .. [2] Serth, R. W., Process Heat Transfer: Principles,
        Applications and Rules of Thumb. 2E. Amsterdam: Academic Press, 2014.
-    '''
+    """
     Nu = 1.86*(Di/L*Re*Pr)**(1/3.0)
     if mu_w is not None and mu is not None:
         Nu *= (mu/mu_w)**0.14
@@ -216,7 +239,7 @@ def laminar_entry_Seider_Tate(Re, Pr, L, Di, mu=None, mu_w=None):
 
 
 def laminar_entry_Baehr_Stephan(Re, Pr, L, Di):
-    r'''Calculates average internal convection Nusselt number for laminar flows
+    r"""Calculates average internal convection Nusselt number for laminar flows
     in pipe during the thermal and velocity entry region according to [1]_ as
     shown in [2]_.
 
@@ -260,7 +283,7 @@ def laminar_entry_Baehr_Stephan(Re, Pr, L, Di):
     .. [2] Bergman, Theodore L., Adrienne S. Lavine, Frank P. Incropera, and
        David P. DeWitt. Introduction to Heat Transfer. 6E.
        Hoboken, NJ: Wiley, 2011.
-    '''
+    """
     Gz = Di/L*Re*Pr
     return (3.657/tanh(2.264*Gz**(-1/3.)+ 1.7*Gz**(-2/3.0))
             + 0.0499*Gz*tanh(1./Gz))/tanh(2.432*Pr**(1/6.0)*Gz**(-1/6.0))
@@ -268,7 +291,7 @@ def laminar_entry_Baehr_Stephan(Re, Pr, L, Di):
 
 ### Turbulent - Equations with more complicated options
 def turbulent_Dittus_Boelter(Re, Pr, heating=True, revised=True):
-    r'''Calculates internal convection Nusselt number for turbulent flows
+    r"""Calculates internal convection Nusselt number for turbulent flows
     in pipe according to [1]_, and [2]_, a reprint of [3]_.
 
     .. math::
@@ -320,7 +343,7 @@ def turbulent_Dittus_Boelter(Re, Pr, heating=True, revised=True):
     .. [3] Dittus, F. W., and L. M. K. Boelter, University of California
        Publications in Engineering, Vol. 2, No. 13, pp. 443-461, October 17,
        1930.
-    '''
+    """
     m = 0.023
     if heating:
         power = 0.4
@@ -337,7 +360,7 @@ def turbulent_Dittus_Boelter(Re, Pr, heating=True, revised=True):
 
 
 def turbulent_Sieder_Tate(Re, Pr, mu=None, mu_w=None):
-    r'''Calculates internal convection Nusselt number for turbulent flows
+    r"""Calculates internal convection Nusselt number for turbulent flows
     in pipe according to [1]_ and supposedly [2]_.
 
     .. math::
@@ -379,7 +402,7 @@ def turbulent_Sieder_Tate(Re, Pr, mu=None, mu_w=None):
     .. [2] Sieder, E. N., and G. E. Tate. "Heat Transfer and Pressure Drop of
        Liquids in Tubes." Industrial & Engineering Chemistry 28, no. 12
        (December 1, 1936): 1429-35. doi:10.1021/ie50324a027.
-    '''
+    """
     Nu = 0.027*Re**0.8*Pr**(1/3.)
     if mu_w is not None and mu is not None:
         Nu *= (mu/mu_w)**0.14
@@ -387,7 +410,7 @@ def turbulent_Sieder_Tate(Re, Pr, mu=None, mu_w=None):
 
 
 def turbulent_entry_Hausen(Re, Pr, Di, x):
-    r'''Calculates internal convection Nusselt number for the entry region
+    r"""Calculates internal convection Nusselt number for the entry region
     of a turbulent flow in pipe according to [2]_ as in [1]_.
 
     .. math::
@@ -424,7 +447,7 @@ def turbulent_entry_Hausen(Re, Pr, Di, x):
        Transfer, 3E. New York: McGraw-Hill, 1998.
     .. [2] H. Hausen, "Neue Gleichungen fÜr die Wärmeübertragung bei freier
        oder erzwungener Stromung,"Allg. Warmetchn., (9): 75-79, 1959.
-    '''
+    """
     return 0.037*(Re**0.75 - 180)*Pr**0.42*(1 + (x/Di)**(-2/3.))
 
 
@@ -432,7 +455,7 @@ def turbulent_entry_Hausen(Re, Pr, Di, x):
 
 
 def turbulent_Colburn(Re, Pr):
-    r'''Calculates internal convection Nusselt number for turbulent flows
+    r"""Calculates internal convection Nusselt number for turbulent flows
     in pipe according to [2]_ as in [1]_.
 
     .. math::
@@ -467,12 +490,12 @@ def turbulent_Colburn(Re, Pr):
        Heat-Transfer Data and a Comparison with Fluid Friction." International
        Journal of Heat and Mass Transfer 7, no. 12 (December 1964): 1359-84.
        doi:10.1016/0017-9310(64)90125-5.
-    '''
+    """
     return 0.023*Re**0.8*Pr**(1/3.)
 
 
 def turbulent_Drexel_McAdams(Re, Pr):
-    r'''Calculates internal convection Nusselt number for turbulent flows
+    r"""Calculates internal convection Nusselt number for turbulent flows
     in pipe according to [2]_ as in [1]_.
 
     .. math::
@@ -507,12 +530,12 @@ def turbulent_Drexel_McAdams(Re, Pr):
        Coefficients for Air Flowing in Round Tubes, in Rectangular Ducts, and
        around Finned Cylinders," February 1, 1945.
        http://ntrs.nasa.gov/search.jsp?R=19930090924.
-    '''
+    """
     return 0.021*Re**0.8*Pr**(0.4)
 
 
 def turbulent_von_Karman(Re, Pr, fd):
-    r'''Calculates internal convection Nusselt number for turbulent flows
+    r"""Calculates internal convection Nusselt number for turbulent flows
     in pipe according to [2]_ as in [1]_.
 
     .. math::
@@ -548,13 +571,13 @@ def turbulent_von_Karman(Re, Pr, fd):
        Transfer, 3E. New York: McGraw-Hill, 1998.
     .. [2] T. von Karman, "The Analogy Between Fluid Friction and Heat
        Transfer," Trans. ASME, (61):705-710,1939.
-    '''
+    """
     return (fd/8.0*Re*Pr/(1.0 + 5.0*(fd/8.0)**0.5
                           *(Pr - 1.0 + log((5.0*Pr + 1.0)/6.))))
 
 
 def turbulent_Prandtl(Re, Pr, fd):
-    r'''Calculates internal convection Nusselt number for turbulent flows
+    r"""Calculates internal convection Nusselt number for turbulent flows
     in pipe according to [2]_ as in [1]_.
 
     .. math::
@@ -589,12 +612,12 @@ def turbulent_Prandtl(Re, Pr, fd):
        Transfer, 3E. New York: McGraw-Hill, 1998.
     .. [2] L. Prandt, Fuhrrer durch die Stomungslehre, Vieweg, Braunschweig,
        p. 359, 1944.
-    '''
+    """
     return (fd/8.)*Re*Pr/(1.0 + 8.7*(fd/8.)**0.5*(Pr - 1.0))
 
 
 def turbulent_Friend_Metzner(Re, Pr, fd):
-    r'''Calculates internal convection Nusselt number for turbulent flows
+    r"""Calculates internal convection Nusselt number for turbulent flows
     in pipe according to [2]_ as in [1]_.
 
     .. math::
@@ -631,12 +654,12 @@ def turbulent_Friend_Metzner(Re, Pr, fd):
     .. [2] Friend, W. L., and A. B. Metzner. “Turbulent Heat Transfer inside
        Tubes and the Analogy among Heat, Mass, and Momentum Transfer.” AIChE
        Journal 4, no. 4 (December 1, 1958): 393-402. doi:10.1002/aic.690040404.
-    '''
+    """
     return (fd/8.)*Re*Pr/(1.2 + 11.8*(fd/8.)**0.5*(Pr - 1.)*Pr**(-1/3.))
 
 
 def turbulent_Petukhov_Kirillov_Popov(Re, Pr, fd):
-    r'''Calculates internal convection Nusselt number for turbulent flows
+    r"""Calculates internal convection Nusselt number for turbulent flows
     in pipe according to [2]_ and [3]_ as in [1]_.
 
     .. math::
@@ -676,13 +699,13 @@ def turbulent_Petukhov_Kirillov_Popov(Re, Pr, fd):
     .. [3] B. S. Petukhov and V. N. Popov, "Theoretical Calculation of Heat
        Exchange in Turbulent Flow in Tubes of an Incompressible Fluidwith
        Variable Physical Properties," High Temp., (111): 69-83, 1963.
-    '''
+    """
     C = 1.07 + 900./Re - (0.63/(1. + 10.*Pr))
     return (fd/8.)*Re*Pr/(C + 12.7*(fd/8.)**0.5*(Pr**(2/3.) - 1.))
 
 
 def turbulent_Webb(Re, Pr, fd):
-    r'''Calculates internal convection Nusselt number for turbulent flows
+    r"""Calculates internal convection Nusselt number for turbulent flows
     in pipe according to [2]_ as in [1]_.
 
     .. math::
@@ -719,12 +742,12 @@ def turbulent_Webb(Re, Pr, fd):
        Reynolds Analogy Equations for Turbulent Heat and Mass Transfer in
        Smooth Tubes.” Wärme - Und Stoffübertragung 4, no. 4
        (December 1, 1971): 197-204. doi:10.1007/BF01002474.
-    '''
+    """
     return (fd/8.)*Re*Pr/(1.07 + 9.*(fd/8.)**0.5*(Pr - 1.)*Pr**0.25)
 
 
 def turbulent_Sandall(Re, Pr, fd):
-    r'''Calculates internal convection Nusselt number for turbulent flows
+    r"""Calculates internal convection Nusselt number for turbulent flows
     in pipe according to [2]_ as in [1]_.
 
     .. math::
@@ -762,14 +785,14 @@ def turbulent_Sandall(Re, Pr, fd):
        Formula for Turbulent Heat and Mass Transfer with Gases or Liquids in
        Tube Flow.” The Canadian Journal of Chemical Engineering 58, no. 4
        (August 1, 1980): 443-47. doi:10.1002/cjce.5450580404.
-    '''
+    """
     C = 2.78*log((fd/8.)**0.5*Re/45.)
     return (fd/8.)**0.5*Re*Pr/(12.48*Pr**(2/3.) - 7.853*Pr**(1/3.)
                                + 3.613*log(Pr) + 5.8 + C)
 
 
 def turbulent_Gnielinski(Re, Pr, fd):
-    r'''Calculates internal convection Nusselt number for turbulent flows
+    r"""Calculates internal convection Nusselt number for turbulent flows
     in pipe according to [2]_ as in [1]_. This is the most recent general
     equation, and is strongly recommended.
 
@@ -806,12 +829,12 @@ def turbulent_Gnielinski(Re, Pr, fd):
     .. [2] Gnielinski, V. (1976). New Equation for Heat and Mass Transfer in
        Turbulent Pipe and Channel Flow, International Chemical Engineering,
        Vol. 16, pp. 359-368.
-    '''
+    """
     return (fd/8.)*(Re - 1E3)*Pr/(1. + 12.7*(fd/8.)**0.5*(Pr**(2/3.) - 1.))
 
 
 def turbulent_Gnielinski_smooth_1(Re, Pr):
-    r'''Calculates internal convection Nusselt number for turbulent flows
+    r"""Calculates internal convection Nusselt number for turbulent flows
     in pipe according to [2]_ as in [1]_. This is a simplified case assuming
     smooth pipe.
 
@@ -846,12 +869,12 @@ def turbulent_Gnielinski_smooth_1(Re, Pr):
     .. [2] Gnielinski, V. (1976). New Equation for Heat and Mass Transfer in
        Turbulent Pipe and Channel Flow, International Chemical Engineering,
        Vol. 16, pp. 359-368.
-    '''
+    """
     return 0.0214*(Re**0.8 - 100.)*Pr**0.4
 
 
 def turbulent_Gnielinski_smooth_2(Re, Pr):
-    r'''Calculates internal convection Nusselt number for turbulent flows
+    r"""Calculates internal convection Nusselt number for turbulent flows
     in pipe according to [2]_ as in [1]_. This is a simplified case assuming
     smooth pipe.
 
@@ -886,12 +909,12 @@ def turbulent_Gnielinski_smooth_2(Re, Pr):
     .. [2] Gnielinski, V. (1976). New Equation for Heat and Mass Transfer in
        Turbulent Pipe and Channel Flow, International Chemical Engineering,
        Vol. 16, pp. 359-368.
-    '''
+    """
     return 0.012*(Re**0.87 - 280.)*Pr**0.4
 
 
 def turbulent_Churchill_Zajic(Re, Pr, fd):
-    r'''Calculates internal convection Nusselt number for turbulent flows
+    r"""Calculates internal convection Nusselt number for turbulent flows
     in pipe according to [2]_ as developed in [1]_. Has yet to obtain
     popularity.
 
@@ -940,7 +963,7 @@ def turbulent_Churchill_Zajic(Re, Pr, fd):
        AIChE Journal 48, no. 5 (May 1, 2002): 927-40. doi:10.1002/aic.690480503.
     .. [2] Plawsky, Joel L. Transport Phenomena Fundamentals, Third Edition.
        CRC Press, 2014.
-    '''
+    """
     Pr_T = 0.85 + 0.015/Pr
     Nu_di = Re*(fd/8.)/(1. + 145*(8./fd)**(-1.25))
     Nu_dinf = 0.07343*Re*(Pr/Pr_T)**(1./3.0)*(fd/8.)**0.5
@@ -948,7 +971,7 @@ def turbulent_Churchill_Zajic(Re, Pr, fd):
 
 
 def turbulent_ESDU(Re, Pr):
-    r'''Calculates internal convection Nusselt number for turbulent flows
+    r"""Calculates internal convection Nusselt number for turbulent flows
     in pipe according to the ESDU as shown in [1]_.
 
     .. math::
@@ -982,13 +1005,13 @@ def turbulent_ESDU(Re, Pr):
     ----------
     .. [1] Hewitt, G. L. Shires, T. Reg Bott G. F., George L. Shires, and
        T. R. Bott. Process Heat Transfer. 1E. Boca Raton: CRC Press, 1994.
-    '''
+    """
     return 0.0225*Re**0.795*Pr**0.495*exp(-0.0225*log(Pr)**2)
 
 ### Correlations for 'rough' turbulent pipe
 
 def turbulent_Martinelli(Re, Pr, fd):
-    r'''Calculates internal convection Nusselt number for turbulent flows
+    r"""Calculates internal convection Nusselt number for turbulent flows
     in pipe according to [2]_ as shown in [1]_.
 
     .. math::
@@ -1024,12 +1047,12 @@ def turbulent_Martinelli(Re, Pr, fd):
        Transfer, 3E. New York: McGraw-Hill, 1998.
     .. [2] Martinelli, R. C. (1947). "Heat transfer to molten metals".
        Trans. ASME, 69, 947-959.
-    '''
+    """
     return Re*Pr*(fd/8.)**0.5/5/(Pr + log(1. + 5.*Pr) + 0.5*log(Re*(fd/8.)**0.5/60.))
 
 
 def turbulent_Nunner(Re, Pr, fd, fd_smooth):
-    r'''Calculates internal convection Nusselt number for turbulent flows
+    r"""Calculates internal convection Nusselt number for turbulent flows
     in pipe according to [2]_ as shown in [1]_.
 
     .. math::
@@ -1066,12 +1089,12 @@ def turbulent_Nunner(Re, Pr, fd, fd_smooth):
        Transfer, 3E. New York: McGraw-Hill, 1998.
     .. [2] W. Nunner, "Warmeiibergang und Druckabfall in Rauhen Rohren,"
        VDI-Forschungsheft 445, ser. B,(22): 5-39, 1956
-    '''
+    """
     return Re*Pr*fd/8./(1 + 1.5*Re**-0.125*Pr**(-1/6.)*(Pr*fd/fd_smooth - 1.))
 
 
 def turbulent_Dipprey_Sabersky(Re, Pr, fd, eD):
-    r'''Calculates internal convection Nusselt number for turbulent flows
+    r"""Calculates internal convection Nusselt number for turbulent flows
     in pipe according to [2]_ as shown in [1]_.
 
     .. math::
@@ -1111,13 +1134,13 @@ def turbulent_Dipprey_Sabersky(Re, Pr, fd, eD):
        Smooth and Rough Tubes at Various Prandtl Numbers.” International
        Journal of Heat and Mass Transfer 6, no. 5 (May 1963): 329-53.
        doi:10.1016/0017-9310(63)90097-8
-    '''
+    """
     Re_e = Re*eD*(fd/8.)**0.5
     return Re*Pr*fd/8./(1 + (fd/8.)**0.5*(5.19*Re_e**0.2*Pr**0.44 - 8.48))
 
 
 def turbulent_Gowen_Smith(Re, Pr, fd):
-    r'''Calculates internal convection Nusselt number for turbulent flows
+    r"""Calculates internal convection Nusselt number for turbulent flows
     in pipe according to [2]_ as shown in [1]_.
 
     .. math::
@@ -1154,12 +1177,12 @@ def turbulent_Gowen_Smith(Re, Pr, fd):
     .. [2] Gowen, R. A., and J. W. Smith. “Turbulent Heat Transfer from Smooth
        and Rough Surfaces.” International Journal of Heat and Mass Transfer 11,
        no. 11 (November 1968): 1657-74. doi:10.1016/0017-9310(68)90046-X.
-    '''
+    """
     return Re*Pr*(fd/8.)**0.5/(4.5 + (0.155*(Re*(fd/8.)**0.5)**0.54 + (8./fd)**0.5)*Pr**0.5)
 
 
 def turbulent_Kawase_Ulbrecht(Re, Pr, fd):
-    r'''Calculates internal convection Nusselt number for turbulent flows
+    r"""Calculates internal convection Nusselt number for turbulent flows
     in pipe according to [2]_ as shown in [1]_.
 
     .. math::
@@ -1195,12 +1218,12 @@ def turbulent_Kawase_Ulbrecht(Re, Pr, fd):
     .. [2] Kawase, Yoshinori, and Jaromir J. Ulbrecht. “Turbulent Heat and Mass
        Transfer in Dilute Polymer Solutions.” Chemical Engineering Science 37,
        no. 7 (1982): 1039-46. doi:10.1016/0009-2509(82)80134-6.
-    '''
+    """
     return 0.0523*Re*Pr**0.5*(fd/4.)**0.5
 
 
 def turbulent_Kawase_De(Re, Pr, fd):
-    r'''Calculates internal convection Nusselt number for turbulent flows
+    r"""Calculates internal convection Nusselt number for turbulent flows
     in pipe according to [2]_ as shown in [1]_.
 
     .. math::
@@ -1237,12 +1260,12 @@ def turbulent_Kawase_De(Re, Pr, fd):
        in Newtonian and Dilute Polymer Solutions Flowing through Rough Pipes.”
        International Journal of Heat and Mass Transfer 27, no. 1
        (January 1984): 140-42. doi:10.1016/0017-9310(84)90246-1.
-    '''
+    """
     return 0.0471*Re*Pr**0.5*(fd/4.)**0.5*(1.11 + 0.44*Pr**(-1/3.) - 0.7*Pr**(-1/6.))
 
 
 def turbulent_Bhatti_Shah(Re, Pr, fd, eD):
-    r'''Calculates internal convection Nusselt number for turbulent flows
+    r"""Calculates internal convection Nusselt number for turbulent flows
     in pipe according to [2]_ as shown in [1]_. The most widely used rough
     pipe turbulent correlation.
 
@@ -1287,45 +1310,45 @@ def turbulent_Bhatti_Shah(Re, Pr, fd, eD):
        convective heat transfer in ducts. In S. Kakaç, R. K. Shah, and W.
        Aung, editors, Handbook of Single-Phase Convective Heat Transfer,
        chapter 4. Wiley-Interscience, New York, 1987.
-    '''
+    """
     Re_e = Re*eD*(fd/8.)**0.5
     return Re*Pr*fd/8./(1 + (fd/8.)**0.5*(4.5*Re_e**0.2*Pr**0.5 - 8.48))
 
 
 conv_tube_laminar_methods = {
-    'Laminar - constant T': (laminar_T_const, ()),
-    'Laminar - constant Q': (laminar_Q_const, ()),
-    'Baehr-Stephan laminar thermal/velocity entry': (laminar_entry_thermal_Hausen, ('Re', 'Pr', 'L', 'Di')),
-     'Hausen laminar thermal entry': (laminar_entry_Seider_Tate, ('Re', 'Pr', 'L', 'Di')),
-    'Seider-Tate laminar thermal entry': (laminar_entry_Baehr_Stephan, ('Re', 'Pr', 'L', 'Di')),
+    "Laminar - constant T": (laminar_T_const, ()),
+    "Laminar - constant Q": (laminar_Q_const, ()),
+    "Baehr-Stephan laminar thermal/velocity entry": (laminar_entry_thermal_Hausen, ("Re", "Pr", "L", "Di")),
+     "Hausen laminar thermal entry": (laminar_entry_Seider_Tate, ("Re", "Pr", "L", "Di")),
+    "Seider-Tate laminar thermal entry": (laminar_entry_Baehr_Stephan, ("Re", "Pr", "L", "Di")),
 }
 
 conv_tube_turbulent_methods = {
-    'Churchill-Zajic': (turbulent_Churchill_Zajic, ('Re', 'Pr', 'fd')),
-    'Petukhov-Kirillov-Popov': (turbulent_Petukhov_Kirillov_Popov, ('Re', 'Pr', 'fd')),
-    'Gnielinski': (turbulent_Gnielinski, ('Re', 'Pr', 'fd')),
-    'Sandall': (turbulent_Sandall, ('Re', 'Pr', 'fd')),
-    'Webb': (turbulent_Webb, ('Re', 'Pr', 'fd')),
-    'Friend-Metzner': (turbulent_Friend_Metzner, ('Re', 'Pr', 'fd')),
-    'Prandtl': (turbulent_Prandtl, ('Re', 'Pr', 'fd')),
-    'von-Karman': (turbulent_von_Karman, ('Re', 'Pr', 'fd')),
-    'Martinelli': (turbulent_Martinelli, ('Re', 'Pr', 'fd')),
-    'Gowen-Smith': (turbulent_Gowen_Smith, ('Re', 'Pr', 'fd')),
-    'Kawase-Ulbrecht': (turbulent_Kawase_Ulbrecht, ('Re', 'Pr', 'fd')),
-    'Kawase-De': (turbulent_Kawase_De, ('Re', 'Pr', 'fd')),
+    "Churchill-Zajic": (turbulent_Churchill_Zajic, ("Re", "Pr", "fd")),
+    "Petukhov-Kirillov-Popov": (turbulent_Petukhov_Kirillov_Popov, ("Re", "Pr", "fd")),
+    "Gnielinski": (turbulent_Gnielinski, ("Re", "Pr", "fd")),
+    "Sandall": (turbulent_Sandall, ("Re", "Pr", "fd")),
+    "Webb": (turbulent_Webb, ("Re", "Pr", "fd")),
+    "Friend-Metzner": (turbulent_Friend_Metzner, ("Re", "Pr", "fd")),
+    "Prandtl": (turbulent_Prandtl, ("Re", "Pr", "fd")),
+    "von-Karman": (turbulent_von_Karman, ("Re", "Pr", "fd")),
+    "Martinelli": (turbulent_Martinelli, ("Re", "Pr", "fd")),
+    "Gowen-Smith": (turbulent_Gowen_Smith, ("Re", "Pr", "fd")),
+    "Kawase-Ulbrecht": (turbulent_Kawase_Ulbrecht, ("Re", "Pr", "fd")),
+    "Kawase-De": (turbulent_Kawase_De, ("Re", "Pr", "fd")),
 
-    'Dittus-Boelter': (turbulent_Dittus_Boelter, ('Re', 'Pr')),
-    'Sieder-Tate': (turbulent_Sieder_Tate, ('Re', 'Pr')),
-    'Drexel-McAdams': (turbulent_Drexel_McAdams, ('Re', 'Pr')),
-    'Colburn': (turbulent_Colburn, ('Re', 'Pr')),
-    'ESDU': (turbulent_ESDU, ('Re', 'Pr')),
-    'Gnielinski smooth low Pr': (turbulent_Gnielinski_smooth_1, ('Re', 'Pr')),
-    'Gnielinski smooth high Pr': (turbulent_Gnielinski_smooth_2, ('Re', 'Pr')),
+    "Dittus-Boelter": (turbulent_Dittus_Boelter, ("Re", "Pr")),
+    "Sieder-Tate": (turbulent_Sieder_Tate, ("Re", "Pr")),
+    "Drexel-McAdams": (turbulent_Drexel_McAdams, ("Re", "Pr")),
+    "Colburn": (turbulent_Colburn, ("Re", "Pr")),
+    "ESDU": (turbulent_ESDU, ("Re", "Pr")),
+    "Gnielinski smooth low Pr": (turbulent_Gnielinski_smooth_1, ("Re", "Pr")),
+    "Gnielinski smooth high Pr": (turbulent_Gnielinski_smooth_2, ("Re", "Pr")),
 
-    'Hausen': (turbulent_entry_Hausen, ('Re', 'Pr', 'Di', 'x')),
-    'Bhatti-Shah': (turbulent_Bhatti_Shah, ('Re', 'Pr', 'fd', 'eD')),
-    'Dipprey-Sabersky': (turbulent_Dipprey_Sabersky, ('Re', 'Pr', 'fd', 'eD')),
-    'Nunner': (turbulent_Nunner, ('Re', 'Pr', 'fd', 'fd_smooth')),
+    "Hausen": (turbulent_entry_Hausen, ("Re", "Pr", "Di", "x")),
+    "Bhatti-Shah": (turbulent_Bhatti_Shah, ("Re", "Pr", "fd", "eD")),
+    "Dipprey-Sabersky": (turbulent_Dipprey_Sabersky, ("Re", "Pr", "fd", "eD")),
+    "Nunner": (turbulent_Nunner, ("Re", "Pr", "fd", "fd_smooth")),
 }
 
 conv_tube_methods = conv_tube_laminar_methods.copy()
@@ -1334,7 +1357,7 @@ conv_tube_methods_list = list(conv_tube_methods.keys())
 
 def Nu_conv_internal_methods(Re, Pr, eD=0, Di=None, x=None, fd=None,
                              check_ranges=True):
-    r'''This function returns a list of correlation names for the calculation
+    r"""This function returns a list of correlation names for the calculation
     of heat transfer coefficient for internal convection inside a circular pipe.
 
     Parameters
@@ -1371,51 +1394,51 @@ def Nu_conv_internal_methods(Re, Pr, eD=0, Di=None, x=None, fd=None,
 
     >>> Nu_conv_internal_methods(Re=1E2, Pr=.7, x=.01, Di=.1)[0]
     'Baehr-Stephan laminar thermal/velocity entry'
-    '''
+    """
     methods = []
     if Re < LAMINAR_TRANSITION_PIPE or not check_ranges:
         # Laminar!
         if (Re is not None and Pr is not None and x is not None and Di is not None):
-            methods.append('Baehr-Stephan laminar thermal/velocity entry')
-            methods.append('Hausen laminar thermal entry')
-            methods.append('Seider-Tate laminar thermal entry')
+            methods.append("Baehr-Stephan laminar thermal/velocity entry")
+            methods.append("Hausen laminar thermal entry")
+            methods.append("Seider-Tate laminar thermal entry")
 
-        methods.append('Laminar - constant T')
-        methods.append('Laminar - constant Q')
+        methods.append("Laminar - constant T")
+        methods.append("Laminar - constant Q")
     if Re >= LAMINAR_TRANSITION_PIPE or not check_ranges:
         if (Re is not None and Pr is not None and Pr < 0.03) or not check_ranges:
             # Liquid metals
-            methods.append('Martinelli')
+            methods.append("Martinelli")
         if (Re is not None and Pr is not None and x is not None and Di is not None) or not check_ranges:
-            methods.append('Hausen')
+            methods.append("Hausen")
         if (Re is not None and Pr is not None and (eD is not None or fd is not None)) or not check_ranges:
             # handle correlations with roughness
-            methods.append('Churchill-Zajic')
-            methods.append('Petukhov-Kirillov-Popov')
-            methods.append('Gnielinski')
-            methods.append('Bhatti-Shah')
-            methods.append('Dipprey-Sabersky')
-            methods.append('Sandall')
-            methods.append('Webb')
-            methods.append('Friend-Metzner')
-            methods.append('Prandtl')
-            methods.append('von-Karman')
-            methods.append('Gowen-Smith')
-            methods.append('Kawase-Ulbrecht')
-            methods.append('Kawase-De')
-            methods.append('Nunner')
+            methods.append("Churchill-Zajic")
+            methods.append("Petukhov-Kirillov-Popov")
+            methods.append("Gnielinski")
+            methods.append("Bhatti-Shah")
+            methods.append("Dipprey-Sabersky")
+            methods.append("Sandall")
+            methods.append("Webb")
+            methods.append("Friend-Metzner")
+            methods.append("Prandtl")
+            methods.append("von-Karman")
+            methods.append("Gowen-Smith")
+            methods.append("Kawase-Ulbrecht")
+            methods.append("Kawase-De")
+            methods.append("Nunner")
         if (Re is not None and Pr is not None) or not check_ranges:
-            methods.append('Dittus-Boelter')
-            methods.append('Sieder-Tate')
-            methods.append('Drexel-McAdams')
-            methods.append('Colburn')
-            methods.append('ESDU')
-            methods.append('Gnielinski smooth low Pr') # 1
-            methods.append('Gnielinski smooth high Pr') # 2
+            methods.append("Dittus-Boelter")
+            methods.append("Sieder-Tate")
+            methods.append("Drexel-McAdams")
+            methods.append("Colburn")
+            methods.append("ESDU")
+            methods.append("Gnielinski smooth low Pr") # 1
+            methods.append("Gnielinski smooth high Pr") # 2
     return methods
 
 def Nu_conv_internal(Re, Pr, eD=0.0, Di=None, x=None, fd=None, Method=None):
-    r'''This function calculates the heat transfer coefficient for internal
+    r"""This function calculates the heat transfer coefficient for internal
     convection inside a circular pipe.
 
     Requires at a minimum a flow's Reynolds and Prandtl numbers `Re` and `Pr`.
@@ -1471,7 +1494,7 @@ def Nu_conv_internal(Re, Pr, eD=0.0, Di=None, x=None, fd=None, Method=None):
 
     >>> Nu_conv_internal(Re=1E2, Pr=.7, x=.01, Di=.1)
     14.91799128769779
-    '''
+    """
     if Method is None:
         Method2 = Nu_conv_internal_methods(Re=Re, Pr=Pr, eD=eD, Di=Di, x=x, fd=fd, check_ranges=True)[0]
     else:
@@ -1571,7 +1594,7 @@ def Nu_conv_internal(Re, Pr, eD=0.0, Di=None, x=None, fd=None, Method=None):
 ### Spiral heat exchangers
 
 def Morimoto_Hotta(Re, Pr, Dh, Rm):
-    r'''Calculates Nusselt number for flow inside a spiral heat exchanger of
+    r"""Calculates Nusselt number for flow inside a spiral heat exchanger of
     spiral mean diameter `Rm` and hydraulic diameter `Dh` according to [1]_,
     also as shown in [2]_ and [3]_.
 
@@ -1625,7 +1648,7 @@ def Morimoto_Hotta(Re, Pr, Dh, Rm):
        Spiral Heat Exchangers and Heat Pipes through Global Best Algorithm."
        Heat and Mass Transfer, July 7, 2016, 1-18.
        doi:10.1007/s00231-016-1861-y.
-    '''
+    """
     return 0.0239*(1. + 5.54*Dh/Rm)*Re**0.806*Pr**0.268
 
 
@@ -1634,7 +1657,7 @@ def Morimoto_Hotta(Re, Pr, Dh, Rm):
 
 
 def helical_turbulent_Nu_Mori_Nakayama(Re, Pr, Di, Dc):
-    r'''Calculates Nusselt number for a fluid flowing inside a curved
+    r"""Calculates Nusselt number for a fluid flowing inside a curved
     pipe such as a helical coil under turbulent conditions, using the method of
     Mori and Nakayama [1]_, also shown in [2]_ and [3]_.
 
@@ -1695,7 +1718,7 @@ def helical_turbulent_Nu_Mori_Nakayama(Re, Pr, Di, Dc):
        Transfer Coefficient in Helical Coils with Single Phase Flow."
        International Journal of Heat and Mass Transfer 89 (October 2015):
        522-38. doi:10.1016/j.ijheatmasstransfer.2015.05.069.
-    '''
+    """
     D_ratio = Di/Dc
     if Pr < 1:
         term1 = Pr/(26.2*(Pr**(2/3.) - 0.074))*Re**0.8*D_ratio**0.1
@@ -1707,7 +1730,7 @@ def helical_turbulent_Nu_Mori_Nakayama(Re, Pr, Di, Dc):
 
 
 def helical_turbulent_Nu_Schmidt(Re, Pr, Di, Dc):
-    r'''Calculates Nusselt number for a fluid flowing inside a curved
+    r"""Calculates Nusselt number for a fluid flowing inside a curved
     pipe such as a helical coil under turbulent conditions, using the method of
     Schmidt [1]_, also shown in [2]_, [3]_, and [4]_.
 
@@ -1766,7 +1789,7 @@ def helical_turbulent_Nu_Schmidt(Re, Pr, Di, Dc):
        522-38. doi:10.1016/j.ijheatmasstransfer.2015.05.069.
     .. [4] Rohsenow, Warren and James Hartnett and Young Cho. Handbook of Heat
        Transfer, 3E. New York: McGraw-Hill, 1998.
-    '''
+    """
     D_ratio = Di/Dc
     if Re <= 2.2E4:
         term = Re**(0.8 - 0.22*D_ratio**0.1)*Pr**(1/3.)
@@ -1776,7 +1799,7 @@ def helical_turbulent_Nu_Schmidt(Re, Pr, Di, Dc):
 
 
 def helical_turbulent_Nu_Xin_Ebadian(Re, Pr, Di, Dc):
-    r'''Calculates Nusselt number for a fluid flowing inside a curved
+    r"""Calculates Nusselt number for a fluid flowing inside a curved
     pipe such as a helical coil under turbulent conditions, using the method of
     Xin and Ebadian [1]_, also shown in [2]_ and [3]_.
 
@@ -1829,14 +1852,14 @@ def helical_turbulent_Nu_Xin_Ebadian(Re, Pr, Di, Dc):
        Transfer Coefficient in Helical Coils with Single Phase Flow."
        International Journal of Heat and Mass Transfer 89 (October 2015):
        522-38. doi:10.1016/j.ijheatmasstransfer.2015.05.069.
-    '''
+    """
     return 0.00619*Re**0.92*Pr**0.4*(1. + 3.455*Di/Dc)
 
 
 ### Rectangular Channels
 
 def Nu_laminar_rectangular_Shan_London(a_r):
-    r'''Calculates internal convection Nusselt number for laminar flows
+    r"""Calculates internal convection Nusselt number for laminar flows
     in a rectangular pipe of varying aspect ratio, as developed in [1]_.
 
     This model is derived assuming a constant wall heat flux from all sides.
@@ -1878,7 +1901,7 @@ def Nu_laminar_rectangular_Shan_London(a_r):
        of Analytical Solutions." STANFORD UNIV CA DEPT OF MECHANICAL
        ENGINEERING, STANFORD UNIV CA DEPT OF MECHANICAL ENGINEERING, November
        1971. http://www.dtic.mil/docs/citations/AD0736260.
-    '''
+    """
     return 8.235*(1 - 2.0421*a_r + 3.0853*a_r**2 - 2.4765*a_r**3
                   + 1.0578*a_r**4 - 0.1861*a_r**5)
 

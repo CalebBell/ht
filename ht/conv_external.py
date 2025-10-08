@@ -1,4 +1,4 @@
-'''Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
+"""Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
 Copyright (C) 2016, Caleb Bell <Caleb.Andrew.Bell@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -18,31 +18,36 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-'''
+"""
 
 from math import exp
 
-__all__ = ['Nu_cylinder_Zukauskas', 'Nu_cylinder_Churchill_Bernstein',
-           'Nu_cylinder_Sanitjai_Goldstein', 'Nu_cylinder_Fand',
-           'Nu_cylinder_Perkins_Leppert_1964',
-           'Nu_cylinder_Perkins_Leppert_1962', 'Nu_cylinder_Whitaker',
-           'Nu_cylinder_McAdams',
-           'Nu_external_cylinder',
-           'Nu_external_cylinder_methods',
-           'Nu_horizontal_plate_laminar_Baehr',
-           'Nu_horizontal_plate_laminar_Churchill_Ozoe',
-           'Nu_horizontal_plate_turbulent_Schlichting',
-           'Nu_horizontal_plate_turbulent_Kreith',
-           'Nu_external_horizontal_plate',
-           'Nu_external_horizontal_plate_methods',
-           'LAMINAR_TRANSITION_HORIZONTAL_PLATE', 'conv_horizontal_plate_methods',
-           ]
+__all__ = [
+    "LAMINAR_TRANSITION_HORIZONTAL_PLATE",
+    "Nu_cylinder_Churchill_Bernstein",
+    "Nu_cylinder_Fand",
+    "Nu_cylinder_McAdams",
+    "Nu_cylinder_Perkins_Leppert_1962",
+    "Nu_cylinder_Perkins_Leppert_1964",
+    "Nu_cylinder_Sanitjai_Goldstein",
+    "Nu_cylinder_Whitaker",
+    "Nu_cylinder_Zukauskas",
+    "Nu_external_cylinder",
+    "Nu_external_cylinder_methods",
+    "Nu_external_horizontal_plate",
+    "Nu_external_horizontal_plate_methods",
+    "Nu_horizontal_plate_laminar_Baehr",
+    "Nu_horizontal_plate_laminar_Churchill_Ozoe",
+    "Nu_horizontal_plate_turbulent_Kreith",
+    "Nu_horizontal_plate_turbulent_Schlichting",
+    "conv_horizontal_plate_methods",
+]
 
 ### Single Cylinders in Crossflow
 
 
 def Nu_cylinder_Zukauskas(Re, Pr, Prw=None):
-    r'''Calculates Nusselt number for crossflow across a single tube at a
+    r"""Calculates Nusselt number for crossflow across a single tube at a
     specified Re. Method from [1]_, also shown without modification in [2]_.
     This method applies to both the laminar and turbulent regimes.
 
@@ -100,7 +105,7 @@ def Nu_cylinder_Zukauskas(Re, Pr, Prw=None):
     .. [2] Bergman, Theodore L., Adrienne S. Lavine, Frank P. Incropera, and
        David P. DeWitt. Introduction to Heat Transfer. 6E. Hoboken, NJ:
        Wiley, 2011.
-    '''
+    """
     if Re <= 40:
         c, m = 0.75, 0.4
     elif Re < 1E3:
@@ -120,7 +125,7 @@ def Nu_cylinder_Zukauskas(Re, Pr, Prw=None):
 
 
 def Nu_cylinder_Churchill_Bernstein(Re, Pr):
-    r'''Calculates Nusselt number for crossflow across a single tube
+    r"""Calculates Nusselt number for crossflow across a single tube
     at a specified `Re` and `Pr`, both evaluated at the film temperature. No
     other wall correction is necessary for this formulation. Method is
     shown without modification in [2]_ and many other texts.
@@ -165,13 +170,13 @@ def Nu_cylinder_Churchill_Bernstein(Re, Pr):
     .. [2] Bergman, Theodore L., Adrienne S. Lavine, Frank P. Incropera, and
        David P. DeWitt. Introduction to Heat Transfer. 6E. Hoboken, NJ:
        Wiley, 2011.
-    '''
+    """
     return 0.3 + (0.62*Re**0.5*Pr**(1/3.))/(1 + (0.4/Pr)**(2/3.))**0.25*(
     1 +(Re/282000.)**(0.625))**0.8
 
 
 def Nu_cylinder_Sanitjai_Goldstein(Re, Pr):
-    r'''Calculates Nusselt number for crossflow across a single tube
+    r"""Calculates Nusselt number for crossflow across a single tube
     at a specified `Re` and `Pr`, both evaluated at the film temperature. No
     other wall correction is necessary for this formulation. Method is the
     most recent implemented here and believed to be more accurate than other
@@ -212,7 +217,7 @@ def Nu_cylinder_Sanitjai_Goldstein(Re, Pr):
        from a Circular Cylinder in Crossflow to Air and Liquids." International
        Journal of Heat and Mass Transfer 47, no. 22 (October 2004): 4795-4805.
        doi:10.1016/j.ijheatmasstransfer.2004.05.012.
-    '''
+    """
     # Interesting numerical issue:
     # The power of the  -5 exp Re term is moved inside the exponential to
     # avoid overflow errors
@@ -222,7 +227,7 @@ def Nu_cylinder_Sanitjai_Goldstein(Re, Pr):
 
 
 def Nu_cylinder_Fand(Re, Pr):
-    r'''Calculates Nusselt number for crossflow across a single tube
+    r"""Calculates Nusselt number for crossflow across a single tube
     at a specified `Re` and `Pr`, both evaluated at the film temperature. No
     other wall correction is necessary for this formulation. Also shown in
     [2]_.
@@ -264,12 +269,12 @@ def Nu_cylinder_Fand(Re, Pr):
        from a Circular Cylinder in Crossflow to Air and Liquids." International
        Journal of Heat and Mass Transfer 47, no. 22 (October 2004): 4795-4805.
        doi:10.1016/j.ijheatmasstransfer.2004.05.012.
-    '''
+    """
     return (0.35 + 0.34*Re**0.5 + 0.15*Re**0.58)*Pr**0.3
 
 
 def Nu_cylinder_McAdams(Re, Pr):
-    r'''Calculates Nusselt number for crossflow across a single tube
+    r"""Calculates Nusselt number for crossflow across a single tube
     at a specified `Re` and `Pr`, both evaluated at the film temperature. No
     other wall correction is necessary for this formulation. Also shown in
     [2]_.
@@ -307,12 +312,12 @@ def Nu_cylinder_McAdams(Re, Pr):
     .. [2] Fand, R. M. "Heat Transfer by Forced Convection from a Cylinder to
        Water in Crossflow." International Journal of Heat and Mass Transfer 8,
        no. 7 (July 1, 1965): 995-1010. doi:10.1016/0017-9310(65)90084-0.
-    '''
+    """
     return (0.35 + 0.56*Re**0.52)*Pr**0.3
 
 
 def Nu_cylinder_Whitaker(Re, Pr, mu=None, muw=None):
-    r'''Calculates Nusselt number for crossflow across a single tube as shown
+    r"""Calculates Nusselt number for crossflow across a single tube as shown
     in [1]_ at a specified `Re` and `Pr`, both evaluated at the free stream
     temperature. Recommends a viscosity exponent correction of 0.25, which is
     applied only if provided. Also shown in [2]_.
@@ -360,7 +365,7 @@ def Nu_cylinder_Whitaker(Re, Pr, mu=None, muw=None):
        from a Circular Cylinder in Crossflow to Air and Liquids." International
        Journal of Heat and Mass Transfer 47, no. 22 (October 2004): 4795-4805.
        doi:10.1016/j.ijheatmasstransfer.2004.05.012.
-    '''
+    """
     Nu = (0.4*Re**0.5 + 0.06*Re**(2/3.))*Pr**0.3
     if mu is not None and muw is not None:
         Nu *= (mu/muw)**0.25
@@ -368,7 +373,7 @@ def Nu_cylinder_Whitaker(Re, Pr, mu=None, muw=None):
 
 
 def Nu_cylinder_Perkins_Leppert_1962(Re, Pr, mu=None, muw=None):
-    r'''Calculates Nusselt number for crossflow across a single tube as shown
+    r"""Calculates Nusselt number for crossflow across a single tube as shown
     in [1]_ at a specified `Re` and `Pr`, both evaluated at the free stream
     temperature. Recommends a viscosity exponent correction of 0.25, which is
     applied only if provided. Also shown in [2]_.
@@ -414,7 +419,7 @@ def Nu_cylinder_Perkins_Leppert_1962(Re, Pr, mu=None, muw=None):
        from a Circular Cylinder in Crossflow to Air and Liquids." International
        Journal of Heat and Mass Transfer 47, no. 22 (October 2004): 4795-4805.
        doi:10.1016/j.ijheatmasstransfer.2004.05.012.
-    '''
+    """
     Nu = (0.30*Re**0.5 + 0.10*Re**0.67)*Pr**0.4
     if mu is not None and muw is not None:
         Nu *= (mu/muw)**0.25
@@ -422,7 +427,7 @@ def Nu_cylinder_Perkins_Leppert_1962(Re, Pr, mu=None, muw=None):
 
 
 def Nu_cylinder_Perkins_Leppert_1964(Re, Pr, mu=None, muw=None):
-    r'''Calculates Nusselt number for crossflow across a single tube as shown
+    r"""Calculates Nusselt number for crossflow across a single tube as shown
     in [1]_ at a specified `Re` and `Pr`, both evaluated at the free stream
     temperature. Recommends a viscosity exponent correction of 0.25, which is
     applied only if provided. Also shown in [2]_.
@@ -470,7 +475,7 @@ def Nu_cylinder_Perkins_Leppert_1964(Re, Pr, mu=None, muw=None):
        from a Circular Cylinder in Crossflow to Air and Liquids." International
        Journal of Heat and Mass Transfer 47, no. 22 (October 2004): 4795-4805.
        doi:10.1016/j.ijheatmasstransfer.2004.05.012.
-    '''
+    """
     Nu = (0.31*Re**0.5 + 0.11*Re**0.67)*Pr**0.4
     if mu is not None and muw is not None:
         Nu *= (mu/muw)**0.25
@@ -478,22 +483,22 @@ def Nu_cylinder_Perkins_Leppert_1964(Re, Pr, mu=None, muw=None):
 
 
 conv_external_cylinder_turbulent_methods = {
-    'Zukauskas': (Nu_cylinder_Zukauskas, ('Re', 'Pr', 'Prw')),
-    'Churchill-Bernstein': (Nu_cylinder_Churchill_Bernstein, ('Re', 'Pr')),
-    'Sanitjai-Goldstein': (Nu_cylinder_Sanitjai_Goldstein, ('Re', 'Pr')),
-    'Fand': (Nu_cylinder_Fand, ('Re', 'Pr')),
-    'McAdams': (Nu_cylinder_McAdams, ('Re', 'Pr')),
-    'Whitaker': (Nu_cylinder_Whitaker, ('Re', 'Pr', 'mu', 'muw')),
-    'Perkins-Leppert 1962': (Nu_cylinder_Perkins_Leppert_1962, ('Re', 'Pr', 'mu', 'muw')),
-    'Perkins-Leppert 1964': (Nu_cylinder_Perkins_Leppert_1964, ('Re', 'Pr', 'mu', 'muw')),
+    "Zukauskas": (Nu_cylinder_Zukauskas, ("Re", "Pr", "Prw")),
+    "Churchill-Bernstein": (Nu_cylinder_Churchill_Bernstein, ("Re", "Pr")),
+    "Sanitjai-Goldstein": (Nu_cylinder_Sanitjai_Goldstein, ("Re", "Pr")),
+    "Fand": (Nu_cylinder_Fand, ("Re", "Pr")),
+    "McAdams": (Nu_cylinder_McAdams, ("Re", "Pr")),
+    "Whitaker": (Nu_cylinder_Whitaker, ("Re", "Pr", "mu", "muw")),
+    "Perkins-Leppert 1962": (Nu_cylinder_Perkins_Leppert_1962, ("Re", "Pr", "mu", "muw")),
+    "Perkins-Leppert 1964": (Nu_cylinder_Perkins_Leppert_1964, ("Re", "Pr", "mu", "muw")),
 }
 
-conv_external_cylinder_turbulent_methods_ranked = ['Sanitjai-Goldstein',
-                                                   'Churchill-Bernstein',
-                                                   'Zukauskas', 'Whitaker',
-                                                   'Perkins-Leppert 1964',
-                                                   'McAdams',  'Fand',
-                                                   'Perkins-Leppert 1962']
+conv_external_cylinder_turbulent_methods_ranked = ["Sanitjai-Goldstein",
+                                                   "Churchill-Bernstein",
+                                                   "Zukauskas", "Whitaker",
+                                                   "Perkins-Leppert 1964",
+                                                   "McAdams",  "Fand",
+                                                   "Perkins-Leppert 1962"]
 
 conv_external_cylinder_methods = conv_external_cylinder_turbulent_methods.copy()
 
@@ -501,7 +506,7 @@ _missing_external_cylinder_method = f"Correlation name not recognized; the avail
 
 
 def Nu_external_cylinder_methods(Re, Pr, Prw=None, mu=None, muw=None, check_ranges=True):
-    r'''This function returns a list of correlation names for forced convection
+    r"""This function returns a list of correlation names for forced convection
     over an external cylinder.
 
     The preferred method 'Sanitjai-Goldstein'.
@@ -533,17 +538,17 @@ def Nu_external_cylinder_methods(Re, Pr, Prw=None, mu=None, muw=None, check_rang
     --------
     >>> Nu_external_cylinder_methods(0.72, 1E7)[0]
     'Sanitjai-Goldstein'
-    '''
-    methods = ['Sanitjai-Goldstein', 'Churchill-Bernstein', 'Fand', 'McAdams']
+    """
+    methods = ["Sanitjai-Goldstein", "Churchill-Bernstein", "Fand", "McAdams"]
     if Prw is not None:
-        methods.append('Zukauskas')
+        methods.append("Zukauskas")
     if mu is not None and muw is not None:
-        methods.extend(['Whitaker', 'Perkins-Leppert 1964', 'Perkins-Leppert 1962'])
+        methods.extend(["Whitaker", "Perkins-Leppert 1964", "Perkins-Leppert 1962"])
     return methods
 
 
 def Nu_external_cylinder(Re, Pr, Prw=None, mu=None, muw=None, Method=None):
-    r'''Calculates Nusselt number for crossflow across a single tube at a
+    r"""Calculates Nusselt number for crossflow across a single tube at a
     specified `Re` and `Pr` according to the specified method. Optional
     parameters are `Prw`, `mu`, and `muw`. This function has eight methods
     available. The 'Sanitjai-Goldstein' method is
@@ -590,25 +595,25 @@ def Nu_external_cylinder(Re, Pr, Prw=None, mu=None, muw=None, Method=None):
     --------
     >>> Nu_external_cylinder(6071, 0.7)
     40.38327083519522
-    '''
-    Method2 = 'Sanitjai-Goldstein' if Method is None else Method
+    """
+    Method2 = "Sanitjai-Goldstein" if Method is None else Method
 
-    if Method2 == 'Sanitjai-Goldstein':
+    if Method2 == "Sanitjai-Goldstein":
         return Nu_cylinder_Sanitjai_Goldstein(Re=Re, Pr=Pr)
-    elif Method2 == 'Churchill-Bernstein':
+    elif Method2 == "Churchill-Bernstein":
         return Nu_cylinder_Sanitjai_Goldstein(Re=Re, Pr=Pr)
-    elif Method2 == 'Fand':
+    elif Method2 == "Fand":
         return Nu_cylinder_Fand(Re=Re, Pr=Pr)
-    elif Method2 == 'McAdams':
+    elif Method2 == "McAdams":
         return Nu_cylinder_McAdams(Re=Re, Pr=Pr)
 
-    elif Method2 == 'Zukauskas':
+    elif Method2 == "Zukauskas":
         return Nu_cylinder_Zukauskas(Re=Re, Pr=Pr, Prw=Prw)
-    elif Method2 == 'Whitaker':
+    elif Method2 == "Whitaker":
         return Nu_cylinder_Whitaker(Re=Re, Pr=Pr, mu=mu, muw=muw)
-    elif Method2 == 'Perkins-Leppert 1962':
+    elif Method2 == "Perkins-Leppert 1962":
         return Nu_cylinder_Perkins_Leppert_1962(Re=Re, Pr=Pr, mu=mu, muw=muw)
-    elif Method2 == 'Perkins-Leppert 1964':
+    elif Method2 == "Perkins-Leppert 1964":
         return Nu_cylinder_Perkins_Leppert_1964(Re=Re, Pr=Pr, mu=mu, muw=muw)
     else:
 
@@ -617,7 +622,7 @@ def Nu_external_cylinder(Re, Pr, Prw=None, mu=None, muw=None, Method=None):
 # Horizontal Plate in crossflow
 
 def Nu_horizontal_plate_laminar_Baehr(Re, Pr):
-    r'''Calculates Nusselt number for laminar flow across an **isothermal**
+    r"""Calculates Nusselt number for laminar flow across an **isothermal**
     flat plate at a specified `Re` and `Pr`, both evaluated at the bulk
     temperature. No other wall correction is necessary for this formulation.
     Four different equations are used for different Prandtl number ranges.
@@ -677,7 +682,7 @@ def Nu_horizontal_plate_laminar_Baehr(Re, Pr):
        Hoboken, NJ: Wiley, 2011.
     .. [3] Gesellschaft, V. D. I., ed. VDI Heat Atlas. 2nd ed. 2010 edition.
        Berlin ; New York: Springer, 2010.
-    '''
+    """
     if Pr < 0.005:
         return 1.128*(Re*Pr)**0.5
     elif Pr < 0.05:
@@ -690,7 +695,7 @@ def Nu_horizontal_plate_laminar_Baehr(Re, Pr):
 
 
 def Nu_horizontal_plate_laminar_Churchill_Ozoe(Re, Pr):
-    r'''Calculates Nusselt number for laminar flow across an **isothermal**
+    r"""Calculates Nusselt number for laminar flow across an **isothermal**
     flat plate at a specified `Re` and `Pr`, both evaluated at the bulk
     temperature. No other wall correction is necessary for this formulation.
     A single equation covers all Prandtl number ranges.
@@ -732,13 +737,13 @@ def Nu_horizontal_plate_laminar_Churchill_Ozoe(Re, Pr):
     .. [2] Bergman, Theodore L., Adrienne S. Lavine, Frank P. Incropera, and
        David P. DeWitt. Introduction to Heat Transfer. 6E.
        Hoboken, NJ: Wiley, 2011.
-    '''
+    """
     return (0.6774*Re**(0.5)*Pr**(1/3.)
             *(1.0 + (0.0468/Pr)**(2.0/3.0))**-0.25 )
 
 
 def Nu_horizontal_plate_turbulent_Schlichting(Re, Pr):
-    r'''Calculates Nusselt number for turbulent flow across an **isothermal**
+    r"""Calculates Nusselt number for turbulent flow across an **isothermal**
     flat plate at a specified `Re` and `Pr`, both evaluated at the bulk
     temperature. The formulation of Schlichting is used, which adds a
     surface friction term to a formulation from Petukhov and Popov.
@@ -777,14 +782,14 @@ def Nu_horizontal_plate_turbulent_Schlichting(Re, Pr):
        http://www.springer.com/de/book/9783662075548.
     .. [2] Gesellschaft, V. D. I., ed. VDI Heat Atlas. 2nd ed. 2010 edition.
        Berlin ; New York: Springer, 2010.
-    '''
+    """
     num = 0.037*Re**0.8*Pr
     den = (1.0 + 2.443*Re**-0.1*(Pr**(2.0/3.0) - 1.0))
     return num/den
 
 
 def Nu_horizontal_plate_turbulent_Kreith(Re, Pr):
-    r'''Calculates Nusselt number for turbulent flow across an **isothermal**
+    r"""Calculates Nusselt number for turbulent flow across an **isothermal**
     flat plate at a specified `Re` and `Pr`, both evaluated at the bulk
     temperature. The formulation of Kreith is used.
 
@@ -818,18 +823,18 @@ def Nu_horizontal_plate_turbulent_Kreith(Re, Pr):
     ----------
     .. [1] Kreith, Frank, Raj Manglik, and Mark Bohn. Principles of Heat
        Transfer. Cengage, 2010.
-    '''
+    """
     return 0.036*Pr**(1.0/3.0)*Re**0.8
 
 
 conv_horizontal_plate_laminar_methods = {
-    'Baehr': (Nu_horizontal_plate_laminar_Baehr, ('Re', 'Pr')),
-    'Churchill Ozoe': (Nu_horizontal_plate_laminar_Churchill_Ozoe, ('Re', 'Pr')),
+    "Baehr": (Nu_horizontal_plate_laminar_Baehr, ("Re", "Pr")),
+    "Churchill Ozoe": (Nu_horizontal_plate_laminar_Churchill_Ozoe, ("Re", "Pr")),
 }
 
 conv_horizontal_plate_turbulent_methods = {
-    'Schlichting': (Nu_horizontal_plate_turbulent_Schlichting, ('Re', 'Pr')),
-    'Kreith': (Nu_horizontal_plate_turbulent_Kreith, ('Re', 'Pr')),
+    "Schlichting": (Nu_horizontal_plate_turbulent_Schlichting, ("Re", "Pr")),
+    "Kreith": (Nu_horizontal_plate_turbulent_Kreith, ("Re", "Pr")),
 }
 
 conv_horizontal_plate_methods = conv_horizontal_plate_laminar_methods.copy()
@@ -839,7 +844,7 @@ LAMINAR_TRANSITION_HORIZONTAL_PLATE = 5E5
 
 def Nu_external_horizontal_plate_methods(Re, Pr, L=None, x=None,
                                    check_ranges=True):
-    r'''Returns a list of correlation names for calculating Nusselt number for
+    r"""Returns a list of correlation names for calculating Nusselt number for
     forced convection across a horizontal plate, supporting both laminar
     and turbulent regimes.
 
@@ -867,21 +872,21 @@ def Nu_external_horizontal_plate_methods(Re, Pr, L=None, x=None,
     --------
     >>> Nu_external_horizontal_plate_methods(Re=1e7, Pr=.7)[0]
     'Schlichting'
-    '''
+    """
     turbulent = Re >= LAMINAR_TRANSITION_HORIZONTAL_PLATE
     if check_ranges:
         if turbulent:
-            return ['Schlichting', 'Kreith']
+            return ["Schlichting", "Kreith"]
         else:
-            return ['Baehr', 'Churchill Ozoe']
+            return ["Baehr", "Churchill Ozoe"]
     else:
-        return ['Baehr', 'Churchill Ozoe', 'Schlichting', 'Kreith']
+        return ["Baehr", "Churchill Ozoe", "Schlichting", "Kreith"]
 
 def Nu_external_horizontal_plate(Re, Pr, L=None, x=None, Method=None,
-                                 laminar_method='Baehr',
-                                 turbulent_method='Schlichting',
+                                 laminar_method="Baehr",
+                                 turbulent_method="Schlichting",
                                  Re_transition=LAMINAR_TRANSITION_HORIZONTAL_PLATE):
-    r'''This function calculates the heat transfer coefficient for external
+    r"""This function calculates the heat transfer coefficient for external
     forced convection along a horizontal plate.
 
     Requires at a minimum a flow's Reynolds and Prandtl numbers `Re` and `Pr`.
@@ -926,20 +931,20 @@ def Nu_external_horizontal_plate(Re, Pr, L=None, x=None, Method=None,
 
     >>> Nu_external_horizontal_plate(Re=1E7, Pr=.7)
     11496.952599969829
-    '''
+    """
     turbulent = not Re < Re_transition
     if Method is None:
         Method2 = turbulent_method if turbulent else laminar_method
     else:
         Method2 = Method
 
-    if Method2 == 'Baehr':
+    if Method2 == "Baehr":
         return Nu_horizontal_plate_laminar_Baehr(Re=Re, Pr=Pr)
-    elif Method2 == 'Churchill Ozoe':
+    elif Method2 == "Churchill Ozoe":
         return Nu_horizontal_plate_laminar_Churchill_Ozoe(Re=Re, Pr=Pr)
-    elif Method2 == 'Schlichting':
+    elif Method2 == "Schlichting":
         return Nu_horizontal_plate_turbulent_Schlichting(Re=Re, Pr=Pr)
-    elif Method2 == 'Kreith':
+    elif Method2 == "Kreith":
         return Nu_horizontal_plate_turbulent_Kreith(Re=Re, Pr=Pr)
     else:
         raise ValueError("Correlation name not recognized; see the "

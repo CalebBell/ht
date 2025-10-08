@@ -1,4 +1,4 @@
-'''Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
+"""Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
 Copyright (C) 2017, Caleb Bell <Caleb.Andrew.Bell@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -18,7 +18,7 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-'''
+"""
 
 from math import radians
 
@@ -26,13 +26,17 @@ from fluids.constants import g
 from fluids.core import Bond, Prandtl, thermal_diffusivity
 from fluids.two_phase_voidage import Lockhart_Martinelli_Xtt
 
-__all__ = ['h_boiling_Amalfi', 'h_boiling_Lee_Kang_Kim',
-           'h_boiling_Han_Lee_Kim', 'h_boiling_Huang_Sheer',
-           'h_boiling_Yan_Lin']
+__all__ = [
+    "h_boiling_Amalfi",
+    "h_boiling_Han_Lee_Kim",
+    "h_boiling_Huang_Sheer",
+    "h_boiling_Lee_Kang_Kim",
+    "h_boiling_Yan_Lin",
+]
 
 def h_boiling_Amalfi(m, x, Dh, rhol, rhog, mul, mug, kl, Hvap, sigma, q,
                      A_channel_flow, chevron_angle=45.0):
-    r'''Calculates the two-phase boiling heat transfer coefficient of a
+    r"""Calculates the two-phase boiling heat transfer coefficient of a
     liquid and gas flowing inside a plate and frame heat exchanger, as
     developed in [1]_ from a wide range of existing correlations and data sets.
     Expected to be the most accurate correlation currently available.
@@ -113,7 +117,7 @@ def h_boiling_Amalfi(m, x, Dh, rhol, rhog, mul, mug, kl, Hvap, sigma, q,
        Part 2: Comparison of Literature Methods to Database and New Prediction
        Methods." International Journal of Refrigeration 61 (January 2016):
        185-203. doi:10.1016/j.ijrefrig.2015.07.009.
-    '''
+    """
     chevron_angle_max = 45.
     beta_s = chevron_angle/chevron_angle_max
 
@@ -139,7 +143,7 @@ def h_boiling_Amalfi(m, x, Dh, rhol, rhog, mul, mug, kl, Hvap, sigma, q,
 
 def h_boiling_Lee_Kang_Kim(m, x, D_eq, rhol, rhog, mul, mug, kl, Hvap, q,
                            A_channel_flow):
-    r'''Calculates the two-phase boiling heat transfer coefficient of a
+    r"""Calculates the two-phase boiling heat transfer coefficient of a
     liquid and gas flowing inside a plate and frame heat exchanger, as
     shown in [1]_ and reviewed in [2]_.
 
@@ -220,7 +224,7 @@ def h_boiling_Lee_Kang_Kim(m, x, D_eq, rhol, rhog, mul, mug, kl, Hvap, q,
        Part 1: Review and Experimental Database." International Journal of
        Refrigeration 61 (January 2016): 166-84.
        doi:10.1016/j.ijrefrig.2015.07.010.
-    '''
+    """
     G = m/A_channel_flow
     Bo = q/(G*Hvap)
     Re_ratio = x/(1. - x)*mul/mug
@@ -234,7 +238,7 @@ def h_boiling_Lee_Kang_Kim(m, x, D_eq, rhol, rhog, mul, mug, kl, Hvap, q,
 
 def h_boiling_Han_Lee_Kim(m, x, Dh, rhol, rhog, mul, kl, Hvap, Cpl, q,
                           A_channel_flow, wavelength, chevron_angle=45.0):
-    r'''Calculates the two-phase boiling heat transfer coefficient of a
+    r"""Calculates the two-phase boiling heat transfer coefficient of a
     liquid and gas flowing inside a plate and frame heat exchanger, as
     developed in [1]_ from experiments with three plate exchangers and the
     working fluids R410A and R22. A well-documented and tested correlation,
@@ -349,7 +353,7 @@ def h_boiling_Han_Lee_Kim(m, x, Dh, rhol, rhog, mul, kl, Hvap, Cpl, q,
     .. [6] Huang, Jianchang. "Performance Analysis of Plate Heat Exchangers
        Used as Refrigerant Evaporators," 2011. Thesis.
        http://wiredspace.wits.ac.za/handle/10539/9779
-    '''
+    """
     chevron_angle = radians(chevron_angle)
     G = m/A_channel_flow # For once, clearly defined in the publication
     G_eq = G*((1. - x) + x*(rhol/rhog)**0.5)
@@ -363,7 +367,7 @@ def h_boiling_Han_Lee_Kim(m, x, Dh, rhol, rhog, mul, kl, Hvap, Cpl, q,
 
 def h_boiling_Huang_Sheer(rhol, rhog, mul, kl, Hvap, sigma, Cpl, q, Tsat,
                           angle=35.):
-    r'''Calculates the two-phase boiling heat transfer coefficient of a
+    r"""Calculates the two-phase boiling heat transfer coefficient of a
     liquid and gas flowing inside a plate and frame heat exchanger, as
     developed in [1]_ and again in the thesis [2]_. Depends on the properties
     of the fluid and not the heat exchanger's geometry.
@@ -460,7 +464,7 @@ def h_boiling_Huang_Sheer(rhol, rhog, mul, kl, Hvap, sigma, Cpl, q, Tsat,
        Correlations for Heat Transfer and Pressure Drop for Evaporation and
        Condensation in Plate Heat Exchangers." International Journal of
        Refrigeration 65 (May 2016): 12-26. doi:10.1016/j.ijrefrig.2015.11.013.
-    '''
+    """
     do = 0.0146*angle*(2.*sigma/(g*(rhol - rhog)))**0.5
     Prl = Prandtl(Cp=Cpl, mu=mul, k=kl)
     alpha_l = thermal_diffusivity(k=kl, rho=rhol, Cp=Cpl)
@@ -470,7 +474,7 @@ def h_boiling_Huang_Sheer(rhol, rhog, mul, kl, Hvap, sigma, Cpl, q, Tsat,
 
 def h_boiling_Yan_Lin(m, x, Dh, rhol, rhog, mul, kl, Hvap, Cpl, q,
                       A_channel_flow):
-    r'''Calculates the two-phase boiling heat transfer coefficient of a
+    r"""Calculates the two-phase boiling heat transfer coefficient of a
     liquid and gas flowing inside a plate and frame heat exchanger, as
     developed in [1]_. Reviewed in [2]_, [3]_, [4]_, and [5]_.
 
@@ -558,7 +562,7 @@ def h_boiling_Yan_Lin(m, x, Dh, rhol, rhog, mul, kl, Hvap, Cpl, q,
     .. [5] Huang, Jianchang. "Performance Analysis of Plate Heat Exchangers
        Used as Refrigerant Evaporators," 2011. Thesis.
        http://wiredspace.wits.ac.za/handle/10539/9779
-    '''
+    """
     G = m/A_channel_flow
     G_eq = G*((1. - x) + x*(rhol/rhog)**0.5)
     Re_eq = G_eq*Dh/mul

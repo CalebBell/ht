@@ -1,4 +1,4 @@
-'''Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
+"""Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
 Copyright (C) 2016, Caleb Bell <Caleb.Andrew.Bell@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -18,14 +18,18 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-'''
+"""
 
 
-__all__ = ['Nu_packed_bed_Gnielinski', 'Nu_Wakao_Kagei', 'Nu_Achenbach',
-           'Nu_KTA']
+__all__ = [
+    "Nu_Achenbach",
+    "Nu_KTA",
+    "Nu_Wakao_Kagei",
+    "Nu_packed_bed_Gnielinski",
+]
 
 def Nu_packed_bed_Gnielinski(dp, voidage, vs, rho, mu, Pr, fa=None):
-    r'''Calculates Nusselt number of a fluid passing over a bed of particles
+    r"""Calculates Nusselt number of a fluid passing over a bed of particles
     using a correlation shown in [3]_ and cited as from [1]_ and [2]_. Likely
     the best available model as the author of [1]_ is the same as [2]_ and
     [3]_.
@@ -95,7 +99,7 @@ def Nu_packed_bed_Gnielinski(dp, voidage, vs, rho, mu, Pr, fa=None):
        durchstomten ruhenden Schuttungen". Verfahrenstechnik 16(1): 36-39
     .. [3] Gnielinski, V. in G esellschaft, V. D. I., ed. VDI Heat Atlas.
        2nd ed. 2010 edition. Berlin; New York: Springer, 2010.
-    '''
+    """
     Re = rho*vs*dp/mu/voidage
     Nu_lam = 0.664*Re**0.5*Pr**(1/3.)
     Nu_turb = 0.037*Re**0.8*Pr/(1 + 2.443*Re**-0.1*(Pr**(2/3.)-1))
@@ -106,7 +110,7 @@ def Nu_packed_bed_Gnielinski(dp, voidage, vs, rho, mu, Pr, fa=None):
 
 
 def Nu_Wakao_Kagei(Re, Pr):
-    r'''Calculates Nusselt number of a fluid passing over a bed of particles
+    r"""Calculates Nusselt number of a fluid passing over a bed of particles
     using a correlation shown in [1]_ and also cited in the review of [2]_.
     Relatively rough, as it has no dependence on voidage.
 
@@ -142,12 +146,12 @@ def Nu_Wakao_Kagei(Re, Pr):
        of Convective Heat Transport in a Packed Pebble-Bed Reactor." Nuclear
        Engineering and Design 284 (April 1, 2015): 143-52.
        doi:10.1016/j.nucengdes.2014.11.041.
-    '''
+    """
     return 2 + 1.1*Pr**(1/3.)*Re**0.6
 
 
 def Nu_Achenbach(Re, Pr, voidage):
-    r'''Calculates Nusselt number of a fluid passing over a bed of particles
+    r"""Calculates Nusselt number of a fluid passing over a bed of particles
     using a correlation shown in [1]_ and also cited in the review of [2]_.
 
     .. math::
@@ -187,12 +191,12 @@ def Nu_Achenbach(Re, Pr, voidage):
        of Convective Heat Transport in a Packed Pebble-Bed Reactor." Nuclear
        Engineering and Design 284 (April 1, 2015): 143-52.
        doi:10.1016/j.nucengdes.2014.11.041.
-    '''
+    """
     return ((1.18*Re**0.58)**4 + (0.23*(Re/(1-voidage))**0.75)**4)**0.25
 
 
 def Nu_KTA(Re, Pr, voidage):
-    r'''Calculates Nusselt number of a fluid passing over a bed of particles
+    r"""Calculates Nusselt number of a fluid passing over a bed of particles
     using a correlation shown in [1]_ and also cited in the review of [2]_.
 
     .. math::
@@ -234,6 +238,6 @@ def Nu_KTA(Re, Pr, voidage):
        of Convective Heat Transport in a Packed Pebble-Bed Reactor." Nuclear
        Engineering and Design 284 (April 1, 2015): 143-52.
        doi:10.1016/j.nucengdes.2014.11.041.
-    '''
+    """
     return (1.27*Pr**(1/3.)*Re**0.36/voidage**1.18
             + 0.033*Pr**0.5/voidage**1.07*Re**0.86)

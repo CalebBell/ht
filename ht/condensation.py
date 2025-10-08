@@ -1,4 +1,4 @@
-'''Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
+"""Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
 Copyright (C) 2016, Caleb Bell <Caleb.Andrew.Bell@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -18,7 +18,7 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-'''
+"""
 
 from math import pi, sin
 
@@ -27,12 +27,18 @@ from fluids.core import Prandtl, Reynolds
 
 from ht.conv_internal import turbulent_Dittus_Boelter
 
-__all__ = ['Boyko_Kruzhilin', 'Nusselt_laminar', 'h_kinetic',
-           'Akers_Deans_Crosser', 'Cavallini_Smith_Zecchin', 'Shah']
+__all__ = [
+    "Akers_Deans_Crosser",
+    "Boyko_Kruzhilin",
+    "Cavallini_Smith_Zecchin",
+    "Nusselt_laminar",
+    "Shah",
+    "h_kinetic",
+]
 
 
 def Nusselt_laminar(Tsat, Tw, rhog, rhol, kl, mul, Hvap, L, angle=90.):
-    r'''Calculates heat transfer coefficient for laminar film condensation
+    r"""Calculates heat transfer coefficient for laminar film condensation
     of a pure chemical on a flat plate, as presented in [1]_ according to an
     analysis performed by Nusselt in 1916.
 
@@ -86,13 +92,13 @@ def Nusselt_laminar(Tsat, Tw, rhog, rhol, kl, mul, Hvap, L, angle=90.):
     ----------
     .. [1] Hewitt, G. L. Shires T. Reg Bott G. F., George L. Shires, and
        T. R. Bott. Process Heat Transfer. 1E. Boca Raton: CRC Press, 1994.
-    '''
+    """
     return 2.*2.**0.5/3.*(kl**3*rhol*(rhol - rhog)*g*sin(angle/180.*pi)
                           *Hvap/(mul*(Tsat - Tw)*L))**0.25
 
 
 def Boyko_Kruzhilin(m, rhog, rhol, kl, mul, Cpl, D, x):
-    r'''Calculates heat transfer coefficient for condensation
+    r"""Calculates heat transfer coefficient for condensation
     of a pure chemical inside a vertical tube or tube bundle, as presented in
     [2]_ according to [1]_.
 
@@ -147,7 +153,7 @@ def Boyko_Kruzhilin(m, rhog, rhol, kl, mul, Cpl, D, x):
        no. 3 (March 1, 1967): 361-73. doi:10.1016/0017-9310(67)90152-4.
     .. [2] Hewitt, G. L. Shires T. Reg Bott G. F., George L. Shires, and
        T. R. Bott. Process Heat Transfer. 1E. Boca Raton: CRC Press, 1994.
-    '''
+    """
     Vlo = m/rhol/(pi/4.*D**2)
     Relo = rhol*Vlo*D/mul
     Prl = mul*Cpl/kl
@@ -156,7 +162,7 @@ def Boyko_Kruzhilin(m, rhog, rhol, kl, mul, Cpl, D, x):
 
 
 def Akers_Deans_Crosser(m, rhog, rhol, kl, mul, Cpl, D, x):
-    r'''Calculates heat transfer coefficient for condensation
+    r"""Calculates heat transfer coefficient for condensation
     of a pure chemical inside a vertical tube or tube bundle, as presented in
     [2]_ according to [1]_.
 
@@ -215,7 +221,7 @@ def Akers_Deans_Crosser(m, rhog, rhol, kl, mul, Cpl, D, x):
        Ser. No. 29 (January 1, 1959).
     .. [2] Kakaç, Sadik, ed. Boilers, Evaporators, and Condensers. 1st.
        Wiley-Interscience, 1991.
-    '''
+    """
     G = m/(pi/4*D**2)
     Ge = G*((1-x) + x*(rhol/rhog)**0.5)
     Ree = D*Ge/mul
@@ -231,7 +237,7 @@ def Akers_Deans_Crosser(m, rhog, rhol, kl, mul, Cpl, D, x):
 
 
 def h_kinetic(T, P, MW, Hvap, f=1.0):
-    r'''Calculates heat transfer coefficient for condensation
+    r"""Calculates heat transfer coefficient for condensation
     of a pure chemical inside a vertical tube or tube bundle, as presented in
     [2]_ according to [1]_.
 
@@ -282,12 +288,12 @@ def h_kinetic(T, P, MW, Hvap, f=1.0):
     .. [3] Stephan, Karl. Heat Transfer in Condensation and Boiling. Translated
        by C. V. Green. Softcover reprint of the original 1st ed. 1992 edition.
        Berlin; New York: Springer, 2013.
-    '''
+    """
     return (2*f)/(2-f)*(MW/(1000*2*pi*R*T))**0.5*(Hvap**2*P*MW)/(1000*R*T**2)
 
 
 def Cavallini_Smith_Zecchin(m, x, D, rhol, rhog, mul, mug, kl, Cpl):
-    r'''Calculates heat transfer coefficient for condensation
+    r"""Calculates heat transfer coefficient for condensation
     of a fluid inside a tube, as presented in
     [1]_, also given in [2]_ and [3]_.
 
@@ -350,7 +356,7 @@ def Cavallini_Smith_Zecchin(m, x, D, rhol, rhog, mul, mug, kl, Cpl):
        Flow of R134a inside a Vertical Smooth Tube Using Artificial
        Intelligence Algorithms." Journal of Mechanical Science and Technology
        25, no. 10 (October 12, 2011): 2683-2701. doi:10.1007/s12206-011-0618-2.
-    '''
+    """
     Prl = Prandtl(Cp=Cpl, mu=mul, k=kl)
     Vl = m*(1-x)/(rhol*pi/4*D**2)
     Vg = m*x/(rhog*pi/4*D**2)
@@ -369,7 +375,7 @@ def Cavallini_Smith_Zecchin(m, x, D, rhol, rhog, mul, mug, kl, Cpl):
 
 
 def Shah(m, x, D, rhol, mul, kl, Cpl, P, Pc):
-    r'''Calculates heat transfer coefficient for condensation
+    r"""Calculates heat transfer coefficient for condensation
     of a fluid inside a tube, as presented in [1]_ and again by the same
     author in [2]_; also given in [3]_. Requires no properties of the gas.
     Uses the Dittus-Boelter correlation for single phase heat transfer
@@ -425,7 +431,7 @@ def Shah(m, x, D, rhol, mul, kl, Cpl, P, Pc):
        3, pp. 1086-1100, 1981.
     .. [3] Kakaç, Sadik, ed. Boilers, Evaporators, and Condensers. 1st.
        Wiley-Interscience, 1991.
-    '''
+    """
     VL = m/(rhol*pi/4*D**2)
     ReL = Reynolds(V=VL, D=D, rho=rhol, mu=mul)
     Prl = Prandtl(Cp=Cpl, k=kl, mu=mul)

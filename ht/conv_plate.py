@@ -1,4 +1,4 @@
-'''Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
+"""Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
 Copyright (C) 2018, Caleb Bell <Caleb.Andrew.Bell@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -18,14 +18,18 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-'''
+"""
 
 from math import pi, radians, sin
 
 from fluids.friction import Kumar_beta_list, friction_plate_Martin_1999, friction_plate_Martin_VDI
 
-__all__ = ['Nu_plate_Kumar', 'Nu_plate_Martin', 'Nu_plate_Muley_Manglik',
-           'Nu_plate_Khan_Khan']
+__all__ = [
+    "Nu_plate_Khan_Khan",
+    "Nu_plate_Kumar",
+    "Nu_plate_Martin",
+    "Nu_plate_Muley_Manglik",
+]
 
 
 Kumar_ms = [[0.349, 0.663, 0.663],
@@ -48,7 +52,7 @@ Kumar_Nu_Res = [[10.0, 10.0],
 
 
 def Nu_plate_Kumar(Re, Pr, chevron_angle, mu=None, mu_wall=None):
-    r'''Calculates Nusselt number for single-phase flow in a
+    r"""Calculates Nusselt number for single-phase flow in a
     **well-designed** Chevron-style plate heat exchanger according to [1]_.
     The data is believed to have been developed by APV International Limited,
     since acquired by SPX Corporation. This uses a curve fit of that data
@@ -120,7 +124,7 @@ def Nu_plate_Kumar(Re, Pr, chevron_angle, mu=None, mu_wall=None):
        Transfer and Pressure Drop Correlations for Refrigerant Evaporators."
        Heat Transfer Engineering 24, no. 5 (September 1, 2003): 3-16.
        doi:10.1080/01457630304056.
-    '''
+    """
     # Uses the standard diameter as characteristic diameter
     beta_list_len = len(Kumar_beta_list)
 
@@ -146,8 +150,8 @@ def Nu_plate_Kumar(Re, Pr, chevron_angle, mu=None, mu_wall=None):
     return Nu
 
 
-def Nu_plate_Martin(Re, Pr, chevron_angle, variant='1999'):
-    r'''Calculates Nusselt number for single-phase flow in a
+def Nu_plate_Martin(Re, Pr, chevron_angle, variant="1999"):
+    r"""Calculates Nusselt number for single-phase flow in a
     Chevron-style plate heat exchanger according to [1]_, also shown in [2]_
     and [3]_.
 
@@ -212,10 +216,10 @@ def Nu_plate_Martin(Re, Pr, chevron_angle, variant='1999'):
        https://publikationen.bibliothek.kit.edu/1000034866.
     .. [3] Gesellschaft, V. D. I., ed. VDI Heat Atlas. 2nd edition.
        Berlin; New York:: Springer, 2010.
-    '''
-    if variant == '1999':
+    """
+    if variant == "1999":
         fd = friction_plate_Martin_1999(Re, chevron_angle)
-    elif variant == 'VDI':
+    elif variant == "VDI":
         fd = friction_plate_Martin_VDI(Re, chevron_angle)
     else:
         raise ValueError("Supported friction factor correlations are Martin's"
@@ -229,7 +233,7 @@ def Nu_plate_Martin(Re, Pr, chevron_angle, variant='1999'):
 
 
 def Nu_plate_Muley_Manglik(Re, Pr, chevron_angle, plate_enlargement_factor):
-    r'''Calculates Nusselt number for single-phase flow in a
+    r"""Calculates Nusselt number for single-phase flow in a
     Chevron-style plate heat exchanger according to [1]_, also shown in [2]_.
 
     .. math::
@@ -289,7 +293,7 @@ def Nu_plate_Muley_Manglik(Re, Pr, chevron_angle, plate_enlargement_factor):
     .. [2] Palm, Björn, and Joachim Claesson. "Plate Heat Exchangers:
        Calculation Methods for Single- and Two-Phase Flow (Keynote)," January
        1, 2005, 103-13. https://doi.org/10.1115/ICMM2005-75092.
-    '''
+    """
     beta, phi = chevron_angle, plate_enlargement_factor
     t1 = (0.2668 - 0.006967*beta + 7.244E-5*beta**2)
     #t2 = (20.78 - 50.94*phi + 41.16*phi**2 - 10.51*phi**3)
@@ -300,7 +304,7 @@ def Nu_plate_Muley_Manglik(Re, Pr, chevron_angle, plate_enlargement_factor):
 
 
 def Nu_plate_Khan_Khan(Re, Pr, chevron_angle):
-    r'''Calculates Nusselt number for single-phase flow in a
+    r"""Calculates Nusselt number for single-phase flow in a
     Chevron-style plate heat exchanger according to [1]_.
 
     .. math::
@@ -347,7 +351,7 @@ def Nu_plate_Khan_Khan(Re, Pr, chevron_angle):
        Corrugated Plate Heat Exchanger for Multiple Plate Configurations."
        Applied Thermal Engineering 30, no. 8 (June 1, 2010): 1058-65.
        https://doi.org/10.1016/j.applthermaleng.2010.01.021.
-    '''
+    """
     beta_max = 60.
     beta_ratio = chevron_angle/beta_max
     Nu = (0.0161*beta_ratio + 0.1298)*Re**(0.198*beta_ratio + 0.6398)*Pr**0.35

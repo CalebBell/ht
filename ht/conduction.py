@@ -1,4 +1,4 @@
-'''Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
+"""Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
 Copyright (C) 2016, 2017, 2018, 2019 Caleb Bell <Caleb.Andrew.Bell@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -18,23 +18,32 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-'''
+"""
 
 from math import acosh, log, pi
 
 from fluids.constants import Btu, degree_Fahrenheit, foot, hour, inch
 
-__all__ = ['R_to_k', 'k_to_R', 'k_to_thermal_resistivity',
-'thermal_resistivity_to_k', 'R_value_to_k', 'k_to_R_value', 'R_cylinder',
-'S_isothermal_sphere_to_plane', 'S_isothermal_pipe_to_plane',
-'S_isothermal_pipe_normal_to_plane',
-'S_isothermal_pipe_to_isothermal_pipe', 'S_isothermal_pipe_to_two_planes',
-'S_isothermal_pipe_eccentric_to_isothermal_pipe',
-'cylindrical_heat_transfer']
+__all__ = [
+    "R_cylinder",
+    "R_to_k",
+    "R_value_to_k",
+    "S_isothermal_pipe_eccentric_to_isothermal_pipe",
+    "S_isothermal_pipe_normal_to_plane",
+    "S_isothermal_pipe_to_isothermal_pipe",
+    "S_isothermal_pipe_to_plane",
+    "S_isothermal_pipe_to_two_planes",
+    "S_isothermal_sphere_to_plane",
+    "cylindrical_heat_transfer",
+    "k_to_R",
+    "k_to_R_value",
+    "k_to_thermal_resistivity",
+    "thermal_resistivity_to_k",
+]
 
 
 def R_to_k(R, t, A=1.):
-    r'''Returns the thermal conductivity of a substance given its thickness
+    r"""Returns the thermal conductivity of a substance given its thickness
     and thermal resistance.
 
     .. math::
@@ -71,12 +80,12 @@ def R_to_k(R, t, A=1.):
     .. [1] Bergman, Theodore L., Adrienne S. Lavine, Frank P. Incropera, and
        David P. DeWitt. Introduction to Heat Transfer. 6E. Hoboken, NJ:
        Wiley, 2011.
-    '''
+    """
     return t/(A*R)
 
 
 def k_to_R(k, t, A=1.):
-    r'''Returns the thermal resistance of a substance given its thickness
+    r"""Returns the thermal resistance of a substance given its thickness
     and thermal conductivity.
 
     .. math::
@@ -112,12 +121,12 @@ def k_to_R(k, t, A=1.):
     .. [1] Bergman, Theodore L., Adrienne S. Lavine, Frank P. Incropera, and
        David P. DeWitt. Introduction to Heat Transfer. 6E. Hoboken, NJ:
        Wiley, 2011.
-    '''
+    """
     return t/(k*A)
 
 
 def k_to_thermal_resistivity(k):
-    r'''Returns the thermal resistivity of a substance given its thermal
+    r"""Returns the thermal resistivity of a substance given its thermal
     conductivity.
 
     .. math::
@@ -149,12 +158,12 @@ def k_to_thermal_resistivity(k):
     ----------
     .. [1] Gesellschaft, V. D. I., ed. VDI Heat Atlas. 2nd edition.
        Berlin; New York:: Springer, 2010.
-    '''
+    """
     return 1./k
 
 
 def thermal_resistivity_to_k(r):
-    r'''Returns the thermal resistivity of a substance given its thermal
+    r"""Returns the thermal resistivity of a substance given its thermal
     conductivity.
 
     .. math::
@@ -185,12 +194,12 @@ def thermal_resistivity_to_k(r):
     ----------
     .. [1] Gesellschaft, V. D. I., ed. VDI Heat Atlas. 2nd edition.
        Berlin; New York:: Springer, 2010.
-    '''
+    """
     return 1./r
 
 
 def R_value_to_k(R_value, SI=True):
-    r'''Returns the thermal conductivity of a substance given its R-value,
+    r"""Returns the thermal conductivity of a substance given its R-value,
     which can be in either SI units of m^2 K/(W*inch) or the Imperial units
     of ft^2 deg F*h/(BTU*inch).
 
@@ -223,7 +232,7 @@ def R_value_to_k(R_value, SI=True):
     ----------
     .. [1] Gesellschaft, V. D. I., ed. VDI Heat Atlas. 2nd edition.
        Berlin; New York:: Springer, 2010.
-    '''
+    """
     if SI:
         r = R_value/inch
     else:
@@ -232,7 +241,7 @@ def R_value_to_k(R_value, SI=True):
 
 
 def k_to_R_value(k, SI=True):
-    r'''Returns the R-value of a substance given its thermal conductivity,
+    r"""Returns the R-value of a substance given its thermal conductivity,
     Will return R-value in SI units unless SI is false. SI units are
     m^2 K/(W*inch); Imperial units of R-value are ft^2 deg F*h/(BTU*inch).
 
@@ -261,7 +270,7 @@ def k_to_R_value(k, SI=True):
     ----------
     .. [1] Gesellschaft, V. D. I., ed. VDI Heat Atlas. 2nd edition.
        Berlin; New York:: Springer, 2010.
-    '''
+    """
     r = k_to_thermal_resistivity(k)
     if SI:
         return r*inch
@@ -270,7 +279,7 @@ def k_to_R_value(k, SI=True):
 
 
 def R_cylinder(Di, Do, k, L):
-    r'''Returns the thermal resistance `R` of a cylinder of constant thermal
+    r"""Returns the thermal resistance `R` of a cylinder of constant thermal
     conductivity `k`, of inner and outer diameter `Di` and `Do`, and with a
     length `L`.
 
@@ -305,14 +314,14 @@ def R_cylinder(Di, Do, k, L):
     .. [1] Bergman, Theodore L., Adrienne S. Lavine, Frank P. Incropera, and
        David P. DeWitt. Introduction to Heat Transfer. 6E. Hoboken, NJ:
        Wiley, 2011.
-    '''
+    """
     hA = k*2*pi*L/log(Do/Di)
     return 1./hA
 
 ### Shape Factors
 
 def S_isothermal_sphere_to_plane(D, Z):
-    r'''Returns the Shape factor `S` of a sphere of constant temperature
+    r"""Returns the Shape factor `S` of a sphere of constant temperature
     and of outer diameter `D` which is `Z` distance from an infinite plane.
 
     .. math::
@@ -349,12 +358,12 @@ def S_isothermal_sphere_to_plane(D, Z):
     .. [2] Bergman, Theodore L., Adrienne S. Lavine, Frank P. Incropera, and
        David P. DeWitt. Introduction to Heat Transfer. 6E. Hoboken, NJ:
        Wiley, 2011.
-    '''
+    """
     return 2*pi*D/(1. - D/(4.*Z))
 
 
 def S_isothermal_pipe_to_plane(D, Z, L=1):
-    r'''Returns the Shape factor `S` of a pipe of constant outer temperature
+    r"""Returns the Shape factor `S` of a pipe of constant outer temperature
     and of outer diameter `D` which is `Z` distance from an infinite plane.
     Length `L` must be provided, but can be set to 1 to obtain a dimensionless
     shape factor used in some sources.
@@ -395,12 +404,12 @@ def S_isothermal_pipe_to_plane(D, Z, L=1):
     .. [2] Bergman, Theodore L., Adrienne S. Lavine, Frank P. Incropera, and
        David P. DeWitt. Introduction to Heat Transfer. 6E. Hoboken, NJ:
        Wiley, 2011.
-    '''
+    """
     return 2.*pi*L/acosh(2.*Z/D)
 
 
 def S_isothermal_pipe_normal_to_plane(D, L):
-    r'''Returns the Shape factor `S` of a pipe of constant outer temperature
+    r"""Returns the Shape factor `S` of a pipe of constant outer temperature
     and of outer diameter `D` which extends into an infinite medium below an
     an infinite plane.
 
@@ -438,12 +447,12 @@ def S_isothermal_pipe_normal_to_plane(D, L):
     .. [2] Bergman, Theodore L., Adrienne S. Lavine, Frank P. Incropera, and
        David P. DeWitt. Introduction to Heat Transfer. 6E. Hoboken, NJ:
        Wiley, 2011.
-    '''
+    """
     return 2.*pi*L/log(4.*L/D)
 
 
 def S_isothermal_pipe_to_isothermal_pipe(D1, D2, W, L=1.):
-    r'''Returns the Shape factor `S` of a pipe of constant outer temperature
+    r"""Returns the Shape factor `S` of a pipe of constant outer temperature
     and of outer diameter `D1` which is `w` distance from another infinite
     pipe of outer diameter`D2`. Length `L` must be provided, but can be set to
     1 to obtain a dimensionless shape factor used in some sources.
@@ -486,12 +495,12 @@ def S_isothermal_pipe_to_isothermal_pipe(D1, D2, W, L=1.):
     .. [2] Bergman, Theodore L., Adrienne S. Lavine, Frank P. Incropera, and
        David P. DeWitt. Introduction to Heat Transfer. 6E. Hoboken, NJ:
        Wiley, 2011.
-    '''
+    """
     return 2.*pi*L/acosh((4*W*W - D1*D1 - D2*D2)/(2.*D1*D2))
 
 
 def S_isothermal_pipe_to_two_planes(D, Z, L=1.):
-    r'''Returns the Shape factor `S` of a pipe of constant outer temperature
+    r"""Returns the Shape factor `S` of a pipe of constant outer temperature
     and of outer diameter `D` which is `Z` distance from two infinite
     isothermal planes of equal temperatures, parallel to each other and
     enclosing the pipe. Length `L` must be provided, but can be set to
@@ -534,12 +543,12 @@ def S_isothermal_pipe_to_two_planes(D, Z, L=1.):
     .. [2] Bergman, Theodore L., Adrienne S. Lavine, Frank P. Incropera, and
        David P. DeWitt. Introduction to Heat Transfer. 6E. Hoboken, NJ:
        Wiley, 2011.
-    '''
+    """
     return 2.*pi*L/log(8.*Z/(pi*D))
 
 
 def S_isothermal_pipe_eccentric_to_isothermal_pipe(D1, D2, Z, L=1.):
-    r'''Returns the Shape factor `S` of a pipe of constant outer temperature
+    r"""Returns the Shape factor `S` of a pipe of constant outer temperature
     and of outer diameter `D1` which is `Z` distance from the center of another
     pipe of outer diameter`D2`. Length `L` must be provided, but can be set to
     1 to obtain a dimensionless shape factor used in some sources.
@@ -583,7 +592,7 @@ def S_isothermal_pipe_eccentric_to_isothermal_pipe(D1, D2, Z, L=1.):
     .. [2] Bergman, Theodore L., Adrienne S. Lavine, Frank P. Incropera, and
        David P. DeWitt. Introduction to Heat Transfer. 6E. Hoboken, NJ:
        Wiley, 2011.
-    '''
+    """
     return 2.*pi*L/acosh((D2*D2 + D1*D1 - 4.*Z*Z)/(2.*D1*D2))
 
 
@@ -591,7 +600,7 @@ def S_isothermal_pipe_eccentric_to_isothermal_pipe(D1, D2, Z, L=1.):
 
 
 def cylindrical_heat_transfer(Ti, To, hi, ho, Di, ts, ks):
-    r'''Calculation for the heat transfer through a cylindrical wall,
+    r"""Calculation for the heat transfer through a cylindrical wall,
     as occurs in pipes and cylindrical vessels. This is the core method
     which calculates the temperatures of each layer - and allows an outer
     layer to iterate on temperature or duty to meet a fixed specification,
@@ -642,7 +651,7 @@ def cylindrical_heat_transfer(Ti, To, hi, ho, Di, ts, ks):
      'U_inner': 1.9649599487726137,
      'U_outer': 0.8106078714663484,
      'q': 123.21239646288495}
-    '''
+    """
     length = 1.0 # basis
     # Note - fouling is just another layer, should be converted to a thickness/thermal conductivity
 
@@ -675,6 +684,6 @@ def cylindrical_heat_transfer(Ti, To, hi, ho, Di, ts, ks):
         Ts.append(Ts[-1] - q*Ri)
 
     # Convert heat transfer coefficient area basis = U_i*A_i = U_o*A_o, divide
-    ans = {'Q': Q, 'q': q, 'UA': UA, 'U_outer': U_external, 'U_inner': UA/A_internal, 'Ts': Ts,
-          'Rs': Rs}
+    ans = {"Q": Q, "q": q, "UA": UA, "U_outer": U_external, "U_inner": UA/A_internal, "Ts": Ts,
+          "Rs": Rs}
     return ans
