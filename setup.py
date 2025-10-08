@@ -129,7 +129,6 @@ classifiers=[
     'Programming Language :: Python :: Implementation :: CPython',
     'Programming Language :: Python :: Implementation :: PyPy',
     'Programming Language :: Python :: Implementation :: MicroPython',
-    'Programming Language :: Python :: Implementation :: IronPython',
     'Topic :: Education',
     'Topic :: Scientific/Engineering :: Atmospheric Science',
     'Topic :: Scientific/Engineering :: Chemistry',

@@ -101,25 +101,24 @@ if not fluids.numerics.is_micropython:
                   conv_free_immersed, conv_free_enclosed, conv_packed_bed, conv_external,
                   conv_supercritical, conv_two_phase, conv_plate, boiling_plate)
     
-    global vectorized, numba, units, numba_vectorized
-    if fluids.numerics.PY37:
-        def __getattr__(name):
-            global vectorized, numba, units, numba_vectorized
-            if name == 'vectorized':
-                import ht.vectorized as vectorized
-                return vectorized
-            if name == 'numba':
-                import ht.numba as numba
-                return numba
-            if name == 'units':
-                import ht.units as units
-                return units
-            if name == 'numba_vectorized':
-                import ht.numba_vectorized as numba_vectorized
-                return numba_vectorized
-            raise AttributeError("module %s has no attribute %s" %(__name__, name))
-    else:
-        from . import vectorized
+    def __getattr__(name):
+        if name == 'vectorized':
+            import ht.vectorized
+            globals()[name] = ht.vectorized
+            return ht.vectorized
+        if name == 'numba':
+            import ht.numba
+            globals()[name] = ht.numba
+            return ht.numba
+        if name == 'units':
+            import ht.units
+            globals()[name] = ht.units
+            return ht.units
+        if name == 'numba_vectorized':
+            import ht.numba_vectorized
+            globals()[name] = ht.numba_vectorized
+            return ht.numba_vectorized
+        raise AttributeError("module %s has no attribute %s" %(__name__, name))
     
 __version__ = '1.0.7'
 
