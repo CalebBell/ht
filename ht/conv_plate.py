@@ -23,8 +23,9 @@ SOFTWARE.
 from math import pi, radians, sin
 
 from fluids.friction import Kumar_beta_list, friction_plate_Martin_1999, friction_plate_Martin_VDI
+from typing import List, Optional
 
-__all__ = [
+__all__: List[str] = [
     "Nu_plate_Khan_Khan",
     "Nu_plate_Kumar",
     "Nu_plate_Martin",
@@ -51,7 +52,7 @@ Kumar_Nu_Res = [[10.0, 10.0],
           [20.0, 500.0]]
 
 
-def Nu_plate_Kumar(Re, Pr, chevron_angle, mu=None, mu_wall=None):
+def Nu_plate_Kumar(Re: float, Pr: float, chevron_angle: float, mu: Optional[float]=None, mu_wall: Optional[float]=None) -> float:
     r"""Calculates Nusselt number for single-phase flow in a
     **well-designed** Chevron-style plate heat exchanger according to [1]_.
     The data is believed to have been developed by APV International Limited,
@@ -150,7 +151,7 @@ def Nu_plate_Kumar(Re, Pr, chevron_angle, mu=None, mu_wall=None):
     return Nu
 
 
-def Nu_plate_Martin(Re, Pr, chevron_angle, variant="1999"):
+def Nu_plate_Martin(Re: float, Pr: float, chevron_angle: float, variant: str="1999") -> float:
     r"""Calculates Nusselt number for single-phase flow in a
     Chevron-style plate heat exchanger according to [1]_, also shown in [2]_
     and [3]_.
@@ -232,7 +233,7 @@ def Nu_plate_Martin(Re, Pr, chevron_angle, variant="1999"):
     return Nu
 
 
-def Nu_plate_Muley_Manglik(Re, Pr, chevron_angle, plate_enlargement_factor):
+def Nu_plate_Muley_Manglik(Re: float, Pr: float, chevron_angle: float, plate_enlargement_factor: float) -> float:
     r"""Calculates Nusselt number for single-phase flow in a
     Chevron-style plate heat exchanger according to [1]_, also shown in [2]_.
 
@@ -303,7 +304,7 @@ def Nu_plate_Muley_Manglik(Re, Pr, chevron_angle, plate_enlargement_factor):
     return t1*t2*Re**t3*Pr**(1/3.)
 
 
-def Nu_plate_Khan_Khan(Re, Pr, chevron_angle):
+def Nu_plate_Khan_Khan(Re: float, Pr: float, chevron_angle: float) -> float:
     r"""Calculates Nusselt number for single-phase flow in a
     Chevron-style plate heat exchanger according to [1]_.
 

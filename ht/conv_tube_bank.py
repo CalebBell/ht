@@ -25,8 +25,9 @@ from math import exp, pi, radians, sin
 from fluids.numerics import bisplev, horner, implementation_optimize_tck, splev
 
 from ht.core import WALL_FACTOR_PRANDTL, wall_factor
+from typing import List, Optional
 
-__all__ = [
+__all__: List[str] = [
     "ESDU_tube_angle_correction",
     "ESDU_tube_row_correction",
     "Nu_ESDU_73031",
@@ -129,7 +130,7 @@ Grimson_C1_staggered_interp = lambda x, y: float(bisplev(x, y, tck_Grimson_C1_st
 
 
 
-def Nu_Grimison_tube_bank(Re, Pr, Do, tube_rows, pitch_parallel, pitch_normal):
+def Nu_Grimison_tube_bank(Re: float, Pr: float, Do: float, tube_rows: int, pitch_parallel: float, pitch_normal: float) -> float:
     r"""Calculates Nusselt number for crossflow across a tube bank
     of tube rows at a specified `Re`, `Pr`, and `D` using the Grimison
     methodology as described in [1]_.
@@ -215,7 +216,7 @@ Zukauskas_Czs_inline = [0.6768, 0.8089, 0.8687, 0.9054, 0.9303, 0.9465, 0.9569,
     0.9647, 0.9712, 0.9766, 0.9811, 0.9847, 0.9877, 0.99, 0.992, 0.9937,
     0.9953, 0.9969, 0.9986]
 
-def Zukauskas_tube_row_correction(tube_rows, staggered=True, Re=1E4):
+def Zukauskas_tube_row_correction(tube_rows: int, staggered: bool=True, Re: float=1E4) -> float:
     r"""Calculates the tube row correction factor according to a graph
     digitized from [1] for heat transfer across
     a tube bundle. The correction factors are slightly different for
@@ -275,8 +276,8 @@ def Zukauskas_tube_row_correction(tube_rows, staggered=True, Re=1E4):
     return correction
 
 
-def Nu_Zukauskas_Bejan(Re, Pr, tube_rows, pitch_parallel, pitch_normal,
-                       Pr_wall=None):
+def Nu_Zukauskas_Bejan(Re: float, Pr: float, tube_rows: int, pitch_parallel: float, pitch_normal: float,
+                       Pr_wall: Optional[float]=None) -> float:
     r"""Calculates Nusselt number for crossflow across a tube bank
     of tube number n at a specified `Re` according to the method of Zukauskas
     [1]_. A fit to graphs from [1]_ published in [2]_ is used for the
@@ -405,7 +406,7 @@ def Nu_Zukauskas_Bejan(Re, Pr, tube_rows, pitch_parallel, pitch_normal,
 ESDU_73031_F2_inline = [0.8479, 0.8957, 0.9306, 0.9551, 0.9724, 0.9839, 0.9902]
 ESDU_73031_F2_staggered = [0.8593, 0.8984, 0.9268, 0.9482, 0.965, 0.9777, 0.9868]
 
-def ESDU_tube_row_correction(tube_rows, staggered=True, Re=3000.0, method="Hewitt"):
+def ESDU_tube_row_correction(tube_rows: int, staggered: bool=True, Re: float=3000.0, method: str="Hewitt") -> float:
     r"""Calculates the tube row correction factor according to [1]_ as shown in
     [2]_ for heat transfer across a tube bundle. This is also used for finned
     bundles. The correction factors are slightly different for staggered vs.
@@ -478,7 +479,7 @@ def ESDU_tube_row_correction(tube_rows, staggered=True, Re=3000.0, method="Hewit
         return correction
 
 
-def ESDU_tube_angle_correction(angle):
+def ESDU_tube_angle_correction(angle: float) -> float:
     r"""Calculates the tube bank inclination correction factor according to
     [1]_ for heat transfer across a tube bundle.
 
@@ -518,8 +519,8 @@ def ESDU_tube_angle_correction(angle):
     return sin(radians(angle))**0.6
 
 
-def Nu_ESDU_73031(Re, Pr, tube_rows, pitch_parallel, pitch_normal,
-                  Pr_wall=None, angle=90.0):
+def Nu_ESDU_73031(Re: float, Pr: float, tube_rows: int, pitch_parallel: float, pitch_normal: float,
+                  Pr_wall: Optional[float]=None, angle: float=90.0) -> float:
     r"""Calculates the Nusselt number for crossflow across a tube bank
     with a specified number of tube rows, at a specified `Re` according to
     [1]_, also shown in [2]_.
@@ -641,7 +642,7 @@ def Nu_ESDU_73031(Re, Pr, tube_rows, pitch_parallel, pitch_normal,
     return a*Re**m*Pr**0.34*F1*F2*F3
 
 
-def Nu_HEDH_tube_bank(Re, Pr, Do, tube_rows, pitch_parallel, pitch_normal):
+def Nu_HEDH_tube_bank(Re: float, Pr: float, Do: float, tube_rows: int, pitch_parallel: float, pitch_normal: float) -> float:
     r"""Calculates Nusselt number for crossflow across a tube bank
     of tube rows at a specified `Re`, `Pr`, and `D` using the Heat Exchanger
     Design Handbook (HEDH) methodology, presented in [1]_.
@@ -766,7 +767,7 @@ Kern_f_Re_tck = implementation_optimize_tck([[9.9524, 9.9524, 9.9524, 9.9524, 17
 Kern_f_Re = lambda x: float(splev(x, Kern_f_Re_tck))
 
 
-def dP_Kern(m, rho, mu, DShell, LSpacing, pitch, Do, NBaffles, mu_w=None):
+def dP_Kern(m: float, rho: float, mu: float, DShell: float, LSpacing: float, pitch: float, Do: float, NBaffles: int, mu_w: Optional[float]=None) -> float:
     r"""Calculates pressure drop for crossflow across a tube bank
     according to the equivalent-diameter method developed by Kern [1]_,
     presented in [2]_.
@@ -1017,7 +1018,7 @@ dP_inline_correction_tck = implementation_optimize_tck([
 ])
 
 
-def dP_Zukauskas(Re, n, ST, SL, D, rho, Vmax):
+def dP_Zukauskas(Re: float, n: int, ST: float, SL: float, D: float, rho: float, Vmax: float) -> float:
     r"""Calculates pressure drop for crossflow across a tube bank
     of tube number n at a specified Re. Method presented in [1]_.
     Also presented in [2]_.
@@ -1115,7 +1116,7 @@ Bell_baffle_configuration_coeffs = [-17.267087530974095, -17.341072676377735,
     -0.3349723004600481, -0.3685826653263089, -0.0629839069257099, 0.35883309630976157,
     0.9345478582873352]
 
-def baffle_correction_Bell(crossflow_tube_fraction, method="spline"):
+def baffle_correction_Bell(crossflow_tube_fraction: float, method: str="spline") -> float:
     r"""Calculate the baffle correction factor `Jc` which accounts for
     the fact that all tubes are not in crossflow to the fluid - some
     have fluid flowing parallel to them because they are situated in
@@ -1223,7 +1224,7 @@ Bell_baffle_leakage_tck = implementation_optimize_tck([[0.0, 0.0, 0.0, 0.0, 0.02
 Bell_baffle_leakage_obj = lambda x, z : float(bisplev(x, z, Bell_baffle_leakage_tck))
 
 
-def baffle_leakage_Bell(Ssb, Stb, Sm, method="spline"):
+def baffle_leakage_Bell(Ssb: float, Stb: float, Sm: float, method: str="spline") -> float:
     r"""Calculate the baffle leakage factor `Jl` which accounts for
     leakage between each baffle.
     Cubic spline interpolation is the default method of retrieving a value
@@ -1419,10 +1420,10 @@ def bundle_bypassing_Bell(bypass_area_fraction, seal_strips, crossflow_rows,
     return Jb
 
 
-def unequal_baffle_spacing_Bell(baffles, baffle_spacing,
-                                baffle_spacing_in=None,
-                                baffle_spacing_out=None,
-                                laminar=False):
+def unequal_baffle_spacing_Bell(baffles: int, baffle_spacing: float,
+                                baffle_spacing_in: Optional[float]=None,
+                                baffle_spacing_out: Optional[float]=None,
+                                laminar: bool=False) -> float:
     r"""Calculate the correction factor for unequal baffle spacing `Js`,
     which accounts for higher velocity of fluid flow and greater heat transfer
     coefficients when the in and/or out baffle spacing is less than the
@@ -1488,7 +1489,7 @@ def unequal_baffle_spacing_Bell(baffles, baffle_spacing,
     return Js
 
 
-def laminar_correction_Bell(Re, total_row_passes):
+def laminar_correction_Bell(Re: float, total_row_passes: int) -> float:
     r"""Calculate the correction factor for adverse temperature gradient built
     up in laminar flow `Jr`.
 

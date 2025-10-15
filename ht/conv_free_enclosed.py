@@ -23,8 +23,9 @@ SOFTWARE.
 from math import exp, log
 
 from fluids.numerics import bisplev, horner, implementation_optimize_tck, secant
+from typing import List, Optional
 
-__all__ = [
+__all__: List[str] = [
     "Nu_Nusselt_Rayleigh_Hollands",
     "Nu_Nusselt_Rayleigh_Holling_Herwig",
     "Nu_Nusselt_Rayleigh_Probert",
@@ -38,12 +39,12 @@ __all__ = [
 __numba_additional_funcs__ = ["Nu_Nusselt_Rayleigh_Holling_Herwig_err"]
 
 
-def Nu_Nusselt_Rayleigh_Holling_Herwig_err(Nu, Ra, Ra_third, D2):
+def Nu_Nusselt_Rayleigh_Holling_Herwig_err(Nu: float, Ra: float, Ra_third: float, D2: float) -> float:
     err = Ra_third*(0.1/2.0*log(1.0/16.0*Ra*Nu) + D2)**(-4.0/3.0) - Nu
     return err
 
 
-def Nu_Nusselt_Rayleigh_Holling_Herwig(Pr, Gr, buoyancy=True):
+def Nu_Nusselt_Rayleigh_Holling_Herwig(Pr: float, Gr: float, buoyancy: bool=True) -> float:
     r"""Calculates the Nusselt number for natural convection between two
     theoretical flat horizontal plates. The height between the plates is infinite, and
     one of the other dimensions of the plates is much larger than the other.
@@ -119,7 +120,7 @@ def Nu_Nusselt_Rayleigh_Holling_Herwig(Pr, Gr, buoyancy=True):
     return secant(Nu_Nusselt_Rayleigh_Holling_Herwig_err, Nu_guess, args=(Ra, Ra_third, D2))
 
 
-def Nu_Nusselt_Rayleigh_Probert(Pr, Gr, buoyancy=True):
+def Nu_Nusselt_Rayleigh_Probert(Pr: float, Gr: float, buoyancy: bool=True) -> float:
     r"""Calculates the Nusselt number for natural convection between two
     theoretical flat plates. The height between the plates is infinite, and
     one of the other dimensions of the plates is much larger than the other.
@@ -187,7 +188,7 @@ def Nu_Nusselt_Rayleigh_Probert(Pr, Gr, buoyancy=True):
         return 0.092*Ra**(1.0/3.0)
 
 
-def Nu_Nusselt_Rayleigh_Hollands(Pr, Gr, buoyancy=True, Rac=1708):
+def Nu_Nusselt_Rayleigh_Hollands(Pr: float, Gr: float, buoyancy: bool=True, Rac: float=1708) -> float:
     r"""Calculates the Nusselt number for natural convection between two
     theoretical flat horizontal plates using the Hollands [1]_ correlation recommended
     in [2]_. This correlation supports different aspect ratios,
@@ -276,7 +277,7 @@ def Nu_Nusselt_Rayleigh_Hollands(Pr, Gr, buoyancy=True, Rac=1708):
     return Nu
 
 
-def Nu_Nusselt_vertical_Thess(Pr, Gr, H=None, L=None):
+def Nu_Nusselt_vertical_Thess(Pr: float, Gr: float, H: Optional[int]=None, L: Optional[int]=None) -> float:
     r"""Calculates the Nusselt number for natural convection between two
     theoretical vertical flat plates using the correlation by Thess [1]
     in [1]_. This is a variant on the horizontal Rayleigh-Benard classic heat
@@ -412,7 +413,7 @@ tck_insulated_Catton = implementation_optimize_tck([[0.125, 0.125, 0.21657639794
    7.4376750879045455, 7.462202956737165], 1, 2])
 
 
-def Rac_Nusselt_Rayleigh(H, L, W, insulated=True):
+def Rac_Nusselt_Rayleigh(H: float, L: float, W: float, insulated: bool=True) -> float:
     r"""Calculates the critical Rayleigh number for free convection to begin
     in the Nusselt-Rayleigh parallel horizontal plate scenario. There are
     actually two cases - one for the top plate to be insulated (adiabatic) and
@@ -486,7 +487,7 @@ insulated_disk_coeffs = [0.2173851248644496, 0.09672312658254612, -1.08004949683
                          0.0035707992137628142, 0.13258956599554672]
 
 
-def Rac_Nusselt_Rayleigh_disk(H, D, insulated=True):
+def Rac_Nusselt_Rayleigh_disk(H: float, D: float, insulated: bool=True) -> float:
     r"""Calculates the critical Rayleigh number for free convection to begin
     in the parallel horizontal disk scenario. There are
     actually two cases - one for the top plate to be insulated (adiabatic) and
@@ -548,7 +549,7 @@ def Rac_Nusselt_Rayleigh_disk(H, D, insulated=True):
 
 ### Free convection vertical helical coil
 
-def Nu_vertical_helical_coil_Ali(Pr, Gr):
+def Nu_vertical_helical_coil_Ali(Pr: float, Gr: float) -> float:
     r"""Calculates Nusselt number for natural convection around a vertical
     helical coil inside a tank or other vessel according to the Ali [1]_
     correlation.
@@ -598,7 +599,7 @@ def Nu_vertical_helical_coil_Ali(Pr, Gr):
     return 0.555*Gr**0.301*Pr**0.314
 
 
-def Nu_vertical_helical_coil_Prabhanjan_Rennie_Raghavan(Pr, Gr):
+def Nu_vertical_helical_coil_Prabhanjan_Rennie_Raghavan(Pr: float, Gr: float) -> float:
     r"""Calculates Nusselt number for natural convection around a vertical
     helical coil inside a tank or other vessel according to the Prabhanjan,
     Rennie, and Raghavan [1]_ correlation.

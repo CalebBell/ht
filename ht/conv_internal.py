@@ -19,9 +19,10 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
+from typing import List, Optional
 
 
-__all__ = [
+__all__: List[str] = [
     "Morimoto_Hotta",
     "Nu_conv_internal",
     "Nu_conv_internal_methods",
@@ -68,7 +69,7 @@ from fluids.friction import LAMINAR_TRANSITION_PIPE, Clamond
 
 ### Laminar
 
-def laminar_T_const():
+def laminar_T_const() -> float:
     r"""Returns internal convection Nusselt number for laminar flows
     in pipe according to [1]_, [2]_ and [3]_. Wall temperature is assumed
     constant.
@@ -98,7 +99,7 @@ def laminar_T_const():
     return 3.66
 
 
-def laminar_Q_const():
+def laminar_Q_const() -> float:
     r"""Returns internal convection Nusselt number for laminar flows
     in pipe according to [1]_, [2]_, and [3]_. Heat flux is assumed constant.
     This is entirely theoretically derived and reproduced experimentally.
@@ -129,7 +130,7 @@ def laminar_Q_const():
 
 ### Laminar - entry region
 
-def laminar_entry_thermal_Hausen(Re, Pr, L, Di):
+def laminar_entry_thermal_Hausen(Re: float, Pr: float, L: float, Di: float) -> float:
     r"""Calculates average internal convection Nusselt number for laminar flows
     in pipe during the thermal entry region according to [1]_ as shown in
     [2]_ and cited by [3]_.
@@ -181,7 +182,7 @@ def laminar_entry_thermal_Hausen(Re, Pr, L, Di):
     return 3.66 + (0.0668*Gz)/(1+0.04*(Gz)**(2/3.))
 
 
-def laminar_entry_Seider_Tate(Re, Pr, L, Di, mu=None, mu_w=None):
+def laminar_entry_Seider_Tate(Re: float, Pr: float, L: float, Di: float, mu: Optional[float]=None, mu_w: Optional[float]=None) -> float:
     r"""Calculates average internal convection Nusselt number for laminar flows
     in pipe during the thermal entry region as developed in [1]_, also
     shown in [2]_.
@@ -238,7 +239,7 @@ def laminar_entry_Seider_Tate(Re, Pr, L, Di, mu=None, mu_w=None):
     return Nu
 
 
-def laminar_entry_Baehr_Stephan(Re, Pr, L, Di):
+def laminar_entry_Baehr_Stephan(Re: float, Pr: float, L: float, Di: float) -> float:
     r"""Calculates average internal convection Nusselt number for laminar flows
     in pipe during the thermal and velocity entry region according to [1]_ as
     shown in [2]_.
@@ -290,7 +291,7 @@ def laminar_entry_Baehr_Stephan(Re, Pr, L, Di):
 
 
 ### Turbulent - Equations with more complicated options
-def turbulent_Dittus_Boelter(Re, Pr, heating=True, revised=True):
+def turbulent_Dittus_Boelter(Re: float, Pr: float, heating: bool=True, revised: bool=True) -> float:
     r"""Calculates internal convection Nusselt number for turbulent flows
     in pipe according to [1]_, and [2]_, a reprint of [3]_.
 
@@ -359,7 +360,7 @@ def turbulent_Dittus_Boelter(Re, Pr, heating=True, revised=True):
     return m*Re**0.8*Pr**power
 
 
-def turbulent_Sieder_Tate(Re, Pr, mu=None, mu_w=None):
+def turbulent_Sieder_Tate(Re: float, Pr: float, mu: Optional[float]=None, mu_w: Optional[float]=None) -> float:
     r"""Calculates internal convection Nusselt number for turbulent flows
     in pipe according to [1]_ and supposedly [2]_.
 
@@ -409,7 +410,7 @@ def turbulent_Sieder_Tate(Re, Pr, mu=None, mu_w=None):
     return Nu
 
 
-def turbulent_entry_Hausen(Re, Pr, Di, x):
+def turbulent_entry_Hausen(Re: float, Pr: float, Di: float, x: float) -> float:
     r"""Calculates internal convection Nusselt number for the entry region
     of a turbulent flow in pipe according to [2]_ as in [1]_.
 
@@ -454,7 +455,7 @@ def turbulent_entry_Hausen(Re, Pr, Di, x):
 ### Regular correlations, Re, Pr and fd only
 
 
-def turbulent_Colburn(Re, Pr):
+def turbulent_Colburn(Re: float, Pr: float) -> float:
     r"""Calculates internal convection Nusselt number for turbulent flows
     in pipe according to [2]_ as in [1]_.
 
@@ -494,7 +495,7 @@ def turbulent_Colburn(Re, Pr):
     return 0.023*Re**0.8*Pr**(1/3.)
 
 
-def turbulent_Drexel_McAdams(Re, Pr):
+def turbulent_Drexel_McAdams(Re: float, Pr: float) -> float:
     r"""Calculates internal convection Nusselt number for turbulent flows
     in pipe according to [2]_ as in [1]_.
 
@@ -534,7 +535,7 @@ def turbulent_Drexel_McAdams(Re, Pr):
     return 0.021*Re**0.8*Pr**(0.4)
 
 
-def turbulent_von_Karman(Re, Pr, fd):
+def turbulent_von_Karman(Re: float, Pr: float, fd: float) -> float:
     r"""Calculates internal convection Nusselt number for turbulent flows
     in pipe according to [2]_ as in [1]_.
 
@@ -576,7 +577,7 @@ def turbulent_von_Karman(Re, Pr, fd):
                           *(Pr - 1.0 + log((5.0*Pr + 1.0)/6.))))
 
 
-def turbulent_Prandtl(Re, Pr, fd):
+def turbulent_Prandtl(Re: float, Pr: float, fd: float) -> float:
     r"""Calculates internal convection Nusselt number for turbulent flows
     in pipe according to [2]_ as in [1]_.
 
@@ -616,7 +617,7 @@ def turbulent_Prandtl(Re, Pr, fd):
     return (fd/8.)*Re*Pr/(1.0 + 8.7*(fd/8.)**0.5*(Pr - 1.0))
 
 
-def turbulent_Friend_Metzner(Re, Pr, fd):
+def turbulent_Friend_Metzner(Re: float, Pr: float, fd: float) -> float:
     r"""Calculates internal convection Nusselt number for turbulent flows
     in pipe according to [2]_ as in [1]_.
 
@@ -658,7 +659,7 @@ def turbulent_Friend_Metzner(Re, Pr, fd):
     return (fd/8.)*Re*Pr/(1.2 + 11.8*(fd/8.)**0.5*(Pr - 1.)*Pr**(-1/3.))
 
 
-def turbulent_Petukhov_Kirillov_Popov(Re, Pr, fd):
+def turbulent_Petukhov_Kirillov_Popov(Re: float, Pr: float, fd: float) -> float:
     r"""Calculates internal convection Nusselt number for turbulent flows
     in pipe according to [2]_ and [3]_ as in [1]_.
 
@@ -704,7 +705,7 @@ def turbulent_Petukhov_Kirillov_Popov(Re, Pr, fd):
     return (fd/8.)*Re*Pr/(C + 12.7*(fd/8.)**0.5*(Pr**(2/3.) - 1.))
 
 
-def turbulent_Webb(Re, Pr, fd):
+def turbulent_Webb(Re: float, Pr: float, fd: float) -> float:
     r"""Calculates internal convection Nusselt number for turbulent flows
     in pipe according to [2]_ as in [1]_.
 
@@ -746,7 +747,7 @@ def turbulent_Webb(Re, Pr, fd):
     return (fd/8.)*Re*Pr/(1.07 + 9.*(fd/8.)**0.5*(Pr - 1.)*Pr**0.25)
 
 
-def turbulent_Sandall(Re, Pr, fd):
+def turbulent_Sandall(Re: float, Pr: float, fd: float) -> float:
     r"""Calculates internal convection Nusselt number for turbulent flows
     in pipe according to [2]_ as in [1]_.
 
@@ -791,7 +792,7 @@ def turbulent_Sandall(Re, Pr, fd):
                                + 3.613*log(Pr) + 5.8 + C)
 
 
-def turbulent_Gnielinski(Re, Pr, fd):
+def turbulent_Gnielinski(Re: float, Pr: float, fd: float) -> float:
     r"""Calculates internal convection Nusselt number for turbulent flows
     in pipe according to [2]_ as in [1]_. This is the most recent general
     equation, and is strongly recommended.
@@ -833,7 +834,7 @@ def turbulent_Gnielinski(Re, Pr, fd):
     return (fd/8.)*(Re - 1E3)*Pr/(1. + 12.7*(fd/8.)**0.5*(Pr**(2/3.) - 1.))
 
 
-def turbulent_Gnielinski_smooth_1(Re, Pr):
+def turbulent_Gnielinski_smooth_1(Re: float, Pr: float) -> float:
     r"""Calculates internal convection Nusselt number for turbulent flows
     in pipe according to [2]_ as in [1]_. This is a simplified case assuming
     smooth pipe.
@@ -873,7 +874,7 @@ def turbulent_Gnielinski_smooth_1(Re, Pr):
     return 0.0214*(Re**0.8 - 100.)*Pr**0.4
 
 
-def turbulent_Gnielinski_smooth_2(Re, Pr):
+def turbulent_Gnielinski_smooth_2(Re: float, Pr: float) -> float:
     r"""Calculates internal convection Nusselt number for turbulent flows
     in pipe according to [2]_ as in [1]_. This is a simplified case assuming
     smooth pipe.
@@ -913,7 +914,7 @@ def turbulent_Gnielinski_smooth_2(Re, Pr):
     return 0.012*(Re**0.87 - 280.)*Pr**0.4
 
 
-def turbulent_Churchill_Zajic(Re, Pr, fd):
+def turbulent_Churchill_Zajic(Re: float, Pr: float, fd: float) -> float:
     r"""Calculates internal convection Nusselt number for turbulent flows
     in pipe according to [2]_ as developed in [1]_. Has yet to obtain
     popularity.
@@ -970,7 +971,7 @@ def turbulent_Churchill_Zajic(Re, Pr, fd):
     return 1./(Pr_T/Pr/Nu_di + (1. - (Pr_T/Pr)**(2/3.))/Nu_dinf)
 
 
-def turbulent_ESDU(Re, Pr):
+def turbulent_ESDU(Re: float, Pr: float) -> float:
     r"""Calculates internal convection Nusselt number for turbulent flows
     in pipe according to the ESDU as shown in [1]_.
 
@@ -1010,7 +1011,7 @@ def turbulent_ESDU(Re, Pr):
 
 ### Correlations for 'rough' turbulent pipe
 
-def turbulent_Martinelli(Re, Pr, fd):
+def turbulent_Martinelli(Re: float, Pr: float, fd: float) -> float:
     r"""Calculates internal convection Nusselt number for turbulent flows
     in pipe according to [2]_ as shown in [1]_.
 
@@ -1051,7 +1052,7 @@ def turbulent_Martinelli(Re, Pr, fd):
     return Re*Pr*(fd/8.)**0.5/5/(Pr + log(1. + 5.*Pr) + 0.5*log(Re*(fd/8.)**0.5/60.))
 
 
-def turbulent_Nunner(Re, Pr, fd, fd_smooth):
+def turbulent_Nunner(Re: float, Pr: float, fd: float, fd_smooth: float) -> float:
     r"""Calculates internal convection Nusselt number for turbulent flows
     in pipe according to [2]_ as shown in [1]_.
 
@@ -1093,7 +1094,7 @@ def turbulent_Nunner(Re, Pr, fd, fd_smooth):
     return Re*Pr*fd/8./(1 + 1.5*Re**-0.125*Pr**(-1/6.)*(Pr*fd/fd_smooth - 1.))
 
 
-def turbulent_Dipprey_Sabersky(Re, Pr, fd, eD):
+def turbulent_Dipprey_Sabersky(Re: float, Pr: float, fd: float, eD: float) -> float:
     r"""Calculates internal convection Nusselt number for turbulent flows
     in pipe according to [2]_ as shown in [1]_.
 
@@ -1139,7 +1140,7 @@ def turbulent_Dipprey_Sabersky(Re, Pr, fd, eD):
     return Re*Pr*fd/8./(1 + (fd/8.)**0.5*(5.19*Re_e**0.2*Pr**0.44 - 8.48))
 
 
-def turbulent_Gowen_Smith(Re, Pr, fd):
+def turbulent_Gowen_Smith(Re: float, Pr: float, fd: float) -> float:
     r"""Calculates internal convection Nusselt number for turbulent flows
     in pipe according to [2]_ as shown in [1]_.
 
@@ -1181,7 +1182,7 @@ def turbulent_Gowen_Smith(Re, Pr, fd):
     return Re*Pr*(fd/8.)**0.5/(4.5 + (0.155*(Re*(fd/8.)**0.5)**0.54 + (8./fd)**0.5)*Pr**0.5)
 
 
-def turbulent_Kawase_Ulbrecht(Re, Pr, fd):
+def turbulent_Kawase_Ulbrecht(Re: float, Pr: float, fd: float) -> float:
     r"""Calculates internal convection Nusselt number for turbulent flows
     in pipe according to [2]_ as shown in [1]_.
 
@@ -1222,7 +1223,7 @@ def turbulent_Kawase_Ulbrecht(Re, Pr, fd):
     return 0.0523*Re*Pr**0.5*(fd/4.)**0.5
 
 
-def turbulent_Kawase_De(Re, Pr, fd):
+def turbulent_Kawase_De(Re: float, Pr: float, fd: float) -> float:
     r"""Calculates internal convection Nusselt number for turbulent flows
     in pipe according to [2]_ as shown in [1]_.
 
@@ -1264,7 +1265,7 @@ def turbulent_Kawase_De(Re, Pr, fd):
     return 0.0471*Re*Pr**0.5*(fd/4.)**0.5*(1.11 + 0.44*Pr**(-1/3.) - 0.7*Pr**(-1/6.))
 
 
-def turbulent_Bhatti_Shah(Re, Pr, fd, eD):
+def turbulent_Bhatti_Shah(Re: float, Pr: float, fd: float, eD: float) -> float:
     r"""Calculates internal convection Nusselt number for turbulent flows
     in pipe according to [2]_ as shown in [1]_. The most widely used rough
     pipe turbulent correlation.
@@ -1355,8 +1356,8 @@ conv_tube_methods = conv_tube_laminar_methods.copy()
 conv_tube_methods.update(conv_tube_turbulent_methods)
 conv_tube_methods_list = list(conv_tube_methods.keys())
 
-def Nu_conv_internal_methods(Re, Pr, eD=0, Di=None, x=None, fd=None,
-                             check_ranges=True):
+def Nu_conv_internal_methods(Re: float, Pr: float, eD: float=0, Di: Optional[float]=None, x: Optional[float]=None, fd: None=None,
+                             check_ranges: bool=True) -> List[str]:
     r"""This function returns a list of correlation names for the calculation
     of heat transfer coefficient for internal convection inside a circular pipe.
 
@@ -1437,7 +1438,7 @@ def Nu_conv_internal_methods(Re, Pr, eD=0, Di=None, x=None, fd=None,
             methods.append("Gnielinski smooth high Pr") # 2
     return methods
 
-def Nu_conv_internal(Re, Pr, eD=0.0, Di=None, x=None, fd=None, Method=None):
+def Nu_conv_internal(Re: float, Pr: float, eD: float=0.0, Di: Optional[float]=None, x: Optional[float]=None, fd: Optional[float]=None, Method: Optional[str]=None) -> float:
     r"""This function calculates the heat transfer coefficient for internal
     convection inside a circular pipe.
 
@@ -1593,7 +1594,7 @@ def Nu_conv_internal(Re, Pr, eD=0.0, Di=None, x=None, fd=None, Method=None):
 
 ### Spiral heat exchangers
 
-def Morimoto_Hotta(Re, Pr, Dh, Rm):
+def Morimoto_Hotta(Re: float, Pr: float, Dh: float, Rm: float) -> float:
     r"""Calculates Nusselt number for flow inside a spiral heat exchanger of
     spiral mean diameter `Rm` and hydraulic diameter `Dh` according to [1]_,
     also as shown in [2]_ and [3]_.
@@ -1656,7 +1657,7 @@ def Morimoto_Hotta(Re, Pr, Dh, Rm):
 ### Helical/curved coils
 
 
-def helical_turbulent_Nu_Mori_Nakayama(Re, Pr, Di, Dc):
+def helical_turbulent_Nu_Mori_Nakayama(Re: float, Pr: float, Di: float, Dc: float) -> float:
     r"""Calculates Nusselt number for a fluid flowing inside a curved
     pipe such as a helical coil under turbulent conditions, using the method of
     Mori and Nakayama [1]_, also shown in [2]_ and [3]_.
@@ -1729,7 +1730,7 @@ def helical_turbulent_Nu_Mori_Nakayama(Re, Pr, Di, Dc):
     return term1*term2
 
 
-def helical_turbulent_Nu_Schmidt(Re, Pr, Di, Dc):
+def helical_turbulent_Nu_Schmidt(Re: float, Pr: float, Di: float, Dc: float) -> float:
     r"""Calculates Nusselt number for a fluid flowing inside a curved
     pipe such as a helical coil under turbulent conditions, using the method of
     Schmidt [1]_, also shown in [2]_, [3]_, and [4]_.
@@ -1798,7 +1799,7 @@ def helical_turbulent_Nu_Schmidt(Re, Pr, Di, Dc):
         return 0.023*(1. + 3.6*(1. - D_ratio)*D_ratio**0.8)*Re**0.8*Pr**(1/3.)
 
 
-def helical_turbulent_Nu_Xin_Ebadian(Re, Pr, Di, Dc):
+def helical_turbulent_Nu_Xin_Ebadian(Re: float, Pr: float, Di: float, Dc: float) -> float:
     r"""Calculates Nusselt number for a fluid flowing inside a curved
     pipe such as a helical coil under turbulent conditions, using the method of
     Xin and Ebadian [1]_, also shown in [2]_ and [3]_.
@@ -1858,7 +1859,7 @@ def helical_turbulent_Nu_Xin_Ebadian(Re, Pr, Di, Dc):
 
 ### Rectangular Channels
 
-def Nu_laminar_rectangular_Shan_London(a_r):
+def Nu_laminar_rectangular_Shan_London(a_r: float) -> float:
     r"""Calculates internal convection Nusselt number for laminar flows
     in a rectangular pipe of varying aspect ratio, as developed in [1]_.
 

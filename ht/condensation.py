@@ -26,8 +26,9 @@ from fluids.constants import R, g
 from fluids.core import Prandtl, Reynolds
 
 from ht.conv_internal import turbulent_Dittus_Boelter
+from typing import List
 
-__all__ = [
+__all__: List[str] = [
     "Akers_Deans_Crosser",
     "Boyko_Kruzhilin",
     "Cavallini_Smith_Zecchin",
@@ -37,7 +38,7 @@ __all__ = [
 ]
 
 
-def Nusselt_laminar(Tsat, Tw, rhog, rhol, kl, mul, Hvap, L, angle=90.):
+def Nusselt_laminar(Tsat: float, Tw: float, rhog: float, rhol: float, kl: float, mul: float, Hvap: float, L: float, angle: float=90.) -> float:
     r"""Calculates heat transfer coefficient for laminar film condensation
     of a pure chemical on a flat plate, as presented in [1]_ according to an
     analysis performed by Nusselt in 1916.
@@ -97,7 +98,7 @@ def Nusselt_laminar(Tsat, Tw, rhog, rhol, kl, mul, Hvap, L, angle=90.):
                           *Hvap/(mul*(Tsat - Tw)*L))**0.25
 
 
-def Boyko_Kruzhilin(m, rhog, rhol, kl, mul, Cpl, D, x):
+def Boyko_Kruzhilin(m: float, rhog: float, rhol: float, kl: float, mul: float, Cpl: float, D: float, x: float) -> float:
     r"""Calculates heat transfer coefficient for condensation
     of a pure chemical inside a vertical tube or tube bundle, as presented in
     [2]_ according to [1]_.
@@ -161,7 +162,7 @@ def Boyko_Kruzhilin(m, rhog, rhol, kl, mul, Cpl, D, x):
     return hlo*(1. + x*(rhol/rhog - 1.))**0.5
 
 
-def Akers_Deans_Crosser(m, rhog, rhol, kl, mul, Cpl, D, x):
+def Akers_Deans_Crosser(m: float, rhog: float, rhol: float, kl: float, mul: float, Cpl: float, D: float, x: float) -> float:
     r"""Calculates heat transfer coefficient for condensation
     of a pure chemical inside a vertical tube or tube bundle, as presented in
     [2]_ according to [1]_.
@@ -236,7 +237,7 @@ def Akers_Deans_Crosser(m, rhog, rhol, kl, mul, Cpl, D, x):
 #print([Akers_Deans_Crosser(m=0.01, rhog=6.36, rhol=582.9, kl=0.098, mul=159E-6, Cpl=2520., D=0.03, x=0.85)])
 
 
-def h_kinetic(T, P, MW, Hvap, f=1.0):
+def h_kinetic(T: float, P: float, MW: float, Hvap: float, f: float=1.0) -> float:
     r"""Calculates heat transfer coefficient for condensation
     of a pure chemical inside a vertical tube or tube bundle, as presented in
     [2]_ according to [1]_.
@@ -292,7 +293,7 @@ def h_kinetic(T, P, MW, Hvap, f=1.0):
     return (2*f)/(2-f)*(MW/(1000*2*pi*R*T))**0.5*(Hvap**2*P*MW)/(1000*R*T**2)
 
 
-def Cavallini_Smith_Zecchin(m, x, D, rhol, rhog, mul, mug, kl, Cpl):
+def Cavallini_Smith_Zecchin(m: float, x: float, D: float, rhol: float, rhog: float, mul: float, mug: float, kl: float, Cpl: float) -> float:
     r"""Calculates heat transfer coefficient for condensation
     of a fluid inside a tube, as presented in
     [1]_, also given in [2]_ and [3]_.
@@ -374,7 +375,7 @@ def Cavallini_Smith_Zecchin(m, x, D, rhol, rhog, mul, mug, kl, Cpl):
     return Nul*kl/D # confirmed to be with respect to the liquid
 
 
-def Shah(m, x, D, rhol, mul, kl, Cpl, P, Pc):
+def Shah(m: float, x: float, D: float, rhol: float, mul: float, kl: float, Cpl: float, P: float, Pc: float) -> float:
     r"""Calculates heat transfer coefficient for condensation
     of a fluid inside a tube, as presented in [1]_ and again by the same
     author in [2]_; also given in [3]_. Requires no properties of the gas.

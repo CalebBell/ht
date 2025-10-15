@@ -27,8 +27,10 @@ from fluids.constants import Btu, degree_Fahrenheit, foot, hour, inch
 from fluids.numerics import bisect, brenth, factorial, gamma, horner, iv, quad, secant
 from fluids.numerics import numpy as np
 from fluids.piping import BWG_SI, BWG_integers
+from numpy import float64
+from typing import Callable, Dict, List, Optional, Union
 
-__all__ = [
+__all__: List[str] = [
     "DBundle_for_Ntubes_HEDH",
     "DBundle_for_Ntubes_Phadkeb",
     "DBundle_min",
@@ -91,7 +93,7 @@ if IS_NUMBA:
     def factorial(n):
         return gamma(n + 1.0)
 
-def crossflow_effectiveness_to_int(v, NTU, t0):
+def crossflow_effectiveness_to_int(v: float, NTU: float, t0: float) -> float:
     x0 = v*v*t0
     return (1. + NTU - x0)*exp(-x0)*v*float(iv(0.0, v))
 
@@ -608,7 +610,7 @@ possible for this configuration; the maximum effectiveness possible is %s." % ((
         raise ValueError("Input heat exchanger type not recognized")
 
 
-def calc_Cmin(mh, mc, Cph, Cpc):
+def calc_Cmin(mh: float, mc: float, Cph: float, Cpc: int) -> float:
     r"""Returns the heat capacity rate for the minimum stream
     having flows `mh` and `mc`, with averaged heat capacities `Cph` and `Cpc`.
 
@@ -658,7 +660,7 @@ def calc_Cmin(mh, mc, Cph, Cpc):
     return min(Ch, Cc)
 
 
-def calc_Cmax(mh, mc, Cph, Cpc):
+def calc_Cmax(mh: float, mc: float, Cph: float, Cpc: int) -> float:
     r"""Returns the heat capacity rate for the maximum stream
     having flows `mh` and `mc`, with averaged heat capacities `Cph` and `Cpc`.
 
@@ -710,7 +712,7 @@ def calc_Cmax(mh, mc, Cph, Cpc):
     return max(Ch, Cc)
 
 
-def calc_Cr(mh, mc, Cph, Cpc):
+def calc_Cr(mh: float, mc: float, Cph: float, Cpc: int) -> float:
     r"""Returns the heat capacity rate ratio for a heat exchanger
     having flows `mh` and `mc`, with averaged heat capacities `Cph` and `Cpc`.
 
@@ -759,7 +761,7 @@ def calc_Cr(mh, mc, Cph, Cpc):
     return Cmin/Cmax
 
 
-def NTU_from_UA(UA, Cmin):
+def NTU_from_UA(UA: float, Cmin: float) -> float:
     r"""Returns the Number of Transfer Units for a heat exchanger having
     `UA`, and with `Cmin` heat capacity rate.
 
@@ -796,7 +798,7 @@ def NTU_from_UA(UA, Cmin):
     return UA/Cmin
 
 
-def UA_from_NTU(NTU, Cmin):
+def UA_from_NTU(NTU: float, Cmin: float) -> float:
     r"""Returns the combined area-heat transfer term for a heat exchanger
     having a specified `NTU`, and with `Cmin` heat capacity rate.
 
@@ -1100,7 +1102,7 @@ def effectiveness_NTU_method(mh, mc, Cph, Cpc, subtype="counterflow", Thi=None,
             "Tci": Tci, "Tco": Tco}
 
 
-def temperature_effectiveness_air_cooler(R1, NTU1, rows, passes, coerce=True):
+def temperature_effectiveness_air_cooler(R1: float, NTU1: float, rows: int, passes: int, coerce: bool=True) -> float:
     r"""Returns temperature effectiveness `P1` of an air cooler with
     a specified heat capacity ratio, number of transfer units `NTU1`,
     number of rows `rows`, and number of passes `passes`. The supported cases
@@ -1323,7 +1325,7 @@ def temperature_effectiveness_air_cooler(R1, NTU1, rows, passes, coerce=True):
             raise ValueError("Number of passes and rows not supported.")
 
 
-def temperature_effectiveness_basic(R1, NTU1, subtype="crossflow"):
+def temperature_effectiveness_basic(R1: Union[float64, float], NTU1: Union[int, float64, float], subtype: str="crossflow") -> Union[float64, float]:
     r"""Returns temperature effectiveness `P1` of a heat exchanger with
     a specified heat capacity ratio, number of transfer units `NTU1`,
     and of type `subtype`. This function performs the calculations for the
@@ -1476,7 +1478,7 @@ def temperature_effectiveness_basic(R1, NTU1, subtype="crossflow"):
     return P1
 
 
-def temperature_effectiveness_TEMA_J(R1, NTU1, Ntp):
+def temperature_effectiveness_TEMA_J(R1: float, NTU1: float, Ntp: int) -> float:
     r"""Returns temperature effectiveness `P1` of a TEMA J type heat exchanger
     with a specified heat capacity ratio, number of transfer units `NTU1`,
     and of number of tube passes `Ntp`. The supported cases are as follows:
@@ -1603,7 +1605,7 @@ def temperature_effectiveness_TEMA_J(R1, NTU1, Ntp):
     return P1
 
 
-def temperature_effectiveness_TEMA_H(R1, NTU1, Ntp, optimal=True):
+def temperature_effectiveness_TEMA_H(R1: float, NTU1: float, Ntp: int, optimal: bool=True) -> float:
     r"""Returns temperature effectiveness `P1` of a TEMA H type heat exchanger
     with a specified heat capacity ratio, number of transfer units `NTU1`,
     and of number of tube passes `Ntp`. For the two tube pass case, there are
@@ -1780,7 +1782,7 @@ def temperature_effectiveness_TEMA_H(R1, NTU1, Ntp, optimal=True):
     return P1
 
 
-def temperature_effectiveness_TEMA_G(R1, NTU1, Ntp, optimal=True):
+def temperature_effectiveness_TEMA_G(R1: float, NTU1: float, Ntp: int, optimal: bool=True) -> float:
     r"""Returns temperature effectiveness `P1` of a TEMA G type heat exchanger
     with a specified heat capacity ratio, number of transfer units `NTU1`,
     and of number of tube passes `Ntp`. For the two tube pass case, there are
@@ -1929,7 +1931,7 @@ def temperature_effectiveness_TEMA_G(R1, NTU1, Ntp, optimal=True):
     return P1
 
 
-def temperature_effectiveness_TEMA_E(R1, NTU1, Ntp=1, optimal=True):
+def temperature_effectiveness_TEMA_E(R1: float, NTU1: float, Ntp: int=1, optimal: bool=True) -> float:
     r"""Returns temperature effectiveness `P1` of a TEMA E type heat exchanger
     with a specified heat capacity ratio, number of transfer units `NTU1`,
     number of tube passes `Ntp`, and whether or not it is arranged in a more
@@ -2186,8 +2188,8 @@ def temperature_effectiveness_TEMA_E(R1, NTU1, Ntp=1, optimal=True):
     return P1
 
 
-def temperature_effectiveness_plate(R1, NTU1, Np1, Np2, counterflow=True,
-                                    passes_counterflow=True, reverse=False):
+def temperature_effectiveness_plate(R1: float, NTU1: float, Np1: int, Np2: int, counterflow: bool=True,
+                                    passes_counterflow: bool=True, reverse: bool=False) -> float:
     r"""Returns the temperature effectiveness `P1` of side 1 of a plate heat
     exchanger with a specified side 1 heat capacity ratio `R1`, side 1 number
     of transfer units `NTU1`, number of passes on sides 1 and 2 (respectively
@@ -3164,7 +3166,7 @@ def _NTU_from_P_objective(NTU1, R1, P1, function, *args):
     return P1_calc - P1
 
 
-def _NTU_from_P_erf(NTU1, *args):
+def _NTU_from_P_erf(NTU1: Union[int, float64, float], *args) -> Union[float64, float]:
     """Private function to hold the common objective function used by
     all backwards solvers for the P-NTU method.
     These methods are really hard on on floating points (overflows and divide
@@ -3174,7 +3176,7 @@ def _NTU_from_P_erf(NTU1, *args):
     R1, P1, function = args[0], args[1], args[2]
     return function(R1, NTU1, *args[3:]) - P1
 
-def _NTU_from_P_solver(P1, R1, NTU_min, NTU_max, function, guess, *args):
+def _NTU_from_P_solver(P1: Union[float64, float], R1: Union[float64, float], NTU_min: Optional[float], NTU_max: Optional[Union[int, float64, float]], function: Callable, guess: Optional[float], *args) -> Union[int, float64, float]:
     """Private function to solve the P-NTU method backwards, given the
     function to use, the upper and lower NTU bounds for consideration,
     and the desired P1 and R1 values.
@@ -3208,7 +3210,7 @@ def _NTU_from_P_solver(P1, R1, NTU_min, NTU_max, function, guess, *args):
     return brenth(_NTU_from_P_erf, NTU_min, NTU_max, args=args2)
 
 
-def _NTU_max_for_P_solver(ps, qs, offsets, R1):
+def _NTU_max_for_P_solver(ps: List[List[float]], qs: List[List[float]], offsets: List[float], R1: Union[float64, float]) -> Union[float64, float]:
     """Private function to calculate the upper bound on the NTU1 value in the
     P-NTU method. This value is calculated via a pade approximation obtained
     on the result of a global minimizer which calculated the maximum P1
@@ -3222,7 +3224,7 @@ def _NTU_max_for_P_solver(ps, qs, offsets, R1):
             return horner(p, x)/horner(q, x)
 
 
-def NTU_from_P_basic(P1, R1, subtype="crossflow"):
+def NTU_from_P_basic(P1: Union[float64, float], R1: Union[float64, float], subtype: str="crossflow") -> Union[float64, float]:
     r"""Returns the number of transfer units of a basic heat exchanger type
     with a specified (for side 1) thermal effectiveness `P1`, and heat capacity
     ratio `R1`. The supported cases are as follows:
@@ -3332,7 +3334,7 @@ def NTU_from_P_basic(P1, R1, subtype="crossflow"):
     return _NTU_from_P_solver(P1, R1, NTU_min, NTU_max, temperature_effectiveness_basic, guess, subtype)
 
 
-def NTU_from_P_G(P1, R1, Ntp, optimal=True):
+def NTU_from_P_G(P1: float, R1: float, Ntp: int, optimal: bool=True) -> float:
     r"""Returns the number of transfer units of a TEMA G type heat exchanger
     with a specified (for side 1) thermal effectiveness `P1`, heat capacity
     ratio `R1`, the number of tube passes `Ntp`, and for the two-pass case
@@ -3409,7 +3411,7 @@ def NTU_from_P_G(P1, R1, Ntp, optimal=True):
     return _NTU_from_P_solver(P1, R1, NTU_min, NTU_max, function, None, Ntp, optimal)
 
 
-def NTU_from_P_J(P1, R1, Ntp):
+def NTU_from_P_J(P1: float, R1: float, Ntp: int) -> float:
     r"""Returns the number of transfer units of a TEMA J type heat exchanger
     with a specified (for side 1) thermal effectiveness `P1`, heat capacity
     ratio `R1`, and the number of tube passes `Ntp`. The supported cases are
@@ -3482,7 +3484,7 @@ def NTU_from_P_J(P1, R1, Ntp):
     return _NTU_from_P_solver(P1, R1, NTU_min, NTU_max, function, None, Ntp)
 
 
-def NTU_from_P_E(P1, R1, Ntp, optimal=True):
+def NTU_from_P_E(P1: float, R1: float, Ntp: int, optimal: bool=True) -> float:
     r"""Returns the number of transfer units of a TEMA E type heat exchanger
     with a specified (for side 1) thermal effectiveness `P1`, heat capacity
     ratio `R1`, the number of tube passes `Ntp`, and for the two-pass case
@@ -3593,7 +3595,7 @@ def NTU_from_P_E(P1, R1, Ntp, optimal=True):
     return _NTU_from_P_solver(P1, R1, NTU_min, NTU_max, function, None, Ntp, optimal)
 
 
-def NTU_from_P_H(P1, R1, Ntp, optimal=True):
+def NTU_from_P_H(P1: float, R1: float, Ntp: int, optimal: bool=True) -> float:
     r"""Returns the number of transfer units of a TEMA H type heat exchanger
     with a specified (for side 1) thermal effectiveness `P1`, heat capacity
     ratio `R1`, the number of tube passes `Ntp`, and for the two-pass case
@@ -3661,8 +3663,8 @@ def NTU_from_P_H(P1, R1, Ntp, optimal=True):
                               None, Ntp, optimal)
 
 
-def NTU_from_P_plate(P1, R1, Np1, Np2, counterflow=True,
-                     passes_counterflow=True, reverse=False):
+def NTU_from_P_plate(P1: float, R1: float, Np1: int, Np2: int, counterflow: bool=True,
+                     passes_counterflow: bool=True, reverse: bool=False) -> float:
     r"""Returns the number of transfer units of a plate heat exchanger
     with a specified side 1 heat capacity ratio `R1`, side 1 number
     of transfer units `NTU1`, number of passes on sides 1 and 2 (respectively
@@ -3817,8 +3819,8 @@ def NTU_from_P_plate(P1, R1, Np1, Np2, counterflow=True,
                               Np2, counterflow, passes_counterflow)
 
 
-def P_NTU_method(m1, m2, Cp1, Cp2, UA=None, T1i=None, T1o=None,
-                 T2i=None, T2o=None, subtype="crossflow", Ntp=1, optimal=True):
+def P_NTU_method(m1: float, m2: float, Cp1: float, Cp2: float, UA: Optional[float]=None, T1i: Optional[int]=None, T1o: Optional[float]=None,
+                 T2i: Optional[int]=None, T2o: Optional[int]=None, subtype: str="crossflow", Ntp: int=1, optimal: bool=True) -> Dict[str, float]:
     r"""Wrapper for the various P-NTU method function calls,
     which can solve a heat exchanger. The heat capacities and mass flows
     of each stream and the type of the heat exchanger are always required.
@@ -4210,7 +4212,7 @@ def P_NTU_method(m1, m2, Cp1, Cp2, UA=None, T1i=None, T1o=None,
     return results
 
 
-def F_LMTD_Fakheri(Thi, Tho, Tci, Tco, shells=1):
+def F_LMTD_Fakheri(Thi: int, Tho: float, Tci: int, Tco: float, shells: int=1) -> float:
     r"""Calculates the log-mean temperature difference correction factor `Ft`
     for a shell-and-tube heat exchanger with one or an even number of tube
     passes, and a given number of shell passes, with the expression given in
@@ -4401,7 +4403,7 @@ HEDH_pitches = {0.25: (1.25, 1.5), 0.375: (1.330, 1.420),
 0.75: (1.250, 1.330, 1.420, 1.500), 1.: (1.250, 1.312, 1.375),
 1.25: (1.250,), 1.5: (1.250,), 2.: (1.250,)}
 
-def DBundle_min(Do):
+def DBundle_min(Do: float) -> float:
     r"""Very roughly, determines a good choice of shell diameter for a given
     tube outer diameter, according to figure 1, section 3.3.5 in [1]_.
 
@@ -4440,7 +4442,7 @@ def DBundle_min(Do):
     return 1.5
 
 
-def shell_clearance(DBundle=None, DShell=None):
+def shell_clearance(DBundle: Optional[float]=None, DShell: Optional[float]=None) -> float:
     r"""Looks up the recommended clearance between a shell and tube bundle in
     a TEMA HX [1]. Either the bundle diameter or the shell diameter are needed
     provided.
@@ -4629,7 +4631,7 @@ _L_unsupported_aluminium = [0.559, 0.762, 0.965, 1.143, 1.321, 1.524, 1.626,
                             1.93, 2.21, 2.794, 2.794, 2.794]
 
 
-def L_unsupported_max(Do, material="CS"):
+def L_unsupported_max(Do: float, material: str="CS") -> float:
     r"""Determines the maximum length of a heat exchanger tube can go without
     a support, according to TEMA [1]_. The limits provided apply for the
     worst-case temperature allowed for the material to be used at.
@@ -4691,7 +4693,7 @@ def L_unsupported_max(Do, material="CS"):
 
 square_C1s = square_Ns = triangular_C1s = triangular_Ns = None
 
-def _load_coeffs_Phadkeb():
+def _load_coeffs_Phadkeb() -> None:
     global square_C1s, square_Ns, triangular_C1s, triangular_Ns
     hx_data_folder = os.path.join(os.path.dirname(__file__), "data")
     triangular_Ns = np.load(os.path.join(hx_data_folder, "triangular_Ns_Phadkeb.npy"))
@@ -4699,7 +4701,7 @@ def _load_coeffs_Phadkeb():
     square_Ns = np.load(os.path.join(hx_data_folder, "square_Ns_Phadkeb.npy"))
     square_C1s = np.load(os.path.join(hx_data_folder, "square_C1s_Phadkeb.npy"))
 
-def Ntubes_Phadkeb(DBundle, Do, pitch, Ntp, angle=30):
+def Ntubes_Phadkeb(DBundle: Union[int, float64, float], Do: float, pitch: float, Ntp: int, angle: float=30) -> int:
     r"""Using tabulated values and correction factors for number of passes,
     the highly accurate method of [1]_ is used to obtain the tube count
     of a given tube bundle outer diameter for a given tube size and pitch.
@@ -4920,11 +4922,11 @@ def Ntubes_Phadkeb(DBundle, Do, pitch, Ntp, angle=30):
         ans = 0 # pragma: no cover
     return ans
 
-def to_solve_Ntubes_Phadkeb(DBundle, Do, pitch, Ntp, angle, Ntubes):
+def to_solve_Ntubes_Phadkeb(DBundle: Union[int, float64], Do: float, pitch: float, Ntp: int, angle: int, Ntubes: int) -> int:
     ans = Ntubes_Phadkeb(DBundle=DBundle, Do=Do, pitch=pitch, Ntp=Ntp, angle=angle) - Ntubes
     return ans
 
-def DBundle_for_Ntubes_Phadkeb(Ntubes, Do, pitch, Ntp, angle=30):
+def DBundle_for_Ntubes_Phadkeb(Ntubes: int, Do: float, pitch: float, Ntp: int, angle: int=30) -> float64:
     r"""Determine the bundle diameter required to fit a specified number of
     tubes in a heat exchanger. Uses the highly accurate method of [1]_,
     which takes into account pitch, number of tube passes, angle,
@@ -4978,7 +4980,7 @@ def DBundle_for_Ntubes_Phadkeb(Ntubes, Do, pitch, Ntp, angle=30):
     return float(bisect(to_solve_Ntubes_Phadkeb, 0, DBundle_max, args=(Do, pitch, Ntp, angle, Ntubes)))
 
 
-def Ntubes_Perrys(DBundle, Do, Ntp, angle=30):
+def Ntubes_Perrys(DBundle: float, Do: float, Ntp: int, angle: int=30) -> int:
     r"""A rough equation presented in Perry's Handbook [1]_ for estimating
     the number of tubes in a tube bundle of differing geometries and tube
     sizes. Claimed accuracy of 24 tubes.
@@ -5043,7 +5045,7 @@ def Ntubes_Perrys(DBundle, Do, Ntp, angle=30):
             raise ValueError("N passes not 1, 2, 4 or 6")
     return int(Nt)
 
-def Ntubes_VDI(DBundle=None, Ntp=None, Do=None, pitch=None, angle=30.):
+def Ntubes_VDI(DBundle: Optional[float]=None, Ntp: Optional[int]=None, Do: Optional[float]=None, pitch: Optional[float]=None, angle: int=30.) -> int:
     r"""A rough equation presented in the VDI Heat Atlas for estimating
     the number of tubes in a tube bundle of differing geometries and tube
     sizes. No accuracy estimation given.
@@ -5109,7 +5111,7 @@ def Ntubes_VDI(DBundle=None, Ntp=None, Do=None, pitch=None, angle=30.):
     return int(Ntubes)
 
 
-def D_for_Ntubes_VDI(N, Ntp, Do, pitch, angle=30):
+def D_for_Ntubes_VDI(N: int, Ntp: float, Do: float, pitch: float, angle: float=30) -> float:
     r"""A rough equation presented in the VDI Heat Atlas for estimating
     the size of a tube bundle from a given number of tubes, number of tube
     passes, outer tube diameter, pitch, and arrangement.
@@ -5177,7 +5179,7 @@ def D_for_Ntubes_VDI(N, Ntp, Do, pitch, angle=30):
     return Dshell/1000.
 
 
-def Ntubes_HEDH(DBundle=None, Do=None, pitch=None, angle=30):
+def Ntubes_HEDH(DBundle: Optional[float]=None, Do: Optional[float]=None, pitch: Optional[float]=None, angle: int=30) -> int:
     r"""A rough equation presented in the HEDH for estimating
     the number of tubes in a tube bundle of differing geometries and tube
     sizes. No accuracy estimation given. Only 1 pass is supported.
@@ -5229,7 +5231,7 @@ def Ntubes_HEDH(DBundle=None, Do=None, pitch=None, angle=30):
     return int(N)
 
 
-def DBundle_for_Ntubes_HEDH(N, Do, pitch, angle=30):
+def DBundle_for_Ntubes_HEDH(N: int, Do: float, pitch: float, angle: int=30) -> float:
     r"""A rough equation presented in the HEDH for estimating the tube bundle
     diameter necessary to fit a given number of tubes.
     No accuracy estimation given. Only 1 pass is supported.
@@ -5281,7 +5283,7 @@ def DBundle_for_Ntubes_HEDH(N, Do, pitch, angle=30):
     return (Do + (1./.78)**0.5*pitch*(C1*N)**0.5)
 
 
-def Ntubes(DBundle, Do, pitch, Ntp=1, angle=30, Method=None):
+def Ntubes(DBundle: float, Do: float, pitch: float, Ntp: int=1, angle: int=30, Method: Optional[str]=None) -> int:
     r"""Calculates the number of tubes which can fit in a heat exchanger.
     The tube count is effected by the pitch, number of tube passes, and angle.
 
@@ -5349,10 +5351,10 @@ def Ntubes(DBundle, Do, pitch, Ntp=1, angle=30, Method=None):
         raise ValueError('Method not recognized; allowable methods are '
                         '"Phadkeb", "HEDH", "VDI", and "Perry"')
 
-def _tubecount_objf_Perry(D, Do, Ntp, angle, N):
+def _tubecount_objf_Perry(D: float, Do: float, Ntp: int, angle: int, N: int) -> int:
     return Ntubes_Perrys(DBundle=D, Do=Do, Ntp=Ntp, angle=angle) - N
 
-def size_bundle_from_tubecount(N, Do, pitch, Ntp=1, angle=30, Method=None):
+def size_bundle_from_tubecount(N: int, Do: float, pitch: float, Ntp: int=1, angle: int=30, Method: Optional[str]=None) -> Union[float64, float]:
     r"""Calculates the outer diameter of a tube bundle containing a specified
     number of tubes.
     The tube count is effected by the pitch, number of tube passes, and angle.

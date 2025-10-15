@@ -29,8 +29,9 @@ from fluids.two_phase_voidage import Lockhart_Martinelli_Xtt
 
 from ht.boiling_nucleic import Cooper, Forster_Zuber
 from ht.conv_internal import turbulent_Dittus_Boelter, turbulent_Gnielinski
+from typing import List, Optional
 
-__all__ = [
+__all__: List[str] = [
     "Chen_Bennett",
     "Chen_Edelstein",
     "Lazarek_Black",
@@ -43,7 +44,7 @@ __all__ = [
 
 __numba_additional_funcs__ = ("to_solve_q_Thome",)
 
-def Lazarek_Black(m, D, mul, kl, Hvap, q=None, Te=None):
+def Lazarek_Black(m: float, D: float, mul: float, kl: float, Hvap: float, q: Optional[float]=None, Te: Optional[float]=None) -> float:
     r"""Calculates heat transfer coefficient for film boiling of saturated
     fluid in vertical tubes for either upward or downward flow. Correlation
     is as shown in [1]_, and also reviewed in [2]_ and [3]_.
@@ -122,7 +123,7 @@ def Lazarek_Black(m, D, mul, kl, Hvap, q=None, Te=None):
         raise ValueError("Either q or Te is needed for this correlation")
 
 
-def Li_Wu(m, x, D, rhol, rhog, mul, kl, Hvap, sigma, q=None, Te=None):
+def Li_Wu(m: float, x: float, D: float, rhol: float, rhog: float, mul: float, kl: float, Hvap: float, sigma: float, q: Optional[float]=None, Te: Optional[float]=None) -> float:
     r"""Calculates heat transfer coefficient for film boiling of saturated
     fluid in any orientation of flow. Correlation
     is as shown in [1]_, and also reviewed in [2]_ and [3]_.
@@ -208,7 +209,7 @@ def Li_Wu(m, x, D, rhol, rhog, mul, kl, Hvap, sigma, q=None, Te=None):
         raise ValueError("Either q or Te is needed for this correlation")
 
 
-def Sun_Mishima(m, D, rhol, rhog, mul, kl, Hvap, sigma, q=None, Te=None):
+def Sun_Mishima(m: float, D: float, rhol: float, rhog: float, mul: float, kl: float, Hvap: float, sigma: float, q: Optional[float]=None, Te: Optional[float]=None) -> float:
     r"""Calculates heat transfer coefficient for film boiling of saturated
     fluid in any orientation of flow. Correlation
     is as shown in [1]_, and also reviewed in [2]_.
@@ -291,8 +292,8 @@ def Sun_Mishima(m, D, rhol, rhog, mul, kl, Hvap, sigma, q=None, Te=None):
         raise ValueError("Either q or Te is needed for this correlation")
 
 
-def Thome(m, x, D, rhol, rhog, mul, mug, kl, kg, Cpl, Cpg, Hvap, sigma, Psat,
-          Pc, q=None, Te=None):
+def Thome(m: float, x: float, D: float, rhol: float, rhog: float, mul: float, mug: float, kl: float, kg: float, Cpl: float, Cpg: float, Hvap: float, sigma: float, Psat: float,
+          Pc: float, q: Optional[float]=None, Te: Optional[float]=None) -> float:
     r"""Calculates heat transfer coefficient for film boiling of saturated
     fluid in any orientation of flow. Correlation
     is as developed in [1]_ and [2]_, and also reviewed [3]_. This is a
@@ -523,11 +524,11 @@ def Thome(m, x, D, rhol, rhog, mul, mug, kl, kg, Cpl, Cpg, Hvap, sigma, Psat,
     h_film = 2*kl/(delta0 + C_delta0)
     return tl/tau*h_Zl + t_film/tau*h_film + t_dry/tau*h_Zg
 
-def to_solve_q_Thome(q, m, x, D, rhol, rhog, kl, kg, mul, mug, Cpl, Cpg, sigma, Hvap, Psat, Pc, Te):
+def to_solve_q_Thome(q: float, m: float, x: float, D: float, rhol: float, rhog: float, kl: float, kg: float, mul: float, mug: float, Cpl: float, Cpg: float, sigma: float, Hvap: float, Psat: float, Pc: float, Te: float) -> float:
     err = q/Thome(m=m, x=x, D=D, rhol=rhol, rhog=rhog, kl=kl, kg=kg, mul=mul, mug=mug, Cpl=Cpl, Cpg=Cpg, sigma=sigma, Hvap=Hvap, Psat=Psat, Pc=Pc, q=q) - Te
     return err
 
-def Yun_Heo_Kim(m, x, D, rhol, mul, Hvap, sigma, q=None, Te=None):
+def Yun_Heo_Kim(m: float, x: float, D: float, rhol: float, mul: float, Hvap: float, sigma: float, q: Optional[float]=None, Te: Optional[float]=None) -> float:
     r"""Calculates heat transfer coefficient for film boiling of saturated
     fluid in any orientation of flow. Correlation
     is as shown in [1]_ and [2]_, and also reviewed in [3]_.
@@ -610,8 +611,8 @@ def Yun_Heo_Kim(m, x, D, rhol, mul, Hvap, sigma, q=None, Te=None):
         raise ValueError("Either q or Te is needed for this correlation")
 
 
-def Chen_Edelstein(m, x, D, rhol, rhog, mul, mug, kl, Cpl, Hvap, sigma,
-                   dPsat, Te):
+def Chen_Edelstein(m: float, x: float, D: float, rhol: float, rhog: float, mul: float, mug: float, kl: float, Cpl: float, Hvap: float, sigma: float,
+                   dPsat: float, Te: float) -> float:
     r"""Calculates heat transfer coefficient for film boiling of saturated
     fluid in any orientation of flow. Correlation
     is developed in [1]_ and [2]_, and reviewed in [3]_. This model is one of
@@ -725,8 +726,8 @@ def Chen_Edelstein(m, x, D, rhol, rhog, mul, mug, kl, Cpl, Hvap, sigma,
     return hnb*S + hl*F
 
 
-def Chen_Bennett(m, x, D, rhol, rhog, mul, mug, kl, Cpl, Hvap, sigma,
-                   dPsat, Te):
+def Chen_Bennett(m: float, x: float, D: float, rhol: float, rhog: float, mul: float, mug: float, kl: float, Cpl: float, Hvap: float, sigma: float,
+                   dPsat: float, Te: float) -> float:
     r"""Calculates heat transfer coefficient for film boiling of saturated
     fluid in any orientation of flow. Correlation
     is developed in [1]_ and [2]_, and reviewed in [3]_. This model is one of
@@ -844,7 +845,7 @@ def Chen_Bennett(m, x, D, rhol, rhog, mul, mug, kl, Cpl, Hvap, sigma,
     return hnb*S + hl*F
 
 
-def Liu_Winterton(m, x, D, rhol, rhog, mul, kl, Cpl, MW, P,  Pc, Te):
+def Liu_Winterton(m: float, x: float, D: float, rhol: float, rhog: float, mul: float, kl: float, Cpl: float, MW: float, P: float,  Pc: float, Te: float) -> float:
     r"""Calculates heat transfer coefficient for film boiling of saturated
     fluid in any orientation of flow. Correlation
     is as developed in [1]_, also reviewed in [2]_ and [3]_.

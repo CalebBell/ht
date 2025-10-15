@@ -21,8 +21,9 @@ SOFTWARE.
 """
 
 from math import log10
+from typing import List, Optional
 
-__all__ = [
+__all__: List[str] = [
     "Nu_Bishop",
     "Nu_Bringer_Smith",
     "Nu_Gorban",
@@ -45,7 +46,7 @@ __all__ = [
 
 ### Vertical upflow only
 
-def Nu_McAdams(Re, Pr):
+def Nu_McAdams(Re: float, Pr: float) -> float:
     r"""Calculates internal convection Nusselt number for turbulent vertical
     upward flow in a pipe under supercritical conditions according to [1]_.
 
@@ -89,7 +90,7 @@ def Nu_McAdams(Re, Pr):
     return 0.0243*Re**0.8*Pr**0.4
 
 
-def Nu_Shitsman(Re, Pr_b, Pr_w):
+def Nu_Shitsman(Re: float, Pr_b: float, Pr_w: float) -> float:
     r"""Calculates internal convection Nusselt number for turbulent vertical
     upward flow in a pipe under supercritical conditions according to [1]_ and
     [2] as shown in both [3]_ and [4]_.
@@ -144,7 +145,7 @@ def Nu_Shitsman(Re, Pr_b, Pr_w):
     return 0.023*Re**0.8*min(Pr_b, Pr_w)**0.8
 
 
-def Nu_Griem(Re, Pr, H=None):
+def Nu_Griem(Re: float, Pr: float, H: Optional[float]=None) -> float:
     r"""Calculates internal convection Nusselt number for turbulent vertical
     upward flow in a pipe under supercritical conditions according to [1]_,
     also shown in [2]_, [3]_ and [4]_. Has complicated rules regarding where
@@ -231,8 +232,8 @@ def Nu_Griem(Re, Pr, H=None):
     return Nu
 
 
-def Nu_Jackson(Re, Pr, rho_w=None, rho_b=None, Cp_avg=None, Cp_b=None, T_b=None,
-               T_w=None, T_pc=None):
+def Nu_Jackson(Re: float, Pr: float, rho_w: Optional[float]=None, rho_b: Optional[float]=None, Cp_avg: Optional[float]=None, Cp_b: Optional[float]=None, T_b: Optional[int]=None,
+               T_w: Optional[int]=None, T_pc: Optional[int]=None) -> float:
     r"""Calculates internal convection Nusselt number for turbulent vertical
     upward flow in a pipe under supercritical conditions according to [1]_.
 
@@ -340,7 +341,7 @@ def Nu_Jackson(Re, Pr, rho_w=None, rho_b=None, Cp_avg=None, Cp_b=None, T_b=None,
     return Nu
 
 
-def Nu_Gupta(Re, Pr, rho_w=None, rho_b=None, mu_w=None, mu_b=None):
+def Nu_Gupta(Re: float, Pr: float, rho_w: Optional[int]=None, rho_b: Optional[float]=None, mu_w: Optional[float]=None, mu_b: Optional[float]=None) -> float:
     r"""Calculates internal convection Nusselt number for turbulent vertical
     upward flow in a pipe under supercritical conditions according to [1]_.
 
@@ -413,7 +414,7 @@ def Nu_Gupta(Re, Pr, rho_w=None, rho_b=None, mu_w=None, mu_b=None):
 
 
 
-def Nu_Swenson(Re, Pr, rho_w=None, rho_b=None):
+def Nu_Swenson(Re: float, Pr: float, rho_w: Optional[int]=None, rho_b: Optional[float]=None) -> float:
     r"""Calculates internal convection Nusselt number for turbulent vertical
     upward flow in a pipe under supercritical conditions according to [1]_.
 
@@ -489,7 +490,7 @@ def Nu_Swenson(Re, Pr, rho_w=None, rho_b=None):
     return Nu
 
 
-def Nu_Xu(Re, Pr, rho_w=None, rho_b=None, mu_w=None, mu_b=None):
+def Nu_Xu(Re: float, Pr: float, rho_w: Optional[int]=None, rho_b: Optional[float]=None, mu_w: Optional[float]=None, mu_b: Optional[float]=None) -> float:
     r"""Calculates internal convection Nusselt number for turbulent vertical
     upward flow in a pipe under supercritical conditions according to [1]_.
 
@@ -561,7 +562,7 @@ def Nu_Xu(Re, Pr, rho_w=None, rho_b=None, mu_w=None, mu_b=None):
     return Nu
 
 
-def Nu_Mokry(Re, Pr, rho_w=None, rho_b=None):
+def Nu_Mokry(Re: float, Pr: float, rho_w: Optional[int]=None, rho_b: Optional[float]=None) -> float:
     r"""Calculates internal convection Nusselt number for turbulent vertical
     upward flow in a pipe under supercritical conditions according to [1]_,
     and reviewed in [2]_.
@@ -631,7 +632,7 @@ def Nu_Mokry(Re, Pr, rho_w=None, rho_b=None):
     return Nu
 
 
-def Nu_Bringer_Smith(Re, Pr):
+def Nu_Bringer_Smith(Re: float, Pr: float) -> float:
     r"""Calculates internal convection Nusselt number for turbulent vertical
     upward flow in a pipe under near-supercritical conditions according to
     [1]_ and as shown in [2]_ and [3]_.
@@ -690,7 +691,7 @@ def Nu_Bringer_Smith(Re, Pr):
     return 0.0266*Re**0.77*Pr**0.55
 
 
-def Nu_Ornatsky(Re, Pr_b, Pr_w, rho_w=None, rho_b=None):
+def Nu_Ornatsky(Re: float, Pr_b: float, Pr_w: float, rho_w: Optional[int]=None, rho_b: Optional[float]=None) -> float:
     r"""Calculates internal convection Nusselt number for turbulent vertical
     upward flow in a pipe under supercritical conditions according to [1]_ as
     shown in both [2]_ and [3]_.
@@ -752,7 +753,7 @@ def Nu_Ornatsky(Re, Pr_b, Pr_w, rho_w=None, rho_b=None):
     return Nu
 
 
-def Nu_Gorban(Re, Pr):
+def Nu_Gorban(Re: float, Pr: float) -> float:
     r"""Calculates internal convection Nusselt number for turbulent vertical
     upward flow in a pipe under supercritical conditions according to [1]_.
     Not recommended.
@@ -799,7 +800,7 @@ def Nu_Gorban(Re, Pr):
     return 0.0059*Re**0.90*Pr**-0.12
 
 
-def Nu_Zhu(Re, Pr, rho_w=None, rho_b=None, k_w=None, k_b=None):
+def Nu_Zhu(Re: float, Pr: float, rho_w: Optional[int]=None, rho_b: Optional[float]=None, k_w: Optional[float]=None, k_b: Optional[float]=None) -> float:
     r"""Calculates internal convection Nusselt number for turbulent vertical
     upward flow in a pipe under supercritical conditions according to [1]_.
 
@@ -871,7 +872,7 @@ def Nu_Zhu(Re, Pr, rho_w=None, rho_b=None, k_w=None, k_b=None):
     return Nu
 
 
-def Nu_Bishop(Re, Pr, rho_w=None, rho_b=None, D=None, x=None):
+def Nu_Bishop(Re: float, Pr: float, rho_w: Optional[float]=None, rho_b: Optional[float]=None, D: Optional[float]=None, x: Optional[float]=None) -> float:
     r"""Calculates internal convection Nusselt number for turbulent vertical
     upward flow in a pipe under supercritical conditions according to [1]_.
     Correlation includes an adjustment for the thermal entry length.
@@ -958,8 +959,8 @@ def Nu_Bishop(Re, Pr, rho_w=None, rho_b=None, D=None, x=None):
     return Nu
 
 
-def Nu_Yamagata(Re, Pr, Pr_pc=None, Cp_avg=None, Cp_b=None, T_b=None,
-               T_w=None, T_pc=None):
+def Nu_Yamagata(Re: float, Pr: float, Pr_pc: Optional[float]=None, Cp_avg: Optional[float]=None, Cp_b: Optional[float]=None, T_b: Optional[int]=None,
+               T_w: Optional[int]=None, T_pc: Optional[float]=None) -> float:
     r"""Calculates internal convection Nusselt number for turbulent vertical
     upward flow in a pipe under supercritical conditions according to [1]_.
 
@@ -1068,7 +1069,7 @@ def Nu_Yamagata(Re, Pr, Pr_pc=None, Cp_avg=None, Cp_b=None, T_b=None,
     return 0.0138*Re**0.85*Pr**0.8*F
 
 
-def Nu_Kitoh(Re, Pr, H=None, G=None, q=None):
+def Nu_Kitoh(Re: float, Pr: float, H: Optional[float]=None, G: Optional[int]=None, q: Optional[float]=None) -> float:
     r"""Calculates internal convection Nusselt number for turbulent vertical
     upward flow in a pipe under supercritical conditions according to [1]_,
     also shown in [2]_, [3]_ and [4]_. Depends on fluid enthalpy, mass flux,
@@ -1173,8 +1174,8 @@ def Nu_Kitoh(Re, Pr, H=None, G=None, q=None):
     return 0.015*Re**0.85*Pr**m
 
 
-def Nu_Krasnoshchekov_Protopopov(Re, Pr, Cp_avg=None, Cp_b=None, k_w=None,
-                                 k_b=None, mu_w=None, mu_b=None):
+def Nu_Krasnoshchekov_Protopopov(Re: float, Pr: float, Cp_avg: Optional[int]=None, Cp_b: Optional[float]=None, k_w: Optional[float]=None,
+                                 k_b: Optional[float]=None, mu_w: Optional[float]=None, mu_b: Optional[float]=None) -> float:
     r"""Calculates internal convection Nusselt number for turbulent vertical
     upward flow in a pipe under supercritical conditions according to [1]_.
 
@@ -1263,7 +1264,7 @@ def Nu_Krasnoshchekov_Protopopov(Re, Pr, Cp_avg=None, Cp_b=None, k_w=None,
     return Nu
 
 
-def Nu_Petukhov(Re, Pr, rho_w=None, rho_b=None, mu_w=None, mu_b=None):
+def Nu_Petukhov(Re: float, Pr: float, rho_w: Optional[float]=None, rho_b: Optional[float]=None, mu_w: Optional[float]=None, mu_b: Optional[float]=None) -> float:
     r"""Calculates internal convection Nusselt number for turbulent vertical
     upward flow in a pipe under supercritical conditions according to [1]_.
 
@@ -1331,8 +1332,8 @@ def Nu_Petukhov(Re, Pr, rho_w=None, rho_b=None, mu_w=None, mu_b=None):
     return (fd/8.)*Re*Pr/(1 + 900./Re + 12.7*(fd/8.)**0.5*(Pr**(2/3.)-1))
 
 
-def Nu_Krasnoshchekov(Re, Pr, rho_w=None, rho_b=None, Cp_avg=None, Cp_b=None,
-                      T_b=None, T_w=None, T_pc=None):
+def Nu_Krasnoshchekov(Re: float, Pr: float, rho_w: Optional[float]=None, rho_b: Optional[float]=None, Cp_avg: Optional[float]=None, Cp_b: Optional[float]=None,
+                      T_b: Optional[float]=None, T_w: Optional[float]=None, T_pc: Optional[float]=None) -> float:
     r"""Calculates internal convection Nusselt number for turbulent vertical
     upward flow in a pipe under supercritical conditions according to [1]_.
 

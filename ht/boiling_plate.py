@@ -25,8 +25,9 @@ from math import radians
 from fluids.constants import g
 from fluids.core import Bond, Prandtl, thermal_diffusivity
 from fluids.two_phase_voidage import Lockhart_Martinelli_Xtt
+from typing import List
 
-__all__ = [
+__all__: List[str] = [
     "h_boiling_Amalfi",
     "h_boiling_Han_Lee_Kim",
     "h_boiling_Huang_Sheer",
@@ -34,8 +35,8 @@ __all__ = [
     "h_boiling_Yan_Lin",
 ]
 
-def h_boiling_Amalfi(m, x, Dh, rhol, rhog, mul, mug, kl, Hvap, sigma, q,
-                     A_channel_flow, chevron_angle=45.0):
+def h_boiling_Amalfi(m: float, x: float, Dh: float, rhol: float, rhog: float, mul: float, mug: float, kl: float, Hvap: float, sigma: float, q: float,
+                     A_channel_flow: float, chevron_angle: float=45.0) -> float:
     r"""Calculates the two-phase boiling heat transfer coefficient of a
     liquid and gas flowing inside a plate and frame heat exchanger, as
     developed in [1]_ from a wide range of existing correlations and data sets.
@@ -141,8 +142,8 @@ def h_boiling_Amalfi(m, x, Dh, rhol, rhog, mul, mug, kl, Hvap, sigma, q,
     return kl/Dh*Nu_tp
 
 
-def h_boiling_Lee_Kang_Kim(m, x, D_eq, rhol, rhog, mul, mug, kl, Hvap, q,
-                           A_channel_flow):
+def h_boiling_Lee_Kang_Kim(m: float, x: float, D_eq: float, rhol: float, rhog: float, mul: float, mug: float, kl: float, Hvap: float, q: float,
+                           A_channel_flow: float) -> float:
     r"""Calculates the two-phase boiling heat transfer coefficient of a
     liquid and gas flowing inside a plate and frame heat exchanger, as
     shown in [1]_ and reviewed in [2]_.
@@ -236,8 +237,8 @@ def h_boiling_Lee_Kang_Kim(m, x, D_eq, rhol, rhog, mul, mug, kl, Hvap, q,
     return h
 
 
-def h_boiling_Han_Lee_Kim(m, x, Dh, rhol, rhog, mul, kl, Hvap, Cpl, q,
-                          A_channel_flow, wavelength, chevron_angle=45.0):
+def h_boiling_Han_Lee_Kim(m: float, x: float, Dh: float, rhol: float, rhog: float, mul: float, kl: float, Hvap: float, Cpl: float, q: float,
+                          A_channel_flow: float, wavelength: float, chevron_angle: int=45.0) -> float:
     r"""Calculates the two-phase boiling heat transfer coefficient of a
     liquid and gas flowing inside a plate and frame heat exchanger, as
     developed in [1]_ from experiments with three plate exchangers and the
@@ -365,8 +366,8 @@ def h_boiling_Han_Lee_Kim(m, x, Dh, rhol, rhog, mul, kl, Hvap, Cpl, q,
     return Ge1*kl/Dh*Re_eq**Ge2*Bo_eq**0.3*Pr**0.4
 
 
-def h_boiling_Huang_Sheer(rhol, rhog, mul, kl, Hvap, sigma, Cpl, q, Tsat,
-                          angle=35.):
+def h_boiling_Huang_Sheer(rhol: float, rhog: float, mul: float, kl: float, Hvap: float, sigma: float, Cpl: float, q: float, Tsat: float,
+                          angle: float=35.) -> float:
     r"""Calculates the two-phase boiling heat transfer coefficient of a
     liquid and gas flowing inside a plate and frame heat exchanger, as
     developed in [1]_ and again in the thesis [2]_. Depends on the properties
@@ -472,8 +473,8 @@ def h_boiling_Huang_Sheer(rhol, rhog, mul, kl, Hvap, sigma, Cpl, q, Tsat,
     return h
 
 
-def h_boiling_Yan_Lin(m, x, Dh, rhol, rhog, mul, kl, Hvap, Cpl, q,
-                      A_channel_flow):
+def h_boiling_Yan_Lin(m: float, x: float, Dh: float, rhol: float, rhog: float, mul: float, kl: float, Hvap: float, Cpl: float, q: float,
+                      A_channel_flow: float) -> float:
     r"""Calculates the two-phase boiling heat transfer coefficient of a
     liquid and gas flowing inside a plate and frame heat exchanger, as
     developed in [1]_. Reviewed in [2]_, [3]_, [4]_, and [5]_.

@@ -21,8 +21,9 @@ SOFTWARE.
 """
 
 from math import log
+from typing import List, Optional
 
-__all__ = [
+__all__: List[str] = [
     "Nu_coil_Xin_Ebadian",
     "Nu_free_horizontal_plate",
     "Nu_free_horizontal_plate_methods",
@@ -53,7 +54,7 @@ __all__ = [
 ]
 
 
-def Nu_vertical_plate_Churchill(Pr, Gr):
+def Nu_vertical_plate_Churchill(Pr: float, Gr: float) -> float:
     r"""Calculates Nusselt number for natural convection around a vertical
     plate according to the Churchill-Chu [1]_ correlation, also presented in
     [2]_. Plate must be isothermal; an alternate expression exists for constant
@@ -109,7 +110,7 @@ def Nu_vertical_plate_Churchill(Pr, Gr):
 
 Nu_free_vertical_plate_all_methods = ["Churchill"]
 
-def Nu_free_vertical_plate_methods(Pr, Gr, H=None, W=None, check_ranges=True):
+def Nu_free_vertical_plate_methods(Pr: float, Gr: float, H: Optional[float]=None, W: Optional[float]=None, check_ranges: bool=True) -> List[str]:
     r"""This function returns a list of methods for calculating heat transfer
     coefficient for external free convection from a verical plate.
 
@@ -147,7 +148,7 @@ def Nu_free_vertical_plate_methods(Pr, Gr, H=None, W=None, check_ranges=True):
     """
     return Nu_free_vertical_plate_all_methods
 
-def Nu_free_vertical_plate(Pr, Gr, buoyancy=None, H=None, W=None, Method=None):
+def Nu_free_vertical_plate(Pr: float, Gr: float, buoyancy: None=None, H: Optional[float]=None, W: Optional[float]=None, Method: Optional[str]=None) -> float:
     r"""This function calculates the heat transfer coefficient for external
     free convection from a verical plate.
 
@@ -204,7 +205,7 @@ def Nu_free_vertical_plate(Pr, Gr, buoyancy=None, H=None, W=None, Method=None):
                         "documentation for the available options.")
 
 
-def Nu_horizontal_plate_McAdams(Pr, Gr, buoyancy=True):
+def Nu_horizontal_plate_McAdams(Pr: float, Gr: float, buoyancy: bool=True) -> float:
     r"""Calculates the Nusselt number for natural convection above a horizontal
     plate according to the McAdams [1]_ correlations. The plate must be
     isothermal. Four different equations are used, two each for laminar and
@@ -263,7 +264,7 @@ def Nu_horizontal_plate_McAdams(Pr, Gr, buoyancy=True):
     return Nu
 
 
-def Nu_horizontal_plate_VDI(Pr, Gr, buoyancy=True):
+def Nu_horizontal_plate_VDI(Pr: float, Gr: float, buoyancy: bool=True) -> float:
     r"""Calculates the Nusselt number for natural convection above a horizontal
     plate according to the VDI [1]_ correlations. The plate must be
     isothermal. Three different equations are used, one each for laminar and
@@ -333,7 +334,7 @@ def Nu_horizontal_plate_VDI(Pr, Gr, buoyancy=True):
         return 0.6*(Ra*f1)**0.2
 
 
-def Nu_horizontal_plate_Rohsenow(Pr, Gr, buoyancy=True):
+def Nu_horizontal_plate_Rohsenow(Pr: float, Gr: float, buoyancy: bool=True) -> float:
     r"""Calculates the Nusselt number for natural convection above a horizontal
     plate according to the Rohsenow, Hartnett, and Cho (1998) [1]_ correlations.
     The plate must be isothermal. Three different equations are used, one each
@@ -417,8 +418,8 @@ conv_free_horizontal_plate_all_methods = {
 Nu_free_horizontal_plate_all_methods = ["VDI", "McAdams", "Rohsenow"]
 
 
-def Nu_free_horizontal_plate_methods(Pr, Gr, buoyancy, L=None, W=None,
-                                     check_ranges=True):
+def Nu_free_horizontal_plate_methods(Pr: float, Gr: float, buoyancy: bool, L: Optional[float]=None, W: Optional[float]=None,
+                                     check_ranges: bool=True) -> List[str]:
     r"""This function returns a list of methods for calculating heat transfer
     coefficient for external free convection from a verical plate.
 
@@ -459,8 +460,8 @@ def Nu_free_horizontal_plate_methods(Pr, Gr, buoyancy, L=None, W=None,
     """
     return Nu_free_horizontal_plate_all_methods
 
-def Nu_free_horizontal_plate(Pr, Gr, buoyancy, L=None, W=None,
-                             Method=None):
+def Nu_free_horizontal_plate(Pr: float, Gr: float, buoyancy: bool, L: Optional[float]=None, W: Optional[float]=None,
+                             Method: Optional[str]=None) -> float:
     r"""This function calculates the heat transfer coefficient for external
     free convection from a horizontal plate.
 
@@ -525,7 +526,7 @@ def Nu_free_horizontal_plate(Pr, Gr, buoyancy, L=None, W=None,
                         "documentation for the available options.")
 
 
-def Nu_sphere_Churchill(Pr, Gr):
+def Nu_sphere_Churchill(Pr: float, Gr: float) -> float:
     r"""Calculates Nusselt number for natural convection around a sphere
     according to the Churchill [1]_ correlation. Sphere must be isothermal.
 
@@ -573,7 +574,7 @@ def Nu_sphere_Churchill(Pr, Gr):
 
 ### Vertical cylinders
 
-def Nu_vertical_cylinder_Griffiths_Davis_Morgan(Pr, Gr, turbulent=None):
+def Nu_vertical_cylinder_Griffiths_Davis_Morgan(Pr: float, Gr: float, turbulent: Optional[bool]=None) -> float:
     r"""Calculates Nusselt number for natural convection around a vertical
     isothermal cylinder according to the results of [1]_ correlated by [2]_, as
     presented in [3]_ and [4]_.
@@ -633,7 +634,7 @@ def Nu_vertical_cylinder_Griffiths_Davis_Morgan(Pr, Gr, turbulent=None):
     return Nu
 
 
-def Nu_vertical_cylinder_Jakob_Linke_Morgan(Pr, Gr, turbulent=None):
+def Nu_vertical_cylinder_Jakob_Linke_Morgan(Pr: float, Gr: float, turbulent: Optional[bool]=None) -> float:
     r"""Calculates Nusselt number for natural convection around a vertical
     isothermal cylinder according to the results of [1]_ correlated by [2]_, as
     presented in [3]_ and [4]_.
@@ -695,7 +696,7 @@ def Nu_vertical_cylinder_Jakob_Linke_Morgan(Pr, Gr, turbulent=None):
     return Nu
 
 
-def Nu_vertical_cylinder_Carne_Morgan(Pr, Gr, turbulent=None):
+def Nu_vertical_cylinder_Carne_Morgan(Pr: float, Gr: float, turbulent: Optional[bool]=None) -> float:
     r"""Calculates Nusselt number for natural convection around a vertical
     isothermal cylinder according to the results of [1]_ correlated by [2]_, as
     presented in [3]_ and [4]_.
@@ -758,7 +759,7 @@ def Nu_vertical_cylinder_Carne_Morgan(Pr, Gr, turbulent=None):
         return 1.07*Ra**0.28
 
 
-def Nu_vertical_cylinder_Eigenson_Morgan(Pr, Gr, turbulent=None):
+def Nu_vertical_cylinder_Eigenson_Morgan(Pr: float, Gr: float, turbulent: None=None) -> float:
     r"""Calculates Nusselt number for natural convection around a vertical
     isothermal cylinder according to the results of [1]_ correlated by [2]_,
     presented in [3]_ and in more detail in [4]_.
@@ -827,7 +828,7 @@ def Nu_vertical_cylinder_Eigenson_Morgan(Pr, Gr, turbulent=None):
         return 0.48*Ra**0.25
 
 
-def Nu_vertical_cylinder_Touloukian_Morgan(Pr, Gr, turbulent=None):
+def Nu_vertical_cylinder_Touloukian_Morgan(Pr: float, Gr: float, turbulent: Optional[bool]=None) -> float:
     r"""Calculates Nusselt number for natural convection around a vertical
     isothermal cylinder according to the results of [1]_ correlated by [2]_, as
     presented in [3]_ and [4]_.
@@ -889,7 +890,7 @@ def Nu_vertical_cylinder_Touloukian_Morgan(Pr, Gr, turbulent=None):
         return 0.726*Ra**0.25
 
 
-def Nu_vertical_cylinder_McAdams_Weiss_Saunders(Pr, Gr, turbulent=None):
+def Nu_vertical_cylinder_McAdams_Weiss_Saunders(Pr: float, Gr: float, turbulent: Optional[bool]=None) -> float:
     r"""Calculates Nusselt number for natural convection around a vertical
     isothermal cylinder according to the results of [1]_ and [2]_ correlated by
     [3]_, as presented in [4]_, [5]_, and [6]_.
@@ -954,7 +955,7 @@ def Nu_vertical_cylinder_McAdams_Weiss_Saunders(Pr, Gr, turbulent=None):
         return 0.59*Ra**0.25
 
 
-def Nu_vertical_cylinder_Kreith_Eckert(Pr, Gr, turbulent=None):
+def Nu_vertical_cylinder_Kreith_Eckert(Pr: float, Gr: float, turbulent: Optional[bool]=None) -> float:
     r"""Calculates Nusselt number for natural convection around a vertical
     isothermal cylinder according to the results of [1]_  correlated by
     [2]_, also as presented in [3]_, [4]_, and [5]_.
@@ -1016,7 +1017,7 @@ def Nu_vertical_cylinder_Kreith_Eckert(Pr, Gr, turbulent=None):
         return 0.555*Ra**0.25
 
 
-def Nu_vertical_cylinder_Hanesian_Kalish_Morgan(Pr, Gr):
+def Nu_vertical_cylinder_Hanesian_Kalish_Morgan(Pr: float, Gr: float) -> float:
     r"""Calculates Nusselt number for natural convection around a vertical
     isothermal cylinder according to the results of [1]_ correlated by
     [2]_, also as presented in [3]_ and [4]_.
@@ -1067,7 +1068,7 @@ def Nu_vertical_cylinder_Hanesian_Kalish_Morgan(Pr, Gr):
 
 
 ### Vertical cylinders, more complex correlations
-def Nu_vertical_cylinder_Al_Arabi_Khamis(Pr, Gr, L, D, turbulent=None):
+def Nu_vertical_cylinder_Al_Arabi_Khamis(Pr: float, Gr: float, L: float, D: float, turbulent: None=None) -> float:
     r"""Calculates Nusselt number for natural convection around a vertical
     isothermal cylinder according to [1]_, also as presented in [2]_ and [3]_.
 
@@ -1132,7 +1133,7 @@ def Nu_vertical_cylinder_Al_Arabi_Khamis(Pr, Gr, L, D, turbulent=None):
         return 2.9*Ra**0.25*Gr_D**(-1/12.)
 
 
-def Nu_vertical_cylinder_Popiel_Churchill(Pr, Gr, L, D):
+def Nu_vertical_cylinder_Popiel_Churchill(Pr: float, Gr: float, L: float, D: float) -> float:
     r"""Calculates Nusselt number for natural convection around a vertical
     isothermal cylinder according to [1]_, also  presented in [2]_.
 
@@ -1207,7 +1208,7 @@ vertical_cylinder_correlations = {
 "Popiel & Churchill": (Nu_vertical_cylinder_Popiel_Churchill, False, True, 1.00E+009, False),
 }
 
-def Nu_vertical_cylinder_methods(Pr, Gr, L=None, D=None, check_ranges=True):
+def Nu_vertical_cylinder_methods(Pr: float, Gr: float, L: Optional[float]=None, D: Optional[float]=None, check_ranges: bool=True) -> List[str]:
     r"""This function returns a list of correlation names for free convetion
     to a vertical cylinder.
 
@@ -1251,7 +1252,7 @@ def Nu_vertical_cylinder_methods(Pr, Gr, L=None, D=None, check_ranges=True):
                 "Al-Arabi & Khamis"]
 
 
-def Nu_vertical_cylinder(Pr, Gr, L=None, D=None, Method=None):
+def Nu_vertical_cylinder(Pr: float, Gr: float, L: Optional[float]=None, D: Optional[float]=None, Method: Optional[str]=None) -> float:
     r"""This function handles choosing which vertical cylinder free convection
     correlation is used. Generally this is used by a helper class, but can be
     used directly. Will automatically select the correlation to use if none is
@@ -1338,7 +1339,7 @@ def Nu_vertical_cylinder(Pr, Gr, L=None, D=None, Method=None):
 
 ### Horizontal Cylinders
 
-def Nu_horizontal_cylinder_Churchill_Chu(Pr, Gr):
+def Nu_horizontal_cylinder_Churchill_Chu(Pr: float, Gr: float) -> float:
     r"""Calculates Nusselt number for natural convection around a horizontal
     cylinder according to the Churchill-Chu [1]_ correlation, also presented in
     [2]_. Cylinder must be isothermal; an alternate expression exists for
@@ -1391,7 +1392,7 @@ def Nu_horizontal_cylinder_Churchill_Chu(Pr, Gr):
     return (0.6 + 0.387*Ra**(1/6.)/(1. + (0.559/Pr)**(9/16.))**(8/27.))**2
 
 
-def Nu_horizontal_cylinder_Kuehn_Goldstein(Pr, Gr):
+def Nu_horizontal_cylinder_Kuehn_Goldstein(Pr: float, Gr: float) -> float:
     r"""Calculates Nusselt number for natural convection around a horizontal
     cylinder according to the Kuehn-Goldstein [1]_ correlation, also shown in
     [2]_. Cylinder must be isothermal.
@@ -1438,7 +1439,7 @@ def Nu_horizontal_cylinder_Kuehn_Goldstein(Pr, Gr):
                   + (0.1*Ra**(1/3.))**15)**(1/15.))
 
 
-def Nu_horizontal_cylinder_Morgan(Pr, Gr):
+def Nu_horizontal_cylinder_Morgan(Pr: float, Gr: float) -> float:
     r"""Calculates Nusselt number for natural convection around a horizontal
     cylinder according to the Morgan [1]_ correlations, a product of a very
     large review of the literature. Sufficiently common as to be shown in [2]_.
@@ -1514,7 +1515,7 @@ horizontal_cylinder_correlations = {
 "Morgan": (Nu_horizontal_cylinder_Morgan)
 }
 
-def Nu_horizontal_cylinder_methods(Pr, Gr, check_ranges=True):
+def Nu_horizontal_cylinder_methods(Pr: float, Gr: float, check_ranges: bool=True) -> List[str]:
     r"""This function returns a list of correlation names for free convetion
     to a horizontal cylinder.
 
@@ -1544,7 +1545,7 @@ def Nu_horizontal_cylinder_methods(Pr, Gr, check_ranges=True):
     """
     return ["Morgan", "Churchill-Chu", "Kuehn & Goldstein"]
 
-def Nu_horizontal_cylinder(Pr, Gr, Method=None):
+def Nu_horizontal_cylinder(Pr: float, Gr: float, Method: Optional[str]=None) -> float:
     r"""This function handles choosing which horizontal cylinder free convection
     correlation is used. Generally this is used by a helper class, but can be
     used directly. Will automatically select the correlation to use if none is
@@ -1614,7 +1615,7 @@ def Nu_horizontal_cylinder(Pr, Gr, Method=None):
 #plt.show()
 
 
-def Nu_coil_Xin_Ebadian(Pr, Gr, horizontal=False):
+def Nu_coil_Xin_Ebadian(Pr: float, Gr: float, horizontal: bool=False) -> float:
     r"""Calculates Nusselt number for natural convection around a vertical
     or horizontal helical coil suspended in a fluid without
     forced convection.

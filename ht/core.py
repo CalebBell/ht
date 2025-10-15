@@ -23,8 +23,9 @@ SOFTWARE.
 from math import log
 
 from fluids.numerics import i0, i1, k0, k1
+from typing import List, Optional
 
-__all__ =[
+__all__: List[str] = [
     "LMTD",
     "Kays_Crawford_laminar_gas_Nu",
     "Kays_Crawford_laminar_gas_fd",
@@ -43,7 +44,7 @@ __all__ =[
     "wall_factor_fd",
 ]
 
-def LMTD(Thi, Tho, Tci, Tco, counterflow=True):
+def LMTD(Thi: float, Tho: float, Tci: float, Tco: float, counterflow: bool=True) -> float:
     r"""Returns the log-mean temperature difference of an ideal counterflow
     or co-current heat exchanger.
 
@@ -162,7 +163,7 @@ def countercurrent_hx_temperature_check(T0i, T0o, T1i, T1o):
     return not Tci > Tco
 
 
-def is_heating_temperature(T, T_wall):
+def is_heating_temperature(T: int, T_wall: int) -> bool:
     r"""Checks whether or not a fluid side is being heated or cooled, from
     the temperature of the wall and the bulk temperature. Returns True for
     heating the bulk fluid, and False for cooling the bulk fluid.
@@ -186,7 +187,7 @@ def is_heating_temperature(T, T_wall):
     """
     return T_wall > T
 
-def is_heating_property(prop, prop_wall):
+def is_heating_property(prop: float, prop_wall: float) -> bool:
     r"""Checks whether or not a fluid side is being heated or cooled, from
     a property of the fluid at the wall and the bulk temperature. Returns True
     for heating the bulk fluid, and False for cooling the bulk fluid.
@@ -403,11 +404,11 @@ wall_factor_bad_option_msg = "Supported options are: "+ str(
         [WALL_FACTOR_VISCOSITY, WALL_FACTOR_PRANDTL, WALL_FACTOR_TEMPERATURE,
          WALL_FACTOR_DEFAULT])
 
-def wall_factor(mu=None, mu_wall=None, Pr=None, Pr_wall=None, T=None,
-                T_wall=None, mu_heating_coeff=0.11, mu_cooling_coeff=0.25,
-                Pr_heating_coeff=0.11, Pr_cooling_coeff=0.25,
-                T_heating_coeff=0.11, T_cooling_coeff=0.25,
-                property_option=WALL_FACTOR_PRANDTL):
+def wall_factor(mu: Optional[int]=None, mu_wall: Optional[int]=None, Pr: Optional[float]=None, Pr_wall: Optional[float]=None, T: Optional[int]=None,
+                T_wall: Optional[int]=None, mu_heating_coeff: float=0.11, mu_cooling_coeff: float=0.25,
+                Pr_heating_coeff: float=0.11, Pr_cooling_coeff: float=0.25,
+                T_heating_coeff: float=0.11, T_cooling_coeff: float=0.25,
+                property_option: str=WALL_FACTOR_PRANDTL) -> float:
     r"""Computes the wall correction factor for heat transfer, mass transfer,
     or momentum transfer between a fluid and a wall. Utility function; the
     coefficients for the phenomenon must be provided to this method. The
@@ -497,7 +498,7 @@ def wall_factor(mu=None, mu_wall=None, Pr=None, Pr_wall=None, T=None,
         raise ValueError(wall_factor_bad_option_msg)
 
 
-def fin_efficiency_Kern_Kraus(Do, D_fin, t_fin, k_fin, h):
+def fin_efficiency_Kern_Kraus(Do: float, D_fin: float, t_fin: float, k_fin: float, h: float) -> float:
     r"""Returns the efficiency `eta_f` of a circular fin of constant thickness
     attached to a circular tube, based on the tube diameter `Do`, fin
     diameter `D_fin`, fin thickness `t_fin`, fin thermal conductivity `k_fin`,

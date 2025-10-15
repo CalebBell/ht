@@ -23,8 +23,9 @@ SOFTWARE.
 from math import acosh, log, pi
 
 from fluids.constants import Btu, degree_Fahrenheit, foot, hour, inch
+from typing import Dict, List, Union
 
-__all__ = [
+__all__: List[str] = [
     "R_cylinder",
     "R_to_k",
     "R_value_to_k",
@@ -42,7 +43,7 @@ __all__ = [
 ]
 
 
-def R_to_k(R, t, A=1.):
+def R_to_k(R: float, t: float, A: float=1.) -> float:
     r"""Returns the thermal conductivity of a substance given its thickness
     and thermal resistance.
 
@@ -84,7 +85,7 @@ def R_to_k(R, t, A=1.):
     return t/(A*R)
 
 
-def k_to_R(k, t, A=1.):
+def k_to_R(k: float, t: float, A: float=1.) -> float:
     r"""Returns the thermal resistance of a substance given its thickness
     and thermal conductivity.
 
@@ -125,7 +126,7 @@ def k_to_R(k, t, A=1.):
     return t/(k*A)
 
 
-def k_to_thermal_resistivity(k):
+def k_to_thermal_resistivity(k: float) -> float:
     r"""Returns the thermal resistivity of a substance given its thermal
     conductivity.
 
@@ -162,7 +163,7 @@ def k_to_thermal_resistivity(k):
     return 1./k
 
 
-def thermal_resistivity_to_k(r):
+def thermal_resistivity_to_k(r: float) -> float:
     r"""Returns the thermal resistivity of a substance given its thermal
     conductivity.
 
@@ -198,7 +199,7 @@ def thermal_resistivity_to_k(r):
     return 1./r
 
 
-def R_value_to_k(R_value, SI=True):
+def R_value_to_k(R_value: float, SI: bool=True) -> float:
     r"""Returns the thermal conductivity of a substance given its R-value,
     which can be in either SI units of m^2 K/(W*inch) or the Imperial units
     of ft^2 deg F*h/(BTU*inch).
@@ -240,7 +241,7 @@ def R_value_to_k(R_value, SI=True):
     return thermal_resistivity_to_k(r)
 
 
-def k_to_R_value(k, SI=True):
+def k_to_R_value(k: float, SI: bool=True) -> float:
     r"""Returns the R-value of a substance given its thermal conductivity,
     Will return R-value in SI units unless SI is false. SI units are
     m^2 K/(W*inch); Imperial units of R-value are ft^2 deg F*h/(BTU*inch).
@@ -278,7 +279,7 @@ def k_to_R_value(k, SI=True):
         return r/(foot*foot*degree_Fahrenheit*hour/Btu/inch)
 
 
-def R_cylinder(Di, Do, k, L):
+def R_cylinder(Di: float, Do: float, k: float, L: float) -> float:
     r"""Returns the thermal resistance `R` of a cylinder of constant thermal
     conductivity `k`, of inner and outer diameter `Di` and `Do`, and with a
     length `L`.
@@ -320,7 +321,7 @@ def R_cylinder(Di, Do, k, L):
 
 ### Shape Factors
 
-def S_isothermal_sphere_to_plane(D, Z):
+def S_isothermal_sphere_to_plane(D: float, Z: float) -> float:
     r"""Returns the Shape factor `S` of a sphere of constant temperature
     and of outer diameter `D` which is `Z` distance from an infinite plane.
 
@@ -362,7 +363,7 @@ def S_isothermal_sphere_to_plane(D, Z):
     return 2*pi*D/(1. - D/(4.*Z))
 
 
-def S_isothermal_pipe_to_plane(D, Z, L=1):
+def S_isothermal_pipe_to_plane(D: float, Z: float, L: float=1) -> float:
     r"""Returns the Shape factor `S` of a pipe of constant outer temperature
     and of outer diameter `D` which is `Z` distance from an infinite plane.
     Length `L` must be provided, but can be set to 1 to obtain a dimensionless
@@ -408,7 +409,7 @@ def S_isothermal_pipe_to_plane(D, Z, L=1):
     return 2.*pi*L/acosh(2.*Z/D)
 
 
-def S_isothermal_pipe_normal_to_plane(D, L):
+def S_isothermal_pipe_normal_to_plane(D: float, L: float) -> float:
     r"""Returns the Shape factor `S` of a pipe of constant outer temperature
     and of outer diameter `D` which extends into an infinite medium below an
     an infinite plane.
@@ -451,7 +452,7 @@ def S_isothermal_pipe_normal_to_plane(D, L):
     return 2.*pi*L/log(4.*L/D)
 
 
-def S_isothermal_pipe_to_isothermal_pipe(D1, D2, W, L=1.):
+def S_isothermal_pipe_to_isothermal_pipe(D1: float, D2: float, W: float, L: float=1.) -> float:
     r"""Returns the Shape factor `S` of a pipe of constant outer temperature
     and of outer diameter `D1` which is `w` distance from another infinite
     pipe of outer diameter`D2`. Length `L` must be provided, but can be set to
@@ -499,7 +500,7 @@ def S_isothermal_pipe_to_isothermal_pipe(D1, D2, W, L=1.):
     return 2.*pi*L/acosh((4*W*W - D1*D1 - D2*D2)/(2.*D1*D2))
 
 
-def S_isothermal_pipe_to_two_planes(D, Z, L=1.):
+def S_isothermal_pipe_to_two_planes(D: float, Z: float, L: float=1.) -> float:
     r"""Returns the Shape factor `S` of a pipe of constant outer temperature
     and of outer diameter `D` which is `Z` distance from two infinite
     isothermal planes of equal temperatures, parallel to each other and
@@ -547,7 +548,7 @@ def S_isothermal_pipe_to_two_planes(D, Z, L=1.):
     return 2.*pi*L/log(8.*Z/(pi*D))
 
 
-def S_isothermal_pipe_eccentric_to_isothermal_pipe(D1, D2, Z, L=1.):
+def S_isothermal_pipe_eccentric_to_isothermal_pipe(D1: float, D2: float, Z: float, L: float=1.) -> float:
     r"""Returns the Shape factor `S` of a pipe of constant outer temperature
     and of outer diameter `D1` which is `Z` distance from the center of another
     pipe of outer diameter`D2`. Length `L` must be provided, but can be set to
@@ -599,7 +600,7 @@ def S_isothermal_pipe_eccentric_to_isothermal_pipe(D1, D2, Z, L=1.):
 # Specific heat transfer problems of conduction
 
 
-def cylindrical_heat_transfer(Ti, To, hi, ho, Di, ts, ks):
+def cylindrical_heat_transfer(Ti: float, To: float, hi: float, ho: float, Di: float, ts: List[float], ks: List[float]) -> Dict[str, Union[float, List[float]]]:
     r"""Calculation for the heat transfer through a cylindrical wall,
     as occurs in pipes and cylindrical vessels. This is the core method
     which calculates the temperatures of each layer - and allows an outer

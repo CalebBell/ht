@@ -23,8 +23,9 @@ SOFTWARE.
 from math import log10
 
 from fluids.constants import g
+from typing import List, Optional
 
-__all__ = [
+__all__: List[str] = [
     "Bier",
     "Cooper",
     "Forster_Zuber",
@@ -48,8 +49,8 @@ __all__ = [
 ]
 
 
-def Rohsenow(rhol, rhog, mul, kl, Cpl, Hvap, sigma, Te=None, q=None, Csf=0.013,
-             n=1.7):
+def Rohsenow(rhol: float, rhog: float, mul: float, kl: float, Cpl: float, Hvap: float, sigma: float, Te: Optional[float]=None, q: Optional[float]=None, Csf: float=0.013,
+             n: float=1.7) -> float:
     r"""Calculates heat transfer coefficient for a evaporator operating
     in the nucleate boiling regime according to [2]_ as presented in [1]_.
 
@@ -129,7 +130,7 @@ def Rohsenow(rhol, rhog, mul, kl, Cpl, Hvap, sigma, Te=None, q=None, Csf=0.013,
         raise ValueError("Either q or Te is needed for this correlation")
 
 
-def McNelly(rhol, rhog, kl, Cpl, Hvap, sigma, P, Te=None, q=None):
+def McNelly(rhol: float, rhog: float, kl: float, Cpl: float, Hvap: float, sigma: float, P: float, Te: Optional[float]=None, q: Optional[float]=None) -> float:
     r"""Calculates heat transfer coefficient for a evaporator operating
     in the nucleate boiling regime according to [2]_ as presented in [1]_.
 
@@ -202,7 +203,7 @@ def McNelly(rhol, rhog, kl, Cpl, Hvap, sigma, P, Te=None, q=None):
         raise ValueError("Either q or Te is needed for this correlation")
 
 
-def Forster_Zuber(rhol, rhog, mul, kl, Cpl, Hvap, sigma, dPsat, Te=None, q=None):
+def Forster_Zuber(rhol: float, rhog: float, mul: float, kl: float, Cpl: float, Hvap: float, sigma: float, dPsat: float, Te: Optional[float]=None, q: Optional[float]=None) -> float:
     r"""Calculates heat transfer coefficient for a evaporator operating
     in the nucleate boiling regime according to [2]_ as presented in [1]_.
 
@@ -280,7 +281,7 @@ def Forster_Zuber(rhol, rhog, mul, kl, Cpl, Hvap, sigma, dPsat, Te=None, q=None)
         raise ValueError("Either q or Te is needed for this correlation")
 
 
-def Montinsky(P, Pc, Te=None, q=None):
+def Montinsky(P: float, Pc: float, Te: Optional[float]=None, q: Optional[float]=None) -> float:
     r"""Calculates heat transfer coefficient for a evaporator operating
     in the nucleate boiling regime according to [2]_ as presented in [1]_.
 
@@ -355,9 +356,9 @@ def Montinsky(P, Pc, Te=None, q=None):
 _angles_Stephan_Abdelsalam = {"general": 35, "water": 45, "hydrocarbon": 35,
 "cryogenic": 1, "refrigerant": 35}
 
-def Stephan_Abdelsalam(rhol, rhog, mul, kl, Cpl, Hvap, sigma, Tsat, Te=None,
-                       q=None, kw=401.0, rhow=8.96, Cpw=384.0, angle=None,
-                       correlation="general"):
+def Stephan_Abdelsalam(rhol: float, rhog: float, mul: float, kl: float, Cpl: float, Hvap: float, sigma: float, Tsat: float, Te: Optional[float]=None,
+                       q: Optional[float]=None, kw: float=401.0, rhow: float=8.96, Cpw: float=384.0, angle: Optional[float]=None,
+                       correlation: str="general") -> float:
     r"""Calculates heat transfer coefficient for a evaporator operating
     in the nucleate boiling regime according to [2]_ as presented in [1]_.
     Five variants are possible.
@@ -530,7 +531,7 @@ def Stephan_Abdelsalam(rhol, rhog, mul, kl, Cpl, Hvap, sigma, Tsat, Te=None,
     return h
 
 
-def HEDH_Taborek(P, Pc, Te=None, q=None):
+def HEDH_Taborek(P: float, Pc: float, Te: Optional[float]=None, q: Optional[float]=None) -> float:
     r"""Calculates heat transfer coefficient for a evaporator operating
     in the nucleate boiling regime according to Taborek (1986)
     as described in [1]_ and as presented in [2]_. Modification of [3]_.
@@ -597,7 +598,7 @@ def HEDH_Taborek(P, Pc, Te=None, q=None):
         raise ValueError("Either q or Te is needed for this correlation")
 
 
-def Bier(P, Pc, Te=None, q=None):
+def Bier(P: float, Pc: float, Te: Optional[float]=None, q: Optional[float]=None) -> float:
     r"""Calculates heat transfer coefficient for a evaporator operating
     in the nucleate boiling regime according to [1]_ .
 
@@ -657,7 +658,7 @@ def Bier(P, Pc, Te=None, q=None):
         raise ValueError("Either q or Te is needed for this correlation")
 
 
-def Cooper(P, Pc, MW, Te=None, q=None, Rp=1E-6):
+def Cooper(P: float, Pc: float, MW: float, Te: Optional[float]=None, q: Optional[float]=None, Rp: float=1E-6) -> float:
     r"""Calculates heat transfer coefficient for a evaporator operating
     in the nucleate boiling regime according to [2]_ as presented in [1]_.
 
@@ -748,7 +749,7 @@ if IS_NUMBA:
     h0_Gorenflow_1993_keys = tuple(h0_Gorenflow_1993.keys())
     h0_Gorenflow_1993_values = tuple(h0_Gorenflow_1993.values())
 
-def Gorenflo(P, Pc, q=None, Te=None, CASRN=None, h0=None, Ra=4E-7):
+def Gorenflo(P: float, Pc: float, q: Optional[float]=None, Te: Optional[float]=None, CASRN: Optional[str]=None, h0: Optional[float]=None, Ra: float=4E-7) -> float:
     r"""Calculates heat transfer coefficient for a pool boiling according to
     [1]_ and also presented in [2]_. Calculation is based on the corresponding
     states law, with a single regression constant per fluid. P and Pc are
@@ -892,9 +893,9 @@ h_nucleic_all_methods = ["Stephan-Abdelsalam", "Stephan-Abdelsalam water",
                      "Forster-Zuber", "Rohsenow", "Cooper", "Bier",
                      "Montinsky", "McNelly", "Gorenflo (1993)"]
 
-def h_nucleic_methods(Te=None, Tsat=None, P=None, dPsat=None, Cpl=None,
-          kl=None, mul=None, rhol=None, sigma=None, Hvap=None, rhog=None,
-          MW=None, Pc=None, CAS=None, check_ranges=False):
+def h_nucleic_methods(Te: Optional[float]=None, Tsat: Optional[float]=None, P: Optional[float]=None, dPsat: Optional[float]=None, Cpl: Optional[float]=None,
+          kl: Optional[float]=None, mul: Optional[float]=None, rhol: Optional[float]=None, sigma: Optional[float]=None, Hvap: Optional[float]=None, rhog: Optional[float]=None,
+          MW: Optional[float]=None, Pc: Optional[float]=None, CAS: Optional[str]=None, check_ranges: bool=False) -> List[str]:
     r"""This function returns the names of correlations for nucleate boiling
     heat flux.
 
@@ -976,11 +977,11 @@ def h_nucleic_methods(Te=None, Tsat=None, P=None, dPsat=None, Cpl=None,
     return methods
 
 
-def h_nucleic(Te=None, q=None, Tsat=None, P=None, dPsat=None, Cpl=None,
-              kl=None, mul=None, rhol=None, sigma=None, Hvap=None, rhog=None,
-              MW=None, Pc=None, Csf=0.013, n=1.7, kw=401.0, rhow=8.96, Cpw=384.0,
-              angle=35.0, Rp=1e-6, Ra=0.4e-6, h0=None,
-              CAS=None, Method=None):
+def h_nucleic(Te: Optional[float]=None, q: Optional[float]=None, Tsat: Optional[float]=None, P: Optional[float]=None, dPsat: Optional[float]=None, Cpl: Optional[float]=None,
+              kl: Optional[float]=None, mul: Optional[float]=None, rhol: Optional[float]=None, sigma: Optional[float]=None, Hvap: Optional[float]=None, rhog: Optional[float]=None,
+              MW: Optional[float]=None, Pc: Optional[float]=None, Csf: float=0.013, n: float=1.7, kw: float=401.0, rhow: float=8.96, Cpw: float=384.0,
+              angle: float=35.0, Rp: float=1e-6, Ra: float=0.4e-6, h0: None=None,
+              CAS: Optional[str]=None, Method: Optional[str]=None) -> float:
     r"""This function handles the calculation of nucleate boiling
     heat flux and chooses the best method for performing the calculation
     based on the provided information.
@@ -1128,7 +1129,7 @@ def h_nucleic(Te=None, q=None, Tsat=None, P=None, dPsat=None, Cpl=None,
 ### Critical Heat Flux
 
 
-def Zuber(sigma, Hvap, rhol, rhog, K=0.18):
+def Zuber(sigma: float, Hvap: float, rhol: float, rhog: float, K: float=0.18) -> float:
     r"""Calculates critical heat flux for nucleic boiling of a flat plate
     or other shape as presented in various sources.
     K = pi/24 is believed to be the original [1]_ value for K, but 0.149 is
@@ -1187,7 +1188,7 @@ def Zuber(sigma, Hvap, rhol, rhog, K=0.18):
     return K*Hvap*rhog**0.5*(g*sigma*(rhol-rhog))**0.25
 
 
-def Serth_HEDH(D, sigma, Hvap, rhol, rhog):
+def Serth_HEDH(D: float, sigma: float, Hvap: float, rhol: float, rhog: float) -> float:
     r"""Calculates critical heat flux for nucleic boiling of a tube bundle
     according to [2]_, citing [3]_, and using [1]_ as the original form.
 
@@ -1248,7 +1249,7 @@ def Serth_HEDH(D, sigma, Hvap, rhol, rhog):
     return K*Hvap*rhog**0.5*(g*sigma*(rhol-rhog))**0.25
 
 
-def HEDH_Montinsky(P, Pc):
+def HEDH_Montinsky(P: float, Pc: float) -> float:
     r"""Calculates critical heat flux
     in the nucleate boiling regime according to [3]_ as presented in [1]_,
     using an expression modified from [2]_.
@@ -1298,8 +1299,8 @@ def HEDH_Montinsky(P, Pc):
 
 qmax_boiling_all_methods = ["Serth-HEDH", "Zuber", "HEDH-Montinsky"]
 
-def qmax_boiling_methods(rhol=None, rhog=None, sigma=None, Hvap=None, D=None,
-                         P=None, Pc=None, check_ranges=False):
+def qmax_boiling_methods(rhol: Optional[int]=None, rhog: Optional[float]=None, sigma: Optional[float]=None, Hvap: Optional[float]=None, D: Optional[float]=None,
+                         P: Optional[float]=None, Pc: Optional[float]=None, check_ranges: bool=False) -> List[str]:
     r"""This function returns a list of methods names which can be used to
     calculate nucleate boiling critical heat flux.
     Preferred methods are 'Serth-HEDH' when a tube diameter is specified,
@@ -1346,8 +1347,8 @@ def qmax_boiling_methods(rhol=None, rhog=None, sigma=None, Hvap=None, D=None,
     return methods
 
 
-def qmax_boiling(rhol=None, rhog=None, sigma=None, Hvap=None, D=None, P=None,
-                 Pc=None, Method=None):
+def qmax_boiling(rhol: Optional[int]=None, rhog: Optional[float]=None, sigma: Optional[float]=None, Hvap: Optional[float]=None, D: Optional[float]=None, P: Optional[float]=None,
+                 Pc: Optional[float]=None, Method: Optional[str]=None) -> float:
     r"""This function handles the calculation of nucleate boiling critical
     heat flux and chooses the best method for performing the calculation.
 

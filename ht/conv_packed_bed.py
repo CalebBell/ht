@@ -19,16 +19,17 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
+from typing import List, Optional
 
 
-__all__ = [
+__all__: List[str] = [
     "Nu_Achenbach",
     "Nu_KTA",
     "Nu_Wakao_Kagei",
     "Nu_packed_bed_Gnielinski",
 ]
 
-def Nu_packed_bed_Gnielinski(dp, voidage, vs, rho, mu, Pr, fa=None):
+def Nu_packed_bed_Gnielinski(dp: float, voidage: float, vs: float, rho: float, mu: float, Pr: float, fa: Optional[float]=None) -> float:
     r"""Calculates Nusselt number of a fluid passing over a bed of particles
     using a correlation shown in [3]_ and cited as from [1]_ and [2]_. Likely
     the best available model as the author of [1]_ is the same as [2]_ and
@@ -109,7 +110,7 @@ def Nu_packed_bed_Gnielinski(dp, voidage, vs, rho, mu, Pr, fa=None):
     return fa*Nu_sphere
 
 
-def Nu_Wakao_Kagei(Re, Pr):
+def Nu_Wakao_Kagei(Re: float, Pr: float) -> float:
     r"""Calculates Nusselt number of a fluid passing over a bed of particles
     using a correlation shown in [1]_ and also cited in the review of [2]_.
     Relatively rough, as it has no dependence on voidage.
@@ -150,7 +151,7 @@ def Nu_Wakao_Kagei(Re, Pr):
     return 2 + 1.1*Pr**(1/3.)*Re**0.6
 
 
-def Nu_Achenbach(Re, Pr, voidage):
+def Nu_Achenbach(Re: float, Pr: float, voidage: float) -> float:
     r"""Calculates Nusselt number of a fluid passing over a bed of particles
     using a correlation shown in [1]_ and also cited in the review of [2]_.
 
@@ -195,7 +196,7 @@ def Nu_Achenbach(Re, Pr, voidage):
     return ((1.18*Re**0.58)**4 + (0.23*(Re/(1-voidage))**0.75)**4)**0.25
 
 
-def Nu_KTA(Re, Pr, voidage):
+def Nu_KTA(Re: float, Pr: float, voidage: float) -> float:
     r"""Calculates Nusselt number of a fluid passing over a bed of particles
     using a correlation shown in [1]_ and also cited in the review of [2]_.
 

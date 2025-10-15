@@ -24,12 +24,13 @@ from math import log, pi
 
 from fluids.constants import g
 from fluids.friction import friction_factor
+from typing import List, Optional
 
-__all__ = ["Lehrer", "Stein_Schmidt"]
+__all__: List[str] = ["Lehrer", "Stein_Schmidt"]
 
-def Lehrer(m, Dtank, Djacket, H, Dinlet, rho, Cp, k, mu, muw=None,
-           isobaric_expansion=None, dT=None, inlettype="tangential",
-           inletlocation="auto"):
+def Lehrer(m: float, Dtank: float, Djacket: float, H: float, Dinlet: float, rho: float, Cp: float, k: float, mu: float, muw: Optional[float]=None,
+           isobaric_expansion: Optional[float]=None, dT: Optional[float]=None, inlettype: str="tangential",
+           inletlocation: str="auto") -> float:
     r"""Calculates average heat transfer coefficient for a jacket around a
     vessel according to [1]_ as described in [2]_.
 
@@ -153,9 +154,9 @@ def Lehrer(m, Dtank, Djacket, H, Dinlet, rho, Cp, k, mu, muw=None,
     return NuSL*k/dg
 
 
-def Stein_Schmidt(m, Dtank, Djacket, H, Dinlet,
-                  rho, Cp, k, mu, muw=None, rhow=None,
-                  inlettype="tangential", inletlocation="auto", roughness=0.0):
+def Stein_Schmidt(m: float, Dtank: float, Djacket: float, H: float, Dinlet: float,
+                  rho: float, Cp: float, k: float, mu: float, muw: Optional[float]=None, rhow: Optional[float]=None,
+                  inlettype: str="tangential", inletlocation: str="auto", roughness: float=0.0) -> float:
     r"""Calculates average heat transfer coefficient for a jacket around a
     vessel according to [1]_ as described in [2]_.
 

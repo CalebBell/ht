@@ -25,8 +25,9 @@ from math import e, exp
 
 from fluids.constants import c, h, k, sigma
 from fluids.numerics import numpy as np
+from typing import List
 
-__all__ = [
+__all__: List[str] = [
     "blackbody_spectral_radiance",
     "grey_transmittance",
     "q_rad",
@@ -34,7 +35,7 @@ __all__ = [
 ]
 
 
-def blackbody_spectral_radiance(T, wavelength):
+def blackbody_spectral_radiance(T: float, wavelength: float) -> float:
     r"""Returns the spectral radiance, in units of W/m^2/sr/µm.
 
     .. math::
@@ -89,7 +90,7 @@ def blackbody_spectral_radiance(T, wavelength):
     return 2.*h*c*c*wavelength**-5/(exp_term - 1.0)
 
 
-def q_rad(emissivity, T, T2=0):
+def q_rad(emissivity: float, T: int, T2: float=0) -> float:
     r"""Returns the radiant heat flux of a surface, optionally including
     assuming radiant heat transfer back to the surface.
 
@@ -133,7 +134,7 @@ def q_rad(emissivity, T, T2=0):
     return sigma*emissivity*(T_T*T_T - T2_T2*T2_T2)
 
 
-def grey_transmittance(extinction_coefficient, molar_density, length, base=e):
+def grey_transmittance(extinction_coefficient: float, molar_density: int, length: float, base: float=e) -> float:
     r"""Calculates the transmittance of a grey body, given the extinction
     coefficient of the material, its molar density, and the path length of the
     radiation.
