@@ -1,4 +1,4 @@
-'''Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
+"""Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
 Copyright (C) 2016, 2017, 2018, 2019, Caleb Bell <Caleb.Andrew.Bell@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -18,7 +18,7 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-'''
+"""
 
 from fluids.numerics import assert_close
 
@@ -34,16 +34,16 @@ def test_conv_jacket():
     assert_close(h, 2608.8602693706853)
 
     # with isobaric expansion, all cases
-    h = Lehrer(m=2.5, Dtank=0.6, Djacket=0.65, H=0.6, Dinlet=0.025, dT=20., rho=995.7, Cp=4178.1, k=0.615, mu=798E-6, muw=355E-6, inlettype='radial', isobaric_expansion=0.000303)
+    h = Lehrer(m=2.5, Dtank=0.6, Djacket=0.65, H=0.6, Dinlet=0.025, dT=20., rho=995.7, Cp=4178.1, k=0.615, mu=798E-6, muw=355E-6, inlettype="radial", isobaric_expansion=0.000303)
     assert_close(h, 3269.4389632666557)
 
-    h = Lehrer(m=2.5, Dtank=0.6, Djacket=0.65, H=0.6, Dinlet=0.025, dT=20., rho=995.7, Cp=4178.1, k=0.615, mu=798E-6, muw=355E-6, inlettype='radial', inletlocation='top', isobaric_expansion=0.000303)
+    h = Lehrer(m=2.5, Dtank=0.6, Djacket=0.65, H=0.6, Dinlet=0.025, dT=20., rho=995.7, Cp=4178.1, k=0.615, mu=798E-6, muw=355E-6, inlettype="radial", inletlocation="top", isobaric_expansion=0.000303)
     assert_close(h, 2566.1198726589996)
 
-    h = Lehrer(m=2.5, Dtank=0.6, Djacket=0.65, H=0.6, Dinlet=0.025, dT=-20., rho=995.7, Cp=4178.1, k=0.615, mu=798E-6, muw=355E-6, inlettype='radial', isobaric_expansion=0.000303)
+    h = Lehrer(m=2.5, Dtank=0.6, Djacket=0.65, H=0.6, Dinlet=0.025, dT=-20., rho=995.7, Cp=4178.1, k=0.615, mu=798E-6, muw=355E-6, inlettype="radial", isobaric_expansion=0.000303)
     assert_close(h, 3269.4389632666557)
 
-    h = Lehrer(m=2.5, Dtank=0.6, Djacket=0.65, H=0.6, Dinlet=0.025, dT=-20., rho=995.7, Cp=4178.1, k=0.615, mu=798E-6, muw=355E-6, inlettype='radial', inletlocation='bottom', isobaric_expansion=0.000303)
+    h = Lehrer(m=2.5, Dtank=0.6, Djacket=0.65, H=0.6, Dinlet=0.025, dT=-20., rho=995.7, Cp=4178.1, k=0.615, mu=798E-6, muw=355E-6, inlettype="radial", inletlocation="bottom", isobaric_expansion=0.000303)
     assert_close(h, 2566.1198726589996)
 
 
@@ -52,19 +52,19 @@ def test_conv_jacket():
     h = Stein_Schmidt(2.5, 0.6, 0.65, 0.6, 0.025, 995.7, 4178.1, 0.615, 798E-6, 355E-6, 971.8)
     assert_close(h, 5695.204169808863)
 
-    h = Stein_Schmidt(2.5, 0.6, 0.65, 0.6, 0.025, 995.7, 4178.1, 0.615, 798E-6, 355E-6, 971.8, inlettype='radial')
+    h = Stein_Schmidt(2.5, 0.6, 0.65, 0.6, 0.025, 995.7, 4178.1, 0.615, 798E-6, 355E-6, 971.8, inlettype="radial")
     assert_close(h, 1217.1449686341773)
 
-    h = Stein_Schmidt(2.5, 0.6, 0.65, 0.6, 0.025, 995.7, 4178.1, 0.615, 798E-6, 355E-6, 971.8, inletlocation='top')
+    h = Stein_Schmidt(2.5, 0.6, 0.65, 0.6, 0.025, 995.7, 4178.1, 0.615, 798E-6, 355E-6, 971.8, inletlocation="top")
     assert_close(h, 5675.841635061595)
 
-    h = Stein_Schmidt(2.5, 0.6, 0.65, 0.6, 0.025, 995.7, 4178.1, 0.615, 798E-6, 355E-6, 971.8, inletlocation='bottom')
+    h = Stein_Schmidt(2.5, 0.6, 0.65, 0.6, 0.025, 995.7, 4178.1, 0.615, 798E-6, 355E-6, 971.8, inletlocation="bottom")
     assert_close(h, 5695.2041698088633)
 
-    h = Stein_Schmidt(2.5, 0.6, 0.65, 0.6, 0.025, 971.8, 4178.1, 0.615, 798E-6, 355E-6, 995.7, inletlocation='bottom')
+    h = Stein_Schmidt(2.5, 0.6, 0.65, 0.6, 0.025, 971.8, 4178.1, 0.615, 798E-6, 355E-6, 995.7, inletlocation="bottom")
     assert_close(h, 5694.9722658952096)
 
-    h = Stein_Schmidt(2.5, 0.6, 0.65, 0.6, 0.025, 971.8, 4178.1, 0.615, 798E-6, 355E-6, 995.7, inletlocation='top')
+    h = Stein_Schmidt(2.5, 0.6, 0.65, 0.6, 0.025, 971.8, 4178.1, 0.615, 798E-6, 355E-6, 995.7, inletlocation="top")
     assert_close(h, 5676.0744960391157)
 
     h = Stein_Schmidt(2.5, 0.6, 0.65, 0.6, 0.025, 971.8, 4178.1, 0.615, 798E-6, 355E-6)

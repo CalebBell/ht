@@ -4,7 +4,7 @@ import sys
 try:
     import test_air_cooler
 except Exception as e:
-    print('run this from the tests directory')
+    print("run this from the tests directory")
     print(e)
     sys.exit()
 import test_boiling_flow
@@ -30,7 +30,7 @@ import test_radiation
 to_test = [test_air_cooler, test_boiling_flow, test_boiling_nucleic, test_boiling_plate, test_condensation, test_conduction, test_conv_external, test_conv_free_immersed, test_conv_free_enclosed, test_conv_internal, test_conv_jacket, test_conv_packed_bed, test_conv_plate, test_conv_supercritical, test_conv_tube_bank, test_conv_two_phase, test_core, test_hx, test_radiation]
 
 
-skip_marks = ['slow', 'fuzz', 'skip_types']
+skip_marks = ["slow", "fuzz", "skip_types"]
 skip_marks_set = set(skip_marks)
 if len(sys.argv) >= 2:
     #print(sys.argv)
@@ -41,13 +41,13 @@ for mod in to_test:
     for s in dir(mod):
         skip = False
         obj = getattr(mod, s)
-        if callable(obj) and hasattr(obj, '__name__') and obj.__name__.startswith('test'):
+        if callable(obj) and hasattr(obj, "__name__") and obj.__name__.startswith("test"):
             try:
                 for bad in skip_marks:
                     if bad in obj.__dict__:
                         skip = True
-                if 'pytestmark' in obj.__dict__:
-                    marked_names = [i.name for i in obj.__dict__['pytestmark']]
+                if "pytestmark" in obj.__dict__:
+                    marked_names = [i.name for i in obj.__dict__["pytestmark"]]
                     for mark_name in marked_names:
                         if mark_name in skip_marks_set:
                             skip = True
@@ -59,5 +59,5 @@ for mod in to_test:
                     print(obj)
                     obj()
                 except Exception as e:
-                    print('FAILED TEST %s with error:' %s)
+                    print(f"FAILED TEST {s} with error:")
                     print(e)

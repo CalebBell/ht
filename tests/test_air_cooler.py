@@ -1,4 +1,4 @@
-'''Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
+"""Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
 Copyright (C) 2016, 2017, 2018, 2019, Caleb Bell <Caleb.Andrew.Bell@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -18,7 +18,7 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-'''
+"""
 
 import pytest
 from fluids.constants import foot, hp, inch, minute
@@ -57,13 +57,13 @@ def test_air_cooler_noise_GPSA():
 
 
 def test_air_cooler_noise_Mukherjee():
-    '''# Confirmed to be log10's because of example tip speed reduction
+    """# Confirmed to be log10's because of example tip speed reduction
     # of 60 m/s to 40 m/s saves 5.3 dB.
     # hp in shaft horse power
     # d in meters
     # sound pressure level, ref level 2E-5 pa
 
-    '''
+    """
     noise = air_cooler_noise_Mukherjee(tip_speed=3177/minute, power=25.1*hp, fan_diameter=4.267)
     assert_close(noise, 99.11026329092925)
 
@@ -204,7 +204,7 @@ def test_dP_ESDU_low_fin():
 @pytest.mark.slow
 @pytest.mark.fuzz
 def test_AirCooledExchangerPermutations():
-    '''Demonstration of permutating all sorts of different options.
+    """Demonstration of permutating all sorts of different options.
 
     need to try both nonlinear optimization (will work easier, need initial guesses)
     and some form of discrete problem solution space.
@@ -215,7 +215,7 @@ def test_AirCooledExchangerPermutations():
      *len(fin_heights)*len(ODs)*len(angles)
      *len(fin_thicknesses))/2.**31#15E-6/3600
 
-    '''
+    """
     from random import choice
 
     tube_rows_options = range(1, 20)

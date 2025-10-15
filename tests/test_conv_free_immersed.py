@@ -1,4 +1,4 @@
-'''Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
+"""Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
 Copyright (C) 2016, 2017, 2018, 2019, Caleb Bell <Caleb.Andrew.Bell@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -18,7 +18,7 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-'''
+"""
 
 import pytest
 from fluids.numerics import assert_close, assert_close1d, assert_close2d, logspace
@@ -64,11 +64,11 @@ def test_Nu_free_vertical_plate():
     assert_close(147.16185223770603, Nu)
 
     methods = Nu_free_vertical_plate_methods(0.69, 2.63E9, H=1.0, W=1.0, check_ranges=True)
-    assert methods[0] == 'Churchill'
+    assert methods[0] == "Churchill"
     assert len(methods) == 1
 
     with pytest.raises(Exception):
-        Nu_free_vertical_plate(0.69, 2.63E9, Method='BADMETHOD')
+        Nu_free_vertical_plate(0.69, 2.63E9, Method="BADMETHOD")
 
 def test_Nu_horizontal_plate_VDI():
     Nu = Nu_horizontal_plate_VDI(5.54, 3.21e8, buoyancy=True)
@@ -91,10 +91,10 @@ def test_Nu_free_horizontal_plate():
     Nu = Nu_free_horizontal_plate(5.54, 3.21e8, L=1.0, W=1.0, buoyancy=True)
     assert_close(Nu, 203.89681224927565)
 
-    Nu = Nu_free_horizontal_plate(5.54, 3.21e8, buoyancy=True, Method='McAdams')
+    Nu = Nu_free_horizontal_plate(5.54, 3.21e8, buoyancy=True, Method="McAdams")
     assert_close(Nu, 181.73121274384457)
 
-    assert Nu_free_horizontal_plate_methods(5.54, 3.21e8, buoyancy=True, L=1.0, W=1.0, check_ranges=True) == ['VDI', 'McAdams', 'Rohsenow']
+    assert Nu_free_horizontal_plate_methods(5.54, 3.21e8, buoyancy=True, L=1.0, W=1.0, check_ranges=True) == ["VDI", "McAdams", "Rohsenow"]
 
 def test_Nu_horizontal_plate_McAdams():
     Nu = Nu_horizontal_plate_McAdams(5.54, 3.21e8, buoyancy=True)
@@ -190,7 +190,7 @@ def test_Nu_vertical_cylinder():
     assert_close(Nu, 36.82833881084525)
 
     with pytest.raises(Exception):
-        Nu_vertical_cylinder(0.72, 1E7, Method='BADMETHOD')
+        Nu_vertical_cylinder(0.72, 1E7, Method="BADMETHOD")
 
     l = Nu_vertical_cylinder_methods(0.72, 1E7, L=1.0, D=.1)
     assert len(l) == 11
@@ -221,7 +221,7 @@ def test_Nu_horizontal_cylinder():
     assert len(l) == 3
 
     with pytest.raises(Exception):
-        Nu_horizontal_cylinder(Pr=0.72, Gr=1E7, Method='BADMETHOD')
+        Nu_horizontal_cylinder(Pr=0.72, Gr=1E7, Method="BADMETHOD")
 
 
 

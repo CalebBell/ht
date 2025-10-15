@@ -1,4 +1,4 @@
-'''Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
+"""Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
 Copyright (C) 2016, 2017 Caleb Bell <Caleb.Andrew.Bell@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -18,7 +18,7 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-'''
+"""
 
 from math import exp, factorial, isnan, sqrt, tanh
 from random import choice, randint, seed, uniform
@@ -166,11 +166,11 @@ def test_Phadkeb_numbers():
     # nn = 14; Select[Union[Flatten[Table[x^2 + x*y + y^2, {x, 0, nn}, {y, 0, x}]]], # <= nn^2 &] (* T. D. Noe, Apr 18 2011 *)
     nums = []
     nn = 400 # Increase this to generate more numbers
-    for x in range(0, nn+1):
-        for y in range(0, x+1):
+    for x in range(nn+1):
+        for y in range(x+1):
             nums.append(x*x + x*y + y*y)
 
-    nums = sorted(list(set(nums)))
+    nums = sorted(set(nums))
 
     nn_square = nn*nn
     nums = [i for i in nums if i < nn_square]
@@ -189,7 +189,7 @@ def test_Phadkeb_numbers():
 
     def a(n):
         tot = 0
-        for k in range(0, int(ceil(n/3.))):
+        for k in range(ceil(n/3.)):
             # numpy could do this
             k3 = k*3.
             tot += floor(n/(k3 + 1.)) - floor(n/(k3 + 2.))
@@ -203,7 +203,7 @@ def test_Phadkeb_numbers():
         s.update([val])
         i += 1
 
-    ans2 = sorted(list(s))
+    ans2 = sorted(s)
     assert np.all(ans2[0:len(triangular_C1s)] == triangular_C1s)
 
     # square Ns
@@ -214,7 +214,7 @@ def test_Phadkeb_numbers():
     # 10 loops, best of 3: 17.3 ms per loop
     # Confirmed with SymPy
     up_to = 100000
-    max_range = int(ceil(up_to**0.5))
+    max_range = ceil(up_to**0.5)
     squares = [i*i for i in range(max_range+1)]
     seq = [i+j for i in squares for j in squares]
     seq = [i for i in set(seq) if i < up_to] # optional
@@ -236,12 +236,12 @@ def test_Phadkeb_numbers():
         # numpy would be good at this
         rtf = sqrtint
         tot = 0.0
-        for k in range(0, sqrtint(n) + 1):
+        for k in range(sqrtint(n) + 1):
             tot += rtf(n - k*k)
         return 1 + 4*tot
 
     ans = {a2(i) for i in range(35000)}
-    ans = sorted(list(ans))
+    ans = sorted(ans)
     nums = ans[0:len(square_C1s)]
     assert_close1d(nums, square_C1s)
 
@@ -291,31 +291,31 @@ def test_Ntubes_VDI():
 
 
 def test_Ntubes():
-    methods = ['Phadkeb', 'HEDH', 'VDI', 'Perry']
+    methods = ["Phadkeb", "HEDH", "VDI", "Perry"]
     Ntubes_calc = [Ntubes(DBundle=1.2, Do=0.025, pitch=.025*1.25, Method=i) for i in methods]
     assert Ntubes_calc == [1285, 1272, 1340, 1297]
 
     assert_close(Ntubes(DBundle=1.2, Do=0.025, pitch=.025*1.25), 1285)
 
     with pytest.raises(Exception):
-        Ntubes(DBundle=1.2, Do=0.025, pitch=.025*1.25, Method='failure')
+        Ntubes(DBundle=1.2, Do=0.025, pitch=.025*1.25, Method="failure")
 
     D = size_bundle_from_tubecount(N=1285, Do=0.025, pitch=0.03125)
     assert type(D) is float
     assert_close(D, 1.1985676402390355)
-    D = size_bundle_from_tubecount(N=1285, Do=0.025, pitch=0.03125, Method='HEDH')
+    D = size_bundle_from_tubecount(N=1285, Do=0.025, pitch=0.03125, Method="HEDH")
     assert type(D) is float
     assert_close(D, 1.205810838411941)
-    D = size_bundle_from_tubecount(N=1285, Do=0.025, pitch=0.03125, Method='VDI')
+    D = size_bundle_from_tubecount(N=1285, Do=0.025, pitch=0.03125, Method="VDI")
     assert type(D) is float
     assert_close(D, 1.1749025890472795)
 
-    D = size_bundle_from_tubecount(N=13252, Do=.028, Ntp=2, angle=45, pitch=.028*1.25, Method='Perry')
+    D = size_bundle_from_tubecount(N=13252, Do=.028, Ntp=2, angle=45, pitch=.028*1.25, Method="Perry")
     assert type(D) is float
     assert_close(D, 3.598336054740235, rtol=5e-5)
 
     with pytest.raises(Exception):
-        size_bundle_from_tubecount(N=1285, Do=0.025, pitch=0.03125, Method='BADMETHOD')
+        size_bundle_from_tubecount(N=1285, Do=0.025, pitch=0.03125, Method="BADMETHOD")
 
 
 def test_effectiveness_NTU():
@@ -323,13 +323,13 @@ def test_effectiveness_NTU():
     for i in range(20):
         eff = uniform(0, 1)
         Cr = uniform(0, 1)
-        units = NTU_from_effectiveness(effectiveness=eff, Cr=Cr, subtype='counterflow')
-        eff_calc = effectiveness_from_NTU(NTU=units, Cr=Cr, subtype='counterflow')
+        units = NTU_from_effectiveness(effectiveness=eff, Cr=Cr, subtype="counterflow")
+        eff_calc = effectiveness_from_NTU(NTU=units, Cr=Cr, subtype="counterflow")
         assert_close(eff, eff_calc)
     # Case with Cr = 1
-    NTU = NTU_from_effectiveness(effectiveness=.9, Cr=1, subtype='counterflow')
+    NTU = NTU_from_effectiveness(effectiveness=.9, Cr=1, subtype="counterflow")
     assert_close(NTU, 9)
-    e = effectiveness_from_NTU(NTU=9, Cr=1, subtype='counterflow')
+    e = effectiveness_from_NTU(NTU=9, Cr=1, subtype="counterflow")
     assert_close(e, 0.9)
 
 
@@ -337,13 +337,13 @@ def test_effectiveness_NTU():
     for i in range(20):
         Cr = uniform(0, 1)
         eff = uniform(0, 1./(Cr + 1.)*(1-1E-7))
-        units = NTU_from_effectiveness(effectiveness=eff, Cr=Cr, subtype='parallel')
-        eff_calc = effectiveness_from_NTU(NTU=units, Cr=Cr, subtype='parallel')
+        units = NTU_from_effectiveness(effectiveness=eff, Cr=Cr, subtype="parallel")
+        eff_calc = effectiveness_from_NTU(NTU=units, Cr=Cr, subtype="parallel")
         assert_close(eff, eff_calc)
 
     with pytest.raises(Exception):
         Cr = 0.6
-        NTU_from_effectiveness(effectiveness=0.62500001, Cr=Cr, subtype='parallel')
+        NTU_from_effectiveness(effectiveness=0.62500001, Cr=Cr, subtype="parallel")
 
 
     # Crossflow, Cmin mixed, Cmax unmixed
@@ -351,34 +351,34 @@ def test_effectiveness_NTU():
     for i in range(20):
         Cr = uniform(0, 1)
         eff = uniform(0, (1 - exp(-1/Cr))*(1-1E-7))
-        N = NTU_from_effectiveness(eff, Cr=Cr, subtype='crossflow, mixed Cmin')
-        eff_calc = effectiveness_from_NTU(N, Cr=Cr, subtype='crossflow, mixed Cmin')
+        N = NTU_from_effectiveness(eff, Cr=Cr, subtype="crossflow, mixed Cmin")
+        eff_calc = effectiveness_from_NTU(N, Cr=Cr, subtype="crossflow, mixed Cmin")
         assert_close(eff, eff_calc)
 
     with pytest.raises(Exception):
         Cr = 0.7
-        NTU_from_effectiveness(0.760348963559, Cr=Cr, subtype='crossflow, mixed Cmin')
+        NTU_from_effectiveness(0.760348963559, Cr=Cr, subtype="crossflow, mixed Cmin")
 
 
     # Crossflow, Cmax mixed, Cmin unmixed
     for i in range(20):
         Cr = uniform(0, 1)
         eff = uniform(0, (exp(Cr) - 1)*exp(-Cr)/Cr-1E-5)
-        N = NTU_from_effectiveness(eff, Cr=Cr, subtype='crossflow, mixed Cmax')
-        eff_calc = effectiveness_from_NTU(N, Cr=Cr, subtype='crossflow, mixed Cmax')
+        N = NTU_from_effectiveness(eff, Cr=Cr, subtype="crossflow, mixed Cmax")
+        eff_calc = effectiveness_from_NTU(N, Cr=Cr, subtype="crossflow, mixed Cmax")
         assert_close(eff, eff_calc)
 
     with pytest.raises(Exception):
         Cr = 0.7
         eff = 0.7201638517265581
-        NTU_from_effectiveness(eff, Cr=Cr, subtype='crossflow, mixed Cmax')
+        NTU_from_effectiveness(eff, Cr=Cr, subtype="crossflow, mixed Cmax")
 
     # Crossflow, this one needed a closed-form solver
     for i in range(100):
         Cr = uniform(0, 1)
         eff = uniform(0, 1)
-        N = NTU_from_effectiveness(eff, Cr=Cr, subtype='crossflow approximate')
-        eff_calc = effectiveness_from_NTU(N, Cr=Cr, subtype='crossflow approximate')
+        N = NTU_from_effectiveness(eff, Cr=Cr, subtype="crossflow approximate")
+        eff_calc = effectiveness_from_NTU(N, Cr=Cr, subtype="crossflow approximate")
         assert_close(eff, eff_calc, rtol=1E-6) # brenth differs in old Python versions, rtol is needed
 
     # Shell and tube - this one doesn't have a nice effectiveness limit,
@@ -389,45 +389,45 @@ def test_effectiveness_NTU():
         shells = randint(1, 10)
         eff_max = (-((-Cr + sqrt(Cr**2 + 1) + 1)/(Cr + sqrt(Cr**2 + 1) - 1))**shells + 1)/(Cr - ((-Cr + sqrt(Cr**2 + 1) + 1)/(Cr + sqrt(Cr**2 + 1) - 1))**shells)
         eff = uniform(0, eff_max-1E-5)
-        N = NTU_from_effectiveness(eff, Cr=Cr, n_shell_tube=shells, subtype='S&T')
-        eff_calc = effectiveness_from_NTU(N, Cr=Cr, n_shell_tube=shells, subtype='S&T')
+        N = NTU_from_effectiveness(eff, Cr=Cr, n_shell_tube=shells, subtype="S&T")
+        eff_calc = effectiveness_from_NTU(N, Cr=Cr, n_shell_tube=shells, subtype="S&T")
         assert_close(eff, eff_calc)
 
     with pytest.raises(Exception):
-        NTU_from_effectiveness(.99, Cr=.7, n_shell_tube=5, subtype='S&T')
+        NTU_from_effectiveness(.99, Cr=.7, n_shell_tube=5, subtype="S&T")
 
     # Easy tests
-    effectiveness = effectiveness_from_NTU(NTU=5, Cr=0.7, subtype='crossflow, mixed Cmin')
+    effectiveness = effectiveness_from_NTU(NTU=5, Cr=0.7, subtype="crossflow, mixed Cmin")
     assert_close(effectiveness, 0.7497843941508544)
-    NTU = NTU_from_effectiveness(effectiveness=effectiveness, Cr=0.7, subtype='crossflow, mixed Cmin')
+    NTU = NTU_from_effectiveness(effectiveness=effectiveness, Cr=0.7, subtype="crossflow, mixed Cmin")
     assert_close(NTU, 5)
 
-    eff = effectiveness_from_NTU(NTU=5, Cr=0.7, subtype='crossflow, mixed Cmax')
+    eff = effectiveness_from_NTU(NTU=5, Cr=0.7, subtype="crossflow, mixed Cmax")
     assert_close(eff, 0.7158099831204696)
-    NTU = NTU_from_effectiveness(eff, Cr=0.7, subtype='crossflow, mixed Cmax')
+    NTU = NTU_from_effectiveness(eff, Cr=0.7, subtype="crossflow, mixed Cmax")
     assert_close(5, NTU)
 
-    eff = effectiveness_from_NTU(NTU=5, Cr=0, subtype='boiler')
+    eff = effectiveness_from_NTU(NTU=5, Cr=0, subtype="boiler")
     assert_close(eff, 0.9932620530009145)
-    NTU = NTU_from_effectiveness(eff, Cr=0, subtype='boiler')
+    NTU = NTU_from_effectiveness(eff, Cr=0, subtype="boiler")
     assert_close(NTU, 5)
 
     with pytest.raises(Exception):
-        effectiveness_from_NTU(NTU=5, Cr=1.01, subtype='crossflow, mixed Cmin')
+        effectiveness_from_NTU(NTU=5, Cr=1.01, subtype="crossflow, mixed Cmin")
 
     with pytest.raises(Exception):
-        NTU_from_effectiveness(effectiveness=.2, Cr=1.01, subtype='crossflow, mixed Cmin')
+        NTU_from_effectiveness(effectiveness=.2, Cr=1.01, subtype="crossflow, mixed Cmin")
 
 
     # bad names
     with pytest.raises(Exception):
-        NTU_from_effectiveness(.99, Cr=.7, subtype='FAIL')
+        NTU_from_effectiveness(.99, Cr=.7, subtype="FAIL")
     with pytest.raises(Exception):
-        effectiveness_from_NTU(NTU=5, Cr=.5, subtype='FAIL')
+        effectiveness_from_NTU(NTU=5, Cr=.5, subtype="FAIL")
 
 
     # Crossflow analytical solution
-    eff = effectiveness_from_NTU(NTU=5, Cr=.7, subtype='crossflow')
+    eff = effectiveness_from_NTU(NTU=5, Cr=.7, subtype="crossflow")
     assert_close(eff, 0.8444821799748551)
 
     def crossflow_unmixed_sum_infinite(NTU, Cr):
@@ -448,61 +448,61 @@ def test_effectiveness_NTU():
         # because the integral term gets too close to 1 for floating point numbers
         # to capture any more accuracy
         # This is not likely to be a problem to users
-        N = NTU_from_effectiveness(eff, Cr=Cr, subtype='crossflow')
-        eff_calc = effectiveness_from_NTU(N, Cr=Cr, subtype='crossflow')
+        N = NTU_from_effectiveness(eff, Cr=Cr, subtype="crossflow")
+        eff_calc = effectiveness_from_NTU(N, Cr=Cr, subtype="crossflow")
         assert_close(eff, eff_calc, rtol=1E-6) # brenth differs in old Python versions, rtol is needed
 
 
 
 def test_effectiveness_NTU_method():
-    ans_known = {'Q': 192850.0, 'Thi': 130, 'Cmax': 9672.0, 'Tho': 110.06100082712986, 'Cmin': 2755.0, 'NTU': 1.1040839095588, 'Tco': 85, 'Tci': 15, 'Cr': 0.2848428453267163, 'effectiveness': 0.6086956521739131, 'UA': 3041.751170834494}
-    ans = effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, subtype='crossflow, mixed Cmax', Tci=15, Tco=85, Tho=110.06100082712986)
+    ans_known = {"Q": 192850.0, "Thi": 130, "Cmax": 9672.0, "Tho": 110.06100082712986, "Cmin": 2755.0, "NTU": 1.1040839095588, "Tco": 85, "Tci": 15, "Cr": 0.2848428453267163, "effectiveness": 0.6086956521739131, "UA": 3041.751170834494}
+    ans = effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, subtype="crossflow, mixed Cmax", Tci=15, Tco=85, Tho=110.06100082712986)
     [assert_close(ans_known[i], ans[i]) for i in ans_known.keys()]
-    ans = effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, subtype='crossflow, mixed Cmax', Tci=15, Tco=85, Thi=130)
-    [assert_close(ans_known[i], ans[i]) for i in ans_known.keys()]
-
-    ans = effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, subtype='crossflow, mixed Cmax', Thi=130, Tho=110.06100082712986, Tci=15)
-    [assert_close(ans_known[i], ans[i]) for i in ans_known.keys()]
-    ans = effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, subtype='crossflow, mixed Cmax', Thi=130, Tho=110.06100082712986, Tco=85)
+    ans = effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, subtype="crossflow, mixed Cmax", Tci=15, Tco=85, Thi=130)
     [assert_close(ans_known[i], ans[i]) for i in ans_known.keys()]
 
-    ans = effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, subtype='crossflow, mixed Cmax', Tco=85, Tho=110.06100082712986, UA=3041.751170834494)
+    ans = effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, subtype="crossflow, mixed Cmax", Thi=130, Tho=110.06100082712986, Tci=15)
     [assert_close(ans_known[i], ans[i]) for i in ans_known.keys()]
-    ans = effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, subtype='crossflow, mixed Cmax', Tci=15, Thi=130, UA=3041.751170834494)
-    [assert_close(ans_known[i], ans[i]) for i in ans_known.keys()]
-
-    ans = effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, subtype='crossflow, mixed Cmax', Tci=15, Tho=110.06100082712986, UA=3041.751170834494)
-    [assert_close(ans_known[i], ans[i]) for i in ans_known.keys()]
-    ans = effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, subtype='crossflow, mixed Cmax', Tco=85, Thi=130, UA=3041.751170834494)
+    ans = effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, subtype="crossflow, mixed Cmax", Thi=130, Tho=110.06100082712986, Tco=85)
     [assert_close(ans_known[i], ans[i]) for i in ans_known.keys()]
 
-    ans = effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, subtype='crossflow, mixed Cmax', Tci=15, Tco=85, Tho=110.06100082712986, UA=3041.751170834494)
+    ans = effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, subtype="crossflow, mixed Cmax", Tco=85, Tho=110.06100082712986, UA=3041.751170834494)
     [assert_close(ans_known[i], ans[i]) for i in ans_known.keys()]
-    ans = effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, subtype='crossflow, mixed Cmax', Tco=85, Thi=130, Tho=110.06100082712986, UA=3041.751170834494)
+    ans = effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, subtype="crossflow, mixed Cmax", Tci=15, Thi=130, UA=3041.751170834494)
+    [assert_close(ans_known[i], ans[i]) for i in ans_known.keys()]
+
+    ans = effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, subtype="crossflow, mixed Cmax", Tci=15, Tho=110.06100082712986, UA=3041.751170834494)
+    [assert_close(ans_known[i], ans[i]) for i in ans_known.keys()]
+    ans = effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, subtype="crossflow, mixed Cmax", Tco=85, Thi=130, UA=3041.751170834494)
+    [assert_close(ans_known[i], ans[i]) for i in ans_known.keys()]
+
+    ans = effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, subtype="crossflow, mixed Cmax", Tci=15, Tco=85, Tho=110.06100082712986, UA=3041.751170834494)
+    [assert_close(ans_known[i], ans[i]) for i in ans_known.keys()]
+    ans = effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, subtype="crossflow, mixed Cmax", Tco=85, Thi=130, Tho=110.06100082712986, UA=3041.751170834494)
     [assert_close(ans_known[i], ans[i]) for i in ans_known.keys()]
 
     with pytest.raises(Exception):
         # Test raising an error with only on set of stream information
-        effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, subtype='crossflow, mixed Cmax', Thi=130, Tho=110.06100082712986, UA=3041.751170834494)
+        effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, subtype="crossflow, mixed Cmax", Thi=130, Tho=110.06100082712986, UA=3041.751170834494)
 
     with pytest.raises(Exception):
         # Inconsistent hot and cold temperatures and heat capacity ratios
-        effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, subtype='crossflow, mixed Cmax', Thi=130, Tho=110.06100082712986, Tco=85, Tci=5)
+        effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, subtype="crossflow, mixed Cmax", Thi=130, Tho=110.06100082712986, Tco=85, Tci=5)
 
     with pytest.raises(Exception):
         # Calculate UA, but no code side temperature information given
-        effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, subtype='crossflow, mixed Cmax', Thi=130, Tho=110.06100082712986)
+        effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, subtype="crossflow, mixed Cmax", Thi=130, Tho=110.06100082712986)
 
     with pytest.raises(Exception):
         # Calculate UA, but no hot side temperature information given
-        effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, subtype='crossflow, mixed Cmax', Tci=15, Tco=85)
+        effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, subtype="crossflow, mixed Cmax", Tci=15, Tco=85)
 
     with pytest.raises(Exception):
         # Calculate UA, but only two temperatures given
-        effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, subtype='crossflow, mixed Cmax', Tci=15, Thi=130)
+        effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, subtype="crossflow, mixed Cmax", Tci=15, Thi=130)
 
 def test_F_LMTD_Fakheri():
-    '''Number of tube passes must be a multiple of 2N for correlation to work.
+    """Number of tube passes must be a multiple of 2N for correlation to work.
     N can be 1.
 
     Example from http://excelcalculations.blogspot.ca/2011/06/lmtd-correction-factor.html
@@ -511,7 +511,7 @@ def test_F_LMTD_Fakheri():
 
     This also matches that from the sheet:
     http://www.mhprofessional.com/getpage.php?c=0071624082_download.php&cat=113
-    '''
+    """
     F_calc = F_LMTD_Fakheri(Tci=15, Tco=85, Thi=130, Tho=110, shells=1)
     assert_close(F_calc, 0.9438358829645933)
 
@@ -520,9 +520,9 @@ def test_F_LMTD_Fakheri():
     assert_close(F_calc, 0.9925689447100824)
 
     for i in range(1, 10):
-        ans = effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, n_shell_tube=i, subtype='S&T', Tci=15, Tco=85, Thi=130)
+        ans = effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, n_shell_tube=i, subtype="S&T", Tci=15, Tco=85, Thi=130)
         dTlm = LMTD(Thi=130, Tho=110.06100082712986,  Tci=15, Tco=85)
-        F_expect = ans['Q']/ans['UA']/dTlm
+        F_expect = ans["Q"]/ans["UA"]/dTlm
 
         F_calc = F_LMTD_Fakheri(Tci=15, Tco=85, Thi=130, Tho=110.06100082712986, shells=i)
         assert_close(F_expect, F_calc)
@@ -535,23 +535,23 @@ def test_temperature_effectiveness_basic():
     # it matches the e-NTU method. The approximate formula for crossflow is somewhat
     # different - it is believed the approximations are different.
 
-    P1 = temperature_effectiveness_basic(R1=3.5107078039927404, NTU1=0.29786672449248663, subtype='counterflow')
+    P1 = temperature_effectiveness_basic(R1=3.5107078039927404, NTU1=0.29786672449248663, subtype="counterflow")
     assert_close(P1, 0.173382601503)
-    P1 = temperature_effectiveness_basic(R1=3.5107078039927404, NTU1=0.29786672449248663, subtype='parallel')
+    P1 = temperature_effectiveness_basic(R1=3.5107078039927404, NTU1=0.29786672449248663, subtype="parallel")
     assert_close(P1, 0.163852912049)
-    P1 = temperature_effectiveness_basic(R1=3.5107078039927404, NTU1=0.29786672449248663, subtype='crossflow approximate')
+    P1 = temperature_effectiveness_basic(R1=3.5107078039927404, NTU1=0.29786672449248663, subtype="crossflow approximate")
     assert_close(P1, 0.149974594007)
-    P1 = temperature_effectiveness_basic(R1=3.5107078039927404, NTU1=0.29786672449248663, subtype='crossflow')
+    P1 = temperature_effectiveness_basic(R1=3.5107078039927404, NTU1=0.29786672449248663, subtype="crossflow")
     assert_close(P1, 0.1698702121873175)
-    P1 = temperature_effectiveness_basic(R1=3.5107078039927404, NTU1=0.29786672449248663, subtype='crossflow, mixed 1')
+    P1 = temperature_effectiveness_basic(R1=3.5107078039927404, NTU1=0.29786672449248663, subtype="crossflow, mixed 1")
     assert_close(P1, 0.168678230894)
-    P1 = temperature_effectiveness_basic(R1=3.5107078039927404, NTU1=0.29786672449248663, subtype='crossflow, mixed 2')
+    P1 = temperature_effectiveness_basic(R1=3.5107078039927404, NTU1=0.29786672449248663, subtype="crossflow, mixed 2")
     assert_close(P1, 0.16953790774)
-    P1 = temperature_effectiveness_basic(R1=3.5107078039927404, NTU1=0.29786672449248663, subtype='crossflow, mixed 1&2')
+    P1 = temperature_effectiveness_basic(R1=3.5107078039927404, NTU1=0.29786672449248663, subtype="crossflow, mixed 1&2")
     assert_close(P1, 0.168411216829)
 
     with pytest.raises(Exception):
-        temperature_effectiveness_basic(R1=3.5107078039927404, NTU1=0.29786672449248663, subtype='FAIL')
+        temperature_effectiveness_basic(R1=3.5107078039927404, NTU1=0.29786672449248663, subtype="FAIL")
 
     # Formulas are in [1]_, [3]_, and [2]_.
 
@@ -761,11 +761,11 @@ def test_temperature_effectiveness_air_cooler():
 
         tot = 0
         for i in range(1, N):
-            for j in range(0, i+1):
+            for j in range(i+1):
                 prod = factorial(i)/factorial(i-j)/factorial(j)
                 tot1 = prod*K**j*exp(-(i-j)*NTU/N)
                 tot2 = 0
-                for k in range(0, j+1):
+                for k in range(j+1):
                     tot2 += (N*K*R)**k/factorial(k)
 
                 tot += tot1*tot2
@@ -799,140 +799,140 @@ def test_temperature_effectiveness_air_cooler_coerce():
 @pytest.mark.mpmath
 def test_P_NTU_method():
     # Counterflow case
-    ans = effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, subtype='counterflow', Tci=15, Tco=85, Tho=110.06100082712986)
-    ans2 = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., UA=ans['UA'], T1i=130, T2i=15, subtype='counterflow')
-    assert_close(ans2['Q'], ans['Q'])
+    ans = effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, subtype="counterflow", Tci=15, Tco=85, Tho=110.06100082712986)
+    ans2 = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., UA=ans["UA"], T1i=130, T2i=15, subtype="counterflow")
+    assert_close(ans2["Q"], ans["Q"])
     # Parallel flow case
-    ans = effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, subtype='parallel', Tci=15, Tco=85, Tho=110.06100082712986)
-    ans2 = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., UA=ans['UA'], T1i=130, T2i=15, subtype='parallel')
-    assert_close(ans2['Q'], ans['Q'])
+    ans = effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, subtype="parallel", Tci=15, Tco=85, Tho=110.06100082712986)
+    ans2 = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., UA=ans["UA"], T1i=130, T2i=15, subtype="parallel")
+    assert_close(ans2["Q"], ans["Q"])
     # Mixed Cmax/ 1
-    ans = effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, subtype='crossflow, mixed Cmax', Tci=15, Tco=85, Tho=110.06100082712986)
-    ans2 = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., UA=ans['UA'], T1i=130, T2i=15, subtype='crossflow, mixed 1')
-    assert_close(ans2['Q'], ans['Q'])
+    ans = effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, subtype="crossflow, mixed Cmax", Tci=15, Tco=85, Tho=110.06100082712986)
+    ans2 = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., UA=ans["UA"], T1i=130, T2i=15, subtype="crossflow, mixed 1")
+    assert_close(ans2["Q"], ans["Q"])
     # Mixed Cmin/2
-    ans = effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, subtype='crossflow, mixed Cmin', Tci=15, Tco=85, Tho=110.06100082712986)
-    ans2 = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., UA=ans['UA'], T1i=130, T2i=15, subtype='crossflow, mixed 2')
-    assert_close(ans2['Q'], ans['Q'])
+    ans = effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, subtype="crossflow, mixed Cmin", Tci=15, Tco=85, Tho=110.06100082712986)
+    ans2 = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., UA=ans["UA"], T1i=130, T2i=15, subtype="crossflow, mixed 2")
+    assert_close(ans2["Q"], ans["Q"])
 
     # Counterflow case but with all five different temperature input cases (both inlets known already done)
-    ans = effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, subtype='counterflow', Tci=15, Tco=85, Tho=110.06100082712986)
-    ans2 = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., UA=ans['UA'], T1o=110.06100082712986, T2o=85, subtype='counterflow')
-    assert_close(ans2['Q'], ans['Q'])
-    ans2 = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., UA=ans['UA'], T1i=130, T2o=85, subtype='counterflow')
-    assert_close(ans2['Q'], ans['Q'])
-    ans2 = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., UA=ans['UA'], T1o=110.06100082712986, T2i=15, subtype='counterflow')
-    assert_close(ans2['Q'], ans['Q'])
-    ans2 = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., UA=ans['UA'], T2o=85, T2i=15, subtype='counterflow')
-    assert_close(ans2['Q'], ans['Q'])
-    ans2 = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., UA=ans['UA'], T1o=110.06100082712986, T1i=130, subtype='counterflow')
-    assert_close(ans2['Q'], ans['Q'])
+    ans = effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, subtype="counterflow", Tci=15, Tco=85, Tho=110.06100082712986)
+    ans2 = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., UA=ans["UA"], T1o=110.06100082712986, T2o=85, subtype="counterflow")
+    assert_close(ans2["Q"], ans["Q"])
+    ans2 = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., UA=ans["UA"], T1i=130, T2o=85, subtype="counterflow")
+    assert_close(ans2["Q"], ans["Q"])
+    ans2 = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., UA=ans["UA"], T1o=110.06100082712986, T2i=15, subtype="counterflow")
+    assert_close(ans2["Q"], ans["Q"])
+    ans2 = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., UA=ans["UA"], T2o=85, T2i=15, subtype="counterflow")
+    assert_close(ans2["Q"], ans["Q"])
+    ans2 = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., UA=ans["UA"], T1o=110.06100082712986, T1i=130, subtype="counterflow")
+    assert_close(ans2["Q"], ans["Q"])
 
     # Only 1 temperature input
     with pytest.raises(Exception):
-        P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., UA=300, T1i=130, subtype='counterflow')
+        P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., UA=300, T1i=130, subtype="counterflow")
 
     # Bad HX type input
     with pytest.raises(Exception):
-        P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., UA=300, T1i=130, T2i=15, subtype='BADTYPE')
+        P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., UA=300, T1i=130, T2i=15, subtype="BADTYPE")
 
-    ans = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., UA=300, T1i=130, T2i=15, subtype='E', Ntp=10)
-    assert_close(ans['Q'], 32212.185563086336,)
+    ans = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., UA=300, T1i=130, T2i=15, subtype="E", Ntp=10)
+    assert_close(ans["Q"], 32212.185563086336,)
 
-    ans = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., UA=300, T1i=130, T2i=15, subtype='G', Ntp=2)
-    assert_close(ans['Q'], 32224.88788570008)
+    ans = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., UA=300, T1i=130, T2i=15, subtype="G", Ntp=2)
+    assert_close(ans["Q"], 32224.88788570008)
 
-    ans = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., UA=300, T1i=130, T2i=15, subtype='H', Ntp=2)
-    assert_close(ans['Q'], 32224.888572366734)
+    ans = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., UA=300, T1i=130, T2i=15, subtype="H", Ntp=2)
+    assert_close(ans["Q"], 32224.888572366734)
 
-    ans = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., UA=300, T1i=130, T2i=15, subtype='J', Ntp=2)
-    assert_close(ans['Q'], 32212.185699719837)
+    ans = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., UA=300, T1i=130, T2i=15, subtype="J", Ntp=2)
+    assert_close(ans["Q"], 32212.185699719837)
 
     # Plate tests
-    ans = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., UA=300, T1i=130, T2i=15, subtype='3/1')
-    assert_close(ans['Q'], 32214.179745602625)
+    ans = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., UA=300, T1i=130, T2i=15, subtype="3/1")
+    assert_close(ans["Q"], 32214.179745602625)
 
-    ans = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., UA=300, T1i=130, T2i=15, subtype='3/1', optimal=False)
-    assert_close(ans['Q'], 32210.4190840378)
+    ans = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., UA=300, T1i=130, T2i=15, subtype="3/1", optimal=False)
+    assert_close(ans["Q"], 32210.4190840378)
 
-    ans = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., UA=300, T1i=130, T2i=15, subtype='2/2')
-    assert_close(ans['Q'], 32229.120739501937)
+    ans = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., UA=300, T1i=130, T2i=15, subtype="2/2")
+    assert_close(ans["Q"], 32229.120739501937)
 
-    ans = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., UA=300, T1i=130, T2i=15, subtype='2/2', optimal=False)
-    assert_close(ans['Q'], 32203.721238671216)
+    ans = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., UA=300, T1i=130, T2i=15, subtype="2/2", optimal=False)
+    assert_close(ans["Q"], 32203.721238671216)
 
-    ans = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., UA=300, T1i=130, T2i=15, subtype='2/2c', optimal=False)
-    assert_close(ans['Q'], 32203.721238671216)
+    ans = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., UA=300, T1i=130, T2i=15, subtype="2/2c", optimal=False)
+    assert_close(ans["Q"], 32203.721238671216)
 
-    ans = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., UA=300, T1i=130, T2i=15, subtype='2/2p', optimal=False)
-    assert_close(ans['Q'], 32195.273806845064)
+    ans = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., UA=300, T1i=130, T2i=15, subtype="2/2p", optimal=False)
+    assert_close(ans["Q"], 32195.273806845064)
 
 
 def test_P_NTU_method_backwards():
-    ans = effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, subtype='counterflow', Tci=15, Tco=85, Tho=110.06100082712986)
-    ans2 = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., T2i=15, T2o=85, T1o=110.06100082712986, subtype='counterflow')
-    assert_close(ans2['Q'], ans['Q'])
+    ans = effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, subtype="counterflow", Tci=15, Tco=85, Tho=110.06100082712986)
+    ans2 = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., T2i=15, T2o=85, T1o=110.06100082712986, subtype="counterflow")
+    assert_close(ans2["Q"], ans["Q"])
 #    # Parallel flow case
-    ans = effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, subtype='parallel', Tci=15, Tco=85, Tho=110.06100082712986)
-    ans2 = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., T1i=130, T2i=15, T1o=110.06100082712986, subtype='parallel')
-    assert_close(ans2['Q'], ans['Q'])
+    ans = effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, subtype="parallel", Tci=15, Tco=85, Tho=110.06100082712986)
+    ans2 = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., T1i=130, T2i=15, T1o=110.06100082712986, subtype="parallel")
+    assert_close(ans2["Q"], ans["Q"])
 #    # Mixed Cmax/ 1
-    ans = effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, subtype='crossflow, mixed Cmax', Tci=15, Tco=85, Tho=110.06100082712986)
-    ans2 = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., T1o=110.06100082712986, T1i=130, T2i=15, subtype='crossflow, mixed 1')
-    assert_close(ans2['Q'], ans['Q'])
+    ans = effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, subtype="crossflow, mixed Cmax", Tci=15, Tco=85, Tho=110.06100082712986)
+    ans2 = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., T1o=110.06100082712986, T1i=130, T2i=15, subtype="crossflow, mixed 1")
+    assert_close(ans2["Q"], ans["Q"])
 #    # Mixed Cmin/2
-    ans = effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, subtype='crossflow, mixed Cmin', Tci=15, Tco=85, Tho=110.06100082712986)
-    ans2 = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., T1o=110.06100082712986, T1i=130, T2i=15, subtype='crossflow, mixed 2')
-    assert_close(ans2['Q'], ans['Q'])
+    ans = effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, subtype="crossflow, mixed Cmin", Tci=15, Tco=85, Tho=110.06100082712986)
+    ans2 = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., T1o=110.06100082712986, T1i=130, T2i=15, subtype="crossflow, mixed 2")
+    assert_close(ans2["Q"], ans["Q"])
 
 #    # Counterflow case but with all five different temperature input cases (both inlets known already done)
-    ans = effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, subtype='counterflow', Tci=15, Tco=85, Tho=110.06100082712986)
-    ans2 = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., T1i=130, T1o=110.06100082712986, T2o=85, subtype='counterflow')
-    assert_close(ans2['Q'], ans['Q'])
-    ans2 = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., T1o=110.06100082712986, T1i=130, T2o=85, subtype='counterflow')
-    assert_close(ans2['Q'], ans['Q'])
-    ans2 = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., T1i=130, T1o=110.06100082712986, T2i=15, subtype='counterflow')
-    assert_close(ans2['Q'], ans['Q'])
-    ans2 = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., T2o=85, T2i=15, T1o=110.06100082712986, subtype='counterflow')
-    assert_close(ans2['Q'], ans['Q'])
-    ans2 = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., T1o=110.06100082712986, T1i=130, T2i=15, subtype='counterflow')
-    assert_close(ans2['Q'], ans['Q'])
+    ans = effectiveness_NTU_method(mh=5.2, mc=1.45, Cph=1860., Cpc=1900, subtype="counterflow", Tci=15, Tco=85, Tho=110.06100082712986)
+    ans2 = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., T1i=130, T1o=110.06100082712986, T2o=85, subtype="counterflow")
+    assert_close(ans2["Q"], ans["Q"])
+    ans2 = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., T1o=110.06100082712986, T1i=130, T2o=85, subtype="counterflow")
+    assert_close(ans2["Q"], ans["Q"])
+    ans2 = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., T1i=130, T1o=110.06100082712986, T2i=15, subtype="counterflow")
+    assert_close(ans2["Q"], ans["Q"])
+    ans2 = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., T2o=85, T2i=15, T1o=110.06100082712986, subtype="counterflow")
+    assert_close(ans2["Q"], ans["Q"])
+    ans2 = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., T1o=110.06100082712986, T1i=130, T2i=15, subtype="counterflow")
+    assert_close(ans2["Q"], ans["Q"])
 
 
-    ans2 = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., T1o=110.06100082712986, T2o=85, T1i=130, T2i=15, subtype='counterflow')
-    assert_close(ans2['Q'], ans['Q'])
+    ans2 = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., T1o=110.06100082712986, T2o=85, T1i=130, T2i=15, subtype="counterflow")
+    assert_close(ans2["Q"], ans["Q"])
 
     # TEMA types
-    ans = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., T1i=130, T1o=126.66954243557834, T2i=15, subtype='E', Ntp=10)
-    assert_close(ans['Q'], 32212.185563086336,)
+    ans = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., T1i=130, T1o=126.66954243557834, T2i=15, subtype="E", Ntp=10)
+    assert_close(ans["Q"], 32212.185563086336,)
 
-    ans = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., T1o=126.66822912678866, T1i=130, T2i=15, subtype='G', Ntp=2)
-    assert_close(ans['Q'], 32224.88788570008)
+    ans = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., T1o=126.66822912678866, T1i=130, T2i=15, subtype="G", Ntp=2)
+    assert_close(ans["Q"], 32224.88788570008)
 
-    ans = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., T1o=126.66822905579335, T1i=130, T2i=15, subtype='H', Ntp=2)
-    assert_close(ans['Q'], 32224.888572366734)
+    ans = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., T1o=126.66822905579335, T1i=130, T2i=15, subtype="H", Ntp=2)
+    assert_close(ans["Q"], 32224.888572366734)
 
-    ans = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., T1o=126.66954242145162, T1i=130, T2i=15, subtype='J', Ntp=2)
-    assert_close(ans['Q'], 32212.185699719837)
+    ans = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., T1o=126.66954242145162, T1i=130, T2i=15, subtype="J", Ntp=2)
+    assert_close(ans["Q"], 32212.185699719837)
 
     # Plate tests
-    ans = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., T1o=126.6693362545903, T1i=130, T2i=15, subtype='3/1')
-    assert_close(ans['Q'], 32214.179745602625)
+    ans = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., T1o=126.6693362545903, T1i=130, T2i=15, subtype="3/1")
+    assert_close(ans["Q"], 32214.179745602625)
 
-    ans = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., T1o=126.66972507402421, T1i=130, T2i=15, subtype='3/1', optimal=False)
-    assert_close(ans['Q'], 32210.4190840378)
+    ans = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., T1o=126.66972507402421, T1i=130, T2i=15, subtype="3/1", optimal=False)
+    assert_close(ans["Q"], 32210.4190840378)
 
-    ans = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., T1o=126.66779148681742, T1i=130, T2i=15, subtype='2/2')
-    assert_close(ans['Q'], 32229.120739501937)
+    ans = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., T1o=126.66779148681742, T1i=130, T2i=15, subtype="2/2")
+    assert_close(ans["Q"], 32229.120739501937)
 
-    ans = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., T1o=126.67041757251124, T1i=130, T2i=15, subtype='2/2', optimal=False)
-    assert_close(ans['Q'], 32203.721238671216)
+    ans = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., T1o=126.67041757251124, T1i=130, T2i=15, subtype="2/2", optimal=False)
+    assert_close(ans["Q"], 32203.721238671216)
 
-    ans = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., T1o=126.67041757251124, T1i=130, T2i=15, subtype='2/2c', optimal=False)
-    assert_close(ans['Q'], 32203.721238671216)
+    ans = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., T1o=126.67041757251124, T1i=130, T2i=15, subtype="2/2c", optimal=False)
+    assert_close(ans["Q"], 32203.721238671216)
 
-    ans = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., T1o=126.67129096289857, T1i=130, T2i=15, subtype='2/2p', optimal=False)
-    assert_close(ans['Q'], 32195.273806845064)
+    ans = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., T1o=126.67129096289857, T1i=130, T2i=15, subtype="2/2p", optimal=False)
+    assert_close(ans["Q"], 32195.273806845064)
 
 
 
@@ -942,19 +942,19 @@ def test_P_NTU_method_backwards():
 
     # Q for both streams don't match case
     with pytest.raises(Exception):
-        P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., T1o=110.06100082712986, T2o=85, T1i=170, T2i=15, subtype='counterflow')
+        P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., T1o=110.06100082712986, T2o=85, T1i=170, T2i=15, subtype="counterflow")
     # No T speced on side 2
     with pytest.raises(Exception):
-        P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., T1o=110.06100082712986, T1i=130, subtype='counterflow')
+        P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., T1o=110.06100082712986, T1i=130, subtype="counterflow")
     # No T specified on side 1
     with pytest.raises(Exception):
-        P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., T2o=85, T2i=15, subtype='counterflow')
+        P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., T2o=85, T2i=15, subtype="counterflow")
     # No T information at all
     with pytest.raises(Exception):
-        ans2 = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., subtype='counterflow')
+        ans2 = P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., subtype="counterflow")
     # subtype not recognized
     with pytest.raises(Exception):
-        P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., T1o=110.06100082712986, T1i=130, T2i=15, subtype='NOTAREALTYPEOFHEATEXCHANGER')
+        P_NTU_method(m1=5.2, m2=1.45, Cp1=1860., Cp2=1900., T1o=110.06100082712986, T1i=130, T2i=15, subtype="NOTAREALTYPEOFHEATEXCHANGER")
 
 
 
@@ -992,7 +992,7 @@ def test_temperature_effectiveness_plate():
             P1 = temperature_effectiveness_plate(R1, NTU1, Np1=1, Np2=2, counterflow=b1, passes_counterflow=b2)
             assert_close(P1, 0.6439306988115887)
             # We can check we did the conversion right as follows:
-            NTU2 = NTU1*R1 #
+            NTU2 = NTU1*R1
             R2 = 1./R1 # switch 2
             P2 = P1*R1
             P2_reversed = temperature_effectiveness_plate(R2, NTU2, Np1=2, Np2=1)
@@ -1083,13 +1083,13 @@ def test_NTU_from_P_basic():
         NTU1 = float(choice(NTU1s))
         try:
             # Not all of the guesses work forward; some overflow, some divide by 0
-            P1 = temperature_effectiveness_basic(R1=R1, NTU1=NTU1, subtype='counterflow')
+            P1 = temperature_effectiveness_basic(R1=R1, NTU1=NTU1, subtype="counterflow")
             # Backwards, it's the same divide by zero or log(negative number)
-            NTU1_calc = NTU_from_P_basic(P1, R1, subtype='counterflow')
+            NTU1_calc = NTU_from_P_basic(P1, R1, subtype="counterflow")
         except (ValueError, OverflowError, ZeroDivisionError):
             continue
         # Again, multiple values of NTU1 can produce the same P1
-        P1_calc = temperature_effectiveness_basic(R1=R1, NTU1=NTU1_calc, subtype='counterflow')
+        P1_calc = temperature_effectiveness_basic(R1=R1, NTU1=NTU1_calc, subtype="counterflow")
         assert_close(P1, P1_calc)
 
     # Analytical result for parallel flow
@@ -1097,12 +1097,12 @@ def test_NTU_from_P_basic():
         R1 = float(choice(R1s))
         NTU1 = float(choice(NTU1s))
         try:
-            P1 = temperature_effectiveness_basic(R1=R1, NTU1=NTU1, subtype='parallel')
+            P1 = temperature_effectiveness_basic(R1=R1, NTU1=NTU1, subtype="parallel")
             # Backwards, it's the same divide by zero or log(negative number)
-            NTU1_calc = NTU_from_P_basic(P1, R1, subtype='parallel')
+            NTU1_calc = NTU_from_P_basic(P1, R1, subtype="parallel")
         except (ValueError, OverflowError, ZeroDivisionError):
             continue
-        P1_calc = temperature_effectiveness_basic(R1=R1, NTU1=NTU1_calc, subtype='parallel')
+        P1_calc = temperature_effectiveness_basic(R1=R1, NTU1=NTU1_calc, subtype="parallel")
         assert_close(P1, P1_calc)
 
     # Analytical result for 'crossflow, mixed 1'
@@ -1111,13 +1111,13 @@ def test_NTU_from_P_basic():
         NTU1 = float(choice(NTU1s))
         try:
             # Not all of the guesses work forward; some overflow, some divide by 0
-            P1 = temperature_effectiveness_basic(R1=R1, NTU1=NTU1, subtype='crossflow, mixed 1')
+            P1 = temperature_effectiveness_basic(R1=R1, NTU1=NTU1, subtype="crossflow, mixed 1")
             # Backwards, it's the same divide by zero or log(negative number)
-            NTU1_calc = NTU_from_P_basic(P1, R1, subtype='crossflow, mixed 1')
+            NTU1_calc = NTU_from_P_basic(P1, R1, subtype="crossflow, mixed 1")
         except (ValueError, OverflowError, ZeroDivisionError):
             continue
         # Again, multiple values of NTU1 can produce the same P1
-        P1_calc = temperature_effectiveness_basic(R1=R1, NTU1=NTU1_calc, subtype='crossflow, mixed 1')
+        P1_calc = temperature_effectiveness_basic(R1=R1, NTU1=NTU1_calc, subtype="crossflow, mixed 1")
         assert_close(P1, P1_calc)
 
     # Analytical result for 'crossflow, mixed 2'
@@ -1126,13 +1126,13 @@ def test_NTU_from_P_basic():
         NTU1 = float(choice(NTU1s))
         try:
             # Not all of the guesses work forward; some overflow, some divide by 0
-            P1 = temperature_effectiveness_basic(R1=R1, NTU1=NTU1, subtype='crossflow, mixed 2')
+            P1 = temperature_effectiveness_basic(R1=R1, NTU1=NTU1, subtype="crossflow, mixed 2")
             # Backwards, it's the same divide by zero or log(negative number)
-            NTU1_calc = NTU_from_P_basic(P1, R1, subtype='crossflow, mixed 2')
+            NTU1_calc = NTU_from_P_basic(P1, R1, subtype="crossflow, mixed 2")
         except (ValueError, OverflowError, ZeroDivisionError):
             continue
         # Again, multiple values of NTU1 can produce the same P1
-        P1_calc = temperature_effectiveness_basic(R1=R1, NTU1=NTU1_calc, subtype='crossflow, mixed 2')
+        P1_calc = temperature_effectiveness_basic(R1=R1, NTU1=NTU1_calc, subtype="crossflow, mixed 2")
         assert_close(P1, P1_calc)
 
 
@@ -1146,15 +1146,15 @@ def test_NTU_from_P_basic():
         R1 = choice(R1s)
         NTU1 = choice(NTU1s)
 
-        P1 = temperature_effectiveness_basic(R1=R1, NTU1=NTU1, subtype='crossflow, mixed 1&2')
+        P1 = temperature_effectiveness_basic(R1=R1, NTU1=NTU1, subtype="crossflow, mixed 1&2")
         try:
             # Very rarely, the pade approximation will get a result too close to the infeasibility region and
             # the solver cannot start as it is already outside the region
-            NTU1_calc = NTU_from_P_basic(P1, R1, subtype='crossflow, mixed 1&2')
+            NTU1_calc = NTU_from_P_basic(P1, R1, subtype="crossflow, mixed 1&2")
         except:
             continue
         # May not get the original NTU1, but the found NTU1 needs to produce the same P1.
-        P1_calc = temperature_effectiveness_basic(R1=R1, NTU1=NTU1_calc, subtype='crossflow, mixed 1&2')
+        P1_calc = temperature_effectiveness_basic(R1=R1, NTU1=NTU1_calc, subtype="crossflow, mixed 1&2")
         assert_close(P1, P1_calc)
         tot +=1
     assert tot == 100
@@ -1164,11 +1164,11 @@ def test_NTU_from_P_basic():
     for i in range(100):
         R1 = float(choice(R1s))
         NTU1 = float(choice(NTU1s))
-        P1 = temperature_effectiveness_basic(R1=R1, NTU1=NTU1, subtype='crossflow approximate')
-        NTU1_calc = NTU_from_P_basic(P1, R1, subtype='crossflow approximate')
+        P1 = temperature_effectiveness_basic(R1=R1, NTU1=NTU1, subtype="crossflow approximate")
+        NTU1_calc = NTU_from_P_basic(P1, R1, subtype="crossflow approximate")
         # We have to compare the re calculated P1 values, because for many values of NTU1,
         # at the initial far guess of 10000 P1 = 1 and at the random NTU1 P1 is also 1
-        P1_calc = temperature_effectiveness_basic(R1=R1, NTU1=NTU1_calc, subtype='crossflow approximate')
+        P1_calc = temperature_effectiveness_basic(R1=R1, NTU1=NTU1_calc, subtype="crossflow approximate")
         # In python 2.6 and 3.3 the solver doesn't converge as well, so we need
         # to add a little tolerance
         assert_close(P1, P1_calc, rtol=5E-6)
@@ -1176,23 +1176,23 @@ def test_NTU_from_P_basic():
     # Crossflow approximate test case
     R1 = .1
     NTU1 = 2
-    P1_calc_orig = temperature_effectiveness_basic(R1=R1, NTU1=NTU1, subtype='crossflow approximate')
+    P1_calc_orig = temperature_effectiveness_basic(R1=R1, NTU1=NTU1, subtype="crossflow approximate")
     P1_expect = 0.8408180737140558
     assert_close(P1_calc_orig, P1_expect)
-    NTU1_backwards = NTU_from_P_basic(P1=P1_expect, R1=R1, subtype='crossflow approximate')
+    NTU1_backwards = NTU_from_P_basic(P1=P1_expect, R1=R1, subtype="crossflow approximate")
     assert_close(NTU1, NTU1_backwards)
 
 
     # Test cross flow - failes VERY OFTEN, should rely on crossflow approximate
     NTU1 = 10
     R1 = 0.5
-    P1 = temperature_effectiveness_basic(R1=R1, NTU1=NTU1, subtype='crossflow')
-    NTU1_calc = NTU_from_P_basic(P1, R1=R1, subtype='crossflow')
+    P1 = temperature_effectiveness_basic(R1=R1, NTU1=NTU1, subtype="crossflow")
+    NTU1_calc = NTU_from_P_basic(P1, R1=R1, subtype="crossflow")
     assert_close(NTU1, NTU1_calc)
 
     # bad type of exchanger
     with pytest.raises(Exception):
-        NTU_from_P_basic(P1=.975, R1=.1, subtype='BADTYPE')
+        NTU_from_P_basic(P1=.975, R1=.1, subtype="BADTYPE")
 
 
 @pytest.mark.mpmath
@@ -1737,25 +1737,25 @@ def test_shell_clearance():
         shell_clearance()
 
 def test_L_unsupported_max():
-    assert_close(L_unsupported_max(Do=.0254, material='CS'), 1.88)
-    assert_close(L_unsupported_max(Do=.0253, material='CS'), 1.753)
-    assert_close(L_unsupported_max(Do=1E-5, material='CS'), 0.66)
-    assert_close(L_unsupported_max(Do=.00635, material='CS'), 0.66)
+    assert_close(L_unsupported_max(Do=.0254, material="CS"), 1.88)
+    assert_close(L_unsupported_max(Do=.0253, material="CS"), 1.753)
+    assert_close(L_unsupported_max(Do=1E-5, material="CS"), 0.66)
+    assert_close(L_unsupported_max(Do=.00635, material="CS"), 0.66)
 
-    assert_close(L_unsupported_max(Do=.00635, material='aluminium'), 0.559)
+    assert_close(L_unsupported_max(Do=.00635, material="aluminium"), 0.559)
 
     with pytest.raises(Exception):
-        L_unsupported_max(Do=.0254, material='BADMATERIAL')
+        L_unsupported_max(Do=.0254, material="BADMATERIAL")
 
     # Terribly pessimistic
-    assert_close(L_unsupported_max(Do=10, material='CS'), 3.175)
+    assert_close(L_unsupported_max(Do=10, material="CS"), 3.175)
 
 
 def test_issue_6():
     at_error = P_NTU_method(m1=3, m2=3, Cp1=1860., Cp2=1860,
-    subtype='counterflow', Ntp=4, T2i=15, T1i=130, UA=3041.75)
+    subtype="counterflow", Ntp=4, T2i=15, T1i=130, UA=3041.75)
     before_error = P_NTU_method(m1=3, m2=3*(1+1e-8), Cp1=1860., Cp2=1860,
-    subtype='counterflow', Ntp=4, T2i=15, T1i=130, UA=3041.75)
+    subtype="counterflow", Ntp=4, T2i=15, T1i=130, UA=3041.75)
     for k, v in at_error.items():
         assert_close(v, before_error[k], rtol=1e-8)
 
@@ -1763,7 +1763,7 @@ def test_issue_6():
     Flowc = 5
     Cph = 4000
     Cpc = 4000
-    subtype = 'counterflow'
+    subtype = "counterflow"
     UA = 2500
     Thi = 90
     Tci = 0

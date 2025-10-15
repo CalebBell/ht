@@ -1,4 +1,4 @@
-'''Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
+"""Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
 Copyright (C) 2020, 2021, 2022 Caleb Bell <Caleb.Andrew.Bell@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -18,7 +18,7 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-'''
+"""
 
 import pytest
 from fluids import AirCooledExchanger
@@ -68,11 +68,11 @@ def test_tube_bank():
     kwargs = dict(m=11., rho=995., mu=0.000803, mu_w=0.000657, DShell=0.584, LSpacing=0.1524, pitch=0.0254, Do=.019, NBaffles=22)
     assert_close(ht.numba.dP_Kern(**kwargs), ht.dP_Kern(**kwargs))
 
-    assert_close(ht.numba.baffle_correction_Bell(0.82, 'chebyshev'), ht.numba.baffle_correction_Bell(0.82, 'chebyshev'))
+    assert_close(ht.numba.baffle_correction_Bell(0.82, "chebyshev"), ht.numba.baffle_correction_Bell(0.82, "chebyshev"))
     assert_close(ht.numba.baffle_correction_Bell(0.82), ht.numba.baffle_correction_Bell(0.82))
 
     assert_close(ht.numba.baffle_leakage_Bell(1, 3, 8), ht.baffle_leakage_Bell(1, 3, 8))
-    assert_close(ht.numba.baffle_leakage_Bell(1, 3, 8, 'HEDH'), ht.baffle_leakage_Bell(1, 3, 8, 'HEDH'))
+    assert_close(ht.numba.baffle_leakage_Bell(1, 3, 8, "HEDH"), ht.baffle_leakage_Bell(1, 3, 8, "HEDH"))
 
     assert_close(ht.numba.bundle_bypassing_Bell(0.5, 5, 25), ht.bundle_bypassing_Bell(0.5, 5, 25))
     assert_close(ht.numba.unequal_baffle_spacing_Bell(16, .1, .15, 0.15), ht.unequal_baffle_spacing_Bell(16, .1, .15, 0.15))
@@ -140,8 +140,8 @@ def test_core_misc():
     assert_close(ht.numba.fin_efficiency_Kern_Kraus(0.0254, 0.05715, 3.8E-4, 200, 58),
                  ht.fin_efficiency_Kern_Kraus(0.0254, 0.05715, 3.8E-4, 200, 58),)
 
-    assert_close(ht.numba.wall_factor(mu=8E-4, mu_wall=3E-4, Pr=1.2, Pr_wall=1.1, T=300,T_wall=350, property_option='Prandtl'),
-                 ht.wall_factor(mu=8E-4, mu_wall=3E-4, Pr=1.2, Pr_wall=1.1, T=300,T_wall=350, property_option='Prandtl'))
+    assert_close(ht.numba.wall_factor(mu=8E-4, mu_wall=3E-4, Pr=1.2, Pr_wall=1.1, T=300,T_wall=350, property_option="Prandtl"),
+                 ht.wall_factor(mu=8E-4, mu_wall=3E-4, Pr=1.2, Pr_wall=1.1, T=300,T_wall=350, property_option="Prandtl"))
 
 
 @mark_as_numba
@@ -230,8 +230,8 @@ def test_conv_jacket():
     assert_close(ht.numba.Lehrer(m=2.5, Dtank=0.6, Djacket=0.65, H=0.6, Dinlet=0.025, dT=20., rho=995.7, Cp=4178.1, k=0.615, mu=798E-6, muw=355E-6),
                  ht.Lehrer(m=2.5, Dtank=0.6, Djacket=0.65, H=0.6, Dinlet=0.025, dT=20., rho=995.7, Cp=4178.1, k=0.615, mu=798E-6, muw=355E-6))
 
-    assert_close(ht.numba.Lehrer(m=2.5, Dtank=0.6, Djacket=0.65, H=0.6, Dinlet=0.025, dT=20., rho=995.7, Cp=4178.1, k=0.615, mu=798E-6, muw=355E-6, inlettype='radial', isobaric_expansion=0.000303),
-                 ht.Lehrer(m=2.5, Dtank=0.6, Djacket=0.65, H=0.6, Dinlet=0.025, dT=20., rho=995.7, Cp=4178.1, k=0.615, mu=798E-6, muw=355E-6, inlettype='radial', isobaric_expansion=0.000303))
+    assert_close(ht.numba.Lehrer(m=2.5, Dtank=0.6, Djacket=0.65, H=0.6, Dinlet=0.025, dT=20., rho=995.7, Cp=4178.1, k=0.615, mu=798E-6, muw=355E-6, inlettype="radial", isobaric_expansion=0.000303),
+                 ht.Lehrer(m=2.5, Dtank=0.6, Djacket=0.65, H=0.6, Dinlet=0.025, dT=20., rho=995.7, Cp=4178.1, k=0.615, mu=798E-6, muw=355E-6, inlettype="radial", isobaric_expansion=0.000303))
 
 
 @mark_as_numba
@@ -292,14 +292,14 @@ def test_boiling_nucleic():
     assert_close(ht.numba.Rohsenow(rhol=957.854, rhog=0.595593, mul=2.79E-4, kl=0.680, Cpl=4217, Hvap=2.257E6, sigma=0.0589, Te=4.9, Csf=0.011, n=1.26),
                  ht.Rohsenow(rhol=957.854, rhog=0.595593, mul=2.79E-4, kl=0.680, Cpl=4217, Hvap=2.257E6, sigma=0.0589, Te=4.9, Csf=0.011, n=1.26))
 
-    numba_methods = ht.numba.h_nucleic_methods(P=3E5, Pc=22048320., Te=4.0, CAS='7732-18-5')
-    regular_methods = ht.h_nucleic_methods(P=3E5, Pc=22048320., Te=4.0, CAS='7732-18-5')
+    numba_methods = ht.numba.h_nucleic_methods(P=3E5, Pc=22048320., Te=4.0, CAS="7732-18-5")
+    regular_methods = ht.h_nucleic_methods(P=3E5, Pc=22048320., Te=4.0, CAS="7732-18-5")
     assert numba_methods == regular_methods
 
 
     # Has a TON of arguments, and numba wants them all to not be Nones.
-    assert_close(ht.numba.h_nucleic(rhol=957.854, rhog=0.595593, mul=2.79E-4, kl=0.680, Cpl=4217, Hvap=2.257E6, sigma=0.0589, Te=4.9, Csf=0.011, n=1.26, P=1e4, Pc=1e6, Tsat=10, MW=33.0, Method='Rohsenow'),
-                 ht.h_nucleic(rhol=957.854, rhog=0.595593, mul=2.79E-4, kl=0.680, Cpl=4217, Hvap=2.257E6, sigma=0.0589, Te=4.9, Csf=0.011, n=1.26, P=1e4, Pc=1e6, Tsat=10, MW=33.0, Method='Rohsenow'))
+    assert_close(ht.numba.h_nucleic(rhol=957.854, rhog=0.595593, mul=2.79E-4, kl=0.680, Cpl=4217, Hvap=2.257E6, sigma=0.0589, Te=4.9, Csf=0.011, n=1.26, P=1e4, Pc=1e6, Tsat=10, MW=33.0, Method="Rohsenow"),
+                 ht.h_nucleic(rhol=957.854, rhog=0.595593, mul=2.79E-4, kl=0.680, Cpl=4217, Hvap=2.257E6, sigma=0.0589, Te=4.9, Csf=0.011, n=1.26, P=1e4, Pc=1e6, Tsat=10, MW=33.0, Method="Rohsenow"))
 
     kwargs = dict(D=0.0127, sigma=8.2E-3, Hvap=272E3, rhol=567.0, rhog=18.09, P=1e6, Pc=1e7)
     assert_close(ht.numba.qmax_boiling(**kwargs), ht.qmax_boiling(**kwargs))
@@ -378,7 +378,7 @@ def test_hx_tube_bundles():
     assert_close(ht.numba.Ntubes_VDI(DBundle=1.184, Ntp=2, Do=.028, pitch=.036, angle=30),
                  ht.Ntubes_VDI(DBundle=1.184, Ntp=2, Do=.028, pitch=.036, angle=30) )
 
-    kwargs = dict(DBundle=1.2, Do=0.025, pitch=0.03125, Method='Phadkeb')
+    kwargs = dict(DBundle=1.2, Do=0.025, pitch=0.03125, Method="Phadkeb")
     assert ht.numba.Ntubes(**kwargs) == ht.Ntubes(**kwargs)
 
     kwargs = dict(N=1285, Do=0.025, pitch=0.03125)
@@ -387,11 +387,11 @@ def test_hx_tube_bundles():
 
 @mark_as_numba
 def test_hx_data():
-    assert_close(ht.L_unsupported_max(Do=.0254, material='CS'),
-                 ht.numba.L_unsupported_max(Do=.0254, material='CS'))
+    assert_close(ht.L_unsupported_max(Do=.0254, material="CS"),
+                 ht.numba.L_unsupported_max(Do=.0254, material="CS"))
 
-    assert_close(ht.numba.baffle_thickness(Dshell=.3, L_unsupported=50, service='R'),
-                 ht.baffle_thickness(Dshell=.3, L_unsupported=50, service='R'))
+    assert_close(ht.numba.baffle_thickness(Dshell=.3, L_unsupported=50, service="R"),
+                 ht.baffle_thickness(Dshell=.3, L_unsupported=50, service="R"))
 
 
 def test_hx_effectiveness_still_working():

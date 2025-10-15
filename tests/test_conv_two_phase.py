@@ -1,4 +1,4 @@
-'''Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
+"""Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
 Copyright (C) 2016, 2017 Caleb Bell <Caleb.Andrew.Bell@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -18,7 +18,7 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-'''
+"""
 
 from fluids.numerics import assert_close
 
@@ -80,6 +80,6 @@ def test_Aggour():
 
 
 def test_h_two_phase():
-    h = h_two_phase(m=1., x=.9, D=.3, alpha=.9, rhol=1000., Cpl=2300., kl=.6, mu_b=1E-3, mu_w=1.2E-3, L=5., method='Aggour')
+    h = h_two_phase(m=1., x=.9, D=.3, alpha=.9, rhol=1000., Cpl=2300., kl=.6, mu_b=1E-3, mu_w=1.2E-3, L=5., method="Aggour")
     assert_close(h, 420.9347146885667)
 

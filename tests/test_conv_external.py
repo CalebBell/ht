@@ -1,4 +1,4 @@
-'''Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
+"""Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
 Copyright (C) 2016, 2017, 2018, 2019, Caleb Bell <Caleb.Andrew.Bell@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -18,7 +18,7 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-'''
+"""
 
 import pytest
 from fluids.numerics import assert_close, assert_close1d, logspace
@@ -103,18 +103,18 @@ def test_Nu_external_cylinder():
     Nu = Nu_external_cylinder(6071.0, 0.7)
     assert_close(Nu, 40.38327083519522)
 
-    Nu = Nu_external_cylinder(6071.0, 0.7, Method='Zukauskas')
+    Nu = Nu_external_cylinder(6071.0, 0.7, Method="Zukauskas")
     assert_close(Nu, 42.4244052368103)
 
     methods = Nu_external_cylinder_methods(6071.0, 0.7, Prw=.8, mu=1e-4, muw=2e-4)
 
     with pytest.raises(Exception):
-        Nu_external_cylinder(6071.0, 0.7, Method='BADMETHOD')
+        Nu_external_cylinder(6071.0, 0.7, Method="BADMETHOD")
 
-    Nu = Nu_external_cylinder(6071.0, 0.7, Prw=.8, Method='Zukauskas')
+    Nu = Nu_external_cylinder(6071.0, 0.7, Prw=.8, Method="Zukauskas")
     assert_close(Nu, 41.0315360788783)
 
-    Nu = Nu_external_cylinder(6071.0, 0.7, mu=1e-4, muw=2e-4, Method='Whitaker')
+    Nu = Nu_external_cylinder(6071.0, 0.7, mu=1e-4, muw=2e-4, Method="Whitaker")
     assert_close(Nu, 38.63521672235044)
 
 
@@ -142,27 +142,27 @@ def test_Nu_horizontal_plate_turbulent_Kreith():
 def test_Nu_external_horizontal_plate():
     # default function - turbulent
     assert_close(Nu_external_horizontal_plate(5e6, .7),
-                    Nu_external_horizontal_plate(5e6, .7, turbulent_method='Schlichting'))
+                    Nu_external_horizontal_plate(5e6, .7, turbulent_method="Schlichting"))
 
     # specific function - turbulent - vs specify turbulent method
     assert_close(Nu_horizontal_plate_turbulent_Kreith(5e6, .7),
-                    Nu_external_horizontal_plate(5e6, .7, turbulent_method='Kreith'))
+                    Nu_external_horizontal_plate(5e6, .7, turbulent_method="Kreith"))
 
     # specific function - turbulent - vs specify method
     assert_close(Nu_horizontal_plate_turbulent_Kreith(5e6, .7),
-                    Nu_external_horizontal_plate(5e6, .7, Method='Kreith'))
+                    Nu_external_horizontal_plate(5e6, .7, Method="Kreith"))
 
     # default function - laminar
     assert_close(Nu_external_horizontal_plate(5e3, .7),
-                    Nu_external_horizontal_plate(5e3, .7, laminar_method='Baehr'))
+                    Nu_external_horizontal_plate(5e3, .7, laminar_method="Baehr"))
 
     # specific function - laminar - vs specify laminar method
     assert_close(Nu_horizontal_plate_laminar_Baehr(5e3, .7),
-                    Nu_external_horizontal_plate(5e3, .7, laminar_method='Baehr'))
+                    Nu_external_horizontal_plate(5e3, .7, laminar_method="Baehr"))
 
     # specific function - laminar - vs specify method
     assert_close(Nu_horizontal_plate_laminar_Churchill_Ozoe(5e6, .7),
-                    Nu_external_horizontal_plate(5e6, .7, Method='Churchill Ozoe'))
+                    Nu_external_horizontal_plate(5e6, .7, Method="Churchill Ozoe"))
 
     # Swith the transition region to be higher
     assert_close(Nu_horizontal_plate_laminar_Baehr(5e6, .7),

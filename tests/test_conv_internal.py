@@ -1,4 +1,4 @@
-'''Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
+"""Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
 Copyright (C) 2016, 2017, 2018, 2019, Caleb Bell <Caleb.Andrew.Bell@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -18,7 +18,7 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-'''
+"""
 
 import pytest
 from fluids.numerics import assert_close, assert_close1d, linspace
@@ -203,7 +203,7 @@ def test_Nu_laminar_rectangular_Shan_London():
 def test_Nu_conv_internal_methods():
     from fluids.units import func_args
 
-    for name, (func, args) in conv_tube_methods.items():
+    for (func, args) in conv_tube_methods.values():
         assert tuple(list(func_args(func))[0:len(args)]) == args
 
 
@@ -211,16 +211,16 @@ def test_Nu_conv_internal():
     Nu = Nu_conv_internal(1E2, .7)
     assert_close(Nu, laminar_T_const())
 
-    Nu = Nu_conv_internal(1E2, .7, Method='Laminar - constant Q')
+    Nu = Nu_conv_internal(1E2, .7, Method="Laminar - constant Q")
     assert_close(Nu, laminar_Q_const())
 
     Nu = Nu_conv_internal(1E2, .7, x=.01, Di=.1)
     assert_close(Nu, 14.91799128769779)
 
     # test the other laminar entrylength methods
-    Nu = Nu_conv_internal(1E2, .7, x=.01, Di=.1, Method='Hausen laminar thermal entry')
+    Nu = Nu_conv_internal(1E2, .7, x=.01, Di=.1, Method="Hausen laminar thermal entry")
     assert_close(Nu, 16.51501443241237)
-    Nu = Nu_conv_internal(1E2, .7, x=.01, Di=.1, Method='Seider-Tate laminar thermal entry')
+    Nu = Nu_conv_internal(1E2, .7, x=.01, Di=.1, Method="Seider-Tate laminar thermal entry")
     assert_close(Nu, 21.054212255270848)
 
     # martinili
@@ -233,12 +233,12 @@ def test_Nu_conv_internal():
     Nu = Nu_conv_internal(1E5, .7)
     assert_close(Nu, 183.71057902604906)
 
-    other_methods = ['Churchill-Zajic', 'Petukhov-Kirillov-Popov', 'Gnielinski',
-                     'Bhatti-Shah', 'Dipprey-Sabersky', 'Sandall', 'Webb',
-                     'Friend-Metzner', 'Prandtl', 'von-Karman', 'Gowen-Smith',
-                     'Kawase-Ulbrecht', 'Kawase-De', 'Nunner', 'Dittus-Boelter',
-                     'Sieder-Tate', 'Drexel-McAdams', 'Colburn', 'ESDU',
-                     'Gnielinski smooth low Pr','Gnielinski smooth high Pr']
+    other_methods = ["Churchill-Zajic", "Petukhov-Kirillov-Popov", "Gnielinski",
+                     "Bhatti-Shah", "Dipprey-Sabersky", "Sandall", "Webb",
+                     "Friend-Metzner", "Prandtl", "von-Karman", "Gowen-Smith",
+                     "Kawase-Ulbrecht", "Kawase-De", "Nunner", "Dittus-Boelter",
+                     "Sieder-Tate", "Drexel-McAdams", "Colburn", "ESDU",
+                     "Gnielinski smooth low Pr","Gnielinski smooth high Pr"]
 
     expected = [103.65851760127596, 96.66083769419261, 95.7206648591076,
                 124.96666518189072, 124.96666518189072, 126.8559349821517,
@@ -254,7 +254,7 @@ def test_Nu_conv_internal():
         assert_close(Nu, expect)
 
     with pytest.raises(Exception):
-        Nu_conv_internal(1E5, .7, Method='NOTAMETHOD')
+        Nu_conv_internal(1E5, .7, Method="NOTAMETHOD")
 
     l = Nu_conv_internal_methods(1E5, .7)
     assert len(l) == 21

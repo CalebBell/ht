@@ -1,4 +1,4 @@
-'''Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
+"""Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
 Copyright (C) 2018 Caleb Bell <Caleb.Andrew.Bell@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -18,7 +18,7 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-'''
+"""
 
 import pytest
 from fluids.numerics import assert_close
@@ -75,7 +75,7 @@ def test_Nu_plate_Martin():
     Nu = Nu_plate_Martin(2000.0, .7, 45.0)
     assert_close(Nu, 30.427601053757712)
 
-    Nu = Nu_plate_Martin(2000.0, .7, 45.0, variant='VDI')
+    Nu = Nu_plate_Martin(2000.0, .7, 45.0, variant="VDI")
     assert_close(Nu, 30.418672)
 
 

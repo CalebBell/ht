@@ -1,4 +1,4 @@
-'''Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
+"""Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
 Copyright (C) 2016, 2017, 2018, 2019, Caleb Bell <Caleb.Andrew.Bell@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -18,7 +18,7 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-'''
+"""
 
 import pytest
 from fluids.numerics import assert_close, assert_close1d
@@ -81,13 +81,13 @@ def test_conduction():
 
 def test_cylindrical_heat_transfer():
     data = cylindrical_heat_transfer(Ti=453.15, To=301.15, hi=1e12, ho=22.697193, Di=0.0779272, ts=[0.0054864, .05], ks=[56.045, 0.0598535265])
-    expect = {'Q': 73.12000884069367,
-     'Rs': [0.00022201030738405449, 1.189361782070256],
-     'Ts': [453.15, 453.1226455779877, 306.578530147744],
-     'UA': 0.48105268974140575,
-     'U_inner': 1.9649599487726137,
-     'U_outer': 0.8106078714663484,
-     'q': 123.21239646288495}
+    expect = {"Q": 73.12000884069367,
+     "Rs": [0.00022201030738405449, 1.189361782070256],
+     "Ts": [453.15, 453.1226455779877, 306.578530147744],
+     "UA": 0.48105268974140575,
+     "U_inner": 1.9649599487726137,
+     "U_outer": 0.8106078714663484,
+     "q": 123.21239646288495}
 
     for k, v in expect.items():
         if type(v) is float:
@@ -103,40 +103,40 @@ def test_insulation():
     ans = [213240.48, 1132.7733999999994, 164486]
     assert_close1d([rho_tot, k_tot, Cp_tot], ans)
 
-    assert_close(0.036, ASHRAE_k(ID='Mineral fiber'))
+    assert_close(0.036, ASHRAE_k(ID="Mineral fiber"))
 
-    k_VDIs = [refractory_VDI_k('Fused silica', i) for i in [None, 200, 1000, 1500]]
+    k_VDIs = [refractory_VDI_k("Fused silica", i) for i in [None, 200, 1000, 1500]]
     assert_close1d(k_VDIs, [1.44, 1.44, 1.58074, 1.73])
 
-    Cp_VDIs = [refractory_VDI_Cp('Fused silica', i) for i in [None, 200, 1000, 1500]]
+    Cp_VDIs = [refractory_VDI_Cp("Fused silica", i) for i in [None, 200, 1000, 1500]]
     assert_close1d(Cp_VDIs, [917.0, 917.0, 956.78225, 982.0])
 
 
-    k = k_material('Mineral fiber')
+    k = k_material("Mineral fiber")
     assert_close(k, 0.036)
-    k = k_material('stainless steel')
+    k = k_material("stainless steel")
     assert_close(k, 17.0)
 
-    rho = rho_material('Mineral fiber')
+    rho = rho_material("Mineral fiber")
     assert_close(rho, 30.0)
 
-    rho = rho_material('stainless steel')
+    rho = rho_material("stainless steel")
     assert_close(rho, 7900.0)
 
-    rho = rho_material('Board, Asbestos/cement')
+    rho = rho_material("Board, Asbestos/cement")
     assert_close(rho, 1900.0)
 
 
-    Cp = Cp_material('Mineral fiber')
+    Cp = Cp_material("Mineral fiber")
     assert_close(Cp, 840.0)
 
-    Cp = Cp_material('stainless steel')
+    Cp = Cp_material("stainless steel")
     assert_close(Cp, 460.0)
 
     with pytest.raises(Exception):
-        rho_material('Clay tile, hollow, 1 cell deep')
+        rho_material("Clay tile, hollow, 1 cell deep")
     with pytest.raises(Exception):
-        Cp_material('Siding, Aluminum, steel, or vinyl, over sheathing foil-backed')
+        Cp_material("Siding, Aluminum, steel, or vinyl, over sheathing foil-backed")
 
 
 @pytest.mark.slow
@@ -153,9 +153,9 @@ def test_insulation_fuzz():
     assert_close(Cp, 353115.0)
 
     # fuzzy matching is slow
-    assert nearest_material('stainless steel') == 'Metals, stainless steel'
-    assert nearest_material('stainless wood') == 'Metals, stainless steel'
-    assert nearest_material('asdfasdfasdfasdfasdfasdfads ') == 'Expanded polystyrene, molded beads'
+    assert nearest_material("stainless steel") == "Metals, stainless steel"
+    assert nearest_material("stainless wood") == "Metals, stainless steel"
+    assert nearest_material("asdfasdfasdfasdfasdfasdfads ") == "Expanded polystyrene, molded beads"
 
-    assert nearest_material('stainless steel', complete=True) == 'Metals, stainless steel'
+    assert nearest_material("stainless steel", complete=True) == "Metals, stainless steel"
 

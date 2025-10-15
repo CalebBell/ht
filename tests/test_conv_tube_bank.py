@@ -1,4 +1,4 @@
-'''Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
+"""Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
 Copyright (C) 2016, 2017 Caleb Bell <Caleb.Andrew.Bell@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -18,10 +18,10 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-'''
+"""
 
 import numpy as np
-from fluids.numerics import assert_close, assert_close1d, assert_close2d, linspace, bisplev
+from fluids.numerics import assert_close, assert_close1d, assert_close2d, bisplev, linspace
 from scipy.interpolate import RectBivariateSpline, UnivariateSpline, interp1d, splrep
 
 from ht import (
@@ -40,12 +40,8 @@ from ht import (
     laminar_correction_Bell,
     unequal_baffle_spacing_Bell,
 )
-from ht.conv_tube_bank import (
-    dP_inline_correction_tck,
-    dP_inline_f_tck, 
-    dP_staggered_f_tck, 
-    dP_staggered_correction_tck
-)
+from ht.conv_tube_bank import dP_inline_correction_tck, dP_inline_f_tck, dP_staggered_correction_tck, dP_staggered_f_tck
+
 
 def test_Nu_Grimison_tube_bank_tcks():
     from ht.conv_tube_bank import Grimison_C1_aligned, Grimison_C1_aligned_tck, Grimison_SL_aligned, Grimison_ST_aligned
@@ -79,7 +75,7 @@ def test_Nu_Grimison_tube_bank():
     # Test the negative input
     args = dict(Re=10263.37, Pr=.708, tube_rows=-1, pitch_normal=.07, pitch_parallel=.05, Do=.025)
     Nu_neg = Nu_Grimison_tube_bank(**args)
-    args['tube_rows'] = 1
+    args["tube_rows"] = 1
     Nu_pos =  Nu_Grimison_tube_bank(**args)
     assert_close(Nu_neg, Nu_pos)
 
@@ -503,15 +499,15 @@ def test_dP_Zukauskas_dP_staggered_correction_spline():
 
 def test_dP_Zukauskas_dP_inline_correction_spline():
     """Test that the pre-computed spline correctly reproduces the original data points"""
-    _dP_inline_correction_parameters = np.array([0.02, 0.04, 0.066164, 0.08, 0.16, 0.32, 0.64, 1.28, 2.56, 5.12, 5.7141, 
+    _dP_inline_correction_parameters = np.array([0.02, 0.04, 0.066164, 0.08, 0.16, 0.32, 0.64, 1.28, 2.56, 5.12, 5.7141,
     ])
-    _dP_inline_correction_Re_1000 = np.array([16.05, 10.359, 7.538, 6.6218, 3.9933, 2.3397, 1.3794, 0.8336, 0.50239, 0.29469, 0.27113, 
+    _dP_inline_correction_Re_1000 = np.array([16.05, 10.359, 7.538, 6.6218, 3.9933, 2.3397, 1.3794, 0.8336, 0.50239, 0.29469, 0.27113,
     ])
     _dP_inline_correction_Re_10000 = np.array([13.181, 8.507, 6.1906, 5.4908, 3.4734, 2.2042, 1.3876, 0.8735, 0.54642, 0.33857, 0.3115
     ])
-    _dP_inline_correction_Re_100000 = np.array([9.092, 6.0549, 4.5073, 4.0322, 2.7957, 1.9162, 1.308, 0.9011, 0.62078, 0.42537, 0.39996, 
+    _dP_inline_correction_Re_100000 = np.array([9.092, 6.0549, 4.5073, 4.0322, 2.7957, 1.9162, 1.308, 0.9011, 0.62078, 0.42537, 0.39996,
     ])
-    _dP_inline_correction_Re_1000000 = np.array([5.3722, 3.9373, 3.1421, 2.8857, 2.1799, 1.6421, 1.2364, 0.9349, 0.7131, 0.53922, 0.51587, 
+    _dP_inline_correction_Re_1000000 = np.array([5.3722, 3.9373, 3.1421, 2.8857, 2.1799, 1.6421, 1.2364, 0.9349, 0.7131, 0.53922, 0.51587,
     ])
 
     _dP_inline_correction_zs = np.array([1E3, 1E4, 1E5, 1E6])
@@ -526,7 +522,7 @@ def test_dP_Zukauskas_dP_inline_correction_spline():
     #    plt.loglog(_dP_inline_correction_parameters, _dP_inline_correction_Re_parameters.T[i, :], '.')
     #    plt.loglog(xs, dP_inline_correction(xs, _dP_inline_correction_zs[i]), '--')
     #plt.show()
-        
+
     errors = []
     for i, param in enumerate(_dP_inline_correction_parameters):
         for j, z in enumerate(_dP_inline_correction_zs):
@@ -648,15 +644,15 @@ def test_baffle_correction_Bell():
     errs = np.array([(baffle_correction_Bell(float(Fc))-Jc)/Jc for Fc, Jc in zip(Bell_baffle_configuration_Fcs, Bell_baffle_configuration_Jcs)])
     assert np.abs(errs).sum()/len(errs) < 1e-3
 
-    Jc = baffle_correction_Bell(0.1, 'chebyshev')
+    Jc = baffle_correction_Bell(0.1, "chebyshev")
     assert_close(Jc, 0.61868011359447)
 
-    Jc = baffle_correction_Bell(0.82, 'HEDH')
+    Jc = baffle_correction_Bell(0.82, "HEDH")
     assert_close(Jc, 1.1404)
 
     # Example in spreadsheet 02 - Heat Exchangers, tab Shell htc imperial,
     # Rules of Thumb for Chemical Engineers 5E
-    Jc = baffle_correction_Bell(0.67292816689362900, method='HEDH')
+    Jc = baffle_correction_Bell(0.67292816689362900, method="HEDH")
     assert_close(1.034508280163413, Jc)
 
 
@@ -759,13 +755,13 @@ def test_baffle_leakage_Bell():
     Jl = baffle_leakage_Bell(1, .0001, .00001)
     assert_close(Jl,  0.16072739052053492)
 
-    Jl = baffle_leakage_Bell(1, 3, 8, method='HEDH')
+    Jl = baffle_leakage_Bell(1, 3, 8, method="HEDH")
     assert_close(Jl, 0.5530236260777133)
 
     # Example in spreadsheet 02 - Heat Exchangers, tab Shell htc imperial,
     # Rules of Thumb for Chemical Engineers 5E
     # Has an error
-    Jl = baffle_leakage_Bell(Ssb=5.5632369907320000000, Stb=4.7424109055909500, Sm=42.7842616174504, method='HEDH')
+    Jl = baffle_leakage_Bell(Ssb=5.5632369907320000000, Stb=4.7424109055909500, Sm=42.7842616174504, method="HEDH")
     assert_close(Jl, 0.6719386427830639)
 
 
@@ -802,15 +798,15 @@ def test_bundle_bypassing_Bell():
     Jb = bundle_bypassing_Bell(0.99, 5, 25, laminar=True)
     assert_close(Jb, 0.7786963825447165, rtol=1e-3)
 
-    Jb = bundle_bypassing_Bell(0.5, 5, 25, method='HEDH')
+    Jb = bundle_bypassing_Bell(0.5, 5, 25, method="HEDH")
     assert_close(Jb, 0.8483210970579099)
 
-    Jb = bundle_bypassing_Bell(0.5, 5, 25, method='HEDH', laminar=True)
+    Jb = bundle_bypassing_Bell(0.5, 5, 25, method="HEDH", laminar=True)
     assert_close(0.8372305924553625, Jb)
 
     # Example in spreadsheet 02 - Heat Exchangers, tab Shell htc imperial,
     # Rules of Thumb for Chemical Engineers 5E
-    Jb = bundle_bypassing_Bell(bypass_area_fraction=0.331946755407654, seal_strips=2, crossflow_rows=10.6516290726817, method='HEDH')
+    Jb = bundle_bypassing_Bell(bypass_area_fraction=0.331946755407654, seal_strips=2, crossflow_rows=10.6516290726817, method="HEDH")
     assert_close(Jb, 0.8908547260332952)
 
 

@@ -1,4 +1,4 @@
-'''Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
+"""Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
 Copyright (C) 2016, 2017, 2018, 2019, Caleb Bell <Caleb.Andrew.Bell@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -18,7 +18,7 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-'''
+"""
 
 import pytest
 from fluids.numerics import assert_close, assert_close1d
@@ -116,9 +116,9 @@ def test_boiling_nucleic_Montinsky():
 
 def test_boiling_nucleic_Stephan_Abdelsalam():
     # Stephan Abdelsalam function; allow bad function method
-    Stephan_Abdelsalam(Te=16.2, Tsat=437.5, Cpl=2730., kl=0.086, mul=156E-6,  sigma=0.0082, Hvap=272E3, rhol=567.0, rhog=18.09, angle=35.0, correlation='fail')
+    Stephan_Abdelsalam(Te=16.2, Tsat=437.5, Cpl=2730., kl=0.086, mul=156E-6,  sigma=0.0082, Hvap=272E3, rhol=567.0, rhog=18.09, angle=35.0, correlation="fail")
 
-    cs = ['general', 'water', 'hydrocarbon', 'cryogenic', 'refrigerant']
+    cs = ["general", "water", "hydrocarbon", "cryogenic", "refrigerant"]
     h_SA = [Stephan_Abdelsalam(Te=16.2, Tsat=437.5, Cpl=2730., kl=0.086, mul=156E-6, sigma=0.0082, Hvap=272E3, rhol=567, rhog=18.09, correlation=i) for i in cs]
     h_values = [26722.441071108373, 30571.788078886435, 21009.03422203015, 3548.8050360907037, 84657.98595551957]
     assert_close1d(h_SA, h_values)
@@ -178,18 +178,18 @@ def test_boiling_nucleic_Cooper():
 def test_Gorenflo():
     # water case, boiling at 3 bar
     q = 2E4
-    h1 = Gorenflo(P=3E5, Pc=22048320., q=q, CASRN='7732-18-5')
+    h1 = Gorenflo(P=3E5, Pc=22048320., q=q, CASRN="7732-18-5")
     assert_close(h1, 3043.344595525422)
     Te = q/h1
-    h2 = Gorenflo(P=3E5, Pc=22048320., Te=Te, CASRN='7732-18-5')
+    h2 = Gorenflo(P=3E5, Pc=22048320., Te=Te, CASRN="7732-18-5")
     assert_close(h1, h2)
 
     # Ethanol case, boiling at 3 bar
     q = 2E4
-    h1 = Gorenflo(P=3E5, Pc=6137000., q=q, CASRN='64-17-5')
+    h1 = Gorenflo(P=3E5, Pc=6137000., q=q, CASRN="64-17-5")
     Te = q/h1
     assert_close(h1, 3101.133553596696)
-    h2 = Gorenflo(P=3E5, Pc=6137000., Te=Te, CASRN='64-17-5')
+    h2 = Gorenflo(P=3E5, Pc=6137000., Te=Te, CASRN="64-17-5")
     assert_close(h1, h2)
 
     # Custom h0 case
@@ -198,60 +198,60 @@ def test_Gorenflo():
 
     with pytest.raises(Exception):
         # Case with a CAS number not in the database
-        Gorenflo(3E5, 6137000., q=2E4, CASRN='6400-17-5')
+        Gorenflo(3E5, 6137000., q=2E4, CASRN="6400-17-5")
     with pytest.raises(Exception):
         # Case with neither Te or q provided:
-        Gorenflo(3E5, 6137000., CASRN='64-17-5')
+        Gorenflo(3E5, 6137000., CASRN="64-17-5")
 
 
 def test_h_nucleic():
-    h = h_nucleic(rhol=957.854, rhog=0.595593, mul=2.79E-4, kl=0.680, Cpl=4217, Hvap=2.257E6, sigma=0.0589, Te=4.9, Method='Rohsenow')
+    h = h_nucleic(rhol=957.854, rhog=0.595593, mul=2.79E-4, kl=0.680, Cpl=4217, Hvap=2.257E6, sigma=0.0589, Te=4.9, Method="Rohsenow")
     assert_close(h, 1094.0242011089285)
 
-    h = h_nucleic(Te=4.3, P=101325.0, Cpl=4180., kl=0.688, sigma=0.0588, Hvap=2.25E6, rhol=958., rhog=0.597, Method='McNelly')
+    h = h_nucleic(Te=4.3, P=101325.0, Cpl=4180., kl=0.688, sigma=0.0588, Hvap=2.25E6, rhol=958., rhog=0.597, Method="McNelly")
     assert_close(h, 533.8056972951352)
 
-    h = h_nucleic(Te=4.3, dPsat=3906*4.3, Cpl=4180., kl=0.688, mul=0.275E-3, sigma=0.0588, Hvap=2.25E6, rhol=958., rhog=0.597, Method='Forster-Zuber')
+    h = h_nucleic(Te=4.3, dPsat=3906*4.3, Cpl=4180., kl=0.688, mul=0.275E-3, sigma=0.0588, Hvap=2.25E6, rhol=958., rhog=0.597, Method="Forster-Zuber")
     assert_close(h, 3519.9239897462644)
 
-    h = h_nucleic(P=101325, Pc=22048321, Te=4.3, Method='Montinsky')
+    h = h_nucleic(P=101325, Pc=22048321, Te=4.3, Method="Montinsky")
     assert_close(h, 1185.0509770292663)
 
-    h = h_nucleic(Te=16.2, Tsat=437.5, Cpl=2730., kl=0.086, mul=156E-6, sigma=0.0082, Hvap=272E3, rhol=567, rhog=18.09, Method='Stephan-Abdelsalam')
+    h = h_nucleic(Te=16.2, Tsat=437.5, Cpl=2730., kl=0.086, mul=156E-6, sigma=0.0082, Hvap=272E3, rhol=567, rhog=18.09, Method="Stephan-Abdelsalam")
     assert_close(h, 26722.441071108373)
 
-    h = h_nucleic(Te=16.2, Tsat=437.5, Cpl=2730., kl=0.086, mul=156E-6, sigma=0.0082, Hvap=272E3, rhol=567, rhog=18.09, Method='Stephan-Abdelsalam water', CAS='7732-18-5')
+    h = h_nucleic(Te=16.2, Tsat=437.5, Cpl=2730., kl=0.086, mul=156E-6, sigma=0.0082, Hvap=272E3, rhol=567, rhog=18.09, Method="Stephan-Abdelsalam water", CAS="7732-18-5")
     assert_close(h, 30571.788078886435)
 
-    h = h_nucleic(Te=16.2, Tsat=437.5, Cpl=2730., kl=0.086, mul=156E-6, sigma=0.0082, Hvap=272E3, rhol=567, rhog=18.09, Method='Stephan-Abdelsalam cryogenic', CAS='1333-74-0')
+    h = h_nucleic(Te=16.2, Tsat=437.5, Cpl=2730., kl=0.086, mul=156E-6, sigma=0.0082, Hvap=272E3, rhol=567, rhog=18.09, Method="Stephan-Abdelsalam cryogenic", CAS="1333-74-0")
     assert_close(h, 3548.8050360907037)
 
-    h = h_nucleic(Te=16.2, P=310.3E3, Pc=2550E3, Method='HEDH-Taborek')
+    h = h_nucleic(Te=16.2, P=310.3E3, Pc=2550E3, Method="HEDH-Taborek")
     assert_close(h, 1397.272486525486)
 
-    h = h_nucleic(P=101325., Pc=22048321.0, Te=4.3, Method='Bier')
+    h = h_nucleic(P=101325., Pc=22048321.0, Te=4.3, Method="Bier")
     assert_close(h, 1290.5349471503353)
 
-    h = h_nucleic(P=101325., Pc=22048321.0, MW=18.02, Te=4.3, Method='Cooper')
+    h = h_nucleic(P=101325., Pc=22048321.0, MW=18.02, Te=4.3, Method="Cooper")
     assert_close(h, 1558.1435442153575)
 
-    h = h_nucleic(P=3E5, Pc=22048320., q=2E4, CAS='7732-18-5', Method='Gorenflo (1993)')
+    h = h_nucleic(P=3E5, Pc=22048320., q=2E4, CAS="7732-18-5", Method="Gorenflo (1993)")
     assert_close(h, 3043.344595525422)
 
     # Test the kwargs
-    h = h_nucleic(rhol=957.854, rhog=0.595593, mul=2.79E-4, kl=0.680, Cpl=4217, Hvap=2.257E6, sigma=0.0589, Te=4.9, Method='Rohsenow', Csf=0.011, n=1.26)
+    h = h_nucleic(rhol=957.854, rhog=0.595593, mul=2.79E-4, kl=0.680, Cpl=4217, Hvap=2.257E6, sigma=0.0589, Te=4.9, Method="Rohsenow", Csf=0.011, n=1.26)
     assert_close(h, 3723.655267067467)
 
 
     # methods
-    methods = h_nucleic_methods(P=101325., Pc=22048321.0, MW=18.02, dPsat=3906*4.3, Tsat=437.5, CAS='7732-18-5', rhol=957.854, rhog=0.595593, mul=2.79E-4, kl=0.680, Cpl=4217, Hvap=2.257E6, sigma=0.0589, Te=4.9)
+    methods = h_nucleic_methods(P=101325., Pc=22048321.0, MW=18.02, dPsat=3906*4.3, Tsat=437.5, CAS="7732-18-5", rhol=957.854, rhog=0.595593, mul=2.79E-4, kl=0.680, Cpl=4217, Hvap=2.257E6, sigma=0.0589, Te=4.9)
     assert len(methods) == 10
 
-    methods = h_nucleic_methods(Te=16.2, Tsat=437.5, Cpl=2730., kl=0.086, mul=156E-6, sigma=0.0082, Hvap=272E3, rhol=567, rhog=18.09, CAS='1333-74-0')
+    methods = h_nucleic_methods(Te=16.2, Tsat=437.5, Cpl=2730., kl=0.086, mul=156E-6, sigma=0.0082, Hvap=272E3, rhol=567, rhog=18.09, CAS="1333-74-0")
     assert len(methods) == 3
 
     with pytest.raises(Exception):
-        h_nucleic(P=101325., Pc=22048321.0, Te=4.3, Method='BADMETHOD')
+        h_nucleic(P=101325., Pc=22048321.0, Te=4.3, Method="BADMETHOD")
 
     with pytest.raises(Exception):
         h_nucleic()
@@ -284,7 +284,7 @@ def test_qmax_nucleic():
     q = qmax_boiling(D=0.0127, sigma=8.2E-3, Hvap=272E3, rhol=567, rhog=18.09)
     assert_close(q, 351867.46522901946)
 
-    q = qmax_boiling(sigma=8.2E-3, Hvap=272E3, rhol=567, rhog=18.09, Method='Zuber')
+    q = qmax_boiling(sigma=8.2E-3, Hvap=272E3, rhol=567, rhog=18.09, Method="Zuber")
     assert_close(q, 536746.9808578263)
 
     q = qmax_boiling(P=310.3E3, Pc=2550E3)
@@ -293,7 +293,7 @@ def test_qmax_nucleic():
     with pytest.raises(Exception):
         qmax_boiling(D=0.0127)
     with pytest.raises(Exception):
-        qmax_boiling(D=0.0127, sigma=8.2E-3, Hvap=272E3, rhol=567, rhog=18.09, Method='BADMETHOD')
+        qmax_boiling(D=0.0127, sigma=8.2E-3, Hvap=272E3, rhol=567, rhog=18.09, Method="BADMETHOD")
 
 
     methods = qmax_boiling_methods(P=310.3E3, Pc=2550E3, D=0.0127, sigma=8.2E-3, Hvap=272E3, rhol=567, rhog=18.09)
