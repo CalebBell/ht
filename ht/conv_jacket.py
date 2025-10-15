@@ -19,17 +19,17 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
+from __future__ import annotations
 
 from math import log, pi
 
 from fluids.constants import g
 from fluids.friction import friction_factor
-from typing import List, Optional
 
-__all__: List[str] = ["Lehrer", "Stein_Schmidt"]
+__all__: list[str] = ["Lehrer", "Stein_Schmidt"]
 
-def Lehrer(m: float, Dtank: float, Djacket: float, H: float, Dinlet: float, rho: float, Cp: float, k: float, mu: float, muw: Optional[float]=None,
-           isobaric_expansion: Optional[float]=None, dT: Optional[float]=None, inlettype: str="tangential",
+def Lehrer(m: float, Dtank: float, Djacket: float, H: float, Dinlet: float, rho: float, Cp: float, k: float, mu: float, muw: float | None=None,
+           isobaric_expansion: float | None=None, dT: float | None=None, inlettype: str="tangential",
            inletlocation: str="auto") -> float:
     r"""Calculates average heat transfer coefficient for a jacket around a
     vessel according to [1]_ as described in [2]_.
@@ -155,7 +155,7 @@ def Lehrer(m: float, Dtank: float, Djacket: float, H: float, Dinlet: float, rho:
 
 
 def Stein_Schmidt(m: float, Dtank: float, Djacket: float, H: float, Dinlet: float,
-                  rho: float, Cp: float, k: float, mu: float, muw: Optional[float]=None, rhow: Optional[float]=None,
+                  rho: float, Cp: float, k: float, mu: float, muw: float | None=None, rhow: float | None=None,
                   inlettype: str="tangential", inletlocation: str="auto", roughness: float=0.0) -> float:
     r"""Calculates average heat transfer coefficient for a jacket around a
     vessel according to [1]_ as described in [2]_.

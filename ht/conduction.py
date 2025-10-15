@@ -19,13 +19,13 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
+from __future__ import annotations
 
 from math import acosh, log, pi
 
 from fluids.constants import Btu, degree_Fahrenheit, foot, hour, inch
-from typing import Dict, List, Union
 
-__all__: List[str] = [
+__all__: list[str] = [
     "R_cylinder",
     "R_to_k",
     "R_value_to_k",
@@ -600,7 +600,7 @@ def S_isothermal_pipe_eccentric_to_isothermal_pipe(D1: float, D2: float, Z: floa
 # Specific heat transfer problems of conduction
 
 
-def cylindrical_heat_transfer(Ti: float, To: float, hi: float, ho: float, Di: float, ts: List[float], ks: List[float]) -> Dict[str, Union[float, List[float]]]:
+def cylindrical_heat_transfer(Ti: float, To: float, hi: float, ho: float, Di: float, ts: list[float], ks: list[float]) -> dict[str, float | list[float]]:
     r"""Calculation for the heat transfer through a cylindrical wall,
     as occurs in pipes and cylindrical vessels. This is the core method
     which calculates the temperatures of each layer - and allows an outer

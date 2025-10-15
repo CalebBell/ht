@@ -19,10 +19,9 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
-from typing import List, Optional
+from __future__ import annotations
 
-
-__all__: List[str] = [
+__all__: list[str] = [
     "Morimoto_Hotta",
     "Nu_conv_internal",
     "Nu_conv_internal_methods",
@@ -182,7 +181,7 @@ def laminar_entry_thermal_Hausen(Re: float, Pr: float, L: float, Di: float) -> f
     return 3.66 + (0.0668*Gz)/(1+0.04*(Gz)**(2/3.))
 
 
-def laminar_entry_Seider_Tate(Re: float, Pr: float, L: float, Di: float, mu: Optional[float]=None, mu_w: Optional[float]=None) -> float:
+def laminar_entry_Seider_Tate(Re: float, Pr: float, L: float, Di: float, mu: float | None=None, mu_w: float | None=None) -> float:
     r"""Calculates average internal convection Nusselt number for laminar flows
     in pipe during the thermal entry region as developed in [1]_, also
     shown in [2]_.
@@ -360,7 +359,7 @@ def turbulent_Dittus_Boelter(Re: float, Pr: float, heating: bool=True, revised: 
     return m*Re**0.8*Pr**power
 
 
-def turbulent_Sieder_Tate(Re: float, Pr: float, mu: Optional[float]=None, mu_w: Optional[float]=None) -> float:
+def turbulent_Sieder_Tate(Re: float, Pr: float, mu: float | None=None, mu_w: float | None=None) -> float:
     r"""Calculates internal convection Nusselt number for turbulent flows
     in pipe according to [1]_ and supposedly [2]_.
 
@@ -1356,8 +1355,8 @@ conv_tube_methods = conv_tube_laminar_methods.copy()
 conv_tube_methods.update(conv_tube_turbulent_methods)
 conv_tube_methods_list = list(conv_tube_methods.keys())
 
-def Nu_conv_internal_methods(Re: float, Pr: float, eD: float=0, Di: Optional[float]=None, x: Optional[float]=None, fd: None=None,
-                             check_ranges: bool=True) -> List[str]:
+def Nu_conv_internal_methods(Re: float, Pr: float, eD: float=0, Di: float | None=None, x: float | None=None, fd: None=None,
+                             check_ranges: bool=True) -> list[str]:
     r"""This function returns a list of correlation names for the calculation
     of heat transfer coefficient for internal convection inside a circular pipe.
 
@@ -1438,7 +1437,7 @@ def Nu_conv_internal_methods(Re: float, Pr: float, eD: float=0, Di: Optional[flo
             methods.append("Gnielinski smooth high Pr") # 2
     return methods
 
-def Nu_conv_internal(Re: float, Pr: float, eD: float=0.0, Di: Optional[float]=None, x: Optional[float]=None, fd: Optional[float]=None, Method: Optional[str]=None) -> float:
+def Nu_conv_internal(Re: float, Pr: float, eD: float=0.0, Di: float | None=None, x: float | None=None, fd: float | None=None, Method: str | None=None) -> float:
     r"""This function calculates the heat transfer coefficient for internal
     convection inside a circular pipe.
 

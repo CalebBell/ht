@@ -19,11 +19,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
+from __future__ import annotations
 
 from math import log
-from typing import List, Optional
 
-__all__: List[str] = [
+__all__: list[str] = [
     "Nu_coil_Xin_Ebadian",
     "Nu_free_horizontal_plate",
     "Nu_free_horizontal_plate_methods",
@@ -110,7 +110,7 @@ def Nu_vertical_plate_Churchill(Pr: float, Gr: float) -> float:
 
 Nu_free_vertical_plate_all_methods = ["Churchill"]
 
-def Nu_free_vertical_plate_methods(Pr: float, Gr: float, H: Optional[float]=None, W: Optional[float]=None, check_ranges: bool=True) -> List[str]:
+def Nu_free_vertical_plate_methods(Pr: float, Gr: float, H: float | None=None, W: float | None=None, check_ranges: bool=True) -> list[str]:
     r"""This function returns a list of methods for calculating heat transfer
     coefficient for external free convection from a verical plate.
 
@@ -148,7 +148,7 @@ def Nu_free_vertical_plate_methods(Pr: float, Gr: float, H: Optional[float]=None
     """
     return Nu_free_vertical_plate_all_methods
 
-def Nu_free_vertical_plate(Pr: float, Gr: float, buoyancy: None=None, H: Optional[float]=None, W: Optional[float]=None, Method: Optional[str]=None) -> float:
+def Nu_free_vertical_plate(Pr: float, Gr: float, buoyancy: None=None, H: float | None=None, W: float | None=None, Method: str | None=None) -> float:
     r"""This function calculates the heat transfer coefficient for external
     free convection from a verical plate.
 
@@ -418,8 +418,8 @@ conv_free_horizontal_plate_all_methods = {
 Nu_free_horizontal_plate_all_methods = ["VDI", "McAdams", "Rohsenow"]
 
 
-def Nu_free_horizontal_plate_methods(Pr: float, Gr: float, buoyancy: bool, L: Optional[float]=None, W: Optional[float]=None,
-                                     check_ranges: bool=True) -> List[str]:
+def Nu_free_horizontal_plate_methods(Pr: float, Gr: float, buoyancy: bool, L: float | None=None, W: float | None=None,
+                                     check_ranges: bool=True) -> list[str]:
     r"""This function returns a list of methods for calculating heat transfer
     coefficient for external free convection from a verical plate.
 
@@ -460,8 +460,8 @@ def Nu_free_horizontal_plate_methods(Pr: float, Gr: float, buoyancy: bool, L: Op
     """
     return Nu_free_horizontal_plate_all_methods
 
-def Nu_free_horizontal_plate(Pr: float, Gr: float, buoyancy: bool, L: Optional[float]=None, W: Optional[float]=None,
-                             Method: Optional[str]=None) -> float:
+def Nu_free_horizontal_plate(Pr: float, Gr: float, buoyancy: bool, L: float | None=None, W: float | None=None,
+                             Method: str | None=None) -> float:
     r"""This function calculates the heat transfer coefficient for external
     free convection from a horizontal plate.
 
@@ -574,7 +574,7 @@ def Nu_sphere_Churchill(Pr: float, Gr: float) -> float:
 
 ### Vertical cylinders
 
-def Nu_vertical_cylinder_Griffiths_Davis_Morgan(Pr: float, Gr: float, turbulent: Optional[bool]=None) -> float:
+def Nu_vertical_cylinder_Griffiths_Davis_Morgan(Pr: float, Gr: float, turbulent: bool | None=None) -> float:
     r"""Calculates Nusselt number for natural convection around a vertical
     isothermal cylinder according to the results of [1]_ correlated by [2]_, as
     presented in [3]_ and [4]_.
@@ -634,7 +634,7 @@ def Nu_vertical_cylinder_Griffiths_Davis_Morgan(Pr: float, Gr: float, turbulent:
     return Nu
 
 
-def Nu_vertical_cylinder_Jakob_Linke_Morgan(Pr: float, Gr: float, turbulent: Optional[bool]=None) -> float:
+def Nu_vertical_cylinder_Jakob_Linke_Morgan(Pr: float, Gr: float, turbulent: bool | None=None) -> float:
     r"""Calculates Nusselt number for natural convection around a vertical
     isothermal cylinder according to the results of [1]_ correlated by [2]_, as
     presented in [3]_ and [4]_.
@@ -696,7 +696,7 @@ def Nu_vertical_cylinder_Jakob_Linke_Morgan(Pr: float, Gr: float, turbulent: Opt
     return Nu
 
 
-def Nu_vertical_cylinder_Carne_Morgan(Pr: float, Gr: float, turbulent: Optional[bool]=None) -> float:
+def Nu_vertical_cylinder_Carne_Morgan(Pr: float, Gr: float, turbulent: bool | None=None) -> float:
     r"""Calculates Nusselt number for natural convection around a vertical
     isothermal cylinder according to the results of [1]_ correlated by [2]_, as
     presented in [3]_ and [4]_.
@@ -828,7 +828,7 @@ def Nu_vertical_cylinder_Eigenson_Morgan(Pr: float, Gr: float, turbulent: None=N
         return 0.48*Ra**0.25
 
 
-def Nu_vertical_cylinder_Touloukian_Morgan(Pr: float, Gr: float, turbulent: Optional[bool]=None) -> float:
+def Nu_vertical_cylinder_Touloukian_Morgan(Pr: float, Gr: float, turbulent: bool | None=None) -> float:
     r"""Calculates Nusselt number for natural convection around a vertical
     isothermal cylinder according to the results of [1]_ correlated by [2]_, as
     presented in [3]_ and [4]_.
@@ -890,7 +890,7 @@ def Nu_vertical_cylinder_Touloukian_Morgan(Pr: float, Gr: float, turbulent: Opti
         return 0.726*Ra**0.25
 
 
-def Nu_vertical_cylinder_McAdams_Weiss_Saunders(Pr: float, Gr: float, turbulent: Optional[bool]=None) -> float:
+def Nu_vertical_cylinder_McAdams_Weiss_Saunders(Pr: float, Gr: float, turbulent: bool | None=None) -> float:
     r"""Calculates Nusselt number for natural convection around a vertical
     isothermal cylinder according to the results of [1]_ and [2]_ correlated by
     [3]_, as presented in [4]_, [5]_, and [6]_.
@@ -955,7 +955,7 @@ def Nu_vertical_cylinder_McAdams_Weiss_Saunders(Pr: float, Gr: float, turbulent:
         return 0.59*Ra**0.25
 
 
-def Nu_vertical_cylinder_Kreith_Eckert(Pr: float, Gr: float, turbulent: Optional[bool]=None) -> float:
+def Nu_vertical_cylinder_Kreith_Eckert(Pr: float, Gr: float, turbulent: bool | None=None) -> float:
     r"""Calculates Nusselt number for natural convection around a vertical
     isothermal cylinder according to the results of [1]_  correlated by
     [2]_, also as presented in [3]_, [4]_, and [5]_.
@@ -1208,7 +1208,7 @@ vertical_cylinder_correlations = {
 "Popiel & Churchill": (Nu_vertical_cylinder_Popiel_Churchill, False, True, 1.00E+009, False),
 }
 
-def Nu_vertical_cylinder_methods(Pr: float, Gr: float, L: Optional[float]=None, D: Optional[float]=None, check_ranges: bool=True) -> List[str]:
+def Nu_vertical_cylinder_methods(Pr: float, Gr: float, L: float | None=None, D: float | None=None, check_ranges: bool=True) -> list[str]:
     r"""This function returns a list of correlation names for free convetion
     to a vertical cylinder.
 
@@ -1252,7 +1252,7 @@ def Nu_vertical_cylinder_methods(Pr: float, Gr: float, L: Optional[float]=None, 
                 "Al-Arabi & Khamis"]
 
 
-def Nu_vertical_cylinder(Pr: float, Gr: float, L: Optional[float]=None, D: Optional[float]=None, Method: Optional[str]=None) -> float:
+def Nu_vertical_cylinder(Pr: float, Gr: float, L: float | None=None, D: float | None=None, Method: str | None=None) -> float:
     r"""This function handles choosing which vertical cylinder free convection
     correlation is used. Generally this is used by a helper class, but can be
     used directly. Will automatically select the correlation to use if none is
@@ -1515,7 +1515,7 @@ horizontal_cylinder_correlations = {
 "Morgan": (Nu_horizontal_cylinder_Morgan)
 }
 
-def Nu_horizontal_cylinder_methods(Pr: float, Gr: float, check_ranges: bool=True) -> List[str]:
+def Nu_horizontal_cylinder_methods(Pr: float, Gr: float, check_ranges: bool=True) -> list[str]:
     r"""This function returns a list of correlation names for free convetion
     to a horizontal cylinder.
 
@@ -1545,7 +1545,7 @@ def Nu_horizontal_cylinder_methods(Pr: float, Gr: float, check_ranges: bool=True
     """
     return ["Morgan", "Churchill-Chu", "Kuehn & Goldstein"]
 
-def Nu_horizontal_cylinder(Pr: float, Gr: float, Method: Optional[str]=None) -> float:
+def Nu_horizontal_cylinder(Pr: float, Gr: float, Method: str | None=None) -> float:
     r"""This function handles choosing which horizontal cylinder free convection
     correlation is used. Generally this is used by a helper class, but can be
     used directly. Will automatically select the correlation to use if none is

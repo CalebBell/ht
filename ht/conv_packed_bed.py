@@ -19,17 +19,16 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
-from typing import List, Optional
+from __future__ import annotations
 
-
-__all__: List[str] = [
+__all__: list[str] = [
     "Nu_Achenbach",
     "Nu_KTA",
     "Nu_Wakao_Kagei",
     "Nu_packed_bed_Gnielinski",
 ]
 
-def Nu_packed_bed_Gnielinski(dp: float, voidage: float, vs: float, rho: float, mu: float, Pr: float, fa: Optional[float]=None) -> float:
+def Nu_packed_bed_Gnielinski(dp: float, voidage: float, vs: float, rho: float, mu: float, Pr: float, fa: float | None=None) -> float:
     r"""Calculates Nusselt number of a fluid passing over a bed of particles
     using a correlation shown in [3]_ and cited as from [1]_ and [2]_. Likely
     the best available model as the author of [1]_ is the same as [2]_ and

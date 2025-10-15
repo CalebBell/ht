@@ -19,6 +19,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
+from __future__ import annotations
 
 from math import pi, sin
 
@@ -26,9 +27,8 @@ from fluids.constants import R, g
 from fluids.core import Prandtl, Reynolds
 
 from ht.conv_internal import turbulent_Dittus_Boelter
-from typing import List
 
-__all__: List[str] = [
+__all__: list[str] = [
     "Akers_Deans_Crosser",
     "Boyko_Kruzhilin",
     "Cavallini_Smith_Zecchin",

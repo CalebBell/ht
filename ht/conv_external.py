@@ -19,11 +19,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
+from __future__ import annotations
 
 from math import exp
-from typing import List, Optional
 
-__all__: List[str] = [
+__all__: list[str] = [
     "LAMINAR_TRANSITION_HORIZONTAL_PLATE",
     "Nu_cylinder_Churchill_Bernstein",
     "Nu_cylinder_Fand",
@@ -47,7 +47,7 @@ __all__: List[str] = [
 ### Single Cylinders in Crossflow
 
 
-def Nu_cylinder_Zukauskas(Re: float, Pr: float, Prw: Optional[float]=None) -> float:
+def Nu_cylinder_Zukauskas(Re: float, Pr: float, Prw: float | None=None) -> float:
     r"""Calculates Nusselt number for crossflow across a single tube at a
     specified Re. Method from [1]_, also shown without modification in [2]_.
     This method applies to both the laminar and turbulent regimes.
@@ -317,7 +317,7 @@ def Nu_cylinder_McAdams(Re: float, Pr: float) -> float:
     return (0.35 + 0.56*Re**0.52)*Pr**0.3
 
 
-def Nu_cylinder_Whitaker(Re: float, Pr: float, mu: Optional[float]=None, muw: Optional[float]=None) -> float:
+def Nu_cylinder_Whitaker(Re: float, Pr: float, mu: float | None=None, muw: float | None=None) -> float:
     r"""Calculates Nusselt number for crossflow across a single tube as shown
     in [1]_ at a specified `Re` and `Pr`, both evaluated at the free stream
     temperature. Recommends a viscosity exponent correction of 0.25, which is
@@ -373,7 +373,7 @@ def Nu_cylinder_Whitaker(Re: float, Pr: float, mu: Optional[float]=None, muw: Op
     return Nu
 
 
-def Nu_cylinder_Perkins_Leppert_1962(Re: float, Pr: float, mu: Optional[float]=None, muw: Optional[float]=None) -> float:
+def Nu_cylinder_Perkins_Leppert_1962(Re: float, Pr: float, mu: float | None=None, muw: float | None=None) -> float:
     r"""Calculates Nusselt number for crossflow across a single tube as shown
     in [1]_ at a specified `Re` and `Pr`, both evaluated at the free stream
     temperature. Recommends a viscosity exponent correction of 0.25, which is
@@ -427,7 +427,7 @@ def Nu_cylinder_Perkins_Leppert_1962(Re: float, Pr: float, mu: Optional[float]=N
     return Nu
 
 
-def Nu_cylinder_Perkins_Leppert_1964(Re: float, Pr: float, mu: Optional[float]=None, muw: Optional[float]=None) -> float:
+def Nu_cylinder_Perkins_Leppert_1964(Re: float, Pr: float, mu: float | None=None, muw: float | None=None) -> float:
     r"""Calculates Nusselt number for crossflow across a single tube as shown
     in [1]_ at a specified `Re` and `Pr`, both evaluated at the free stream
     temperature. Recommends a viscosity exponent correction of 0.25, which is
@@ -506,7 +506,7 @@ conv_external_cylinder_methods = conv_external_cylinder_turbulent_methods.copy()
 _missing_external_cylinder_method = f"Correlation name not recognized; the availble methods are {list(conv_external_cylinder_methods.keys())}."
 
 
-def Nu_external_cylinder_methods(Re: float, Pr: float, Prw: Optional[float]=None, mu: Optional[float]=None, muw: Optional[float]=None, check_ranges: bool=True) -> List[str]:
+def Nu_external_cylinder_methods(Re: float, Pr: float, Prw: float | None=None, mu: float | None=None, muw: float | None=None, check_ranges: bool=True) -> list[str]:
     r"""This function returns a list of correlation names for forced convection
     over an external cylinder.
 
@@ -548,7 +548,7 @@ def Nu_external_cylinder_methods(Re: float, Pr: float, Prw: Optional[float]=None
     return methods
 
 
-def Nu_external_cylinder(Re: float, Pr: float, Prw: Optional[float]=None, mu: Optional[float]=None, muw: Optional[float]=None, Method: Optional[str]=None) -> float:
+def Nu_external_cylinder(Re: float, Pr: float, Prw: float | None=None, mu: float | None=None, muw: float | None=None, Method: str | None=None) -> float:
     r"""Calculates Nusselt number for crossflow across a single tube at a
     specified `Re` and `Pr` according to the specified method. Optional
     parameters are `Prw`, `mu`, and `muw`. This function has eight methods
@@ -843,8 +843,8 @@ conv_horizontal_plate_methods.update(conv_horizontal_plate_turbulent_methods)
 
 LAMINAR_TRANSITION_HORIZONTAL_PLATE = 5E5
 
-def Nu_external_horizontal_plate_methods(Re: float, Pr: float, L: Optional[float]=None, x: Optional[float]=None,
-                                   check_ranges: bool=True) -> List[str]:
+def Nu_external_horizontal_plate_methods(Re: float, Pr: float, L: float | None=None, x: float | None=None,
+                                   check_ranges: bool=True) -> list[str]:
     r"""Returns a list of correlation names for calculating Nusselt number for
     forced convection across a horizontal plate, supporting both laminar
     and turbulent regimes.
@@ -883,7 +883,7 @@ def Nu_external_horizontal_plate_methods(Re: float, Pr: float, L: Optional[float
     else:
         return ["Baehr", "Churchill Ozoe", "Schlichting", "Kreith"]
 
-def Nu_external_horizontal_plate(Re: float, Pr: float, L: None=None, x: None=None, Method: Optional[str]=None,
+def Nu_external_horizontal_plate(Re: float, Pr: float, L: None=None, x: None=None, Method: str | None=None,
                                  laminar_method: str="Baehr",
                                  turbulent_method: str="Schlichting",
                                  Re_transition: float=LAMINAR_TRANSITION_HORIZONTAL_PLATE) -> float:

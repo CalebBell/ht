@@ -19,15 +19,15 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
+from __future__ import annotations
 
 from math import exp, pi, radians, sin
 
 from fluids.numerics import bisplev, horner, implementation_optimize_tck, splev
 
 from ht.core import WALL_FACTOR_PRANDTL, wall_factor
-from typing import List, Optional
 
-__all__: List[str] = [
+__all__: list[str] = [
     "ESDU_tube_angle_correction",
     "ESDU_tube_row_correction",
     "Nu_ESDU_73031",
@@ -277,7 +277,7 @@ def Zukauskas_tube_row_correction(tube_rows: int, staggered: bool=True, Re: floa
 
 
 def Nu_Zukauskas_Bejan(Re: float, Pr: float, tube_rows: int, pitch_parallel: float, pitch_normal: float,
-                       Pr_wall: Optional[float]=None) -> float:
+                       Pr_wall: float | None=None) -> float:
     r"""Calculates Nusselt number for crossflow across a tube bank
     of tube number n at a specified `Re` according to the method of Zukauskas
     [1]_. A fit to graphs from [1]_ published in [2]_ is used for the
@@ -520,7 +520,7 @@ def ESDU_tube_angle_correction(angle: float) -> float:
 
 
 def Nu_ESDU_73031(Re: float, Pr: float, tube_rows: int, pitch_parallel: float, pitch_normal: float,
-                  Pr_wall: Optional[float]=None, angle: float=90.0) -> float:
+                  Pr_wall: float | None=None, angle: float=90.0) -> float:
     r"""Calculates the Nusselt number for crossflow across a tube bank
     with a specified number of tube rows, at a specified `Re` according to
     [1]_, also shown in [2]_.
@@ -767,7 +767,7 @@ Kern_f_Re_tck = implementation_optimize_tck([[9.9524, 9.9524, 9.9524, 9.9524, 17
 Kern_f_Re = lambda x: float(splev(x, Kern_f_Re_tck))
 
 
-def dP_Kern(m: float, rho: float, mu: float, DShell: float, LSpacing: float, pitch: float, Do: float, NBaffles: int, mu_w: Optional[float]=None) -> float:
+def dP_Kern(m: float, rho: float, mu: float, DShell: float, LSpacing: float, pitch: float, Do: float, NBaffles: int, mu_w: float | None=None) -> float:
     r"""Calculates pressure drop for crossflow across a tube bank
     according to the equivalent-diameter method developed by Kern [1]_,
     presented in [2]_.
@@ -1421,8 +1421,8 @@ def bundle_bypassing_Bell(bypass_area_fraction, seal_strips, crossflow_rows,
 
 
 def unequal_baffle_spacing_Bell(baffles: int, baffle_spacing: float,
-                                baffle_spacing_in: Optional[float]=None,
-                                baffle_spacing_out: Optional[float]=None,
+                                baffle_spacing_in: float | None=None,
+                                baffle_spacing_out: float | None=None,
                                 laminar: bool=False) -> float:
     r"""Calculate the correction factor for unequal baffle spacing `Js`,
     which accounts for higher velocity of fluid flow and greater heat transfer

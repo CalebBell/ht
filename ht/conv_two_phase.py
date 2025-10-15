@@ -19,15 +19,15 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
+from __future__ import annotations
 
 from math import pi
 
 from fluids.core import Prandtl, Reynolds
 
 from ht.conv_internal import laminar_entry_Seider_Tate
-from typing import List, Optional
 
-__all__: List[str] = [
+__all__: list[str] = [
     "Aggour",
     "Davis_David",
     "Elamvaluthi_Srinivas",
@@ -106,7 +106,7 @@ def Davis_David(m: float, x: float, D: float, rhol: float, rhog: float, Cpl: flo
     return Nu_TP*kl/D
 
 
-def Elamvaluthi_Srinivas(m: float, x: float, D: float, rhol: float, rhog: float, Cpl: float, kl: float, mug: float, mu_b: float, mu_w: Optional[float]=None) -> float:
+def Elamvaluthi_Srinivas(m: float, x: float, D: float, rhol: float, rhog: float, Cpl: float, kl: float, mug: float, mu_b: float, mu_w: float | None=None) -> float:
     r"""Calculates the two-phase non-boiling heat transfer coefficient of a
     liquid and gas flowing inside a tube of any inclination, as in [1]_ and
     reviewed in [2]_.
@@ -186,7 +186,7 @@ def Elamvaluthi_Srinivas(m: float, x: float, D: float, rhol: float, rhog: float,
     return Nu_TP*kl/D
 
 
-def Groothuis_Hendal(m: float, x: float, D: float, rhol: float, rhog: float, Cpl: float, kl: float, mug: float, mu_b: float, mu_w: Optional[float]=None,
+def Groothuis_Hendal(m: float, x: float, D: float, rhol: float, rhog: float, Cpl: float, kl: float, mug: float, mu_b: float, mu_w: float | None=None,
                      water: bool=False) -> float:
     r"""Calculates the two-phase non-boiling heat transfer coefficient of a
     liquid and gas flowing inside a tube of any inclination, as in [1]_ and
@@ -276,7 +276,7 @@ def Groothuis_Hendal(m: float, x: float, D: float, rhol: float, rhog: float, Cpl
     return Nu_TP*kl/D
 
 
-def Hughmark(m: float, x: float, alpha: float, D: float, L: float, Cpl: float, kl: float, mu_b: Optional[float]=None, mu_w: Optional[float]=None) -> float:
+def Hughmark(m: float, x: float, alpha: float, D: float, L: float, Cpl: float, kl: float, mu_b: float | None=None, mu_w: float | None=None) -> float:
     r"""Calculates the two-phase non-boiling laminar heat transfer coefficient
     of a liquid and gas flowing inside a tube of any inclination, as in [1]_
     and reviewed in [2]_.
@@ -350,7 +350,7 @@ def Hughmark(m: float, x: float, alpha: float, D: float, L: float, Cpl: float, k
     return Nu_TP*kl/D
 
 
-def Knott(m: float, x: float, D: float, rhol: int, rhog: float, Cpl: Optional[float]=None, kl: Optional[float]=None, mu_b: Optional[float]=None, mu_w: Optional[float]=None, L: Optional[float]=None,
+def Knott(m: float, x: float, D: float, rhol: int, rhog: float, Cpl: float | None=None, kl: float | None=None, mu_b: float | None=None, mu_w: float | None=None, L: float | None=None,
           hl: None=None) -> float:
     r"""Calculates the two-phase non-boiling heat transfer coefficient of a
     liquid and gas flowing inside a tube of any inclination, as in [1]_ and
@@ -435,7 +435,7 @@ def Knott(m: float, x: float, D: float, rhol: int, rhog: float, Cpl: Optional[fl
     return hl*(1 + Vgs/Vls)**(1/3.)
 
 
-def Kudirka_Grosh_McFadden(m: float, x: float, D: float, rhol: float, rhog: float, Cpl: float, kl: float, mug: float, mu_b: float, mu_w: Optional[float]=None) -> float:
+def Kudirka_Grosh_McFadden(m: float, x: float, D: float, rhol: float, rhog: float, Cpl: float, kl: float, mug: float, mu_b: float, mu_w: float | None=None) -> float:
     r"""Calculates the two-phase non-boiling heat transfer coefficient of a
     liquid and gas flowing inside a tube of any inclination, as in [1]_ and
     reviewed in [2]_.
@@ -511,8 +511,8 @@ def Kudirka_Grosh_McFadden(m: float, x: float, D: float, rhol: float, rhog: floa
     return Nu*kl/D
 
 
-def Martin_Sims(m: float, x: float, D: float, rhol: float, rhog: float, hl: Optional[float]=None,
-                Cpl: Optional[float]=None, kl: Optional[float]=None, mu_b: Optional[float]=None, mu_w: Optional[float]=None, L: Optional[float]=None) -> float:
+def Martin_Sims(m: float, x: float, D: float, rhol: float, rhog: float, hl: float | None=None,
+                Cpl: float | None=None, kl: float | None=None, mu_b: float | None=None, mu_w: float | None=None, L: float | None=None) -> float:
     r"""Calculates the two-phase non-boiling heat transfer coefficient of a
     liquid and gas flowing inside a tube of any inclination, as in [1]_ and
     reviewed in [2]_.
@@ -588,7 +588,7 @@ def Martin_Sims(m: float, x: float, D: float, rhol: float, rhog: float, hl: Opti
     return hl*(1.0 + 0.64*(Vgs/Vls)**0.5)
 
 
-def Ravipudi_Godbold(m: float, x: float, D: float, rhol: float, rhog: float, Cpl: float, kl: float, mug: float, mu_b: float, mu_w: Optional[float]=None) -> float:
+def Ravipudi_Godbold(m: float, x: float, D: float, rhol: float, rhog: float, Cpl: float, kl: float, mug: float, mu_b: float, mu_w: float | None=None) -> float:
     r"""Calculates the two-phase non-boiling heat transfer coefficient of a
     liquid and gas flowing inside a tube of any inclination, as in [1]_ and
     reviewed in [2]_.
@@ -662,7 +662,7 @@ def Ravipudi_Godbold(m: float, x: float, D: float, rhol: float, rhog: float, Cpl
     return Nu*kl/D
 
 
-def Aggour(m: float, x: float, alpha: float, D: float, rhol: float, Cpl: float, kl: float, mu_b: float, mu_w: Optional[float]=None, L: Optional[float]=None,
+def Aggour(m: float, x: float, alpha: float, D: float, rhol: float, Cpl: float, kl: float, mu_b: float, mu_w: float | None=None, L: float | None=None,
            turbulent: None=None) -> float:
     r"""Calculates the two-phase non-boiling laminar heat transfer coefficient
     of a liquid and gas flowing inside a tube of any inclination, as in [1]_
@@ -875,9 +875,9 @@ def h_two_phase_methods(m, x, D, Cpl, kl, rhol=None, rhog=None, mul=None,
     return methods
 
 
-def h_two_phase(m: float, x: float, D: float, Cpl: float, kl: float, rhol: Optional[float]=None, rhog: None=None, mul: None=None,
-                mu_b: Optional[float]=None, mu_w: Optional[float]=None, mug: None=None, L: Optional[float]=None, alpha: Optional[float]=None,
-                method: Optional[str]=None) -> float:
+def h_two_phase(m: float, x: float, D: float, Cpl: float, kl: float, rhol: float | None=None, rhog: None=None, mul: None=None,
+                mu_b: float | None=None, mu_w: float | None=None, mug: None=None, L: float | None=None, alpha: float | None=None,
+                method: str | None=None) -> float:
     r"""Calculates the two-phase non-boiling laminar heat transfer coefficient
     of a liquid and gas flowing inside a tube according to the specified
     method. Nine methods are available.

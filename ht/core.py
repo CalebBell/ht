@@ -19,13 +19,13 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
+from __future__ import annotations
 
 from math import log
 
 from fluids.numerics import i0, i1, k0, k1
-from typing import List, Optional
 
-__all__: List[str] = [
+__all__: list[str] = [
     "LMTD",
     "Kays_Crawford_laminar_gas_Nu",
     "Kays_Crawford_laminar_gas_fd",
@@ -404,8 +404,8 @@ wall_factor_bad_option_msg = "Supported options are: "+ str(
         [WALL_FACTOR_VISCOSITY, WALL_FACTOR_PRANDTL, WALL_FACTOR_TEMPERATURE,
          WALL_FACTOR_DEFAULT])
 
-def wall_factor(mu: Optional[int]=None, mu_wall: Optional[int]=None, Pr: Optional[float]=None, Pr_wall: Optional[float]=None, T: Optional[int]=None,
-                T_wall: Optional[int]=None, mu_heating_coeff: float=0.11, mu_cooling_coeff: float=0.25,
+def wall_factor(mu: int | None=None, mu_wall: int | None=None, Pr: float | None=None, Pr_wall: float | None=None, T: int | None=None,
+                T_wall: int | None=None, mu_heating_coeff: float=0.11, mu_cooling_coeff: float=0.25,
                 Pr_heating_coeff: float=0.11, Pr_cooling_coeff: float=0.25,
                 T_heating_coeff: float=0.11, T_cooling_coeff: float=0.25,
                 property_option: str=WALL_FACTOR_PRANDTL) -> float:

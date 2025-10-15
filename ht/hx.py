@@ -19,18 +19,21 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
+from __future__ import annotations
 
 import os
 from math import exp, floor, log, sqrt, tanh  # tanh= 1/coth
+from typing import TYPE_CHECKING, Callable
 
 from fluids.constants import Btu, degree_Fahrenheit, foot, hour, inch
 from fluids.numerics import bisect, brenth, factorial, gamma, horner, iv, quad, secant
 from fluids.numerics import numpy as np
 from fluids.piping import BWG_SI, BWG_integers
-from numpy import float64
-from typing import Callable, Dict, List, Optional, Union
 
-__all__: List[str] = [
+if TYPE_CHECKING:
+    from numpy import float64
+
+__all__: list[str] = [
     "DBundle_for_Ntubes_HEDH",
     "DBundle_for_Ntubes_Phadkeb",
     "DBundle_min",
@@ -1325,7 +1328,7 @@ def temperature_effectiveness_air_cooler(R1: float, NTU1: float, rows: int, pass
             raise ValueError("Number of passes and rows not supported.")
 
 
-def temperature_effectiveness_basic(R1: Union[float64, float], NTU1: Union[int, float64, float], subtype: str="crossflow") -> Union[float64, float]:
+def temperature_effectiveness_basic(R1: float64 | float, NTU1: float64 | float, subtype: str="crossflow") -> float64 | float:
     r"""Returns temperature effectiveness `P1` of a heat exchanger with
     a specified heat capacity ratio, number of transfer units `NTU1`,
     and of type `subtype`. This function performs the calculations for the
@@ -3166,7 +3169,7 @@ def _NTU_from_P_objective(NTU1, R1, P1, function, *args):
     return P1_calc - P1
 
 
-def _NTU_from_P_erf(NTU1: Union[int, float64, float], *args) -> Union[float64, float]:
+def _NTU_from_P_erf(NTU1: float64 | float, *args) -> float64 | float:
     """Private function to hold the common objective function used by
     all backwards solvers for the P-NTU method.
     These methods are really hard on on floating points (overflows and divide
@@ -3176,7 +3179,7 @@ def _NTU_from_P_erf(NTU1: Union[int, float64, float], *args) -> Union[float64, f
     R1, P1, function = args[0], args[1], args[2]
     return function(R1, NTU1, *args[3:]) - P1
 
-def _NTU_from_P_solver(P1: Union[float64, float], R1: Union[float64, float], NTU_min: Optional[float], NTU_max: Optional[Union[int, float64, float]], function: Callable, guess: Optional[float], *args) -> Union[int, float64, float]:
+def _NTU_from_P_solver(P1: float64 | float, R1: float64 | float, NTU_min: float | None, NTU_max: float64 | float | None, function: Callable, guess: float | None, *args) -> int | float64 | float:
     """Private function to solve the P-NTU method backwards, given the
     function to use, the upper and lower NTU bounds for consideration,
     and the desired P1 and R1 values.
@@ -3210,7 +3213,7 @@ def _NTU_from_P_solver(P1: Union[float64, float], R1: Union[float64, float], NTU
     return brenth(_NTU_from_P_erf, NTU_min, NTU_max, args=args2)
 
 
-def _NTU_max_for_P_solver(ps: List[List[float]], qs: List[List[float]], offsets: List[float], R1: Union[float64, float]) -> Union[float64, float]:
+def _NTU_max_for_P_solver(ps: list[list[float]], qs: list[list[float]], offsets: list[float], R1: float64 | float) -> float64 | float:
     """Private function to calculate the upper bound on the NTU1 value in the
     P-NTU method. This value is calculated via a pade approximation obtained
     on the result of a global minimizer which calculated the maximum P1
@@ -3224,7 +3227,7 @@ def _NTU_max_for_P_solver(ps: List[List[float]], qs: List[List[float]], offsets:
             return horner(p, x)/horner(q, x)
 
 
-def NTU_from_P_basic(P1: Union[float64, float], R1: Union[float64, float], subtype: str="crossflow") -> Union[float64, float]:
+def NTU_from_P_basic(P1: float64 | float, R1: float64 | float, subtype: str="crossflow") -> float64 | float:
     r"""Returns the number of transfer units of a basic heat exchanger type
     with a specified (for side 1) thermal effectiveness `P1`, and heat capacity
     ratio `R1`. The supported cases are as follows:
@@ -3819,8 +3822,8 @@ def NTU_from_P_plate(P1: float, R1: float, Np1: int, Np2: int, counterflow: bool
                               Np2, counterflow, passes_counterflow)
 
 
-def P_NTU_method(m1: float, m2: float, Cp1: float, Cp2: float, UA: Optional[float]=None, T1i: Optional[int]=None, T1o: Optional[float]=None,
-                 T2i: Optional[int]=None, T2o: Optional[int]=None, subtype: str="crossflow", Ntp: int=1, optimal: bool=True) -> Dict[str, float]:
+def P_NTU_method(m1: float, m2: float, Cp1: float, Cp2: float, UA: float | None=None, T1i: int | None=None, T1o: float | None=None,
+                 T2i: int | None=None, T2o: int | None=None, subtype: str="crossflow", Ntp: int=1, optimal: bool=True) -> dict[str, float]:
     r"""Wrapper for the various P-NTU method function calls,
     which can solve a heat exchanger. The heat capacities and mass flows
     of each stream and the type of the heat exchanger are always required.
@@ -4442,7 +4445,7 @@ def DBundle_min(Do: float) -> float:
     return 1.5
 
 
-def shell_clearance(DBundle: Optional[float]=None, DShell: Optional[float]=None) -> float:
+def shell_clearance(DBundle: float | None=None, DShell: float | None=None) -> float:
     r"""Looks up the recommended clearance between a shell and tube bundle in
     a TEMA HX [1]. Either the bundle diameter or the shell diameter are needed
     provided.
@@ -4701,7 +4704,7 @@ def _load_coeffs_Phadkeb() -> None:
     square_Ns = np.load(os.path.join(hx_data_folder, "square_Ns_Phadkeb.npy"))
     square_C1s = np.load(os.path.join(hx_data_folder, "square_C1s_Phadkeb.npy"))
 
-def Ntubes_Phadkeb(DBundle: Union[int, float64, float], Do: float, pitch: float, Ntp: int, angle: float=30) -> int:
+def Ntubes_Phadkeb(DBundle: float64 | float, Do: float, pitch: float, Ntp: int, angle: float=30) -> int:
     r"""Using tabulated values and correction factors for number of passes,
     the highly accurate method of [1]_ is used to obtain the tube count
     of a given tube bundle outer diameter for a given tube size and pitch.
@@ -4922,7 +4925,7 @@ def Ntubes_Phadkeb(DBundle: Union[int, float64, float], Do: float, pitch: float,
         ans = 0 # pragma: no cover
     return ans
 
-def to_solve_Ntubes_Phadkeb(DBundle: Union[int, float64], Do: float, pitch: float, Ntp: int, angle: int, Ntubes: int) -> int:
+def to_solve_Ntubes_Phadkeb(DBundle: int | float64, Do: float, pitch: float, Ntp: int, angle: int, Ntubes: int) -> int:
     ans = Ntubes_Phadkeb(DBundle=DBundle, Do=Do, pitch=pitch, Ntp=Ntp, angle=angle) - Ntubes
     return ans
 
@@ -5045,7 +5048,7 @@ def Ntubes_Perrys(DBundle: float, Do: float, Ntp: int, angle: int=30) -> int:
             raise ValueError("N passes not 1, 2, 4 or 6")
     return int(Nt)
 
-def Ntubes_VDI(DBundle: Optional[float]=None, Ntp: Optional[int]=None, Do: Optional[float]=None, pitch: Optional[float]=None, angle: int=30.) -> int:
+def Ntubes_VDI(DBundle: float | None=None, Ntp: int | None=None, Do: float | None=None, pitch: float | None=None, angle: int=30.) -> int:
     r"""A rough equation presented in the VDI Heat Atlas for estimating
     the number of tubes in a tube bundle of differing geometries and tube
     sizes. No accuracy estimation given.
@@ -5179,7 +5182,7 @@ def D_for_Ntubes_VDI(N: int, Ntp: float, Do: float, pitch: float, angle: float=3
     return Dshell/1000.
 
 
-def Ntubes_HEDH(DBundle: Optional[float]=None, Do: Optional[float]=None, pitch: Optional[float]=None, angle: int=30) -> int:
+def Ntubes_HEDH(DBundle: float | None=None, Do: float | None=None, pitch: float | None=None, angle: int=30) -> int:
     r"""A rough equation presented in the HEDH for estimating
     the number of tubes in a tube bundle of differing geometries and tube
     sizes. No accuracy estimation given. Only 1 pass is supported.
@@ -5283,7 +5286,7 @@ def DBundle_for_Ntubes_HEDH(N: int, Do: float, pitch: float, angle: int=30) -> f
     return (Do + (1./.78)**0.5*pitch*(C1*N)**0.5)
 
 
-def Ntubes(DBundle: float, Do: float, pitch: float, Ntp: int=1, angle: int=30, Method: Optional[str]=None) -> int:
+def Ntubes(DBundle: float, Do: float, pitch: float, Ntp: int=1, angle: int=30, Method: str | None=None) -> int:
     r"""Calculates the number of tubes which can fit in a heat exchanger.
     The tube count is effected by the pitch, number of tube passes, and angle.
 
@@ -5354,7 +5357,7 @@ def Ntubes(DBundle: float, Do: float, pitch: float, Ntp: int=1, angle: int=30, M
 def _tubecount_objf_Perry(D: float, Do: float, Ntp: int, angle: int, N: int) -> int:
     return Ntubes_Perrys(DBundle=D, Do=Do, Ntp=Ntp, angle=angle) - N
 
-def size_bundle_from_tubecount(N: int, Do: float, pitch: float, Ntp: int=1, angle: int=30, Method: Optional[str]=None) -> Union[float64, float]:
+def size_bundle_from_tubecount(N: int, Do: float, pitch: float, Ntp: int=1, angle: int=30, Method: str | None=None) -> float64 | float:
     r"""Calculates the outer diameter of a tube bundle containing a specified
     number of tubes.
     The tube count is effected by the pitch, number of tube passes, and angle.

@@ -19,6 +19,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
+from __future__ import annotations
 
 from math import atan, log10, sin
 
@@ -27,9 +28,8 @@ from fluids.core import Prandtl, Reynolds
 
 from ht.conv_tube_bank import ESDU_tube_row_correction
 from ht.core import LMTD, WALL_FACTOR_PRANDTL, fin_efficiency_Kern_Kraus, wall_factor
-from typing import List, Optional
 
-__all__: List[str] = [
+__all__: list[str] = [
     "Ft_aircooler",
     "air_cooler_noise_GPSA",
     "air_cooler_noise_Mukherjee",
@@ -568,7 +568,7 @@ def h_ESDU_low_fin(m: float, A: float, A_min: float, A_increase: float, A_fin: f
                    A_tube_showing: float, tube_diameter: float,
                    fin_diameter: float, fin_thickness: float, bare_length: float,
                    pitch_parallel: float, pitch_normal: float, tube_rows: int,
-                   rho: float, Cp: float, mu: float, k: float, k_fin: float, Pr_wall: Optional[float]=None) -> float:
+                   rho: float, Cp: float, mu: float, k: float, k_fin: float, Pr_wall: float | None=None) -> float:
     r"""Calculates the air side heat transfer coefficient for an air cooler
     or other finned tube bundle with low fins using the formulas of [1]_ as
     presented in [2]_ (and also [3]_).

@@ -19,13 +19,13 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
+from __future__ import annotations
 
 from math import pi, radians, sin
 
 from fluids.friction import Kumar_beta_list, friction_plate_Martin_1999, friction_plate_Martin_VDI
-from typing import List, Optional
 
-__all__: List[str] = [
+__all__: list[str] = [
     "Nu_plate_Khan_Khan",
     "Nu_plate_Kumar",
     "Nu_plate_Martin",
@@ -52,7 +52,7 @@ Kumar_Nu_Res = [[10.0, 10.0],
           [20.0, 500.0]]
 
 
-def Nu_plate_Kumar(Re: float, Pr: float, chevron_angle: float, mu: Optional[float]=None, mu_wall: Optional[float]=None) -> float:
+def Nu_plate_Kumar(Re: float, Pr: float, chevron_angle: float, mu: float | None=None, mu_wall: float | None=None) -> float:
     r"""Calculates Nusselt number for single-phase flow in a
     **well-designed** Chevron-style plate heat exchanger according to [1]_.
     The data is believed to have been developed by APV International Limited,

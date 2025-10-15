@@ -19,13 +19,13 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
+from __future__ import annotations
 
 from math import exp, log
 
 from fluids.numerics import bisplev, horner, implementation_optimize_tck, secant
-from typing import List, Optional
 
-__all__: List[str] = [
+__all__: list[str] = [
     "Nu_Nusselt_Rayleigh_Hollands",
     "Nu_Nusselt_Rayleigh_Holling_Herwig",
     "Nu_Nusselt_Rayleigh_Probert",
@@ -277,7 +277,7 @@ def Nu_Nusselt_Rayleigh_Hollands(Pr: float, Gr: float, buoyancy: bool=True, Rac:
     return Nu
 
 
-def Nu_Nusselt_vertical_Thess(Pr: float, Gr: float, H: Optional[int]=None, L: Optional[int]=None) -> float:
+def Nu_Nusselt_vertical_Thess(Pr: float, Gr: float, H: int | None=None, L: int | None=None) -> float:
     r"""Calculates the Nusselt number for natural convection between two
     theoretical vertical flat plates using the correlation by Thess [1]
     in [1]_. This is a variant on the horizontal Rayleigh-Benard classic heat
