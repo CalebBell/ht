@@ -1,5 +1,5 @@
-'''Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
-Copyright (C) 2016, Caleb Bell <Caleb.Andrew.Bell@gmail.com>
+"""Chemical Engineering Design Library (ChEDL). Utilities for process modeling.
+Copyright (C) 2016-2025, Caleb Bell <Caleb.Andrew.Bell@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -18,38 +18,40 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-'''
+"""
+
+import os
+import shutil
+import tempfile
+from pathlib import Path
 
 from setuptools import setup
 from wheel.bdist_wheel import bdist_wheel
-import os
-import shutil
-from pathlib import Path
-import tempfile
+
 
 class bdist_wheel_light(bdist_wheel):
     description = "Build a light wheel package with minified Python files and without type stubs"
-    
+
     def minify_python_file(self, file_path):
         """Minify a Python file and return the minified content"""
-        with open(file_path, 'r', encoding='utf-8') as f:
+        with open(file_path, encoding="utf-8") as f:
             content = f.read()
         import python_minifier
         return python_minifier.minify(content, remove_annotations=True, remove_pass=True, remove_literal_statements=True)
-    
+
     def run(self):
-        pkg_dir = Path(os.path.abspath('ht'))
-        
+        pkg_dir = Path(os.path.abspath("ht"))
+
         # Files to exclude (relative to ht directory)
         exclude_files = [
-            'data',
+            "data",
         ]
-        
+
         # Create temporary directory
         with tempfile.TemporaryDirectory() as temp_dir:
             moved_files = []
             minified_files = []
-            
+
             try:
                 # Move files to temporary location
                 for rel_path in exclude_files:
@@ -58,7 +60,7 @@ class bdist_wheel_light(bdist_wheel):
                         # Create path in temp dir maintaining structure
                         temp_path = Path(temp_dir) / rel_path
                         temp_path.parent.mkdir(parents=True, exist_ok=True)
-                        
+
                         if orig_path.is_dir():
                             shutil.move(str(orig_path), str(temp_path))
                         else:
@@ -66,36 +68,36 @@ class bdist_wheel_light(bdist_wheel):
                         moved_files.append((orig_path, temp_path))
 
                 # Handle .pyi files
-                for pyi_file in pkg_dir.rglob('*.pyi'):
+                for pyi_file in pkg_dir.rglob("*.pyi"):
                     rel_path = pyi_file.relative_to(pkg_dir)
                     temp_path = Path(temp_dir) / rel_path
                     temp_path.parent.mkdir(parents=True, exist_ok=True)
                     shutil.move(str(pyi_file), str(temp_path))
                     moved_files.append((pyi_file, temp_path))
 
-                
+
                 # Minify .py files
-                for py_file in pkg_dir.rglob('*.py'):
+                for py_file in pkg_dir.rglob("*.py"):
                     # Store original content and minify
-                    with open(py_file, 'r', encoding='utf-8') as f:
+                    with open(py_file, encoding="utf-8") as f:
                         original_content = f.read()
                     minified_content = self.minify_python_file(py_file)
-                    
+
                     # Write minified content
-                    with open(py_file, 'w', encoding='utf-8') as f:
+                    with open(py_file, "w", encoding="utf-8") as f:
                         f.write(minified_content)
-                    
+
                     # Store original content for restoration
                     minified_files.append((py_file, original_content))
-                
+
                 # Build the wheel
                 super().run()
-                
+
             finally:
-                
+
                 # Restore original Python files
                 for file_path, original_content in minified_files:
-                    with open(file_path, 'w', encoding='utf-8') as f:
+                    with open(file_path, "w", encoding="utf-8") as f:
                         f.write(original_content)
                 # Restore moved files
                 for orig_path, temp_path in moved_files:
@@ -104,64 +106,62 @@ class bdist_wheel_light(bdist_wheel):
                         shutil.move(str(temp_path), str(orig_path))
 
 classifiers=[
-    'Development Status :: 5 - Production/Stable',
-    'Intended Audience :: Developers',
-    'Intended Audience :: Education',
-    'Intended Audience :: Manufacturing',
-    'Intended Audience :: Science/Research',
-    'License :: OSI Approved :: MIT License',
-    'Natural Language :: English',
-    'Operating System :: MacOS',
-    'Operating System :: Microsoft :: Windows',
-    'Operating System :: POSIX',
-    'Operating System :: POSIX :: BSD',
-    'Operating System :: POSIX :: Linux',
-    'Operating System :: Unix',
-    'Programming Language :: Python',
-    'Programming Language :: Python :: 3.6',
-    'Programming Language :: Python :: 3.7',
-    'Programming Language :: Python :: 3.8',
-    'Programming Language :: Python :: 3.9',
-    'Programming Language :: Python :: 3.10',
-    'Programming Language :: Python :: 3.11',
-    'Programming Language :: Python :: 3.12',
-    'Programming Language :: Python :: 3.13',
-    'Programming Language :: Python :: Implementation :: CPython',
-    'Programming Language :: Python :: Implementation :: PyPy',
-    'Programming Language :: Python :: Implementation :: MicroPython',
-    'Topic :: Education',
-    'Topic :: Scientific/Engineering :: Atmospheric Science',
-    'Topic :: Scientific/Engineering :: Chemistry',
-    'Topic :: Scientific/Engineering :: Physics',
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Education",
+    "Intended Audience :: Manufacturing",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: English",
+    "Operating System :: MacOS",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX",
+    "Operating System :: POSIX :: BSD",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: Unix",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: Implementation :: PyPy",
+    "Topic :: Education",
+    "Topic :: Scientific/Engineering :: Atmospheric Science",
+    "Topic :: Scientific/Engineering :: Chemistry",
+    "Topic :: Scientific/Engineering :: Physics",
 ]
 
-description = 'Heat transfer component of Chemical Engineering Design Library (ChEDL)'
-keywords = ('heat-transfer heat-exchanger air-cooler tube-bank condensation '
-            'boiling chemical-engineering mechanical-engineering pressure-drop '
-            'radiation process-simulation engineering insulation flow-boiling '
-            'nucleate-boiling reboiler cross-flow')
+description = "Heat transfer component of Chemical Engineering Design Library (ChEDL)"
+keywords = ("heat-transfer heat-exchanger air-cooler tube-bank condensation "
+            "boiling chemical-engineering mechanical-engineering pressure-drop "
+            "radiation process-simulation engineering insulation flow-boiling "
+            "nucleate-boiling reboiler cross-flow")
 
 
 setup(
-  name = 'ht',
-  packages = ['ht'],
-  license='MIT',
-  version = '1.0.8',
+  name = "ht",
+  packages = ["ht"],
+  license="MIT",
+  version = "1.0.8",
   description = description,
-  author = 'Caleb Bell',
-  long_description = open('README.rst').read(),
+  author = "Caleb Bell",
+  long_description = open("README.rst").read(),
   platforms=["Windows", "Linux", "Mac OS", "Unix"],
-  author_email = 'Caleb.Andrew.Bell@gmail.com',
-  url = 'https://github.com/CalebBell/ht',
-  download_url = 'https://github.com/CalebBell/ht/tarball/1.0.8',
+  author_email = "Caleb.Andrew.Bell@gmail.com",
+  url = "https://github.com/CalebBell/ht",
+  download_url = "https://github.com/CalebBell/ht/tarball/1.0.8",
   keywords = keywords,
   classifiers = classifiers,
-  install_requires=['fluids>=1.1.0', 'numpy>=1.5.0', "scipy>=1.6.0"],
-  package_data={'ht': ['data/*']},
+  install_requires=["fluids>=1.1.0", "numpy>=1.5.0", "scipy>=1.6.0"],
+  package_data={"ht": ["data/*"]},
   extras_require = {
-      'Coverage documentation':  ['wsgiref>=0.1.2', 'coverage>=4.0.3', 'pint']
+      "Coverage documentation":  ["wsgiref>=0.1.2", "coverage>=4.0.3", "pint"]
   },
     cmdclass={
-        'bdist_wheel_light': bdist_wheel_light,
-    }  
+        "bdist_wheel_light": bdist_wheel_light,
+    }
 )
