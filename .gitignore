@@ -1,4 +1,6 @@
 *.pyc
+.gitignore
+.pytype
 .pypirc
 dist
 MANIFEST
@@ -8,9 +10,14 @@ htmlcov
 __pycache__
 *kate-swp
 .spyproject
-ht.egg-info 
-.idea
+ht.egg-info
 prof
+.mypy_cache
+monkeytype.sqlite3
+.asv
+ht.build
+node_modules
+package-lock.json
 
 # Compiled source #
 ###################
@@ -21,6 +28,8 @@ prof
 *.o
 *.so
 *.pyo
+*.idea
+*$py.class
 
 # Packages #
 ############
@@ -34,23 +43,27 @@ prof
 *.rar
 *.tar
 #*.zip
- 
+
 # Logs and databases #
 ######################
 *.log
 *.sql
 *.sqlite
- 
+.vscode
+
 # OS generated files #
 ######################
 .DS_Store
 .DS_Store?
+.ipynb_checkpoints
 ._*
 _*
 .Spotlight-V100
 .Trashes
 ehthumbs.db
 Thumbs.db
-.vscode
-.VSCodeCounter
+
+.pytest_cache/
+word_whitelist.txt
+simple_geolocator_cache.sqlite3
 .claude

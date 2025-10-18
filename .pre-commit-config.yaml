@@ -6,6 +6,7 @@ repos:
       # Run the linter.
       - id: ruff-check
         args: [--fix]
+        files: ^(ht)/
 
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v5.0.0
@@ -13,3 +14,16 @@ repos:
       - id: check-yaml
       - id: check-toml
       - id: check-json
+        exclude: ^asv\.conf\.json$
+      - id: check-xml
+      - id: check-merge-conflict
+      - id: check-case-conflict
+      - id: check-executables-have-shebangs
+      - id: check-shebang-scripts-are-executable
+      - id: check-illegal-windows-names
+      - id: debug-statements
+
+  - repo: https://github.com/hukkin/mdformat
+    rev: 1.0.0
+    hooks:
+      - id: mdformat
