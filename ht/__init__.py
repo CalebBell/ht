@@ -19,8 +19,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
-
-import fluids
+# ruff: noqa: F403
 
 from . import (
     air_cooler,
@@ -132,7 +131,7 @@ def __getattr__(name):
         import ht.numba_vectorized
         globals()[name] = ht.numba_vectorized
         return ht.numba_vectorized
-    raise AttributeError("module %s has no attribute %s" %(__name__, name))
+    raise AttributeError(f"module {__name__} has no attribute {name}")
 
 __version__ = "1.0.7"
 

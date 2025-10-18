@@ -23,7 +23,7 @@ from __future__ import annotations
 
 import os
 from math import exp, floor, log, sqrt, tanh  # tanh= 1/coth
-from typing import TYPE_CHECKING, Callable
+from typing import Callable
 
 from fluids.constants import Btu, degree_Fahrenheit, foot, hour, inch
 from fluids.numerics import bisect, brenth, factorial, gamma, horner, iv, quad, secant
