@@ -189,6 +189,7 @@ classifiers=[
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Programming Language :: Python :: Implementation :: CPython",
     "Programming Language :: Python :: Implementation :: PyPy",
     "Topic :: Education",
@@ -208,11 +209,11 @@ setup(
     name="ht",
     packages=["ht"],
     license="MIT",
-    version="1.0.8",
-    download_url="https://github.com/CalebBell/ht/tarball/1.0.8",
+    version="1.1.0",
+    download_url="https://github.com/CalebBell/ht/tarball/1.1.0",
     description=description,
     long_description=open("README.rst").read(),
-    install_requires=["fluids>=1.1.0", "numpy>=1.5.0", "scipy>=1.6.0"],
+    install_requires=["fluids>=1.2.0", "numpy>=1.5.0", "scipy>=1.6.0"],
     extras_require={
         "Coverage documentation":  ["wsgiref>=0.1.2", "coverage>=4.0.3", "pint"]
     },

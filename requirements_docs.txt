@@ -25,4 +25,4 @@ jacobi
 numdifftools
 mpmath
 pandas
-fluids>=1.1.0
+fluids>=1.2.0
