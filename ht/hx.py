@@ -28,7 +28,7 @@ from typing import Callable
 from fluids.constants import Btu, degree_Fahrenheit, foot, hour, inch
 from fluids.numerics import bisect, brenth, factorial, gamma, horner, iv, quad, secant
 from fluids.numerics import numpy as np
-from fluids.piping import BWG_SI, BWG_integers
+from fluids.piping import BWG_SI, BWG_gauges
 
 __all__: list[str] = [
     "DBundle_for_Ntubes_HEDH",
@@ -4309,7 +4309,7 @@ TEMA_tubing = {0.25: (22, 24), 0.375: (18, 20, 22), 0.5: (18, 20),
 #
 #for tup in TEMA_Full_Tubing:
 #    Do, BWG = tup[0]/1000., tup[1]
-#    t = BWG_SI[BWG_integers.index(BWG)]
+#    t = BWG_SI[BWG_gauges.index(BWG)]
 #    Di = Do-2*t
 #    print t*1000, Di*1000
 #
@@ -4334,16 +4334,16 @@ def get_tube_TEMA(NPS=None, BWG=None, Do=None, Di=None, tmin=None):
         if not check_tubing_TEMA(NPS, BWG):
             raise ValueError("NPS and BWG Specified are not listed in TEMA")
         Do = 0.0254*NPS
-        t = BWG_SI[BWG_integers.index(BWG)]
+        t = BWG_SI[BWG_gauges.index(BWG)]
         Di = Do-2*t
     elif Do and BWG:
         NPS = Do/.0254
         if not check_tubing_TEMA(NPS, BWG):
             raise ValueError("NPS and BWG Specified are not listed in TEMA")
-        t = BWG_SI[BWG_integers.index(BWG)]
+        t = BWG_SI[BWG_gauges.index(BWG)]
         Di = Do-2*t
     elif BWG and Di:
-        t = BWG_SI[BWG_integers.index(BWG)] # Will fail if BWG not int
+        t = BWG_SI[BWG_gauges.index(BWG)] # Will fail if BWG not int
         Do = t*2 + Di
         NPS = Do/.0254
         if not check_tubing_TEMA(NPS, BWG):
@@ -4351,26 +4351,26 @@ def get_tube_TEMA(NPS=None, BWG=None, Do=None, Di=None, tmin=None):
     elif NPS and Di:
         Do = 0.0254*NPS
         t = (Do - Di)/2
-        BWG = [BWG_integers[BWG_SI.index(t)]]
+        BWG = [BWG_gauges[BWG_SI.index(t)]]
         if not check_tubing_TEMA(NPS, BWG):
             raise ValueError("NPS and BWG Specified are not listed in TEMA")
     elif Di and Do:
         NPS = Do/.0254
         t = (Do - Di)/2
-        BWG = [BWG_integers[BWG_SI.index(t)]]
+        BWG = [BWG_gauges[BWG_SI.index(t)]]
         if not check_tubing_TEMA(NPS, BWG):
             raise ValueError("NPS and BWG Specified are not listed in TEMA")
     # Begin Fuzzy matching
     elif NPS and tmin:
         Do = 0.0254*NPS
-        ts = [BWG_SI[BWG_integers.index(BWG)] for BWG in TEMA_tubing[NPS]]
+        ts = [BWG_SI[BWG_gauges.index(BWG)] for BWG in TEMA_tubing[NPS]]
         ts.reverse() # Small to large
         if tmin > ts[-1]:
             raise ValueError("Specified minimum thickness is larger than available in TEMA")
         for t in ts: # Runs if at least 1 of the thicknesses are the right size.
             if tmin <= t:
                 break
-        BWG = [BWG_integers[BWG_SI.index(t)]]
+        BWG = [BWG_gauges[BWG_SI.index(t)]]
         Di = Do-2*t
     elif Do and tmin:
         NPS = Do/.0254
@@ -4380,7 +4380,7 @@ def get_tube_TEMA(NPS=None, BWG=None, Do=None, Di=None, tmin=None):
     elif NPS:
         BWG = TEMA_tubing[NPS][0] # Pick the first listed size
         Do = 0.0254*NPS
-        t = BWG_SI[BWG_integers.index(BWG)]
+        t = BWG_SI[BWG_gauges.index(BWG)]
         Di = Do-2*t
     else:
         raise ValueError("Insufficient information provided")
