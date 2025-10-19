@@ -1,6 +1,7 @@
 pytest
+pytest-cov
 sympy
-fuzzywuzzy
+thefuzz
 pint
 pytz
 IPython
