@@ -133,5 +133,5 @@ def __getattr__(name):
         return ht.numba_vectorized
     raise AttributeError(f"module {__name__} has no attribute {name}")
 
-__version__ = "1.0.7"
+__version__ = "1.1.0"
 

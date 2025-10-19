@@ -1,10 +1,11 @@
 pytest
+pytest-cov
 sympy
-fuzzywuzzy
+thefuzz
 pint
 pytz
 IPython
 sphinx
 wheel
 mpmath
-fluids>=1.1.0
+fluids>=1.2.0
