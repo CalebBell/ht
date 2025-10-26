@@ -393,7 +393,7 @@ def test_hx_data():
     assert_close(ht.numba.baffle_thickness(Dshell=.3, L_unsupported=50, service="R"),
                  ht.baffle_thickness(Dshell=.3, L_unsupported=50, service="R"))
 
-
+@mark_as_numba
 def test_hx_effectiveness_still_working():
     assert_close(ht.numba.temperature_effectiveness_air_cooler(.5, 2, rows=10, passes=10),
                  ht.temperature_effectiveness_air_cooler(.5, 2, rows=10, passes=10))
