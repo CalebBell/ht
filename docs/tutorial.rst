@@ -12,7 +12,7 @@ heat transfer coefficient, the Nusselt number. The 'dimensional' heat transfer c
 .. math::
     h = \frac{k\cdot \text{Nu}}{L}
 
-Design philosophy
+Design Philosophy
 -----------------
 Like all libraries, this was developed to scratch my own itches. Since its
 public release it has been found useful by many others, from students across 
@@ -136,7 +136,7 @@ of the object and the wavelength to be considered.
 >>> blackbody_spectral_radiance(T=800., wavelength=4E-6)
 1311694129.7430933
 
-Heat exchanger sizing
+Heat Exchanger Sizing
 ---------------------
 
 There are three popular methods of sizing heat exchangers. The log-mean temperature 
@@ -150,7 +150,7 @@ supports the most types of heat exchangers; its form always requires the UA
 term to be guessed however.
 
 
-LMTD correction factor method
+LMTD Correction Factor Method
 -----------------------------
 
 The simplest method, the log-mean temperature difference correction factor method,
@@ -193,7 +193,7 @@ provided.
 39.75251118049003
 
 
-Effectiveness-NTU method
+Effectiveness-NTU Method
 ------------------------
 This method uses the formula :math:`Q=\epsilon C_{min}(T_{h,i}-T_{c,i})`. The main
 complication of this method is calculating effectiveness `epsilon`, which
