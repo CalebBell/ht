@@ -214,14 +214,15 @@ def test_Nu_conv_internal():
     Nu = Nu_conv_internal(1E2, .7, Method="Laminar - constant Q")
     assert_close(Nu, laminar_Q_const())
 
+    # The default laminar entry-length method is Baehr-Stephan
     Nu = Nu_conv_internal(1E2, .7, x=.01, Di=.1)
-    assert_close(Nu, 14.91799128769779)
+    assert_close(Nu, 21.054212255270844)
 
     # test the other laminar entrylength methods
     Nu = Nu_conv_internal(1E2, .7, x=.01, Di=.1, Method="Hausen laminar thermal entry")
-    assert_close(Nu, 16.51501443241237)
+    assert_close(Nu, 14.91799128769779)
     Nu = Nu_conv_internal(1E2, .7, x=.01, Di=.1, Method="Seider-Tate laminar thermal entry")
-    assert_close(Nu, 21.054212255270848)
+    assert_close(Nu, 16.51501443241237)
 
     # martinili
     Nu = Nu_conv_internal(1E5, .02, eD=0.0)
@@ -260,3 +261,58 @@ def test_Nu_conv_internal():
     assert len(l) == 21
 
 test_Nu_conv_internal()
+
+
+def test_Nu_conv_internal_laminar_entry_dispatch():
+    """Each laminar entry method must return its own correlation.
+
+    These three were wired to each other: asking for Baehr-Stephan gave
+    Hausen, Hausen gave Seider-Tate and Seider-Tate gave Baehr-Stephan.
+    """
+    Re, Pr, x, Di = 1E2, 0.7, 0.01, 0.1
+    expected = {
+        "Baehr-Stephan laminar thermal/velocity entry":
+            laminar_entry_Baehr_Stephan(Re=Re, Pr=Pr, L=x, Di=Di),
+        "Hausen laminar thermal entry":
+            laminar_entry_thermal_Hausen(Re=Re, Pr=Pr, L=x, Di=Di),
+        "Seider-Tate laminar thermal entry":
+            laminar_entry_Seider_Tate(Re=Re, Pr=Pr, L=x, Di=Di),
+    }
+    for method, expect in expected.items():
+        assert_close(Nu_conv_internal(Re, Pr, x=x, Di=Di, Method=method), expect)
+
+    # The three must stay distinct, or the check above proves nothing
+    assert len(set(expected.values())) == 3
+
+    # The first-ranked laminar method is the one the default resolves to
+    assert Nu_conv_internal_methods(Re, Pr, x=x, Di=Di)[0] == \
+        "Baehr-Stephan laminar thermal/velocity entry"
+    assert_close(Nu_conv_internal(Re, Pr, x=x, Di=Di),
+                 expected["Baehr-Stephan laminar thermal/velocity entry"])
+
+
+def test_Nu_conv_internal_low_Re_no_friction_factor():
+    """Laminar correlations must not need a turbulent friction factor.
+
+    `Clamond` is undefined below Re ~ 2.85, and it was evaluated on every
+    call because `eD` defaults to 0.0 rather than None -- so laminar input
+    raised `math domain error` from a value the correlation never uses.
+    """
+    # Constant-Nusselt methods cannot use a friction factor at all
+    assert_close(Nu_conv_internal(1.0, 0.7, Method="Laminar - constant T"),
+                 laminar_T_const())
+    assert_close(Nu_conv_internal(1.0, 0.7, Method="Laminar - constant Q"),
+                 laminar_Q_const())
+
+    # ... nor do the laminar entry-length correlations
+    assert_close(Nu_conv_internal(1.0, 0.7, x=0.15, Di=0.04),
+                 laminar_entry_Baehr_Stephan(Re=1.0, Pr=0.7, L=0.15, Di=0.04))
+
+    # Continuous across the Re where Clamond used to start raising (~2.845)
+    below = Nu_conv_internal(2.5, 0.7, x=0.15, Di=0.04)
+    above = Nu_conv_internal(3.0, 0.7, x=0.15, Di=0.04)
+    assert abs(above - below) < 0.05
+
+    # An explicitly supplied friction factor is still honoured for turbulent
+    assert_close(Nu_conv_internal(1E5, .7, fd=0.01, Method="Churchill-Zajic"),
+                 turbulent_Churchill_Zajic(Re=1E5, Pr=.7, fd=0.01))

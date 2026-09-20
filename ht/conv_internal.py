@@ -1318,9 +1318,9 @@ def turbulent_Bhatti_Shah(Re: float, Pr: float, fd: float, eD: float) -> float:
 conv_tube_laminar_methods = {
     "Laminar - constant T": (laminar_T_const, ()),
     "Laminar - constant Q": (laminar_Q_const, ()),
-    "Baehr-Stephan laminar thermal/velocity entry": (laminar_entry_thermal_Hausen, ("Re", "Pr", "L", "Di")),
-     "Hausen laminar thermal entry": (laminar_entry_Seider_Tate, ("Re", "Pr", "L", "Di")),
-    "Seider-Tate laminar thermal entry": (laminar_entry_Baehr_Stephan, ("Re", "Pr", "L", "Di")),
+    "Baehr-Stephan laminar thermal/velocity entry": (laminar_entry_Baehr_Stephan, ("Re", "Pr", "L", "Di")),
+    "Hausen laminar thermal entry": (laminar_entry_thermal_Hausen, ("Re", "Pr", "L", "Di")),
+    "Seider-Tate laminar thermal entry": (laminar_entry_Seider_Tate, ("Re", "Pr", "L", "Di")),
 }
 
 conv_tube_turbulent_methods = {
@@ -1493,7 +1493,7 @@ def Nu_conv_internal(Re: float, Pr: float, eD: float=0.0, Di: float | None=None,
     Entry length - laminar example
 
     >>> Nu_conv_internal(Re=1E2, Pr=.7, x=.01, Di=.1)
-    14.91799128769779
+    21.054212255270844
     """
     if Method is None:
         Method2 = Nu_conv_internal_methods(Re=Re, Pr=Pr, eD=eD, Di=Di, x=x, fd=fd, check_ranges=True)[0]
@@ -1501,7 +1501,11 @@ def Nu_conv_internal(Re: float, Pr: float, eD: float=0.0, Di: float | None=None,
         Method2 = Method
 
     L = x
-    if eD is not None and fd is None:
+    # Only the turbulent correlations take a friction factor. Computing it
+    # unconditionally also evaluated `Clamond` on laminar input, where it is
+    # undefined below Re ~ 2.85 and raised `math domain error` from a value
+    # the selected correlation never uses.
+    if eD is not None and fd is None and Re >= LAMINAR_TRANSITION_PIPE:
         fd = Clamond(Re=Re, eD=eD)
 
     if Method2 == "Laminar - constant T":
@@ -1509,11 +1513,11 @@ def Nu_conv_internal(Re: float, Pr: float, eD: float=0.0, Di: float | None=None,
     elif Method2 == "Laminar - constant Q":
         return laminar_Q_const()
     elif Method2 == "Baehr-Stephan laminar thermal/velocity entry":
-        return laminar_entry_thermal_Hausen(Re=Re, Pr=Pr, L=L, Di=Di)
-    elif Method2 == "Hausen laminar thermal entry":
-        return laminar_entry_Seider_Tate(Re=Re, Pr=Pr, L=L, Di=Di)
-    elif Method2 == "Seider-Tate laminar thermal entry":
         return laminar_entry_Baehr_Stephan(Re=Re, Pr=Pr, L=L, Di=Di)
+    elif Method2 == "Hausen laminar thermal entry":
+        return laminar_entry_thermal_Hausen(Re=Re, Pr=Pr, L=L, Di=Di)
+    elif Method2 == "Seider-Tate laminar thermal entry":
+        return laminar_entry_Seider_Tate(Re=Re, Pr=Pr, L=L, Di=Di)
     elif Method2 == "Churchill-Zajic":
         return turbulent_Churchill_Zajic(Re=Re, Pr=Pr, fd=fd)
     elif Method2 == "Petukhov-Kirillov-Popov":
