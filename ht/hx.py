@@ -150,7 +150,7 @@ def effectiveness_from_NTU(NTU, Cr, subtype="counterflow", n_shell_tube=None):
 
     .. math::
         \epsilon = 1 - \exp\left[\left(\frac{1}{C_r}\right)
-        (NTU)^{0.22}\left\{\exp\left[C_r(NTU)^{0.78}\right]-1\right\}\right]
+        (NTU)^{0.22}\left\{\exp\left[-C_r(NTU)^{0.78}\right]-1\right\}\right]
 
     The exact solution for crossflow (fluids unmixed) uses SciPy's quad
     to perform an integral (there is no analytical integral solution available).
