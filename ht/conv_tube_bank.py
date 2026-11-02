@@ -376,7 +376,7 @@ def Nu_Zukauskas_Bejan(Re: float, Pr: float, tube_rows: int, pitch_parallel: flo
         if Re < 100:
             c, m = 0.9, 0.4
         elif Re < 1000:
-            c, m = 0.52, 0.05
+            c, m = 0.52, 0.5
         elif Re < 2E5:
             c, m = 0.27, 0.63
         else:

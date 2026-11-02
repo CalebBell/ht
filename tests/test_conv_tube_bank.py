@@ -251,6 +251,10 @@ def test_Nu_Zukauskas_Bejan():
     Nus_expect = [4.554889061992833, 65.35035570869223, 768.4207053648229, 26469.71311148279]
     assert_close1d(Nus, Nus_expect)
 
+    # In-line, 100 < Re < 1000: C = 0.52, m = 0.5
+    Nu = Nu_Zukauskas_Bejan(Re=500, Pr=7., tube_rows=30, pitch_parallel=.05, pitch_normal=.05)
+    assert_close(Nu, 0.52*500**0.5*7**0.36)
+
     Nus = [Nu_Zukauskas_Bejan(Re=Re, Pr=7., tube_rows=30, pitch_parallel=.05, pitch_normal=.09) for Re in (10, 2000, 1E5, 1E7)]
     Nus_expect = [5.263427360525052, 75.85353712516013, 793.1545862201796, 27967.361063088636]
     assert_close1d(Nus, Nus_expect)

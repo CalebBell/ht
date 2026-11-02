@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Fixed
+
+- `Nu_Zukauskas_Bejan`: in-line banks with 100 < Re < 1000 used an exponent of 0.05 instead of 0.5 (#22)
+
 ## [1.2.0] - 2025-10-26
 
 ### Added
