@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Fixed
+
+- `Nu_external_cylinder`: Method="Churchill-Bernstein" called `Nu_cylinder_Sanitjai_Goldstein` instead of `Nu_cylinder_Churchill_Bernstein` (#25)
+
 ## [1.2.0] - 2025-10-26
 
 ### Added

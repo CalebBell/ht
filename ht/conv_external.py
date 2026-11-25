@@ -602,7 +602,7 @@ def Nu_external_cylinder(Re: float, Pr: float, Prw: float | None=None, mu: float
     if Method2 == "Sanitjai-Goldstein":
         return Nu_cylinder_Sanitjai_Goldstein(Re=Re, Pr=Pr)
     elif Method2 == "Churchill-Bernstein":
-        return Nu_cylinder_Sanitjai_Goldstein(Re=Re, Pr=Pr)
+        return Nu_cylinder_Churchill_Bernstein(Re=Re, Pr=Pr)
     elif Method2 == "Fand":
         return Nu_cylinder_Fand(Re=Re, Pr=Pr)
     elif Method2 == "McAdams":
