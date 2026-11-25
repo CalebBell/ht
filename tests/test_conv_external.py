@@ -103,6 +103,9 @@ def test_Nu_external_cylinder():
     Nu = Nu_external_cylinder(6071.0, 0.7)
     assert_close(Nu, 40.38327083519522)
 
+    Nu = Nu_external_cylinder(6071.0, 0.7, Method="Churchill-Bernstein")
+    assert_close(Nu, 40.63708594124974)
+
     Nu = Nu_external_cylinder(6071.0, 0.7, Method="Zukauskas")
     assert_close(Nu, 42.4244052368103)
 
