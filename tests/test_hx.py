@@ -1769,3 +1769,18 @@ def test_issue_6():
     Tci = 0
     results = effectiveness_NTU_method(Flowh,Flowc,Cph,Cpc,subtype=subtype,UA=UA,
                                         Thi = Thi, Tci=Tci)
+
+
+def test_temperature_effectiveness_basic_counterflow_overflow():
+    # CalebBell/ht #26: R1 > 1 and large NTU1 overflows exp(-NTU1*(1 - R1))
+    P1 = temperature_effectiveness_basic(R1=2.0, NTU1=800.0, subtype="counterflow")
+    assert_close(P1, 0.5, atol=1e-12)
+
+    # Moderate NTU values: test consistency with standard formula
+    for NTU1 in (1.0, 3.0, 10.0):
+        for R1 in (0.5, 2.0):
+            e_orig = exp(-NTU1*(1.0 - R1))
+            P1_orig = (1.0 - e_orig)/(1.0 - R1*e_orig)
+            P1_func = temperature_effectiveness_basic(R1=R1, NTU1=NTU1, subtype="counterflow")
+            assert_close(P1_func, P1_orig, atol=1e-12)
+

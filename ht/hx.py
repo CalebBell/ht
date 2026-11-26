@@ -1447,8 +1447,12 @@ def temperature_effectiveness_basic(R1: float, NTU1: float, subtype: str="crossf
             limit(P1, R1, 1)
             """
             P1 = -NTU1/(-NTU1 - 1.0)
+        elif R1 < 1.0:
+            e = exp(-NTU1*(1.0 - R1))
+            P1 = (1.0 - e)/(1.0 - R1*e)
         else:
-            P1 = (1.0 - exp(-NTU1*(1 - R1)))/(1.0 - R1*exp(-NTU1*(1-R1)))
+            e = exp(-NTU1*(R1 - 1.0))
+            P1 = (1.0 - e)/(R1 - e)
     elif subtype == "parallel":
         P1 = (1.0 - exp(-NTU1*(1 + R1)))/(1.0 + R1)
     elif subtype == "crossflow approximate":
